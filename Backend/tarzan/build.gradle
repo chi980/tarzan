@@ -24,10 +24,16 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// postgresSql
+	implementation 'org.postgresql:postgresql:42.6.0'
+	// hibernate-spatial 및 jts 라이브러리
+	implementation 'org.hibernate:hibernate-spatial:6.2.13.Final'
+	implementation 'org.locationtech.jts:jts-core'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
