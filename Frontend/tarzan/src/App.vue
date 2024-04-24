@@ -5,7 +5,6 @@
     <div class="inner">
       <p>러나</p>
     </div>
-    <!-- <h2>ㅇㄹㄴ</h2> -->
   </div>
 </template>
 
