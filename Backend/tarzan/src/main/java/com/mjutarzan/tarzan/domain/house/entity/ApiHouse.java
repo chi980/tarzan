@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.geolatte.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -19,8 +20,10 @@ public class ApiHouse extends House{
     private String category;
 
     @Builder
-    public ApiHouse(String name, String address, Geometry location, String category){
+    public ApiHouse(String name, String address, Point location, String category){
         super(name, address, location);
         this.category = category;
     }
+
+
 }

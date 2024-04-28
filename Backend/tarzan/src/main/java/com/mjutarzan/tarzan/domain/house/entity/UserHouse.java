@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.catalina.User;
 import org.geolatte.geom.Geometry;
-
+import org.locationtech.jts.geom.Point;
 @Entity
 @Getter
 @DiscriminatorValue(value = "user")
@@ -16,7 +16,7 @@ import org.geolatte.geom.Geometry;
 public class UserHouse extends House{
 
     @Builder
-    public UserHouse(String name, String address, Geometry location){
+    public UserHouse(String name, String address, Point location){
         super(name, address, location);
     }
 }

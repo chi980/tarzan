@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.geolatte.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -27,10 +28,10 @@ public abstract class House extends CommonEntity {
     @Column(name = "house_address", nullable = false)
     private String address;
 
-    @Column(name = "house_location", nullable = false)
-    private Geometry location;
+    @Column(columnDefinition = "geometry(Point,4326)", name = "house_location", nullable = false)
+    private Point location;
 
-    protected House(String name, String address, Geometry location){
+    protected House(String name, String address, Point location){
         this.name = name;
         this.address = address;
         this.location = location;
