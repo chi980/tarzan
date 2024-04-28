@@ -34,7 +34,7 @@ pipeline {
 
         stage('Dockerizing'){
             steps{
-                dir('backend'){
+                dir('Backend'){
 
                     sh "echo '파일 구조 확인'"
                     sh "ls"
