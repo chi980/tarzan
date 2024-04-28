@@ -28,9 +28,13 @@ public abstract class Building {
     @Column(columnDefinition = "geometry(Point,4326)", name = "building_location", nullable = false)
     private Point location;
 
-    protected Building(String name, String address, Point location){
+    @Column(name = "building_phone_number", nullable = true)
+    private String phoneNumber;
+
+    protected Building(String name, String address, Point location, String phoneNumber){
         this.name = name;
         this.address = address;
         this.location = location;
+        this.phoneNumber = phoneNumber;
     }
 }
