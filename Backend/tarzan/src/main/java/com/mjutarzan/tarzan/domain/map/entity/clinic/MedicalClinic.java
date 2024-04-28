@@ -1,6 +1,5 @@
 package com.mjutarzan.tarzan.domain.map.entity.clinic;
 
-import com.mjutarzan.tarzan.domain.map.entity.Building;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -11,11 +10,11 @@ import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
-@DiscriminatorValue("clinic")
+@DiscriminatorValue("medical_clinic")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Clinic extends Building {
+public class MedicalClinic extends Clinic{
     @Builder
-    public Clinic(String name, String address, Point location, String phoneNumber){
+    public MedicalClinic(String name, String address, Point location, String phoneNumber){
         super(name, address, location, phoneNumber);
     }
 }
