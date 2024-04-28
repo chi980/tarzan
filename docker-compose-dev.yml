@@ -3,7 +3,7 @@ services:
   backend:
     container_name: backend
     build:
-      context: ./Backend
+      context: ./Backend/tarzan
       args:
         SERVER_MODE: dev
     ports:
@@ -11,7 +11,7 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./Frontend
+      context: ./Frontend/tarzan
       dockerfile: Dockerfile.dev
     ports:
       - 3000:3000
