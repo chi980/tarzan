@@ -30,6 +30,11 @@ dependencies {
 	// hibernate-spatial 및 jts 라이브러리
 	implementation 'org.hibernate:hibernate-spatial:6.2.13.Final'
 	implementation 'org.locationtech.jts:jts-core'
+	// opencsv
+	implementation 'com.opencsv:opencsv:5.5.2'
+
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
