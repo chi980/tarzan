@@ -1,6 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.transportation;
 
-import com.mjutarzan.tarzan.domain.map.entity.Building;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
@@ -11,12 +11,17 @@ import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
-@DiscriminatorValue("transportation")
+@DiscriminatorValue("subway")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Transportation extends Building {
+public class Subway extends Transportation{
 
-    @Builder
-    public Transportation(String name, String address, Point location, String phoneNumber){
+    // 1호선...
+    @Column(name="subway_type", nullable = true)
+    private String type;
+
+    @Builder(builderMethodName = "subwayBuilder")
+    public Subway(String name, String address, Point location, String phoneNumber, String type){
         super(name, address, location, phoneNumber);
+        this.type = type;
     }
 }

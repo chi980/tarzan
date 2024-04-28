@@ -1,8 +1,7 @@
 package com.mjutarzan.tarzan.domain.map.entity.amenity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +14,13 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Park extends Amenity{
 
+    @Enumerated(EnumType.STRING)
     @Column(name="park_gu", nullable = true)
-    private String gu;
+    private SiGunGu gu;
 
 
     @Builder(builderMethodName = "parkBuilder")
-    public Park(String name, String address, Point location, String phoneNumber, String gu){
+    public Park(String name, String address, Point location, String phoneNumber, SiGunGu gu){
         super(name, address, location, phoneNumber);
         this.gu = gu;
     }
