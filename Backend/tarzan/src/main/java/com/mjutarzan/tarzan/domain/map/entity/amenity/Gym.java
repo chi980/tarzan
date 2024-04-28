@@ -1,4 +1,4 @@
-package com.mjutarzan.tarzan.domain.house.entity;
+package com.mjutarzan.tarzan.domain.map.entity.amenity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -11,18 +11,16 @@ import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
-@DiscriminatorValue(value = "api")
+@DiscriminatorValue("gym")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ApiHouse extends House{
+public class Gym extends Amenity{
 
-    @Column(name = "api_house_category", nullable = true)
+    @Column(name="gym_category", nullable = true)
     private String category;
 
-    @Builder
-    public ApiHouse(String name, String address, Point location, String category){
-        super(name, address, location);
+    @Builder(builderMethodName = "gymBuilder")
+    public Gym(String name, String address, Point location, String phoneNumber, String category){
+        super(name, address, location, phoneNumber);
         this.category = category;
     }
-
-
 }
