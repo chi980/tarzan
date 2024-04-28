@@ -42,6 +42,7 @@ public class CSVService {
         if(ddlAuto.contains("create")){
             try{
                 log.info("csv 파일을 자동으로 업로드합니다.");
+//                loadHouseCsvWithoutBatch();
                 loadHouseCsv();
 
             }catch(Exception e){
@@ -52,7 +53,19 @@ public class CSVService {
         }
     }
 
-    private void loadHouseCsv() throws Exception{
+    private void loadHouseCsv() {
+        long startTime = System.currentTimeMillis();
+
+
+
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        log.info("CSV 파일 로드 및 처리 시간: {} 밀리초", elapsedTime);
+    }
+
+    private void loadHouseCsvWithoutBatch() throws Exception{
+        long startTime = System.currentTimeMillis();
+
         Resource resource = resourceLoader.getResource("classpath:/static/data/house.csv");
         try (CSVReader reader = new CSVReader(new InputStreamReader(resource.getInputStream()))) {
             String[] headers = reader.readNext(); // 헤더 라인을 읽어옴
@@ -76,6 +89,10 @@ public class CSVService {
             }
             apiHouseRepository.saveAll(apiHouses);
         }
+
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        log.info("CSV 파일 로드 및 처리 시간: {} 밀리초", elapsedTime);
     }
 
 }
