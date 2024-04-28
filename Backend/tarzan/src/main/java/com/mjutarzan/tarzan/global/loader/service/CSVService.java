@@ -2,7 +2,6 @@ package com.mjutarzan.tarzan.global.loader.service;
 
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
-import com.opencsv.CSVParser;
 import com.opencsv.CSVReader;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +15,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
