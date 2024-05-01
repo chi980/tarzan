@@ -13,7 +13,7 @@ import org.locationtech.jts.geom.Point;
 @DiscriminatorValue("hospital")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Hospital extends Clinic{
-    @Builder
+    @Builder(builderMethodName = "hospitalBuilder")
     public Hospital(String name, String address, Point location, String phoneNumber){
         super(name, address, location, phoneNumber);
     }
