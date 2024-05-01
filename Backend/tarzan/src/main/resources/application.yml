@@ -3,9 +3,9 @@ spring:
     name: tarzan
 
   datasource:
-    url: jdbc:postgresql://54.180.109.0:5432/tarzan
+    url: jdbc:postgresql://http://43.203.126.22/tarzan
     username: postgres
-    password: '@tarzan_zxcvbnm123!'
+    password: '@strawberry_tarzan_8960!'
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
