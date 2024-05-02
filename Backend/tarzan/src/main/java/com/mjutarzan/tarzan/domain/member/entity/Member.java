@@ -30,10 +30,10 @@ public class Member extends CommonEntity implements UserDetails {
     @Column(name = "member_email", nullable = false)
     private String email; // 사용자 이메일
 
-    @Column(name = "member_provider", nullable = false)
+    @Column(name = "member_provider")
     private String provider; // OAuth2 제공자
 
-    @Column(name = "member_provider_id", nullable = false, unique = true)
+    @Column(name = "member_provider_id", unique = true)
     private String providerId; // OAuth2 사용자의 고유한 ID, username 대신 사용
 
     @Column(name = "member_username")
@@ -44,10 +44,10 @@ public class Member extends CommonEntity implements UserDetails {
     @Column(name = "member_role")
     private Role role;
 
-    @Column(name = "member_password", nullable = false)
+    @Column(name = "member_password")
     private String password;
 
-    @Column(name = "member_nickname", nullable = false, unique = true)
+    @Column(name = "member_nickname")
     private String nickname;
 
 

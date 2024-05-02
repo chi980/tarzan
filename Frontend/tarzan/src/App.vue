@@ -1,23 +1,39 @@
-<script setup lang="ts"></script>
-
 <template>
-  <div class="container">
-    <div class="inner">
-      <p>러나</p>
-    </div>
+  <div id="main-container">
+    <button @click="googleSnsLogin">Google 로그인</button>
+
+    <button @click="axiosClick">axios</button>
   </div>
 </template>
 
 <style scoped>
-div.container {
+div#main-container {
   width: 100%;
-  height: 50%;
+  height: 100%;
   margin: 0;
   padding: 0;
-  background-color: blue;
-}
-div.inner {
-  width: 100%;
-  background-color: bisque;
+  background-color: aliceblue;
 }
 </style>
+<script>
+import axios from "axios";
+export default {
+  methods: {
+    googleSnsLogin() {
+      location.href = "http://localhost:8080/oauth2/authorization/google";
+    },
+
+    axiosClick() {
+      axios
+        .get("/api", { withCredentials: true })
+        .then((res) => {
+          alert(JSON.stringify(res.data));
+        })
+        .catch((error) => alert(error));
+    },
+  },
+  data() {
+    return {};
+  },
+};
+</script>
