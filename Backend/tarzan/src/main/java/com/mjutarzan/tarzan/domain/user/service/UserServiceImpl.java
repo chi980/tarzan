@@ -70,7 +70,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String authenticate(LoginUserRequestDto loginUserRequestDto) {
-        // 로그인 로직(redis)
+        Optional<User> loginedUser = userRepository.findByProviderId(loginUserRequestDto.getProviderId());
+
+        if(loginedUser.isPresent()) return loginedUser.get().getLoginId();
         return null;
     }
 }

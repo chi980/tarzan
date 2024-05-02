@@ -31,6 +31,9 @@ public class User extends CommonEntity {
     @Column(name = "user_nickname", nullable = false, unique = true)
     private String nickname;
 
+    @Column(name = "user_refresh_token")
+    private String refreshToken;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "member_role")
     private Role role;
@@ -66,6 +69,10 @@ public class User extends CommonEntity {
         this.haveCar = haveCar;
 
         return this;
+    }
+
+    public void changeRefreshToken(String refreshToken) { // 추가!
+        this.refreshToken = refreshToken;
     }
 
     public String getRoleKey(){
