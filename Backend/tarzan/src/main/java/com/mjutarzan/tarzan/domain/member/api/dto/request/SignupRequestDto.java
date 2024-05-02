@@ -1,4 +1,4 @@
-package com.mjutarzan.tarzan.domain.user.api.dto.request;
+package com.mjutarzan.tarzan.domain.member.api.dto.request;
 
 
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SignupUserRequestDto {
+public class SignupRequestDto {
     private String email;
     private String provider;
     private String providerId;
