@@ -27,7 +27,7 @@ public class OAuthApiV2 {
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-
+        log.info("reissue controller");
         //get refresh token
         String refresh = null;
         Cookie[] cookies = request.getCookies();
@@ -40,7 +40,7 @@ public class OAuthApiV2 {
         }
 
         if (refresh == null) {
-
+            log.error("refresh token null");
             //response status code
             return new ResponseEntity<>("refresh token null", HttpStatus.BAD_REQUEST);
         }
@@ -50,6 +50,7 @@ public class OAuthApiV2 {
             jwtTokenUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
 
+            log.error("refresh token expired");
             //response status code
             return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
         }
@@ -59,6 +60,7 @@ public class OAuthApiV2 {
 
         if (!category.equals("refresh")) {
 
+            log.error("invalid refresh token");
             //response status code
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }

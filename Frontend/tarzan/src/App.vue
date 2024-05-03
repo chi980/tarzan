@@ -4,6 +4,7 @@
     <button @click="kakaoSnsLogin">Kakao 로그인</button>
 
     <button @click="axiosClick">axios</button>
+    <button @click="reissue">reisuue Token</button>
   </div>
 </template>
 
@@ -30,6 +31,15 @@ export default {
     axiosClick() {
       axios
         .get("/api", { withCredentials: true })
+        .then((res) => {
+          alert(JSON.stringify(res.data));
+        })
+        .catch((error) => alert(error));
+    },
+
+    reissue() {
+      axios
+        .post("/api/oauth")
         .then((res) => {
           alert(JSON.stringify(res.data));
         })
