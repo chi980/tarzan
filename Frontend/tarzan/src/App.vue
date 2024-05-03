@@ -1,6 +1,7 @@
 <template>
   <div id="main-container">
     <button @click="googleSnsLogin">Google 로그인</button>
+    <button @click="kakaoSnsLogin">Kakao 로그인</button>
 
     <button @click="axiosClick">axios</button>
   </div>
@@ -21,6 +22,9 @@ export default {
   methods: {
     googleSnsLogin() {
       location.href = "http://localhost:8080/oauth2/authorization/google";
+    },
+    kakaoSnsLogin() {
+      location.href = "http://localhost:8080/oauth2/authorization/kakao";
     },
 
     axiosClick() {

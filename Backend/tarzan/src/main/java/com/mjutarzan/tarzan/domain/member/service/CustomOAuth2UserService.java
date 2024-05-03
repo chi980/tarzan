@@ -6,7 +6,6 @@ import com.mjutarzan.tarzan.domain.member.model.dto.GoogleResponse;
 import com.mjutarzan.tarzan.domain.member.model.dto.KakaoResponse;
 import com.mjutarzan.tarzan.domain.member.model.dto.OAuth2Response;
 import com.mjutarzan.tarzan.domain.member.model.dto.UserDTO;
-import com.mjutarzan.tarzan.domain.member.model.vo.Role;
 import com.mjutarzan.tarzan.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -32,36 +31,35 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         System.out.println(oAuth2User);
 
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        String provider = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
-        if (registrationId.equals("google")) {
+        if (provider.equals("google")) {
 
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
-        }else if(registrationId.equals("kakao")){
+//        }else if(registrationId.equals("kakao")){
+//            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        }else if(provider.equals("kakao")){
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         }
         else {
-
+            System.out.println("제공되지 않는 provider입니다.:"+provider);
             return null;
         }
 
         //리소스 서버에서 발급 받은 정보로 사용자를 특정할 아이디값을 만듬
         String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+        // 로그인 이력이 없는 경우
         Optional<Member> existData = memberRepository.findByUsername(username);
         if (existData.isEmpty()) {
 
-            Role role = null;
-            if(registrationId.equals("google")){
-                role = Role.GOOGLE;
-            }else if(registrationId.equals("kakao")){
-                role = Role.KAKAO;
-            }
-
             Member member = Member.builder()
-                    .username(username)
                     .email(oAuth2Response.getEmail())
+                    .provider(oAuth2Response.getProvider())
+                    .providerId(oAuth2Response.getProviderId())
+                    .username(username)
                     .name(oAuth2Response.getName())
-                    .role(role)
+                    .role(oAuth2Response.getRole())
+                    .password(oAuth2Response.getEmail()) // 비밀번호가 의미가 없으므로 email을 넣는다.
                     .build();
 
             memberRepository.save(member);
@@ -69,19 +67,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
             userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(Role.GOOGLE);
+            userDTO.setRole(oAuth2Response.getRole());
 
             return new CustomOAuth2User(userDTO);
         }
         else {
             Member alreadyMember = existData.get();
-            alreadyMember.update(oAuth2Response.getEmail(), oAuth2Response.getName());
-
-            memberRepository.save(alreadyMember);
+//            alreadyMember.update(oAuth2Response.getEmail(), oAuth2Response.getName());
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(alreadyMember.getUsername());
-            userDTO.setName(oAuth2Response.getName());
+            userDTO.setName(alreadyMember.getName());
             userDTO.setRole(alreadyMember.getRole());
 
             return new CustomOAuth2User(userDTO);

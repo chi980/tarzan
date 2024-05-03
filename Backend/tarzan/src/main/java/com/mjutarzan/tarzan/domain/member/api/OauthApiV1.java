@@ -8,7 +8,6 @@ import com.mjutarzan.tarzan.global.exception.DuplicateUserException;
 import com.mjutarzan.tarzan.global.exception.ProviderNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,19 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/oauth")
-public class OauthApi {
+@RequestMapping("/api/oauth/v1")
+public class OauthApiV1 {
 
     private final MemberService userService;
 
-    @Value("${spring.jwt.secret}")
-    private String jwtSecret;
 
-    @Value("${spring.jwt.access-token-validity-in-seconds}")
-    private Long accessTokenValidTime;
-
-    @Value("${spring.jwt.refresh-token-validity-in-seconds}")
-    private Long refreshTokenValidTime;
 
 
 

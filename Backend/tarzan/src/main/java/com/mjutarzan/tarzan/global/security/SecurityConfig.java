@@ -1,9 +1,11 @@
 package com.mjutarzan.tarzan.global.security;
 
 import com.mjutarzan.tarzan.domain.member.service.CustomOAuth2UserService;
+import com.mjutarzan.tarzan.global.security.filter.CustomLogoutFilter;
 import com.mjutarzan.tarzan.global.security.handler.CustomSuccessHandler;
 import com.mjutarzan.tarzan.global.security.jwt.JwtTokenFilter;
 import com.mjutarzan.tarzan.global.security.jwt.JwtTokenUtil;
+import com.mjutarzan.tarzan.global.security.token.RefreshTokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -27,8 +30,10 @@ public class SecurityConfig{
     @Value("${spring.jwt.secret}")
     private String secretKey;
 
+
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenUtil jwtUtil;
 
     @Bean
@@ -71,11 +76,16 @@ public class SecurityConfig{
         http
                 .addFilterBefore(new JwtTokenFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
+
         //oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
+                        // 로그인 된 유저의 정보를 가져온다.
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(customOAuth2UserService))
+                        // 가져온 유저의 정보를 customOAuth2UserService가 처리
+                        .userService(customOAuth2UserService))
                         .successHandler(customSuccessHandler)
                 );
 
@@ -83,6 +93,8 @@ public class SecurityConfig{
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/redis/*").permitAll()
+                        .requestMatchers("/api/oauth/reissue").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정 : STATELESS

@@ -1,5 +1,7 @@
 package com.mjutarzan.tarzan.domain.member.model.dto;
 
+import com.mjutarzan.tarzan.domain.member.model.vo.Role;
+
 import java.util.Map;
 
 public class GoogleResponse implements OAuth2Response{
@@ -15,6 +17,11 @@ public class GoogleResponse implements OAuth2Response{
     public String getProvider() {
 
         return "google";
+    }
+
+    @Override
+    public Role getRole() {
+        return Role.GOOGLE;
     }
 
     @Override
