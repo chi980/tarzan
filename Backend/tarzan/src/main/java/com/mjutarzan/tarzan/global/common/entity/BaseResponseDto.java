@@ -1,7 +1,13 @@
 package com.mjutarzan.tarzan.global.common.entity;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class BaseResponseDto {
 
     private boolean success;
@@ -14,4 +20,5 @@ public class BaseResponseDto {
         this.message = message;
         this.data = data;
     }
+
 }

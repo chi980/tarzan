@@ -2,10 +2,16 @@ spring:
   application:
     name: tarzan
 
+  session:
+    store-type: redis # session 을 redis 로 설정
+  redis:
+    host: 43.203.126.22
+    port: 6379
+    password: "strawberry_tarzan_8960!"
   datasource:
-    url: jdbc:postgresql://54.180.109.0:5432/tarzan
+    url: jdbc:postgresql://43.203.126.22/tarzan
     username: postgres
-    password: '@tarzan_zxcvbnm123!'
+    password: '@strawberry_tarzan_8960!'
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,6 +23,41 @@ spring:
         format_sql: true
     use_sql_comments: true
     database: postgresql
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: 47134587732-6gq6500f5srhmscdv8bektl4uovnqr3t.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
+          kakao:
+#            rest api key
+            client-id: b70dc9585929d8782aa4c22017317c27
+            client-secret: MKwCIvKkVfr4dziIyCfGjQzDdUYdeZ0O
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            scope: profile_nickname,profile_image,account_email
+            client-name: kakao
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+  jwt:
+    secret: f3ea5bb104ef3a66b65f87dacf67411fa982fdd62bc99da583d3cd37102ff435
+    refresh-token-validity-in-seconds: 1209600 # 14일
+    access-token-validity-in-seconds: 43200 # 12시간
 
   batch:
     job:
