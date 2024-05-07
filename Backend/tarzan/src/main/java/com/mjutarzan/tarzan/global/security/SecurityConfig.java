@@ -1,8 +1,9 @@
 package com.mjutarzan.tarzan.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjutarzan.tarzan.domain.member.service.CustomOAuth2UserService;
-import com.mjutarzan.tarzan.global.security.filter.CustomLogoutFilter;
 import com.mjutarzan.tarzan.global.security.handler.CustomSuccessHandler;
+import com.mjutarzan.tarzan.global.security.jwt.JwtExceptionFilter;
 import com.mjutarzan.tarzan.global.security.jwt.JwtTokenFilter;
 import com.mjutarzan.tarzan.global.security.jwt.JwtTokenUtil;
 import com.mjutarzan.tarzan.global.security.token.RefreshTokenRepository;
@@ -16,14 +17,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Collections;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig{
 
@@ -39,6 +39,11 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        //HTTP Basic 인증 방식 disable
+        http
+                .httpBasic((auth) -> auth.disable());
+        
+        //cors 활성화
         http
                 .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
@@ -68,16 +73,17 @@ public class SecurityConfig{
         http
                 .formLogin((auth) -> auth.disable());
 
-        //HTTP Basic 인증 방식 disable
+        //세션 설정 : STATELESS
         http
-                .httpBasic((auth) -> auth.disable());
+                .sessionManagement((session) -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        //JWTFilter 추가
+        //경로별 인가 작업
         http
-                .addFilterBefore(new JwtTokenFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
-        http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/").permitAll() // test
+                        .requestMatchers("/api/oauth/token/**").permitAll()
+                        .anyRequest().authenticated());
 
         //oauth2
         http
@@ -89,18 +95,16 @@ public class SecurityConfig{
                         .successHandler(customSuccessHandler)
                 );
 
-        //경로별 인가 작업
-        http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/redis/*").permitAll()
-                        .requestMatchers("/api/oauth/reissue").permitAll()
-                        .anyRequest().authenticated());
 
-        //세션 설정 : STATELESS
+        // JwtExceptionFilter -> JwtFilter 추가 [ JwtFilter에서 예외 throw할 시 JwtExceptionFilter로 감 ]
         http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .addFilterBefore(new JwtTokenFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(new ObjectMapper()), JwtTokenFilter.class);
+
+//        http
+//                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
+
+
 
         return http.build();
     }

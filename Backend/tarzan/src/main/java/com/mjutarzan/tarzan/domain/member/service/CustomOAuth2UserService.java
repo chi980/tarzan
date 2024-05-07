@@ -64,10 +64,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             memberRepository.save(member);
 
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(username);
-            userDTO.setName(oAuth2Response.getName());
-            userDTO.setRole(oAuth2Response.getRole());
+            UserDTO userDTO = UserDTO.builder()
+                    .username(username)
+                    .name(oAuth2Response.getName())
+                    .role(oAuth2Response.getRole())
+                    .build();
 
             return new CustomOAuth2User(userDTO);
         }
@@ -75,10 +76,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             Member alreadyMember = existData.get();
 //            alreadyMember.update(oAuth2Response.getEmail(), oAuth2Response.getName());
 
-            UserDTO userDTO = new UserDTO();
-            userDTO.setUsername(alreadyMember.getUsername());
-            userDTO.setName(alreadyMember.getName());
-            userDTO.setRole(alreadyMember.getRole());
+            UserDTO userDTO = UserDTO.builder()
+                    .username(alreadyMember.getUsername())
+                    .name(alreadyMember.getName())
+                    .role(alreadyMember.getRole())
+                    .build();
 
             return new CustomOAuth2User(userDTO);
         }

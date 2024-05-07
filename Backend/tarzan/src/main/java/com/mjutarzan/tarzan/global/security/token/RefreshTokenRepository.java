@@ -3,6 +3,8 @@ package com.mjutarzan.tarzan.global.security.token;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface RefreshTokenRepository  extends CrudRepository<RefreshToken, String> {
     // 특정 refreshToken이 존재하는지 확인하는 메서드
     Boolean existsByRefreshToken(String refreshToken);
@@ -10,5 +12,7 @@ public interface RefreshTokenRepository  extends CrudRepository<RefreshToken, St
     // 특정 refreshToken을 삭제하는 메서드
     @Transactional
     void deleteByRefreshToken(String refreshToken);
+
+    Optional<RefreshToken> findByAccessToken(String accessToken);
 
 }

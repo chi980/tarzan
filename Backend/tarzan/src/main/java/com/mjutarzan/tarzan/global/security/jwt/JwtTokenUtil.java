@@ -1,8 +1,8 @@
 package com.mjutarzan.tarzan.global.security.jwt;
 
 import com.mjutarzan.tarzan.domain.member.model.vo.Role;
-import com.mjutarzan.tarzan.global.security.token.RefreshToken;
-import com.mjutarzan.tarzan.global.security.token.RefreshTokenRepository;
+import com.mjutarzan.tarzan.global.security.token.GeneratedToken;
+import com.mjutarzan.tarzan.global.security.token.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -21,7 +21,8 @@ public class JwtTokenUtil {
 
     private Key key;
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
+
 
     @Value("${spring.jwt.access-token-validity-in-seconds}")
     private Long accessTokenValidTime;
@@ -29,21 +30,21 @@ public class JwtTokenUtil {
     @Value("${spring.jwt.refresh-token-validity-in-seconds}")
     private Long refreshTokenValidTime;
 
-    public JwtTokenUtil(@Value("${spring.jwt.secret}")String secret, RefreshTokenRepository refreshTokenRepository) {
+    public JwtTokenUtil(@Value("${spring.jwt.secret}")String secret, RefreshTokenService refreshTokenService) {
 
 
         byte[] byteSecretKey = Decoders.BASE64.decode(secret);
         key = Keys.hmacShaKeyFor(byteSecretKey);
 
-        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public String getUsername(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("username", String.class);
     }
 
-    public String getRole(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
+    public Role getRole(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", Role.class);
     }
 
     public String getCategory(String token) {
@@ -76,16 +77,32 @@ public class JwtTokenUtil {
     }
 
     public String createAccessToken(String username, Role role) {
-        return createJwt(username, role, "access",accessTokenValidTime);
+        return "Bearer "+createJwt(username, role, "access",accessTokenValidTime);
     }
 
-    public String createRefreshToken(String username, Role role) {
+    /**
+     * Refresh token을 생성한 뒤 Redis에 저장
+     * @param username
+     * @param role
+     * @return
+     */
+    public String createRefreshToken(String username, Role role, String accessToken) {
 
         String refreshTokenString = createJwt(username, role, "refresh", refreshTokenValidTime);
-        RefreshToken refreshToken = new RefreshToken(refreshTokenString, username, refreshTokenValidTime);
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenService.save(refreshTokenString,accessToken, username, refreshTokenValidTime);
 
         return refreshTokenString;
+    }
+
+    public GeneratedToken createToken(String username, Role role){
+        String accessToken = createAccessToken(username, role);
+        String refreshToken = createRefreshToken(username, role, accessToken);
+
+        return GeneratedToken
+                .builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public Cookie createCookie(String key, String value) {
