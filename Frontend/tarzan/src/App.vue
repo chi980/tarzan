@@ -1,12 +1,12 @@
 <template>
   <div id="main-container">
-    <button @click="googleSnsLogin">Google 로그인</button>
+    <!-- <button @click="googleSnsLogin">Google 로그인</button>
     <button @click="kakaoSnsLogin">Kakao 로그인</button>
 
     <button @click="axiosClick">axios</button>
     <button @click="reissue">reisuue Token</button>
 
-    <button @click="checkHeader">header확인</button>
+    <button @click="checkHeader">header확인</button> -->
 
     <router-view />
     <!-- 추가 -->
