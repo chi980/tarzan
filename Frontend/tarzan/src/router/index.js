@@ -40,6 +40,11 @@ const routes = [
     name: "NotFound",
     component: () => import("@/pages/ErrorNotFound.vue"),
   },
+  {
+    path: "/communityHome",
+    name: "communityHome",
+    component: () => import("@/components/communityHome.vue"),
+  }
 ];
 
 const router = createRouter({
