@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore.js";
 import { mapState, mapActions } from "pinia";
+
 export default {
   data() {
     return {
