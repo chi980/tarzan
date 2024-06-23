@@ -1,0 +1,28 @@
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 900;
+  font-style: normal;
+}
+@mixin custom-button-style($bg-color: $secondary-color-default) {
+  display: flex;
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  width: 100%;
+  height: 56px;
+  background-color: $bg-color;
+  border-radius: 10px;
+  margin-bottom: $margin-default;
+}
+
+@mixin custom-padding {
+  padding-left: $padding-default;
+  padding-right: $padding-default;
+}
+
+@mixin custom-text($font-color: $text-color-default) {
+  font-family: "Pretendard-Regular", sans-serif;
+  font-size: 16px;
+  color: $font-color;
+}
