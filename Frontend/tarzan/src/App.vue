@@ -20,6 +20,8 @@ div#main-container {
   margin: 0;
   padding: 0;
   background-color: aliceblue;
+
+  position: relative;
 }
 </style>
 <script>
