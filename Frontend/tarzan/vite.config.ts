@@ -10,6 +10,18 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"), // 추가
     },
   },
+
+  // SCSS 전역 사용
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+        @import "@/assets/scss/_variables.scss";
+        @import "@/assets/scss/_mixins.scss";
+      `,
+      },
+    },
+  },
   server: {
     proxy: {
       "/api": "http://localhost:8080",
