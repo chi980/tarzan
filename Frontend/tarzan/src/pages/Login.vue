@@ -42,44 +42,18 @@ export default {
 </script>
 
 <style lang="scss">
-.sub-container {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.custom-button-group {
-  @include custom-padding;
-}
-.button-item-image {
-  height: 24px;
-  width: 24px;
-  margin-right: 4px;
-}
-
-.button-item-content {
-  @include custom-text();
-}
-
-.custom-button {
-  @include custom-button-style();
-}
+// logo
 #logo {
   height: 254px;
   width: 254px;
   margin-bottom: calc($margin-default * 3) px;
 }
+
+// 추천하는 sns login
 #recommended-login-group {
   width: 100%;
   height: 90px;
   position: relative;
-}
-.custom-button-kakao {
-  @include custom-button-style($kakao-color);
-  position: absolute;
-  bottom: 0;
 }
 
 #recommended-login-desc {
@@ -89,8 +63,16 @@ export default {
   right: 0;
 }
 
+.custom-button-kakao {
+  @include custom-button-style($kakao-color);
+  position: absolute;
+  bottom: 0;
+}
+
+// 그 외 sns login
 .custom-button-google {
   @include custom-button-style($google-color);
 }
+
 /**https://w-world.tistory.com/232 참고해보자 */
 </style>
