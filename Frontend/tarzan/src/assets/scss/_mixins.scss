@@ -5,6 +5,7 @@
   font-weight: 900;
   font-style: normal;
 }
+
 @mixin custom-button-style($bg-color: $secondary-color-default) {
   display: flex;
   justify-content: center; /* 가로 중앙 정렬 */
@@ -16,13 +17,37 @@
   margin-bottom: $margin-default;
 }
 
-@mixin custom-padding {
-  padding-left: $padding-default;
-  padding-right: $padding-default;
+@mixin custom-padding-x($padding-size: $padding-default) {
+  padding-left: $padding-size;
+  padding-right: $padding-size;
 }
 
-@mixin custom-text($font-color: $text-color-default) {
+@mixin custom-padding-y($padding-size: $padding-default) {
+  padding-top: $padding-size;
+  padding-bottom: $padding-size;
+}
+
+@mixin custom-margin-x($margin-size: $margin-default) {
+  margin-left: $margin-size;
+  margin-right: $margin-size;
+}
+
+@mixin custom-margin-y($margin-size: $margin-default) {
+  margin-top: $margin-size;
+  margin-bottom: $margin-size;
+}
+
+@mixin custom-margin-input {
+  margin-top: $margin-default;
+  margin-bottom: $margin-small;
+}
+
+@mixin custom-text($font-color: $text-color-default, $font-size: 16px) {
   font-family: "Pretendard-Regular", sans-serif;
-  font-size: 16px;
+  font-size: $font-size;
   color: $font-color;
+}
+
+@mixin custom-popup-shadow {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }

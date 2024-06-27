@@ -1,14 +1,6 @@
-.sub-container {
-  position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 // button group
 .custom-button-group {
-  @include custom-padding;
+  @include custom-padding-x;
 }
 
 // button
@@ -20,7 +12,7 @@
 .button-item-image {
   height: 24px;
   width: 24px;
-  margin-right: 4px;
+  margin-right: calc($margin-small);
 }
 
 .button-item-content {
