@@ -29,6 +29,12 @@ const routes = [
   },
 
   {
+    path: "/tmp",
+    name: "Tmp",
+    component: () => import("@/pages/Tmp.vue"),
+  },
+
+  {
     path: "/login-processing",
     name: "LoginProcessing",
     component: () => import("@/pages/LoginProcessing.vue"),

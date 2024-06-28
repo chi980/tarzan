@@ -25,8 +25,8 @@
 
 <script>
 import logoImage from "@/assets/tarzan_logo.png";
-import kakaoImage from "@/assets/kakao_login_logo.png";
-import googleImage from "@/assets/google_login_logo.png";
+import kakaoImage from "@/assets/icons/kakao_login_logo.png";
+import googleImage from "@/assets/icons/google_login_logo.png";
 import loginDescImage from "@/assets/login_desc.png";
 
 export default {

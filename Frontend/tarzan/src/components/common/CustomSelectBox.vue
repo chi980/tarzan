@@ -4,11 +4,20 @@
     * 선택된 idx -->
 
 <template>
-  <div>
-    <div class="selected-item" v-if="selectedOption" @click="controllPopUp">
-      <p>서울시 {{ selectedOption.name }}</p>
+  <div class="dropdown">
+    <div class="selected-item" v-if="selectedOption" @click="controllDropDown">
+      <span>{{ selectedOption.name }}</span>
+      <img
+        :src="arrowDownSrc"
+        alt="arrowDown"
+        class="input-item-image"
+        :class="{ rotated: isRotated, rotate: true }"
+      />
     </div>
-    <div v-if="isPopupOpen" class="scrollable-container">
+    <div
+      class="scrollable-container dropdown-content"
+      :class="['dropdown-content', { show: isDropDownOpen }]"
+    >
       <div class="scrollable-list">
         <ul>
           <li
@@ -16,19 +25,18 @@
             :key="option.idx"
             @click="selectOption(option)"
           >
-            서울시 {{ option.name }}
+            {{ option.name }}
           </li>
         </ul>
       </div>
     </div>
-
-    나날이
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { Option } from "@/data/options";
+import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
 // 부모로부터 받아온 options
 const props = defineProps({
@@ -42,20 +50,23 @@ const props = defineProps({
 const selectedOption = ref<Option | null>(null);
 
 // 팝업 상태 관리
-const isPopupOpen = ref(false);
+const isDropDownOpen = ref(false);
+// 화살표 상태 관리
+const isRotated = ref(false);
 
-const controllPopUp = () => {
-  isPopupOpen.value = !isPopupOpen.value;
+const controllDropDown = () => {
+  isDropDownOpen.value = !isDropDownOpen.value;
+  isRotated.value = !isRotated.value;
 };
 
 // 팝업 열기 핸들러
-const openPopup = () => {
-  isPopupOpen.value = true;
+const openDropDown = () => {
+  isDropDownOpen.value = true;
 };
 
 // 팝업 닫기 핸들러
-const closePopup = () => {
-  isPopupOpen.value = false;
+const closeDropDown = () => {
+  isDropDownOpen.value = false;
 };
 // 초기 선택 옵션 설정
 onMounted(() => {
@@ -67,7 +78,6 @@ onMounted(() => {
 // 옵션 클릭 핸들러
 const selectOption = (option: Option) => {
   selectedOption.value = option;
-  closePopup();
 };
 </script>
 
@@ -84,32 +94,42 @@ const selectOption = (option: Option) => {
   display: flex;
   align-items: center; /* 수직 가운데 정렬 */
 }
+.selected-item span {
+  width: 100%;
+  margin-right: $input-margin-default;
+  text-align: left;
+}
+.input-item-image {
+  height: 18px;
+  width: 18px;
+}
+.rotate {
+  transition: transform 0.5s ease;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
 
 .scrollable-container {
-  @include custom-padding-x($padding-small);
-  @include custom-padding-y($padding-small);
   @include custom-popup-shadow;
   border-radius: $border-radius-default;
   background-color: white;
 }
+
 .scrollable-list {
   max-height: 138px;
   overflow-y: auto;
-  // border: 1px solid #ccc;
   border-radius: $border-radius-default;
   padding: 0;
-  margin: 0;
+  margin: 10px;
 }
 .scrollable-list ul {
   padding: 0;
   margin: 0;
 }
-.scrollable-list li:first-child {
-  list-style-type: none;
-}
 .scrollable-list li {
   @include custom-text;
-  // background-color: antiquewhite;
   list-style-type: none;
   border-radius: $border-radius-default;
   padding: $padding-default;
@@ -132,5 +152,22 @@ const selectOption = (option: Option) => {
 ::-webkit-scrollbar-thumb {
   border-radius: $border-radius-default;
   background: #d9d9d9;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+.dropdown-content.show {
+  display: block;
+  z-index: 1000;
+  width: inherit;
 }
 </style>
