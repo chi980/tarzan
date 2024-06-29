@@ -1,14 +1,13 @@
-@font-face {
-  font-family: "Pretendard-Regular";
-  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
-    format("woff");
-  font-weight: 900;
-  font-style: normal;
-}
-@mixin custom-button-style($bg-color: $secondary-color-default) {
-  display: flex;
+@mixin custom-none-select-basic {
+  cursor: pointer;
+  user-select: none;
   justify-content: center; /* 가로 중앙 정렬 */
   align-items: center; /* 세로 중앙 정렬 */
+}
+
+@mixin custom-button-style($bg-color: $secondary-color-default) {
+  @include custom-none-select-basic;
+  display: flex;
   width: 100%;
   height: 56px;
   background-color: $bg-color;
@@ -16,13 +15,59 @@
   margin-bottom: $margin-default;
 }
 
-@mixin custom-padding {
-  padding-left: $padding-default;
-  padding-right: $padding-default;
+@mixin custom-padding-x($padding-size: $padding-default) {
+  padding-left: $padding-size;
+  padding-right: $padding-size;
 }
 
-@mixin custom-text($font-color: $text-color-default) {
-  font-family: "Pretendard-Regular", sans-serif;
-  font-size: 16px;
+@mixin custom-padding-y($padding-size: $padding-default) {
+  padding-top: $padding-size;
+  padding-bottom: $padding-size;
+}
+
+@mixin custom-margin-x($margin-size: $margin-default) {
+  margin-left: $margin-size;
+  margin-right: $margin-size;
+}
+
+@mixin custom-margin-y($margin-size: $margin-default) {
+  margin-top: $margin-size;
+  margin-bottom: $margin-size;
+}
+
+@mixin custom-margin-input {
+  margin-top: $margin-default;
+  margin-bottom: $margin-small;
+}
+
+@mixin custom-input-style {
+  @include custom-padding-x;
+  @include custom-text;
+  height: 48px;
+  appearance: none;
+  border: none;
+  outline: none;
+  background-color: $input-color;
+  border-radius: 13px;
+}
+
+// 기본 텍스트 스타일 믹스인
+@mixin custom-text(
+  $font-color: $text-color-default,
+  $font-size: 16px,
+  $font-weight: 400
+) {
+  font-family: "Pretendard", sans-serif;
+  font-size: $font-size;
+  font-weight: $font-weight;
   color: $font-color;
+}
+
+// 굵은 텍스트 스타일 믹스인
+@mixin custom-text-bold($font-color: $text-color-default, $font-size: 16px) {
+  @include custom-text($font-color, $font-size, 900);
+}
+
+@mixin custom-popup-shadow {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
