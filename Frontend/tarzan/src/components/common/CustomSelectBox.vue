@@ -4,30 +4,42 @@
     * 선택된 idx -->
 
 <template>
-  <div class="dropdown">
-    <div class="selected-item" v-if="selectedOption" @click="controllDropDown">
-      <span>{{ selectedOption.name }}</span>
-      <img
-        :src="arrowDownSrc"
-        alt="arrowDown"
-        class="input-item-image"
-        :class="{ rotated: isRotated, rotate: true }"
-      />
-    </div>
+  <div>
     <div
-      class="scrollable-container dropdown-content"
-      :class="['dropdown-content', { show: isDropDownOpen }]"
-    >
-      <div class="scrollable-list">
-        <ul>
-          <li
-            v-for="option in options"
-            :key="option.idx"
-            @click="selectOption(option)"
-          >
-            {{ option.name }}
-          </li>
-        </ul>
+      :class="['dropdown-exterior', { show: isDropDownOpen }]"
+      @click="controllDropDown"
+    ></div>
+
+    <div class="dropdown">
+      <div
+        class="selected-item"
+        v-if="selectedOption"
+        @click="controllDropDown"
+      >
+        <span>{{ selectedOption.name }}</span>
+        <img
+          :src="arrowDownSrc"
+          alt="arrowDown"
+          class="input-item-image"
+          :class="{ rotated: isRotated, rotate: true }"
+        />
+      </div>
+
+      <div
+        class="scrollable-container dropdown-content"
+        :class="['dropdown-content', { show: isDropDownOpen }]"
+      >
+        <div class="scrollable-list">
+          <ul>
+            <li
+              v-for="option in options"
+              :key="option.idx"
+              @click="selectOption(option)"
+            >
+              {{ option.name }}
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -155,9 +167,23 @@ const selectOption = (option: Option) => {
 }
 
 .dropdown {
+  @include custom-none-select-basic;
   position: relative;
   display: inline-block;
   width: 100%;
+}
+.dropdown-exterior {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+.dropdown-exterior.show {
+  display: block;
+  z-index: 1; /* 층위 값을 설정 */
 }
 .dropdown-content {
   display: none;

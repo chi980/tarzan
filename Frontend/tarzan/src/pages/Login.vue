@@ -1,8 +1,9 @@
 <template>
   <div class="sub-container">
     <img :src="logoSrc" alt="Logo" id="logo" />
+
     <div class="custom-button-group">
-      <div id="recommended-login-group">
+      <div id="recommended-login-group" class="custom-button-item">
         <div class="custom-button-kakao">
           <img :src="kakaoLogoSrc" alt="kakaoLogo" class="button-item-image" />
           <p class="button-item-content">카카오로 계속하기</p>
@@ -15,9 +16,15 @@
           />
         </div>
       </div>
-      <div class="custom-button-google">
-        <img :src="googleLogoSrc" alt="googleLogo" class="button-item-image" />
-        <p class="button-item-content">구글로 계속하기</p>
+      <div class="custom-button-item">
+        <div class="custom-button-google">
+          <img
+            :src="googleLogoSrc"
+            alt="googleLogo"
+            class="button-item-image"
+          />
+          <p class="button-item-content">구글로 계속하기</p>
+        </div>
       </div>
     </div>
   </div>
@@ -44,14 +51,25 @@ export default {
 <style lang="scss">
 // logo
 #logo {
+  @include custom-none-select-basic;
   height: 254px;
   width: 254px;
   margin-bottom: calc($margin-default * 3) px;
 }
 
+.custom-button-group {
+  display: flex;
+  padding: 0;
+  width: 100%;
+  flex-direction: column; /* 세로 방향으로 요소 배치 */
+}
+.custom-button-group p {
+  display: block;
+  margin: 10px;
+}
+
 // 추천하는 sns login
 #recommended-login-group {
-  width: 100%;
   height: 90px;
   position: relative;
 }
@@ -61,6 +79,11 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.custom-button-item {
+  @include custom-margin-x;
+  display: block;
 }
 
 .custom-button-kakao {

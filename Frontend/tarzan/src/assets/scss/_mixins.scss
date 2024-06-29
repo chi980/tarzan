@@ -1,7 +1,13 @@
-@mixin custom-button-style($bg-color: $secondary-color-default) {
-  display: flex;
+@mixin custom-none-select-basic {
+  cursor: pointer;
+  user-select: none;
   justify-content: center; /* 가로 중앙 정렬 */
   align-items: center; /* 세로 중앙 정렬 */
+}
+
+@mixin custom-button-style($bg-color: $secondary-color-default) {
+  @include custom-none-select-basic;
+  display: flex;
   width: 100%;
   height: 56px;
   background-color: $bg-color;
@@ -45,21 +51,21 @@
   border-radius: 13px;
 }
 
-@mixin custom-text($font-color: $text-color-default, $font-size: 16px) {
-  font-family: "Pretendard", sans-serif;
-  font-size: $font-size;
-  font-weight: 400;
-  color: $font-color;
-}
-@mixin custom-text-bold(
+// 기본 텍스트 스타일 믹스인
+@mixin custom-text(
   $font-color: $text-color-default,
   $font-size: 16px,
-  $font-weight: 900
+  $font-weight: 400
 ) {
   font-family: "Pretendard", sans-serif;
   font-size: $font-size;
   font-weight: $font-weight;
   color: $font-color;
+}
+
+// 굵은 텍스트 스타일 믹스인
+@mixin custom-text-bold($font-color: $text-color-default, $font-size: 16px) {
+  @include custom-text($font-color, $font-size, 900);
 }
 
 @mixin custom-popup-shadow {

@@ -1,13 +1,19 @@
 <template>
   <div class="sub-container">
-    <div id="custom-buttom-img">
-      <img :src="userDefaultSrc" alt="user-img" id="user-default-img" />
-      <img
-        :src="userInputSrc"
-        alt="user-img-input-button"
-        id="user-img-input"
-      />
-    </div>
+    <DropDown :options="userImgInputOptions">
+      <template #default="{ toggleDropdown }">
+        <div class="custom-container" @click="toggleDropdown">
+          <div id="custom-buttom-img">
+            <img :src="userDefaultSrc" alt="user-img" id="user-default-img" />
+            <img
+              :src="userInputSrc"
+              alt="user-img-input-button"
+              id="user-img-input"
+            />
+          </div>
+        </div>
+      </template>
+    </DropDown>
     <form class="input-form">
       <!-- 컴포넌트 화 하기 -->
       <div class="input-group">
@@ -43,6 +49,13 @@
         <!--  select 박스 -->
         <CustomSelectBox :options="carOptions" />
       </div>
+
+      <div class="input-group">
+        <h2 class="input-title">학교/직장 주소</h2>
+        <div class="input-content">
+          <input type="text" placeholder="주소를 입력해주세요" />
+        </div>
+      </div>
     </form>
   </div>
 </template>
@@ -53,11 +66,17 @@ import userImage from "@/assets/signup_user_default_img.png";
 import userInputImage from "@/assets/signup_user_img_input.png";
 
 import { Option } from "@/data/options";
+import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 
 // 반응형 변수 정의
 const userDefaultSrc = ref(userImage);
 const userInputSrc = ref(userInputImage);
+
+const userImgInputOptions: Option[] = [
+  { idx: 1, name: "갤러리 보기", value: "galary" },
+  { idx: 2, name: "사진 촬영", value: "picture" },
+];
 
 // 부모 컴포넌트의 배열 데이터 정의
 const seoulDistrictOptions: Option[] = [
@@ -104,7 +123,15 @@ const carOptions: Option[] = [
 </script>
 
 <style lang="scss" scoped>
+.custom-container {
+  display: flex;
+  flex-direction: column; /* 기본값 */
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 #custom-buttom-img {
+  @include custom-none-select-basic;
   height: 94px;
   width: 82px;
   margin: 0 auto;
@@ -124,6 +151,7 @@ const carOptions: Option[] = [
 }
 
 #check-duplicate-btn {
+  @include custom-none-select-basic;
   @include custom-text($font-size: 14px);
   width: 72px;
   height: 40px;
@@ -165,21 +193,5 @@ const carOptions: Option[] = [
   display: block;
   @include custom-padding-y(4px);
   text-align: left;
-}
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f9f9f9;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-}
-.dropdown:hover .dropdown-content {
-  display: block;
-  width: inherit;
 }
 </style>
