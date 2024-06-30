@@ -37,17 +37,23 @@
       <div class="input-group">
         <h2 class="input-title">사는 곳</h2>
         <!--  select 박스 -->
-        <CustomSelectBox :options="seoulDistrictOptions" />
+        <div class="select-content">
+          <CustomSelectBox :options="seoulDistrictOptions" />
+        </div>
       </div>
       <div class="input-group">
         <h2 class="input-title">반려동물 유무</h2>
         <!--  select 박스 -->
-        <CustomSelectBox :options="petOptions" />
+        <div class="select-content">
+          <CustomSelectBox :options="petOptions" />
+        </div>
       </div>
       <div class="input-group">
         <h2 class="input-title">자차 유무</h2>
         <!--  select 박스 -->
-        <CustomSelectBox :options="carOptions" />
+        <div class="select-content">
+          <CustomSelectBox :options="carOptions" />
+        </div>
       </div>
 
       <div class="input-group">
@@ -191,5 +197,9 @@ const carOptions: Option[] = [
   display: block;
   @include custom-padding-y(4px);
   text-align: left;
+}
+
+.select-content {
+  @include custom-margin-input;
 }
 </style>

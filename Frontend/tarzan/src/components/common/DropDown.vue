@@ -1,9 +1,5 @@
 <template>
   <div id="dropdown-container">
-    <div
-      :class="['dropdown-exterior', { show: isDropDownOpen }]"
-      @click="toggleDropdown"
-    ></div>
     <slot :toggleDropdown="toggleDropdown"><div>보기</div></slot>
     <div
       :class="['dropdown-content', { show: isDropDownOpen }]"
@@ -19,6 +15,10 @@
         </li>
       </ul>
     </div>
+    <div
+      :class="['dropdown-exterior', { show: isDropDownOpen }]"
+      @click="toggleDropdown"
+    ></div>
   </div>
 </template>
 
@@ -61,7 +61,7 @@ const selectOption = (option: Option) => {
 }
 .dropdown-exterior.show {
   display: block;
-  z-index: 1; /* 층위 값을 설정 */
+  z-index: $z-index-dropdown-exterior; /* 층위 값을 설정 */
 }
 .dropdown-content {
   @include custom-popup-shadow;
@@ -78,7 +78,7 @@ const selectOption = (option: Option) => {
 }
 .dropdown-content.show {
   display: block;
-  z-index: 1000;
+  z-index: $z-index-dropdown;
 }
 
 .dropdown-content > ul > li {
