@@ -28,6 +28,7 @@
       <div
         class="scrollable-container dropdown-content"
         :class="['dropdown-content', { show: isDropDownOpen }]"
+        @click="controllDropDown"
       >
         <div class="scrollable-list">
           <ul>
