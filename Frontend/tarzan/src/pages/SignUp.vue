@@ -117,8 +117,6 @@ const petOptions: Option[] = [
 const carOptions: Option[] = [
   { idx: 1, name: "차 없음", value: "DONTHAVE" },
   { idx: 2, name: "차 있음", value: "HAVE" },
-  // { idx: 3, name: "반려동물 고민 중", value: "CONSIDERING" },
-  // { idx: 4, name: "기타", value: "ETC" },
 ];
 </script>
 

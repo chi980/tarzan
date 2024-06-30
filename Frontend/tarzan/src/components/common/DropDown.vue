@@ -5,7 +5,10 @@
       @click="toggleDropdown"
     ></div>
     <slot :toggleDropdown="toggleDropdown"><div>보기</div></slot>
-    <div :class="['dropdown-content', { show: isDropDownOpen }]">
+    <div
+      :class="['dropdown-content', { show: isDropDownOpen }]"
+      @click="toggleDropdown"
+    >
       <ul>
         <li
           v-for="option in options"
