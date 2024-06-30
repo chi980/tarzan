@@ -5,11 +5,6 @@
 
 <template>
   <div>
-    <div
-      :class="['dropdown-exterior', { show: isDropDownOpen }]"
-      @click="controllDropDown"
-    ></div>
-
     <div class="dropdown">
       <div
         class="selected-item"
@@ -28,6 +23,7 @@
       <div
         class="scrollable-container dropdown-content"
         :class="['dropdown-content', { show: isDropDownOpen }]"
+        @click="controllDropDown"
       >
         <div class="scrollable-list">
           <ul>
@@ -42,6 +38,10 @@
         </div>
       </div>
     </div>
+    <div
+      :class="['dropdown-exterior', { show: isDropDownOpen }]"
+      @click="controllDropDown"
+    ></div>
   </div>
 </template>
 
@@ -97,7 +97,7 @@ const selectOption = (option: Option) => {
 .selected-item {
   @include custom-text;
   @include custom-padding-x;
-  @include custom-margin-input;
+  // @include custom-margin-input;
 
   height: 48px;
   border-radius: $border-radius-default;
@@ -112,8 +112,7 @@ const selectOption = (option: Option) => {
   text-align: left;
 }
 .input-item-image {
-  height: 18px;
-  width: 18px;
+  @include custom-icon-style;
 }
 .rotate {
   transition: transform 0.5s ease;
@@ -170,6 +169,7 @@ const selectOption = (option: Option) => {
   @include custom-none-select-basic;
   position: relative;
   display: inline-block;
+  min-width: 160px;
   width: 100%;
 }
 .dropdown-exterior {
@@ -183,7 +183,7 @@ const selectOption = (option: Option) => {
 }
 .dropdown-exterior.show {
   display: block;
-  z-index: 1; /* 층위 값을 설정 */
+  z-index: $z-index-dropdown-exterior; /* 층위 값을 설정 */
 }
 .dropdown-content {
   display: none;
@@ -193,7 +193,8 @@ const selectOption = (option: Option) => {
 }
 .dropdown-content.show {
   display: block;
-  z-index: 1000;
+  margin-top: $margin-small;
+  z-index: $z-index-dropdown;
   width: inherit;
 }
 </style>

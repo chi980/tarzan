@@ -9,7 +9,6 @@
     <button @click="checkHeader">header확인</button> -->
 
     <router-view />
-    <!-- 추가 -->
   </div>
 </template>
 
@@ -19,7 +18,7 @@ div#main-container {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: aliceblue;
+  /* background-color: aliceblue; */
 
   position: relative;
 }

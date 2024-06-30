@@ -4,7 +4,7 @@
 
     <div class="custom-button-group">
       <div id="recommended-login-group" class="custom-button-item">
-        <div class="custom-button-kakao">
+        <div class="custom-button-kakao custom-button">
           <img :src="kakaoLogoSrc" alt="kakaoLogo" class="button-item-image" />
           <p class="button-item-content">카카오로 계속하기</p>
         </div>

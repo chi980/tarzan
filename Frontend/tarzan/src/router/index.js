@@ -20,6 +20,11 @@ const routes = [
     name: "SignUp",
     component: () => import("@/pages/SignUp.vue"),
   },
+  {
+    path: "/bookmark",
+    name: "BookMark",
+    component: () => import("@/pages/BookMark.vue"),
+  },
 
   {
     path: "/home2",

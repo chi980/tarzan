@@ -1,13 +1,13 @@
 @mixin custom-none-select-basic {
   cursor: pointer;
   user-select: none;
-  justify-content: center; /* 가로 중앙 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
 }
 
 @mixin custom-button-style($bg-color: $secondary-color-default) {
   @include custom-none-select-basic;
   display: flex;
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
   width: 100%;
   height: 56px;
   background-color: $bg-color;
@@ -69,5 +69,42 @@
 }
 
 @mixin custom-popup-shadow {
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 10px $shadow-popup;
+}
+
+@mixin custom-bar-style($height: inherit, $z-index) {
+  width: 100%;
+  height: $height;
+  z-index: $z-index;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+@mixin custom-icon-style($size: 18px) {
+  width: $size;
+  height: $size;
+}
+
+// top, bottom, left, right만 가능
+@mixin custom-shadow-style(
+  $direction,
+  $color: #a6a6a6,
+  $offset: 4px,
+  $blur: 14px,
+  $spread: 0px
+) {
+  @if $direction == "top" {
+    box-shadow: 0 calc($offset * -1) $blur $spread lighten($color, 30%);
+  } @else if $direction == "bottom" {
+    box-shadow: 0 $offset $blur $spread lighten($color, 30%);
+  } @else if $direction == "left" {
+    box-shadow: calc($offset * -1) 0 $blur $spread lighten($color, 30%);
+  } @else if $direction == "right" {
+    box-shadow: $offset 0 $blur $spread lighten($color, 30%);
+  } @else {
+    @warn "Unknown direction: #{$direction}. Valid directions are 'top', 'bottom', 'left', and 'right'.";
+  }
 }
