@@ -34,7 +34,6 @@ const items = ref<BarItem[]>([
   @include custom-text($font-weight: 400, $font-size: 12px);
   @include custom-bar-style($height: 68px, $z-index: $z-index-bottom-bar);
   @include custom-none-select-basic;
-  @include custom-shadow-style("top");
 }
 .bar-item > img {
   @include custom-icon-style;
