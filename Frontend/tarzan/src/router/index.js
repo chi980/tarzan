@@ -49,6 +49,11 @@ const routes = [
     }),
   },
   {
+    path: "/community",
+    name: "Community",
+    component: () => import("@/pages/Community.vue"),
+  },
+  {
     path: "/auth",
     // component: AuthLayout, // auth 레이아웃을 사용할 수도 있습니다.
     meta: { requiresAuth: true },
