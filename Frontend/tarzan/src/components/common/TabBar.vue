@@ -1,46 +1,28 @@
 <template>
   <div class="tab-container">
-    <!-- <div
-      v-for="(tab, index) in tabs"
-      :key="tab.name"
-      :class="['tab', { active: activeTab === index }]"
-      @click="selectTab(index)"
-    >
-      {{ tab.name }}
-    </div>
-    <div class="tab-content">
-      <component :is="activeTabComponent"></component>
-    </div> -->
-
     <div class="tab-titles">
+      <!-- 탭 버튼들을 동적으로 생성 -->
       <button
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectTab(index)"
         :class="{ active: selectedTab === index }"
       >
-        {{ tab.title }}
+        {{ tab.name }}
       </button>
     </div>
+
+    <!-- 선택된 탭의 컨텐츠 -->
     <div class="tab-content">
-      <p>{{ tabs[selectedTab].content }}</p>
+      <component :is="currentTabComponent" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineProps } from "vue";
-
-// Tab 타입 정의
-// interface Tab {
-//   name: string;
-//   component: any;
-// }
-interface Tab {
-  title: string;
-  content: string;
-}
-// Props 정의
+import { ref, computed } from "vue";
+import { Tab } from "@/data/tabs";
+// 부모로부터 받아온 options
 const props = defineProps({
   tabs: {
     type: Array as () => Tab[],
@@ -49,17 +31,18 @@ const props = defineProps({
 });
 
 // 상태 변수
-const activeTab = ref<number>(0);
+const selectedTab = ref<number>(0); // 초기값: 첫 탭
+
+// 선택된 탭의 컴포넌트 계산
+const currentTabComponent = computed(() => {
+  return props.tabs[selectedTab.value].component;
+});
 
 // 선택된 탭을 변경하는 메소드
 const selectTab = (index: number) => {
-  activeTab.value = index;
+  selectedTab.value = index;
+  console.log(props.tabs[index]);
 };
-
-// 현재 선택된 탭의 컴포넌트
-// const activeTabComponent = computed(
-//   () => props.tabs[activeTab.value].component
-// );
 </script>
 
 <style lang="scss" scoped>
