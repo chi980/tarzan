@@ -20,19 +20,19 @@
 import { ref } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
+import TabBar from "@/components/common/TabBar.vue";
+import { Tab } from "@/data/tabs";
+import HouseTap from "@/components/bookmark/HouseTap.vue";
+import MoverTap from "@/components/bookmark/MoverTap.vue";
+import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
 import CompareImgSrc from "@/assets/icons/Filter/Style=Outlined.svg";
-import TabBar from "@/components/common/TabBar.vue";
 
-interface Tab {
-  title: string;
-  content: string;
-}
-
+// 탭 데이터 배열 초기화
 const tabs: Tab[] = [
-  { title: "Tab 1", content: "This is the content of Tab 1." },
-  { title: "Tab 2", content: "This is the content of Tab 2." },
-  { title: "Tab 3", content: "This is the content of Tab 3." },
+  { name: "집선택", component: HouseTap },
+  { name: "이사 업체 선택", component: MoverTap },
+  { name: "자취 필수품 선택", component: ItemTap },
 ];
 </script>
 
