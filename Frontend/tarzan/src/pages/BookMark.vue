@@ -30,7 +30,7 @@ import CompareImgSrc from "@/assets/icons/Filter/Style=Outlined.svg";
 
 // 탭 데이터 배열 초기화
 const tabs: Tab[] = [
-  { name: "집선택", component: HouseTap },
+  { name: "집 선택", component: HouseTap },
   { name: "이사 업체 선택", component: MoverTap },
   { name: "자취 필수품 선택", component: ItemTap },
 ];
