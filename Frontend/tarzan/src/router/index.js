@@ -48,6 +48,25 @@ const routes = [
       refreshToken: route.query.refreshToken,
     }),
   },
+
+  {
+    path: "/community",
+    name: "Community",
+    component: () => import("@/pages/Community.vue"),
+  },
+
+  {
+    path: "/community/:id",
+    name: 'PostDetail',
+    component: () => import("@/components/post/PostDetail.vue"),
+  },
+
+  {
+    path: "/community/postcreate",
+    name: 'PostCreate',
+    component: () => import("@/components/post/PostCreate.vue"),
+  },
+
   {
     path: "/auth",
     // component: AuthLayout, // auth 레이아웃을 사용할 수도 있습니다.
