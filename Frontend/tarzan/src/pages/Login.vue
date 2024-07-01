@@ -8,13 +8,7 @@
           <img :src="kakaoLogoSrc" alt="kakaoLogo" class="button-item-image" />
           <p class="button-item-content">카카오로 계속하기</p>
         </div>
-        <div>
-          <img
-            :src="LoginDescSrc"
-            alt="loginDesc"
-            id="recommended-login-desc"
-          />
-        </div>
+        <img :src="LoginDescSrc" alt="loginDesc" id="recommended-login-desc" />
       </div>
       <div class="custom-button-item">
         <div class="custom-button-google">
@@ -49,6 +43,17 @@ export default {
 </script>
 
 <style lang="scss">
+@keyframes shake {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px); /* 중간에서 위로 5px 이동 */
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
 // logo
 #logo {
   @include custom-none-select-basic;
@@ -70,7 +75,7 @@ export default {
 
 // 추천하는 sns login
 #recommended-login-group {
-  height: 90px;
+  height: 100px;
   position: relative;
 }
 
@@ -79,6 +84,10 @@ export default {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+#recommended-login-group:hover #recommended-login-desc {
+  animation: shake 0.8s infinite alternate ease-in-out;
 }
 
 .custom-button-item {

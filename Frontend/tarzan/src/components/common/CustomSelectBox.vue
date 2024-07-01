@@ -7,6 +7,7 @@
   <div>
     <div class="dropdown">
       <div
+        :style="parentStyle"
         class="selected-item"
         v-if="selectedOption"
         @click="controllDropDown"
@@ -48,6 +49,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { Option } from "@/data/options";
+import { SelectStyle } from "@/data/selectStyle";
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
 // 부모로부터 받아온 options
@@ -55,6 +57,14 @@ const props = defineProps({
   options: {
     type: Array as () => Option[],
     required: true,
+  },
+  parentStyle: {
+    type: Object as () => SelectStyle,
+    default: () => ({
+      backgroundColor: `$input-color`,
+      fontWeight: 400,
+      justifyContent: `space-between`,
+    }),
   },
 });
 
@@ -104,10 +114,11 @@ const selectOption = (option: Option) => {
   background-color: $input-color;
 
   display: flex;
+  gap: $padding-small;
+
   align-items: center; /* 수직 가운데 정렬 */
 }
 .selected-item span {
-  width: 100%;
   margin-right: $input-margin-default;
   text-align: left;
 }
@@ -169,7 +180,7 @@ const selectOption = (option: Option) => {
   @include custom-none-select-basic;
   position: relative;
   display: inline-block;
-  min-width: 160px;
+  min-width: 150px;
   width: 100%;
 }
 .dropdown-exterior {
@@ -193,6 +204,7 @@ const selectOption = (option: Option) => {
 }
 .dropdown-content.show {
   display: block;
+  min-width: max-content;
   margin-top: $margin-small;
   z-index: $z-index-dropdown;
   width: inherit;

@@ -1,10 +1,16 @@
 <template>
   <div class="top-bar">
-    <CustomSelectBox :options="seoulDistrictOptions" />
+    <div class="select-content">
+      <CustomSelectBox
+        :options="seoulDistrictOptions"
+        :parentStyle="topBarStyle"
+      />
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { Option } from "@/data/options";
+import { SelectStyle } from "@/data/selectStyle";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 // 부모 컴포넌트의 배열 데이터 정의
 const seoulDistrictOptions: Option[] = [
@@ -34,12 +40,23 @@ const seoulDistrictOptions: Option[] = [
   { idx: 24, name: "서울시 송파구", value: "SONGPA" },
   { idx: 25, name: "서울시 강동구", value: "GANGDONG" },
 ];
+
+const topBarStyle: SelectStyle = {
+  backgroundColor: "white",
+  fontWeight: 700,
+  justifyContent: "center",
+};
 </script>
 <style lang="scss" scoped>
 .top-bar {
   @include custom-text($font-weight: 800, $font-size: 16px);
-  @include custom-bar-style($height: 54px, $z-index: $z-index-top-bar);
+  @include custom-bar-style($height: 60px, $z-index: $z-index-top-bar);
   @include custom-none-select-basic;
-  @include custom-shadow-style("bottom");
+  // @include custom-shadow-style("bottom");
+}
+.select-content {
+  @include custom-margin-x;
+  width: 100%;
+  // background-color: aqua;
 }
 </style>
