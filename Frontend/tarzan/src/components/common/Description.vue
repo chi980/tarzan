@@ -34,8 +34,9 @@ const props = defineProps({
   justify-content: center; /* 가로축 중앙 정렬 */
   align-items: center; /* 세로축 중앙 정렬 */
   gap: $margin-default;
-  height: 164px;
   background-color: #f2ecff;
+
+  height: 164px;
 }
 .description-container > img {
   height: 80px;
