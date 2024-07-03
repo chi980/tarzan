@@ -7,7 +7,5 @@
 <script setup lang="ts"></script>
 
 <style lang="scss" scoped>
-.tab-container {
-  background-color: beige;
-}
+// 공통
 </style>

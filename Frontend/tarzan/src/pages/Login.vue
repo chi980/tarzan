@@ -4,9 +4,9 @@
 
     <div class="custom-button-group">
       <div id="recommended-login-group" class="custom-button-item">
-        <div class="custom-button-kakao custom-button">
+        <div class="custom-button-kakao">
           <img :src="kakaoLogoSrc" alt="kakaoLogo" class="button-item-image" />
-          <p class="button-item-content">카카오로 계속하기</p>
+          <p>카카오로 계속하기</p>
         </div>
         <img :src="LoginDescSrc" alt="loginDesc" id="recommended-login-desc" />
       </div>
@@ -68,15 +68,12 @@ export default {
   width: 100%;
   flex-direction: column; /* 세로 방향으로 요소 배치 */
 }
-.custom-button-group p {
-  display: block;
-  margin: 10px;
-}
 
 // 추천하는 sns login
 #recommended-login-group {
   height: 100px;
   position: relative;
+  display: flex;
 }
 
 #recommended-login-desc {
@@ -96,14 +93,13 @@ export default {
 }
 
 .custom-button-kakao {
-  @include custom-button-style($kakao-color);
-  position: absolute;
-  bottom: 0;
+  @include custom-button-style($bg-color: $kakao-color, $height: 56px);
+  margin-top: auto;
 }
 
 // 그 외 sns login
 .custom-button-google {
-  @include custom-button-style($google-color);
+  @include custom-button-style($bg-color: $google-color, $height: 56px);
 }
 
 /**https://w-world.tistory.com/232 참고해보자 */

@@ -3,16 +3,29 @@
   user-select: none;
 }
 
-@mixin custom-button-style($bg-color: $secondary-color-default) {
+@mixin custom-button-style(
+  $bg-color: $secondary-color-default,
+  $height: 56px,
+  $icon-size: 24px
+) {
   @include custom-none-select-basic;
   display: flex;
   justify-content: center; /* 가로 중앙 정렬 */
   align-items: center; /* 세로 중앙 정렬 */
-  width: 100%;
-  height: 56px;
+  flex: 1;
+  height: $height;
+  gap: $padding-small;
   background-color: $bg-color;
   border-radius: 10px;
   margin-bottom: $margin-default;
+
+  img {
+    @include custom-icon-style($size: $icon-size);
+  }
+
+  p {
+    @include custom-text($font-weight: 500);
+  }
 }
 
 @mixin custom-padding-x($padding-size: $padding-default) {
@@ -25,6 +38,11 @@
   padding-bottom: $padding-size;
 }
 
+@mixin custom-padding($padding-size: $padding-default) {
+  @include custom-padding-x($padding-size: $padding-size);
+  @include custom-padding-y($padding-size: $padding-size);
+}
+
 @mixin custom-margin-x($margin-size: $margin-default) {
   margin-left: $margin-size;
   margin-right: $margin-size;
@@ -33,6 +51,10 @@
 @mixin custom-margin-y($margin-size: $margin-default) {
   margin-top: $margin-size;
   margin-bottom: $margin-size;
+}
+@mixin custom-margin($margin-size: $margin-default) {
+  @include custom-margin-x($margin-size: $margin-size);
+  @include custom-margin-y($margin-size: $margin-size);
 }
 
 @mixin custom-margin-input {
