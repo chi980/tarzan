@@ -8,6 +8,7 @@
   flex-direction: column; /* 세로 방향으로 요소 배치 */
   justify-content: center;
   align-items: center;
+  background-color: white;
 
   box-shadow: 0px 0px 20px rgba(166, 166, 166, 0.2);
 }
