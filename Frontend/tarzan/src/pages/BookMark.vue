@@ -1,5 +1,5 @@
 <template>
-  <div class="sub-container">
+  <div class="sub-container non-input-sub-container">
     <TopBar></TopBar>
     <div class="center-container">
       <div>
@@ -7,6 +7,7 @@
           descriptionImgSrc="/src/assets/etc/Saly-26.png"
           descriptionTitle="타잔이와 함께 체크해봐요!"
           descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
+          backgroundColor="#f2ecff"
         />
         <TabBar :tabs="tabs"></TabBar>
       </div>
@@ -39,10 +40,11 @@ const tabs: Tab[] = [
 </script>
 
 <style lang="scss" scoped>
-.sub-container {
+// 공통
+.non-input-sub-container {
+  @include custom-none-select-basic;
   justify-content: space-between;
 }
-
 .center-container {
   position: relative;
   flex-grow: 1;
@@ -89,9 +91,9 @@ const tabs: Tab[] = [
   background-color: $primary-color-400;
 
   box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
-}
 
-.center-container-fix-button > img {
-  @include custom-icon-style;
+  img {
+    @include custom-icon-style;
+  }
 }
 </style>

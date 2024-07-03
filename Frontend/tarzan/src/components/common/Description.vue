@@ -1,5 +1,8 @@
 <template>
-  <div class="description-container">
+  <div
+    class="description-container"
+    :style="{ backgroundColor: backgroundColor }"
+  >
     <img :src="descriptionImgSrc" alt="img" />
     <div class="description-content">
       <p v-html="descriptionTitle"></p>
@@ -24,6 +27,10 @@ const props = defineProps({
     type: String,
     default: "기본 내용입니다",
   },
+  backgroundColor: {
+    type: String,
+    default: "#F2F2F2",
+  },
 });
 </script>
 
@@ -34,9 +41,8 @@ const props = defineProps({
   justify-content: center; /* 가로축 중앙 정렬 */
   align-items: center; /* 세로축 중앙 정렬 */
   gap: $margin-default;
-  background-color: #f2ecff;
 
-  height: 164px;
+  height: 150px;
 }
 .description-container > img {
   height: 80px;
@@ -55,6 +61,7 @@ const props = defineProps({
 }
 .description-content > p:first-child {
   @include custom-text-bold($font-size: 18px);
+  line-height: 1.3em;
 }
 .description-content > p:last-child {
   @include custom-text($font-size: 12px, $font-color: $text-color-light);
