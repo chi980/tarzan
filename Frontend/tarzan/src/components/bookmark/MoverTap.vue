@@ -1,6 +1,6 @@
 <template>
-  <div class="tab-content">
-    <h1>moverTap</h1>
+  <div class="tab-content checklist">
+    <h1>무알너</h1>
   </div>
 </template>
 
@@ -8,4 +8,8 @@
 
 <style lang="scss" scoped>
 // 공통
+// scoped
+.tab-content {
+  background: aqua;
+}
 </style>

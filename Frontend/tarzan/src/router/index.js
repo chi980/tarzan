@@ -27,6 +27,12 @@ const routes = [
   },
 
   {
+    path: "/fraud",
+    name: "Fraud",
+    component: () => import("@/pages/Fraud.vue"),
+  },
+
+  {
     path: "/home2",
     name: "Home2",
     component: () => import("@/components/Home2.vue"),
@@ -57,13 +63,13 @@ const routes = [
 
   {
     path: "/community/:id",
-    name: 'PostDetail',
+    name: "PostDetail",
     component: () => import("@/components/post/PostDetail.vue"),
   },
 
   {
     path: "/community/postcreate",
-    name: 'PostCreate',
+    name: "PostCreate",
     component: () => import("@/components/post/PostCreate.vue"),
   },
 
