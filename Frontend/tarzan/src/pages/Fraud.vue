@@ -32,6 +32,7 @@ import { ref } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
+import Check from "@/data/check";
 
 interface FraudContent {
   idx: number;
