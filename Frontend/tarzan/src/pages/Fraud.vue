@@ -119,7 +119,7 @@ const contents: FraudContent[] = ref([
   justify-content: center; /* 수평 중앙 정렬 */
   gap: $padding-default;
 
-  background-color: #f2f2f2;
+  background-color: #f8f8f8;
   border-radius: $border-radius-default;
 
   p {
