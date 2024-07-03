@@ -138,3 +138,24 @@
     @warn "Unknown direction: #{$direction}. Valid directions are 'top', 'bottom', 'left', and 'right'.";
   }
 }
+
+@mixin custom-scrollbar-style {
+  /* 스크롤바 전체 영역 */
+  ::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  ::-webkit-scrollbar-track {
+    background: none;
+    margin: 8px;
+  }
+  /* 스크롤바 막대 */
+  ::-webkit-scrollbar-thumb {
+    border-radius: $border-radius-default;
+    background: #d9d9d9;
+  }
+}

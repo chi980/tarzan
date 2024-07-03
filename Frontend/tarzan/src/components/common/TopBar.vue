@@ -50,7 +50,10 @@ const topBarStyle: SelectStyle = {
 <style lang="scss" scoped>
 .top-bar {
   @include custom-text($font-weight: 800, $font-size: 16px);
-  @include custom-bar-style($height: 60px, $z-index: $z-index-top-bar);
+  @include custom-bar-style(
+    $height: $height-top-bar,
+    $z-index: $z-index-top-bar
+  );
   @include custom-none-select-basic;
   // @include custom-shadow-style("bottom");
 }
