@@ -1,16 +1,19 @@
 <template>
-  <div class="sub-container">
+  <div class="sub-container non-input-sub-container">
     <TopBar></TopBar>
     <div class="center-container">
-      <DescriptionComponent
-        descriptionImgSrc="/src/assets/etc/Saly-26.png"
-        descriptionTitle="타잔이와 함께 체크해봐요!"
-        descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
-      />
-      <div class="center-container-fix-button">
-        <img :src="CompareImgSrc" />비교하기
+      <div>
+        <DescriptionComponent
+          descriptionImgSrc="/src/assets/etc/Saly-26.png"
+          descriptionTitle="타잔이와 함께 체크해봐요!"
+          descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
+          backgroundColor="#f2ecff"
+        />
+        <TabBar :tabs="tabs"></TabBar>
       </div>
-      <TabBar :tabs="tabs"></TabBar>
+    </div>
+    <div class="center-container-fix-button">
+      <img :src="CompareImgSrc" />비교하기
     </div>
     <BottomBar></BottomBar>
   </div>
@@ -37,10 +40,11 @@ const tabs: Tab[] = [
 </script>
 
 <style lang="scss" scoped>
-.sub-container {
+// 공통
+.non-input-sub-container {
+  @include custom-none-select-basic;
   justify-content: space-between;
 }
-
 .center-container {
   position: relative;
   flex-grow: 1;
@@ -48,14 +52,33 @@ const tabs: Tab[] = [
 
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
 }
 
 .center-container-fix-button {
   @include custom-text($font-color: white, $font-weight: 800, $font-size: 14px);
   @include custom-none-select-basic;
   position: absolute;
+  bottom: calc(#{$height-bottom-bar} + #{$padding-default});
   right: $padding-default;
-  bottom: $padding-default;
   z-index: $z-index-button;
 
   display: flex;
@@ -68,9 +91,9 @@ const tabs: Tab[] = [
   background-color: $primary-color-400;
 
   box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
-}
 
-.center-container-fix-button > img {
-  @include custom-icon-style;
+  img {
+    @include custom-icon-style;
+  }
 }
 </style>

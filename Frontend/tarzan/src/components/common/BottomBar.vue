@@ -32,7 +32,10 @@ const items = ref<BarItem[]>([
 <style lang="scss" scoped>
 .bottom-bar {
   @include custom-text($font-weight: 400, $font-size: 12px);
-  @include custom-bar-style($height: 68px, $z-index: $z-index-bottom-bar);
+  @include custom-bar-style(
+    $height: $height-bottom-bar,
+    $z-index: $z-index-bottom-bar
+  );
   @include custom-none-select-basic;
 }
 .bar-item > img {

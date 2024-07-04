@@ -3,18 +3,43 @@
   @include custom-padding-x;
 }
 
+.tab-content {
+  @include custom-margin-y;
+  // background-color: aqua;
+}
 // button
 .custom-button {
   @include custom-button-style();
 }
 
-// button-items
-.button-item-image {
-  height: 24px;
-  width: 24px;
-  margin-right: calc($margin-small);
+// content를 구분해주는 회색 긴 선
+.content-indicator {
+  @include custom-margin-y;
+  background-color: #ededed;
+  height: 10px;
 }
 
-.button-item-content {
-  @include custom-text();
+// content가 없을 때 보여주는 요소
+.non-content {
+  display: flex;
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  border-top: 1px solid #d9d9d9;
+  min-height: 140px;
+
+  p {
+    @include custom-text-description(
+      $font-color: $text-color-light,
+      $font-size: 12px
+    );
+  }
+}
+
+.button-in-tab {
+  @include custom-margin-x;
+  @include custom-button-style(
+    $bg-color: #f2f2f2,
+    $icon-size: 18px,
+    $height: 52px
+  );
 }

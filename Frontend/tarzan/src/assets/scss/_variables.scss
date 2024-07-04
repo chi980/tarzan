@@ -43,7 +43,7 @@ $google-color: #f2f2f2;
 
 /* text color */
 $text-color-default: #2e2e2e;
-$text-color-light: #848484;
+$text-color-light: #878787;
 
 /* input color */
 $input-color: #f2f2f2;
@@ -102,6 +102,10 @@ $shadow-search-box: 0px 2px 10px rgba(0, 0, 0, 0.1);
 $shadow-popup: 0px 0px 10px rgba(0, 0, 0, 0.2);
 $shadow-bar: 0px -1px 10px rgba(166, 166, 166, 0.1);
 $shadow-map-box: 0px -2px 6px rgba(0, 0, 0, 0.15);
+
+// height
+$height-top-bar: 60px;
+$height-bottom-bar: 68px;
 
 /* z-indexs */
 $z-index-dropdown: 1000;

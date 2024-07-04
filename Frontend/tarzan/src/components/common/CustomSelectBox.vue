@@ -81,15 +81,6 @@ const controllDropDown = () => {
   isRotated.value = !isRotated.value;
 };
 
-// 팝업 열기 핸들러
-const openDropDown = () => {
-  isDropDownOpen.value = true;
-};
-
-// 팝업 닫기 핸들러
-const closeDropDown = () => {
-  isDropDownOpen.value = false;
-};
 // 초기 선택 옵션 설정
 onMounted(() => {
   if (props.options.length > 0) {
