@@ -10,34 +10,34 @@
         :class="{ rotated: isRotated, rotate: true }"
       />
     </div>
-    <div
-      v-for="accordionContent in accordionContents"
-      :key="accordionContent.idx"
-      class="accordion-collapse"
-    >
+    <div class="accordion-contents" v-if="canSeeContent">
       <div
-        class="accordion-subtitle"
-        @click="
-          controllSubAccordion(accordionContents, accordionContent.idx - 1)
-        "
+        v-for="accordionContent in accordionContents"
+        :key="accordionContent.idx"
+        class="accordion-collapse"
       >
-        <p>
-          {{ accordionContent.title }}
-          {{ accordionContent.canSee }}
-        </p>
-        <img
-          :src="arrowDownSrc"
-          alt="arrowDown"
-          class="input-item-image"
-          :class="{ rotated: accordionContent.isRotated, rotate: true }"
-        />
-      </div>
-      <div>
-        <CheckListItem
-          v-for="checkItem in accordionContent.contents"
-          :key="checkItem.idx"
-          :checkListItem="checkItem"
-        />
+        <div
+          class="accordion-subtitle"
+          :class="{ active: !accordionContent.canSee }"
+          @click="toggleSubAccordion(accordionContent.idx)"
+        >
+          <p>
+            {{ accordionContent.title }}
+          </p>
+          <img
+            :src="arrowDownSrc"
+            alt="arrowDown"
+            class="input-item-image"
+            :class="{ rotated: accordionContent.isRotated, rotate: true }"
+          />
+        </div>
+        <div class="accordion-sub-content" v-if="accordionContent.canSee">
+          <CheckListItem
+            v-for="checkItem in accordionContent.contents"
+            :key="checkItem.idx"
+            :checkListItem="checkItem"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -60,6 +60,12 @@ const props = defineProps({
   },
 });
 
+// Emit 정의
+const emits = defineEmits<{
+  toggleAccordion: () => void;
+  toggleSubAccordion: (idx: number) => void;
+}>();
+
 // 화살표 상태 관리
 const isRotated = ref(false);
 
@@ -69,12 +75,11 @@ const canSeeContent = ref(false);
 const controllAccordion = () => {
   isRotated.value = !isRotated.value;
   canSeeContent.value = !canSeeContent.value;
+  emits("toggleAccordion");
 };
 
-const emits = defineEmits(["controllSubAccordion"]);
-
-const controllSubAccordion = () => {
-  emits("controllSubAccordion", {});
+const toggleSubAccordion = (idx: number) => {
+  emits("toggleSubAccordion", idx);
 };
 </script>
 
@@ -113,6 +118,12 @@ const controllSubAccordion = () => {
     }
   }
 
+  .accordion-contents {
+    display: flex;
+    flex-direction: column;
+    gap: $padding-small;
+  }
+
   .accordion-collapse {
     display: flex;
     flex-direction: column;
@@ -120,6 +131,26 @@ const controllSubAccordion = () => {
     border: #e5e5e5 solid 1px;
     border-radius: $border-radius-default;
     overflow: hidden;
+  }
+  .accordion-subtitle {
+    @include custom-padding;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: #e5e5e5 solid 1px;
+
+    p {
+      @include custom-text($font-size: 14px);
+    }
+
+    img {
+      @include custom-icon-style;
+    }
+
+    &.active {
+      border: none;
+    }
   }
 }
 

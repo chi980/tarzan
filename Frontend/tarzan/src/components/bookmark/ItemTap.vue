@@ -3,19 +3,20 @@
     <ComplexAccordion
       accordionTitle="가전"
       :accordionContents="homeAppliances"
-      @controllSubAccordion="controllSubAccordion"
+      @toggleAccordion="toggleAccordion"
+      @toggleSubAccordion="toggleSubAccordion"
     >
     </ComplexAccordion>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { Check, CheckList } from "@/data/check";
 import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
 import CheckListItem from "@/components/common/CheckListItem.vue";
 
-const homeAppliances: CheckList[] = [
+const homeAppliances = ref<CheckList[]>([
   {
     idx: 1,
     title: "이사 전 필수품",
@@ -100,12 +101,26 @@ const homeAppliances: CheckList[] = [
     ],
     canSee: false,
   },
-];
+]);
 
-const controllSubAccordion = (data: { array: CheckList[]; idx: number }) => {
-  const controlledCheckList = data.array[data.idx];
-  controlledCheckList.canSee = !controlledCheckList.canSee;
-  alert(controlledCheckList.title + " " + controlledCheckList.canSee);
+const toggleAccordion = () => {
+  alert("전부 토글");
+  // homeAppliances.value.forEach((controlledCheckList) => {
+  //   controlledCheckList.canSee = !controlledCheckList.canSee;
+  //   controlledCheckList.contents.forEach((item) => {
+  //     item.value = false; // 각 contents의 value도 초기화
+  //   });
+  // });
+};
+
+const toggleSubAccordion = (idx: number) => {
+  const controlledCheckList = homeAppliances.value.find(
+    (item) => item.idx === idx
+  );
+  if (controlledCheckList) {
+    controlledCheckList.canSee = !controlledCheckList.canSee;
+    controlledCheckList.isRotated = !controlledCheckList.isRotated;
+  }
 };
 </script>
 
