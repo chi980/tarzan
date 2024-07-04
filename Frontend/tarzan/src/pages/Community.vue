@@ -2,15 +2,16 @@
   <div class="sub-container">
     <TopBar></TopBar>
     <div class="center-container">
-
       <div class="searchbar">
-        <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
-        <input
-          v-model="searchQuery"
-          class="search-input"
-          type="text"
-          placeholder="찾고 싶은 글 제목을 입력해주세요." />
+        <div class="input-icon-wrap">
+          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+          <input
+            v-model="searchQuery" 
+            type="text"
+            placeholder="찾고 싶은 글 제목을 입력해주세요." />
+        </div>
       </div>
+
 
       <div class="tag-buttons">
         <button
@@ -76,6 +77,49 @@ export default {
 </script>
 
 
-<style lang="">
+<style lang="scss" scoped>
+  .sub-container {
+    justify-content: space-between;
+  }
+
+  .center-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
   
+  .center-container .searchbar {
+    display: flex;
+    padding-top: $margin-small;
+    padding-bottom: $margin-default;
+    @include custom-padding-x;
+    box-sizing: border-box;
+  }
+
+  .center-container .searchbar .input-icon-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    border-radius: 13px;
+    background-color: $input-color;
+    padding-right: $padding-default;
+  }
+
+  .center-container .searchbar .input-icon-wrap .icon-search {
+    width: 16px;
+    height: 16px;
+    @include custom-margin-x;
+    color: $input-placeholder-color;
+  }
+
+  .center-container .searchbar .input-icon-wrap input {
+    width: 100%;
+    appearance: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    @include custom-text;
+  }
 </style>
