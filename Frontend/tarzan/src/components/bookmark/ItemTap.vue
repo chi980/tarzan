@@ -3,124 +3,106 @@
     <ComplexAccordion
       accordionTitle="가전"
       :accordionContents="homeAppliances"
-      @toggleAccordion="toggleAccordion"
-      @toggleSubAccordion="toggleSubAccordion"
-    >
-    </ComplexAccordion>
+      @toggleAccordion="toggleAccordionHomeAppliances"
+      @toggleSubAccordion="toggleSubAccordionHomeAppliances"
+    />
+    <ComplexAccordion
+      accordionTitle="가구ㆍ패브릭"
+      :accordionContents="fabrics"
+      @toggleAccordion="toggleAccordionFabrics"
+      @toggleSubAccordion="toggleSubAccordionFabrics"
+    />
+    <ComplexAccordion
+      accordionTitle="욕실 용품"
+      :accordionContents="bathroomSupplies"
+      @toggleAccordion="toggleAccordionBathroomSupplies"
+      @toggleSubAccordion="toggleSubAccordionBathroomSupplies"
+    />
+    <ComplexAccordion
+      accordionTitle="필수 식재료"
+      :accordionContents="ingredients"
+      @toggleAccordion="toggleAccordionIngredients"
+      @toggleSubAccordion="toggleSubAccordionIngredients"
+    />
+    <ComplexAccordion
+      accordionTitle="주방 용품"
+      :accordionContents="kitchenUtensils"
+      @toggleAccordion="toggleAccordionKitchenUtensils"
+      @toggleSubAccordion="toggleSubAccordionKitchenUtensils"
+    />
+    <ComplexAccordion
+      accordionTitle="생활 용품"
+      :accordionContents="householdGoods"
+      @toggleAccordion="toggleAccordionHouseholdGoods"
+      @toggleSubAccordion="toggleSubAccordionHouseholdGoods"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { Check, CheckList } from "@/data/check";
+import {
+  homeAppliances,
+  fabrics,
+  bathroomSupplies,
+  ingredients,
+  kitchenUtensils,
+  householdGoods,
+} from "@/data/bookmark/itemTab";
 import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
 import CheckListItem from "@/components/common/CheckListItem.vue";
 
-const homeAppliances = ref<CheckList[]>([
-  {
-    idx: 1,
-    title: "이사 전 필수품",
-    contents: [
-      {
-        idx: 1,
-        name: "공유기",
-        value: false,
-      },
-      {
-        idx: 2,
-        name: "멀티탭 3구, 6구",
-        value: false,
-      },
-      {
-        idx: 3,
-        name: "헤어 드라이어",
-        value: false,
-      },
-      {
-        idx: 4,
-        name: "전자레인지",
-        value: false,
-      },
-      {
-        idx: 5,
-        name: "청소기",
-        value: false,
-      },
-      {
-        idx: 6,
-        name: "냉장고",
-        value: false,
-      },
-      {
-        idx: 7,
-        name: "에어컨",
-        value: false,
-      },
-      {
-        idx: 8,
-        name: "세탁기",
-        value: false,
-      },
-    ],
-    canSee: false,
-  },
-  {
-    idx: 2,
-    title: "이사 후 사도 되는 물품",
-    contents: [
-      {
-        idx: 1,
-        name: "인덕션/멀티쿠커/가스레인지",
-        value: false,
-      },
-      {
-        idx: 2,
-        name: "스탠드 조명",
-        value: false,
-      },
-      {
-        idx: 3,
-        name: "공기청정기",
-        value: false,
-      },
-      {
-        idx: 4,
-        name: "미니다리미",
-        value: false,
-      },
-      {
-        idx: 5,
-        name: "선풍기(써큘레이터)",
-        value: false,
-      },
-      {
-        idx: 6,
-        name: "전기장판",
-        value: false,
-      },
-    ],
-    canSee: false,
-  },
-]);
-
-const toggleAccordion = () => {
-  alert("전부 토글");
-  // homeAppliances.value.forEach((controlledCheckList) => {
-  //   controlledCheckList.canSee = !controlledCheckList.canSee;
-  //   controlledCheckList.contents.forEach((item) => {
-  //     item.value = false; // 각 contents의 value도 초기화
-  //   });
-  // });
+const toggleAccordion = (contents: CheckList[]) => {
+  contents.value.forEach((controlledCheckList) => {
+    controlledCheckList.canSee = false;
+    controlledCheckList.isRotated = false;
+  });
 };
 
-const toggleSubAccordion = (idx: number) => {
-  const controlledCheckList = homeAppliances.value.find(
-    (item) => item.idx === idx
-  );
+const toggleSubAccordion = (contents: CheckList[], idx: number) => {
+  const controlledCheckList = contents.value.find((item) => item.idx === idx);
   if (controlledCheckList) {
     controlledCheckList.canSee = !controlledCheckList.canSee;
     controlledCheckList.isRotated = !controlledCheckList.isRotated;
   }
+};
+
+const toggleAccordionHomeAppliances = () => {
+  toggleAccordion(homeAppliances);
+};
+const toggleSubAccordionHomeAppliances = (idx: number) => {
+  toggleSubAccordion(homeAppliances, idx);
+};
+const toggleAccordionFabrics = () => {
+  toggleAccordion(fabrics);
+};
+const toggleSubAccordionFabrics = (idx: number) => {
+  toggleSubAccordion(fabrics, idx);
+};
+const toggleAccordionBathroomSupplies = () => {
+  toggleAccordion(bathroomSupplies);
+};
+const toggleSubAccordionBathroomSupplies = (idx: number) => {
+  toggleSubAccordion(bathroomSupplies, idx);
+};
+const toggleAccordionIngredients = () => {
+  toggleAccordion(ingredients);
+};
+const toggleSubAccordionIngredients = (idx: number) => {
+  toggleSubAccordion(ingredients, idx);
+};
+const toggleAccordionKitchenUtensils = () => {
+  toggleAccordion(kitchenUtensils);
+};
+const toggleSubAccordionKitchenUtensils = (idx: number) => {
+  toggleSubAccordion(kitchenUtensils, idx);
+};
+const toggleAccordionHouseholdGoods = () => {
+  toggleAccordion(householdGoods);
+};
+const toggleSubAccordionHouseholdGoods = (idx: number) => {
+  toggleSubAccordion(householdGoods, idx);
 };
 </script>
 
