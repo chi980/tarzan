@@ -1,7 +1,8 @@
 <template>
   <div class="sub-container">
-    <!-- 여따 heaer 넣기 -->
-     
+    <!-- 대체용 해더 삭제 필수 -->
+    <TopBar></TopBar> 
+
     <div class="center-container">
       <div class="post-container">
         <div class="post-tag">
@@ -31,20 +32,32 @@
           @delete-comment="deleteComment"
         />
       </div>
+      
+      <!-- 실험용 제거 필수 -->
+      <div class = "abc">
+        <TagButton></TagButton>
+      </div>
+      <!-- 실험용 제거 필수 -->
+
     </div>
 
     <BottomBar />
+
   </div>
 </template>
 
 <script>
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostComment from "@/components/post/PostComment.vue";
+import TagButton from "../community/TagButton.vue"; // 실험용 제거 필수
+import TopBar from "../common/TopBar.vue"; // 실험용 제거 필수
 
 export default {
   components: {
     BottomBar,
     PostComment,
+    TagButton,  // 실험용 제거 필수
+    TopBar,
   },
   data() {
     return {
@@ -72,5 +85,14 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .sub-container {
+    justify-content: space-between;
+  }
+
+  // 실험용 제거 필수
+  .abc {
+    padding: 20px
+  }
+
 </style>

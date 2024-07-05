@@ -1,6 +1,7 @@
 <template>
   <div class="sub-container">
     <TopBar></TopBar>
+
     <div class="center-container">
       <div class="searchbar">
         <div class="input-icon-wrap">
@@ -12,16 +13,14 @@
         </div>
       </div>
 
+      <DescriptionComponent
+          descriptionImgSrc="/src/assets/etc/Saly-25.png"
+          descriptionTitle="동네주민과<br/>얘기해보세요!"
+          descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
+          backgroundColor="#FFF7D9"
+      />
 
-      <div class="tag-buttons">
-        <button
-          v-for="(tag, index) in tags"
-          :key="index"
-          :class="['tag-button', { 'active': activeTag === tag }]"
-          @click="setActiveTag(tag)">
-          {{ tag }}
-        </button>
-      </div>
+      <TagButtonGroup />
 
       <div class="resultbar">
         <span class="result-text">결과</span>
@@ -50,12 +49,16 @@
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostList from "@/components/post/PostList.vue"
+import DescriptionComponent from "@/components/common/Description.vue";
+import TagButtonGroup from "@/components/community/TagButtonGroup.vue"; 
 
 export default {
   components: {
     TopBar,
     BottomBar,
     PostList,
+    DescriptionComponent,
+    TagButtonGroup,
   },
   data() {
     return {
@@ -122,4 +125,6 @@ export default {
     background: transparent;
     @include custom-text;
   }
+
+  
 </style>
