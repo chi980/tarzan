@@ -17,27 +17,14 @@
           descriptionImgSrc="/src/assets/etc/Saly-25.png"
           descriptionTitle="동네주민과<br/>얘기해보세요!"
           descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
-          backgroundColor="#FFF7D9"
-      />
+          backgroundColor="#FFF7D9"/>
 
       <TagButtonGroup />
-
-      <div class="resultbar">
-        <span class="result-text">결과</span>
-        <span class="result-number">{{  result }}</span>
-        <div class="sort-dropdown">
-          <select v-model="selectedSort" @change="onSortChange">
-            <option value="latest">최신순</option>
-            <option value="views">조회수순</option>
-            <option value="likes">좋아요순</option>
-          </select>
-        </div>
-      </div>
-
       <PostList />
 
-      <div class="write-button">
-        <button @click="goToPostCreate">글쓰기</button>
+      <div class="write-button" @click="goToPostCreate">
+        <img :src="CompareImgSrc" />
+        글쓰기
       </div>
     </div>
 
@@ -52,6 +39,7 @@ import PostList from "@/components/post/PostList.vue"
 import DescriptionComponent from "@/components/common/Description.vue";
 import TagButtonGroup from "@/components/community/TagButtonGroup.vue"; 
 
+
 export default {
   components: {
     TopBar,
@@ -60,18 +48,7 @@ export default {
     DescriptionComponent,
     TagButtonGroup,
   },
-  data() {
-    return {
-      tags: ['전체', '교통', '맛집', '생활팁', '질문', '모임'],
-      activeTag: '전체',
-      result: '1600',
-      selectedSort: 'latest',
-    };
-  },
   methods: {
-    setActiveTag(tag) {
-      this.activeTag = tag;
-    },
     goToPostCreate() {
       this.$router.push({ name: 'PostCreate' });
     },
@@ -126,5 +103,27 @@ export default {
     @include custom-text;
   }
 
-  
+  .center-container .write-button {
+    @include custom-text($font-color: white, $font-weight: 800, $font-size: 14px);
+    @include custom-none-select-basic;
+    position: absolute;
+    bottom: calc(#{$height-bottom-bar} + #{$padding-default});
+    right: $padding-default;
+    z-index: $z-index-button;
+
+    display: flex;
+    justify-content: center; /* 가로축 중앙 정렬 */
+    align-items: center; /* 세로축 중앙 정렬 */
+    padding: 12px 14px 12px 12px;
+    gap: $padding-small;
+
+    border-radius: 20px;
+    background-color: $primary-color-400;
+
+    box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
+
+    img {
+      @include custom-icon-style;
+    }
+  }
 </style>
