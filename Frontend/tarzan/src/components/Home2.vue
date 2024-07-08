@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Option } from "@/data/options";
-import SelectBox from "@/components/common/SelectBox.vue";
+import SelectBox from "@/components/common/CustomSelectBox";
 const options = [
   { idx: 1, name: "Option 1" },
   { idx: 2, name: "Option 2" },
