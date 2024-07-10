@@ -1,14 +1,12 @@
 <template>
   <div class="sub-container">
-    <!-- 대체용 해더 삭제 필수 -->
-    <TopBar></TopBar> 
-
+    <PostTopBar />
     <div class="center-container">
-      <div class="post-container">
+      <div class="post-detail-container">
         <div class="post-tag">
           <span>{{ post.tag }}</span>
         </div>
-        <div class="post-witer">
+        <div class="post-writer">
           <span clas>{{ post.writer }}</span>
         </div>
         <div class="post-title">
@@ -22,7 +20,6 @@
           <span>{{ post.elapsedTime }}</span>
         </div>
       </div>
-
       <div class="comment-container">
         <PostComment
           v-for="(comment, index) in comments"
@@ -32,32 +29,21 @@
           @delete-comment="deleteComment"
         />
       </div>
-      
-      <!-- 실험용 제거 필수 -->
-      <div class = "abc">
-        <TagButton></TagButton>
-      </div>
-      <!-- 실험용 제거 필수 -->
-
     </div>
-
     <BottomBar />
-
   </div>
 </template>
 
 <script>
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostComment from "@/components/post/PostComment.vue";
-import TagButton from "../community/TagButton.vue"; // 실험용 제거 필수
-import TopBar from "../common/TopBar.vue"; // 실험용 제거 필수
+import PostTopBar from "./PostTopBar.vue";
 
 export default {
   components: {
     BottomBar,
     PostComment,
-    TagButton,  // 실험용 제거 필수
-    TopBar,
+    PostTopBar,
   },
   data() {
     return {
@@ -87,12 +73,7 @@ export default {
 
 <style lang="scss" scoped>
   .sub-container {
+    display: flex;
     justify-content: space-between;
   }
-
-  // 실험용 제거 필수
-  .abc {
-    padding: 20px
-  }
-
 </style>
