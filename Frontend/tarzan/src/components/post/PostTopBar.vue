@@ -87,7 +87,7 @@ export default {
   position: absolute;
   background-color: #f9f9f9;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  transform: translateX(-60%); /* 드랍 다운 목록 위치 조절 */
+  transform: translateX(-70%); /* 드랍 다운 목록 위치 조절 */
 }
 
 .dropdown-content.show {
@@ -104,7 +104,7 @@ export default {
 }
 
 .scrollable-list li {
-  padding: 10px 20px; /* 리스트 아이템의 내부 패딩 설정 */
+  padding: 14px 30px; /* 리스트 아이템의 내부 패딩 설정 */
 }
 
 .dropdown-exterior {
