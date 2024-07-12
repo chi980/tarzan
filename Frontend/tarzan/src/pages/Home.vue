@@ -1,20 +1,17 @@
 <template>
   <div class="sub-container">
     <TopBar></TopBar>
-    <div>
-    <KakaoMap :lat="33.450701" :lng="126.570667" @onLoadKakaoMap="onLoadKakaoMap" />
-    </div>
-    <div>
-      <button class="demo-button" @click="zoomIn">지도레벨 - 1</button>
-      <button class="demo-button" @click="zoomOut">지도레벨 + 1</button>
-    </div>
+    <form class="search-box" action="" method="get">
+      <input class="search-txt" type="text" name="" placeholder="찾고 싶은 주소를 입력하세요.">
+    </form>
+    <div ref="mapContainer" style="width: 100%; height: 83%"></div>
     <p>{{ message }}</p>
     <BottomBar></BottomBar>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TabBar from "@/components/common/TabBar.vue";
@@ -27,49 +24,34 @@ import CompareImgSrc from "@/assets/icons/Filter/Style=Outlined.svg";
 
 ///////////////////////////////////////////////////
 
+
 import { KakaoMap } from 'vue3-kakao-maps';
 
-const map = ref<kakao.maps.Map>();
-const message = ref<string>('');
+const mapContainer = ref(null)
 
-const onLoadKakaoMap = (mapRef: kakao.maps.Map) => {
-  map.value = mapRef;
-  displayLevel();
-};
+onMounted(() => {
+  loadKakaoMap(mapContainer.value)
+})
 
-const zoomIn = () => {
-  // 현재 지도의 레벨을 얻어옵니다
-  if (map.value) {
-    const level = map.value.getLevel();
+const loadKakaoMap = (container) => {
+  const script = document.createElement('script')
+  script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false`
+  document.head.appendChild(script)
 
-    // 지도를 1레벨 내립니다 (지도가 확대됩니다)
-    map.value.setLevel(level - 1);
+  script.onload = () => {
+    window.kakao.maps.load(() => {
+      const options = {
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692), // 지도 중심 좌표
+        level: 3, // 지도 확대 레벨
+        maxLevel: 10, // 지도 축소 제한 레벨
+      }
+
+      const mapInstance = new window.kakao.maps.Map(container, options) // 지도 생성
+    })
   }
-
-  // 지도 레벨을 표시합니다
-  displayLevel();
-};
-
-const zoomOut = () => {
-  // 현재 지도의 레벨을 얻어옵니다
-  if (map.value) {
-    const level = map.value.getLevel();
-
-    // 지도를 1레벨 올립니다 (지도가 축소됩니다)
-    map.value.setLevel(level + 1);
-  }
-
-  // 지도 레벨을 표시합니다
-  displayLevel();
-};
-
-const displayLevel = () => {
-  message.value = `현재 지도 레벨은 ${map.value?.getLevel()} 레벨 입니다.`;
-};
+}
 
 ////////////////////////////////////////////////////
-
-
 
 
 
