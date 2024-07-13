@@ -29,7 +29,16 @@ const routes = [
   {
     path: "/fraud",
     name: "Fraud",
-    component: () => import("@/pages/Fraud.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("@/pages/Fraud.vue"),
+      },
+      {
+        path: "homeowner",
+        component: () => import("@/components/fraud/CheckHouseOwner.vue"),
+      },
+    ],
   },
 
   {

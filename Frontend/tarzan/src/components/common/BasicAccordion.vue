@@ -10,11 +10,9 @@
         :class="{ rotated: isRotated, rotate: true }"
       />
     </div>
-    <transition name="accordion-display" mode="out-in">
-      <div class="accordion-collapse" v-if="canSeeContent">
-        <slot></slot>
-      </div>
-    </transition>
+    <div class="accordion-collapse" v-if="canSeeContent">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -81,6 +79,8 @@ const controllAccordion = () => {
     display: flex;
     flex-direction: column;
     gap: $padding-small;
+    background-color: white;
+
     border: #e5e5e5 solid 1px;
     border-radius: $border-radius-default;
     overflow: hidden;
@@ -94,5 +94,20 @@ const controllAccordion = () => {
 .accordion-display-enter-from,
 .accordion-display-leave-to {
   opacity: 0; // 등장하기 시작, 퇴장의 마지막은 투명도 0
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: height 0.5s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  height: 0;
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  height: auto;
 }
 </style>

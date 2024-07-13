@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-content">
+  <div class="accordion-wrapper">
     <BasicAccordion accordionTitle="이사 D-30">
       <CheckListItem
         v-for="checkItem in checkListBefore30Days"
@@ -91,7 +91,7 @@ const checkListDdays: Check[] = [
   margin-bottom: $padding-small;
 }
 // scoped
-.tab-content {
+.accordion-wrapper {
   display: flex;
   flex-direction: column;
   gap: $padding-small;
