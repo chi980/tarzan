@@ -5,7 +5,7 @@
         <p>추가하기</p>
       </div>
     </div>
-    <div class="center-container">
+    <div class="center-container left-top-container">
       <form class="input-form">
         <!-- 컴포넌트 화 하기 -->
         <div class="input-group">
@@ -252,10 +252,11 @@ const directionOptions: Option[] = [
     }
   }
 }
-// scoped
-.center-container {
+.left-top-container {
   justify-content: flex-start;
-  padding-top: $padding-big;
+  gap: $padding-big;
+  padding-top: calc(#{$padding-default}* 2);
   padding-bottom: calc(54px + #{$margin-default} + #{$padding-default});
 }
+// scoped
 </style>
