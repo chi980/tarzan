@@ -4,7 +4,7 @@
     * 선택된 idx -->
 
 <template>
-  <div>
+  <div class="select-wrapper">
     <div class="dropdown">
       <div
         :style="parentStyle"
@@ -95,8 +95,11 @@ const selectOption = (option: Option) => {
 </script>
 
 <style lang="scss" scoped>
+.select-wrapper {
+  display: flex;
+}
 .selected-item {
-  @include custom-text;
+  @include custom-text($font-size: 14px);
   @include custom-padding-x;
   // @include custom-margin-input;
 
@@ -142,7 +145,7 @@ const selectOption = (option: Option) => {
   margin: 0;
 }
 .scrollable-list li {
-  @include custom-text;
+  @include custom-text($font-size: 14px);
   list-style-type: none;
   border-radius: $border-radius-default;
   padding: $padding-default;
@@ -171,8 +174,8 @@ const selectOption = (option: Option) => {
   @include custom-none-select-basic;
   position: relative;
   display: inline-block;
-  min-width: 150px;
-  width: 100%;
+  // width: 100%;
+  flex: 1;
 }
 .dropdown-exterior {
   display: none;
@@ -195,9 +198,8 @@ const selectOption = (option: Option) => {
 }
 .dropdown-content.show {
   display: block;
-  min-width: max-content;
   margin-top: $margin-small;
   z-index: $z-index-dropdown;
-  width: inherit;
+  width: 100%;
 }
 </style>

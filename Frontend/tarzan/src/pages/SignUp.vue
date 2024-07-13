@@ -18,19 +18,21 @@
       <!-- 컴포넌트 화 하기 -->
       <div class="input-group">
         <h2 class="input-title">닉네임</h2>
-        <div class="input-content">
-          <input type="text" placeholder="닉네임을 입력해주세요" />
-          <div id="check-duplicate-btn"><div>중복확인</div></div>
-        </div>
-        <div class="input-description">
-          <p>
-            <i class="bi bi-info-circle"> </i>
-            닉네임은 영문, 숫자로 이루어져야 합니다.
-          </p>
-          <p>
-            <i class="bi bi-info-circle"> </i>
-            닉네임은 6글자 이상 10글자 이하여야 합니다.
-          </p>
+        <div class="input-content-wrapper">
+          <div class="input-content">
+            <input type="text" placeholder="닉네임을 입력해주세요" />
+            <div id="check-duplicate-btn"><div>중복확인</div></div>
+          </div>
+          <div class="input-description">
+            <p>
+              <i class="bi bi-info-circle"> </i>
+              닉네임은 영문, 숫자로 이루어져야 합니다.
+            </p>
+            <p>
+              <i class="bi bi-info-circle"> </i>
+              닉네임은 6글자 이상 10글자 이하여야 합니다.
+            </p>
+          </div>
         </div>
       </div>
       <!-- component 화 하기 // 들어가야 할것: title, options-->
@@ -170,36 +172,62 @@ const carOptions: Option[] = [
   color: $primary-color-default;
   border-radius: 14px;
 }
-.input-group {
-  @include custom-padding-x();
-  margin-top: $margin-default;
-}
-.input-title {
-  @include custom-text-bold($font-size: 18px);
-  text-align: left;
-}
-.input-content {
-  @include custom-margin-input;
-  display: flex;
-  align-items: center;
+.input-form {
   width: 100%;
-}
-.input-content input[type="text"] {
-  @include custom-input-style;
-  flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
+  display: flex;
+  flex-direction: column;
+  gap: $padding-big;
+  .input-group {
+    @include custom-padding-x();
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .input-title {
+      @include custom-text-bold($font-size: 18px);
+      text-align: left;
+    }
+
+    .input-content-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: $padding-small;
+
+      .input-content {
+        margin: 0;
+      }
+    }
+
+    .input-content {
+      display: flex;
+      align-items: center;
+      gap: $padding-small;
+
+      input[type="text"] {
+        @include custom-input-style;
+        flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
+      }
+
+      .select-content {
+        flex-grow: 1;
+      }
+    }
+    .input-description {
+      @include custom-text($font-size: 12px, $font-color: $text-color-light);
+
+      p {
+        display: block;
+        @include custom-padding-y(4px);
+        text-align: left;
+      }
+    }
+  }
 }
 
-.input-description {
-  @include custom-text($font-size: 12px, $font-color: $text-color-light);
-}
-
-.input-description p {
-  display: block;
-  @include custom-padding-y(4px);
-  text-align: left;
-}
-
-.select-content {
-  @include custom-margin-input;
+// scoped
+.sub-container {
+  display: flex;
+  flex-direction: column;
+  gap: $padding-default;
 }
 </style>
