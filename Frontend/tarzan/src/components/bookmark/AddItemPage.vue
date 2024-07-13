@@ -105,7 +105,7 @@
     @include custom-margin-input;
     display: flex;
     align-items: center;
-    width: 100%;
+    gap: $padding-default;
 
     input[type="text"] {
       @include custom-input-style;

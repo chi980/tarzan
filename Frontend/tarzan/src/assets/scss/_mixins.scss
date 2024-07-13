@@ -58,14 +58,9 @@
   @include custom-margin-y($margin-size: $margin-size);
 }
 
-@mixin custom-margin-input {
-  margin-top: $margin-default;
-  margin-bottom: $margin-small;
-}
-
 @mixin custom-input-style {
   @include custom-padding-x;
-  @include custom-text;
+  font-family: "Pretendard", sans-serif;
   height: 48px;
   appearance: none;
   border: none;
