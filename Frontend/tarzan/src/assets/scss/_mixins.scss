@@ -6,7 +6,8 @@
 @mixin custom-button-style(
   $bg-color: $secondary-color-default,
   $height: 56px,
-  $icon-size: 24px
+  $icon-size: 24px,
+  $font-color: $text-color-default
 ) {
   @include custom-none-select-basic;
   display: flex;
@@ -24,7 +25,7 @@
   }
 
   p {
-    @include custom-text($font-weight: 500);
+    @include custom-text($font-weight: 500, $font-color: $font-color);
   }
 }
 

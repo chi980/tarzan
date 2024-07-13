@@ -23,7 +23,17 @@ const routes = [
   {
     path: "/bookmark",
     name: "BookMark",
-    component: () => import("@/pages/BookMark.vue"),
+
+    children: [
+      {
+        path: "",
+        component: () => import("@/pages/BookMark.vue"),
+      },
+      {
+        path: "add",
+        component: () => import("@/components/bookmark/AddItemPage.vue"),
+      },
+    ],
   },
 
   {
