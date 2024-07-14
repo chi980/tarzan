@@ -9,46 +9,62 @@
       <div class="tag-wrapper">
         <h2 class="tag-title">주방 및 세탁실</h2>
         <div class="tag-content">
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
+          <Tag
+            v-for="(item, index) in checkItemsInKitchen"
+            :key="index"
+            :checkItem="item"
+            @update:checkItem="
+              updateCheckItem(checkItemsInKitchen, index, $event)
+            "
+          />
         </div>
       </div>
       <div class="tag-wrapper">
         <h2 class="tag-title">거실</h2>
         <div class="tag-content">
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
+          <Tag
+            v-for="(item, index) in checkItemsInLivingRoom"
+            :key="index"
+            :checkItem="item"
+            @update:checkItem="
+              updateCheckItem(checkItemsInLivingRoom, index, $event)
+            "
+          />
         </div>
       </div>
       <div class="tag-wrapper">
         <h2 class="tag-title">방</h2>
         <div class="tag-content">
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
+          <Tag
+            v-for="(item, index) in checkItemsInRoom"
+            :key="index"
+            :checkItem="item"
+            @update:checkItem="updateCheckItem(checkItemsInRoom, index, $event)"
+          />
         </div>
       </div>
       <div class="tag-wrapper">
         <h2 class="tag-title">화장실</h2>
         <div class="tag-content">
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
+          <Tag
+            v-for="(item, index) in checkItemsInBathRoom"
+            :key="index"
+            :checkItem="item"
+            @update:checkItem="
+              updateCheckItem(checkItemsInBathRoom, index, $event)
+            "
+          />
         </div>
       </div>
       <div class="tag-wrapper">
         <h2 class="tag-title">보안 및 기타시설</h2>
         <div class="tag-content">
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
-          <div>식탁</div>
+          <Tag
+            v-for="(item, index) in checkItemsInEtc"
+            :key="index"
+            :checkItem="item"
+            @update:checkItem="updateCheckItem(checkItemsInEtc, index, $event)"
+          />
         </div>
       </div>
     </div>
@@ -60,7 +76,53 @@
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { ref } from "vue";
+import { Check } from "@/data/check.ts";
+import Tag from "@/components/common/Tag.vue";
+
+const checkItemsInKitchen = ref<Check[]>([
+  { name: "식탁", value: false },
+  { name: "인덕션/가스레인지", value: false },
+  { name: "전자레인지", value: false },
+  { name: "냉장고", value: false },
+  { name: "세탁기", value: false },
+  { name: "싱크대", value: false },
+]);
+
+const checkItemsInLivingRoom = ref<Check[]>([
+  { name: "TV", value: false },
+  { name: "천장/벽걸이에어컨", value: false },
+  { name: "전자레인지", value: false },
+]);
+
+const checkItemsInRoom = ref<Check[]>([
+  { name: "침대", value: false },
+  { name: "옷장/북박이장", value: false },
+]);
+
+const checkItemsInBathRoom = ref<Check[]>([
+  { name: "샤워부스", value: false },
+  { name: "비데", value: false },
+]);
+const checkItemsInEtc = ref<Check[]>([
+  { name: "경비원/사설경비", value: false },
+  { name: "CCTV", value: false },
+  { name: "무인택배함", value: false },
+  { name: "현관보안", value: false },
+  { name: "인터폰/비디오폰", value: false },
+  { name: "카드키", value: false },
+  { name: "화재경보기", value: false },
+  { name: "베란다", value: false },
+  { name: "엘레베이터", value: false },
+  { name: "WIFI", value: false },
+]);
+
+const updateCheckItem = (array: Check[], index: number, updatedItem: Check) => {
+  array.splice(index, 1, updatedItem);
+  console.log(array[index]);
+};
+</script>
 <style lang="scss" scoped>
 // 공통
 .top-bar-back {
@@ -117,15 +179,16 @@
 
   display: flex;
   flex-direction: column;
-  gap: $padding-default;
+  gap: 18px;
 
   .tag-title {
     @include custom-text-bold($font-size: 18px);
     text-align: left;
   }
-
   .tag-content {
-    background-color: aqua;
+    display: flex;
+    flex-wrap: wrap;
+    gap: $padding-small;
   }
 }
 .left-top-container {
