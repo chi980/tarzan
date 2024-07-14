@@ -60,10 +60,10 @@ export default {
     // 실제 프로젝트에서는 API를 통해 게시물 데이터를 가져옴
     this.post = {
       id: postId,
-      tag: '생활팁',
+      tag: '질문',
       writer: '호랑이',
-      title: `Post ${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
-      content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
+      title: `${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
+      content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
       elapsedTime: '20시간 전',
     };
   },
@@ -75,5 +75,60 @@ export default {
   .sub-container {
     display: flex;
     justify-content: space-between;
+  }
+
+  .center-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #EDEDED;
+    height: 100%;
+    gap: 10px;
+    
+  }
+
+  .post-detail-container{
+    background-color: white;
+    text-align:left;
+    display:flex;
+    flex-direction: column;
+    gap: 12px;
+    @include custom-padding-x;
+    @include custom-padding-y;
+    // flex-basis: 230px;
+  }
+
+  .center-container .post-detail-container .post-tag span{
+    display: inline-block;
+    background-color: #F2F3F9;
+    @include custom-padding($margin-small);
+    border-radius: 10px;
+    font-size: 10px;
+  }
+
+  .center-container .post-detail-container .post-writer {
+    color: #9F9F9F;
+    font-size: 12px;
+  }
+
+  .center-container .post-detail-container .post-title {
+    @include custom-text-bold($font-color: $text-color-default, $font-size: 19px);
+  }
+
+  .center-container .post-detail-container .post-content {
+    line-height: 1.5;
+    font-size: 13px;
+  }
+  
+  .center-container .post-detail-container .post-time {
+    font-size: 12px;
+    color: #9F9F9F;
+    margin-top: 12px;
+  }
+
+  .comment-container {
+    flex-grow: 1;
+    padding-top: 20px;
+    background-color: white;
   }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <div class="post-item-container" @click="handleClick">
+    <!-- <SmallTag /> -->
     <div class="post-tag">
       <span>{{ post.tag }}</span>
     </div>
@@ -21,7 +22,6 @@
 </template>
 
 <script>
-
 export default {
   props: {
     post: Object,  // 부모 컴포넌트로부터 post라는 객체를 props로 받음
