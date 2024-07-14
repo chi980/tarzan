@@ -98,13 +98,12 @@ export default {
     // flex-basis: 230px;
   }
 
-  .comment-container {
-    flex-grow: 1;
-    padding-top: 20px;
-    background-color: white;
-  }
-
-  .center-container .post-detail-container .post-tag {
+  .center-container .post-detail-container .post-tag span{
+    display: inline-block;
+    background-color: #F2F3F9;
+    @include custom-padding($margin-small);
+    border-radius: 10px;
+    font-size: 10px;
   }
 
   .center-container .post-detail-container .post-writer {
@@ -125,5 +124,11 @@ export default {
     font-size: 12px;
     color: #9F9F9F;
     margin-top: 12px;
+  }
+
+  .comment-container {
+    flex-grow: 1;
+    padding-top: 20px;
+    background-color: white;
   }
 </style>

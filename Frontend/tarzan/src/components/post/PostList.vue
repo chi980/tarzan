@@ -21,8 +21,8 @@
   </div>
 </template>
 <script>
-import ResultBar from "@/components/community/ResultBar.vue";
-import PostItem from './PostItem.vue';
+import ResultBar from "@/components/common/ResultBar.vue";
+import PostItem from '@/components/post/PostItem.vue';
 
 export default {
   components: {
