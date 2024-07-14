@@ -1,11 +1,19 @@
 <template>
   <div class="sub-container">
     <TopBar></TopBar>
-    <form class="search-box" action="" method="get">
-      <input class="search-txt" type="text" name="" placeholder="찾고 싶은 주소를 입력하세요.">
-    </form>
+    <div class="center-container">
+      <div class="searchbar">
+        <div class="input-icon-wrap">
+          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+          <input
+            v-model="searchQuery" 
+            type="text"
+            placeholder="찾고 싶은 집주소를 입력해주세요." />
+        </div>
+      </div>
+      </div>
     <div ref="mapContainer" style="width: 100%; height: 83%"></div>
-    <p>{{ message }}</p>
+    <BuildingInfo />
     <BottomBar></BottomBar>
   </div>
 </template>
@@ -14,15 +22,12 @@
 import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import TabBar from "@/components/common/TabBar.vue";
-import { Tab } from "@/data/tabs";
-import HouseTap from "@/components/bookmark/HouseTap.vue";
-import MoverTap from "@/components/bookmark/MoverTap.vue";
-import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
-import CompareImgSrc from "@/assets/icons/Filter/Style=Outlined.svg";
+import BuildingInfo from "@/components/home/BuildingInfo.vue";
+
 
 ///////////////////////////////////////////////////
+
 
 
 import { KakaoMap } from 'vue3-kakao-maps';
@@ -94,4 +99,40 @@ const loadKakaoMap = (container) => {
 .center-container-fix-button > img {
   @include custom-icon-style;
 }
+
+.center-container .searchbar {
+  display: flex;
+  padding-top: $margin-small;
+  padding-bottom: $margin-default;
+  @include custom-padding-x;
+  box-sizing: border-box;
+}
+
+.center-container .searchbar .input-icon-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  border-radius: 13px;
+  background-color: $input-color;
+  padding-right: $padding-default;
+}
+
+.center-container .searchbar .input-icon-wrap .icon-search {
+  width: 16px;
+  height: 16px;
+  @include custom-margin-x;
+  color: $input-placeholder-color;
+}
+
+.center-container .searchbar .input-icon-wrap input {
+  width: 100%;
+  appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  @include custom-text;
+
+}
+
 </style>
