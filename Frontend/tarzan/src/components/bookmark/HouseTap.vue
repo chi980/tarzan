@@ -14,12 +14,7 @@
         </p>
       </div>
       <div class="content">
-        <div class="non-content">
-          <p>
-            <i class="bi bi-info-circle"> </i>
-            북마크한 집이 존재하지 않습니다.
-          </p>
-        </div>
+        <NonContent :value="'북마크한 집이 존재하지 않습니다.'" />
       </div>
     </div>
     <div class="content-indicator"></div>
@@ -29,12 +24,7 @@
         <p>점검 완료한 집은 최대 3개까지 비교할 수 있어요!</p>
       </div>
       <div class="content">
-        <div class="non-content">
-          <p>
-            <i class="bi bi-info-circle"> </i>
-            점검 완료한 집이 존재하지 않습니다.
-          </p>
-        </div>
+        <NonContent :value="'점검 완료한 집이 존재하지 않습니다.'" />
       </div>
     </div>
   </div>
@@ -42,6 +32,7 @@
 
 <script setup lang="ts">
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
+import NonContent from "@/components/common/NonContent.vue";
 </script>
 
 <style lang="scss" scoped>
