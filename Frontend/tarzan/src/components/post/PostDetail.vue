@@ -84,7 +84,6 @@ export default {
     background-color: #EDEDED;
     height: 100%;
     gap: 10px;
-    
   }
 
   .post-detail-container{
@@ -128,7 +127,7 @@ export default {
 
   .comment-container {
     flex-grow: 1;
-    padding-top: 20px;
+    padding-top: 15px;
     background-color: white;
   }
 </style>
