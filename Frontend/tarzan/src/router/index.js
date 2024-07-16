@@ -60,6 +60,10 @@ const routes = [
         path: "homeowner",
         component: () => import("@/components/fraud/CheckHouseOwner.vue"),
       },
+      {
+        path: "contract",
+        component: () => import("@/components/fraud/CheckContract.vue"),
+      },
     ],
   },
 
