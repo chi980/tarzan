@@ -1,20 +1,12 @@
 <template>
   <div class="sub-container">
-    <!-- header 넣기 -->
     <div class="header">
       <h3>글쓰기</h3>
     </div>
     <div class="input-container">
-      <input class="input-item" ype="text" placeholder="제목을 입력해주세요"  />
-
-      <select class="input-item">
-        <option disabled selected>태그를 선택해주세요</option>
-        <option value="transport">교통</option>
-        <option value="transport">맛집</option>
-        <option value="transport">생활팁</option>
-        <option value="transport">질문</option>
-        <option value="transport">모임</option>
-      </select>
+      <input class="input-item" type="text" placeholder="제목을 입력해주세요"  />
+      
+      <CustomSelectBox :options="tagOptions" />
 
       <textarea class="input-item" placeholder="내용을 입력해주세요"></textarea>
     </div>
@@ -28,10 +20,27 @@
 
 
 <script>
+import CustomSelectBox from '../common/CustomSelectBox.vue';
+
 export default {
+  components: {
+    CustomSelectBox,
+  },
   methods: {
     goToBack() {
       this.$router.go(-1);
+    }
+  },
+  data() {
+    return {
+      tagOptions: [
+      { idx: 1, name: "교통", value: "trans" },
+      { idx: 2, name: "맛집", value: "food" },
+      { idx: 3, name: "생활팁", value: "tip" },
+      { idx: 4, name: "질문", value: "question" },
+      { idx: 5, name: "모임", value: "?" },
+      { idx: 6, name: "기타", value: "etc" },
+      ]
     }
   }
 }
@@ -39,7 +48,6 @@ export default {
 
 
 <style scoped lang="scss">
-// input
   .input-container {
     display: flex;
     flex-direction: column;
@@ -51,7 +59,7 @@ export default {
     row-gap: $padding-default;
   }
 
-  .input-item {
+  .input-container .input-item {
     width: 100%;
     box-sizing: border-box;
     background-color: #F2F2F2;
@@ -65,11 +73,6 @@ export default {
     @include custom-input-style;
   }
 
-  .input-container select {
-    @include custom-input-style;
-    appearance: none; // 스타일 제거
-  }
-
   .input-container textarea {
     height: 283px;
     padding-left: 16px;
@@ -77,8 +80,6 @@ export default {
     @include custom-text;
   }
 
-
-// 글 제출/취소 버튼
   .post-button {
     display: flex;
     justify-content: center;

@@ -12,7 +12,7 @@
       <TagButtonGroup />
       <PostList />
       <div class="write-button" @click="goToPostCreate">
-        <img :src="CompareImgSrc" />
+        <img src="@/assets/icons/Filter/post-write-icon.png" />
         글쓰기
       </div>
     </div>

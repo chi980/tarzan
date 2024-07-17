@@ -2,9 +2,11 @@
   <div class="comment-container">
     <div class="comment-header">
         <span id="comment-writer">{{ comment.writer }}</span>
-        <img id="comment-edit-icon" 
+        <div class="comment-edit-container">
+          <img id="comment-edit-icon" 
           src="@/assets/icons/Filter/comment-edit-icon.png" 
           alt="comment-edit-icon.png">
+        </div>
     </div>
     <div class="comment-content">
       <p>{{ comment.content }}</p>
@@ -19,11 +21,26 @@
 export default {
   name: 'Comment',
   props: {
-    comment: Object,
-    index: Number,
+    comment: {
+      type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
+      required: true
+    },
   },
+  data() {
+    return {
+      edit: [
+        { id: 1, name: "수정하기", value: "edit" },
+        { id: 2, name: "삭제하기", value: "delete" }
+      ]
+    };
+  }
 }
 </script>
+
 <style scoped lang="scss">
 .comment-container {
   display: flex;
