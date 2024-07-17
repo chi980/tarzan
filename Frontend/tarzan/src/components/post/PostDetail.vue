@@ -28,6 +28,7 @@
           :index="index"
           @delete-comment="deleteComment"
         />
+        <CommentInput></CommentInput>
       </div>
     </div>
     <BottomBar />
@@ -36,14 +37,16 @@
 
 <script>
 import BottomBar from "@/components/common/BottomBar.vue";
-import PostComment from "@/components/post/PostComment.vue";
 import PostTopBar from "./PostTopBar.vue";
+import PostComment from "@/components/post/PostComment.vue";
+import CommentInput from "./CommentInput.vue";
 
 export default {
   components: {
+    PostTopBar,
     BottomBar,
     PostComment,
-    PostTopBar,
+    CommentInput,
   },
   data() {
     return {
@@ -84,7 +87,6 @@ export default {
     background-color: #EDEDED;
     height: 100%;
     gap: 10px;
-    
   }
 
   .post-detail-container{
@@ -127,8 +129,9 @@ export default {
   }
 
   .comment-container {
+    position: relative;
     flex-grow: 1;
-    padding-top: 20px;
+    padding-top: 15px;
     background-color: white;
   }
 </style>

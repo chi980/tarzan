@@ -1,7 +1,12 @@
 <template>
   <div class="comment-container">
-    <div class="comment-writer">
-      <span>{{ comment.writer }}</span>
+    <div class="comment-header">
+        <span id="comment-writer">{{ comment.writer }}</span>
+        <div class="comment-edit-container">
+          <img id="comment-edit-icon" 
+          src="@/assets/icons/Filter/comment-edit-icon.png" 
+          alt="comment-edit-icon.png">
+        </div>
     </div>
     <div class="comment-content">
       <p>{{ comment.content }}</p>
@@ -9,30 +14,33 @@
     <div class="comment-time">
       <span>{{ comment.time }}</span>
     </div>
-    <div class="comment-delete">
-      <button @click="deleteComment" class="delete-button">
-        <i class="fas fa-trash-alt"></i>
-      </button>
-    </div>
   </div>
   <hr class="custom-hr">
 </template>
-
 <script>
 export default {
   name: 'Comment',
   props: {
-    comment: Object,
-    index: Number,
-  },
-
-  methods: {
-    deleteComment() {
-      this.$emit('delete-comment', this.index);
+    comment: {
+      type: Object,
+      required: true
+    },
+    index: {
+      type: Number,
+      required: true
     },
   },
+  data() {
+    return {
+      edit: [
+        { id: 1, name: "수정하기", value: "edit" },
+        { id: 2, name: "삭제하기", value: "delete" }
+      ]
+    };
+  }
 }
 </script>
+
 <style scoped lang="scss">
 .comment-container {
   display: flex;
@@ -43,8 +51,19 @@ export default {
   @include custom-padding-y($padding-size: 3px);
 }
 
-.comment-container .comment-writer {
+.comment-container .comment-header {
+  // background-color: yellow;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#comment-writer {
   @include custom-text-bold($font-color: $text-color-default, $font-size: 12px);
+}
+
+#comment-edit-icon {
+  width: 24px;
 }
 
 .comment-container .comment-content {
@@ -54,6 +73,7 @@ export default {
 .comment-container .comment-time {
   font-size: 12px;
   color: #9F9F9F;
+  padding-top: 5px;
 }
 
 .custom-hr {
