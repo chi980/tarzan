@@ -4,7 +4,7 @@
       <span id="result-title">결과</span>
       <span id="result-number">1600</span>
     </div>
-    <div class="select-sort">
+    <div class="post-sort">
       <CustomSelectBox
         :options="sortOptions"
       />
@@ -26,7 +26,6 @@ const sortOptions: Option[] = [
 
 <style lang="scss" scoped>
   .resultbar {
-    background-color: orange;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -34,9 +33,9 @@ const sortOptions: Option[] = [
   }
 
   .resultbar-text {
-    background-color: yellow;
     display: flex;
     align-items: baseline;
+    gap: 5px;
   }
 
   #result-title {
@@ -44,10 +43,15 @@ const sortOptions: Option[] = [
   }
 
   #result-number{
-    @include custom-text-bold($font-color:$primary-color-default, $font-size: 12px);
+    @include custom-text-bold($primary-color-default, 12px);
   }
 
-  .select-sort {
-    background-color: green;
+  .post-sort {
+    flex-basis: 115px;
+  }
+
+  :deep(.selected-item) {
+    background-color: white;
+    // padding-left: 25%;
   }
 </style>
