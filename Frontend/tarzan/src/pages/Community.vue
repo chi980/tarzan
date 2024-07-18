@@ -12,7 +12,7 @@
       <TagButtonGroup />
       <PostList />
       <div class="write-button" @click="goToPostCreate">
-        <img src="@/assets/icons/Filter/post-write-icon.png" />
+        <img id="post-write-icon" src="@/assets/icons/Filter/post-write-icon.png" />
         글쓰기
       </div>
     </div>
@@ -68,8 +68,8 @@ export default {
     z-index: $z-index-button;
 
     display: flex;
-    justify-content: center; /* 가로축 중앙 정렬 */
-    align-items: center; /* 세로축 중앙 정렬 */
+    justify-content: center;
+    align-items: center; 
     padding: 12px 14px 12px 12px;
     gap: $padding-small;
 
@@ -77,9 +77,9 @@ export default {
     background-color: $primary-color-400;
 
     box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
+  }
 
-  img {
+  #post-write-icon {
       @include custom-icon-style;
     }
-  }
 </style>

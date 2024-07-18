@@ -77,13 +77,11 @@ const routes = [
     component: () => import("@/components/Home2.vue"),
     meta: { requiresAuth: true },
   },
-
   {
     path: "/tmp",
     name: "Tmp",
     component: () => import("@/pages/Tmp.vue"),
   },
-
   {
     path: "/login-processing",
     name: "LoginProcessing",
@@ -97,19 +95,28 @@ const routes = [
   {
     path: "/community",
     name: "Community",
-    component: () => import("@/pages/Community.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("@/pages/Community.vue"),
+      },
+      {
+        path: ":id",
+        name: "PostDetail",
+        component: () => import("@/components/post/PostDetail.vue"),
+      },
+      {
+        path: "postcreate",
+        name: "PostCreate",
+        component: () => import("@/components/post/PostCreate.vue"),
+      },
+    ],
   },
 
   {
-    path: "/community/:id",
-    name: "PostDetail",
-    component: () => import("@/components/post/PostDetail.vue"),
-  },
-
-  {
-    path: "/community/postcreate",
-    name: "PostCreate",
-    component: () => import("@/components/post/PostCreate.vue"),
+    path: "/review/create",
+    name: "CreateReview",
+    component: () => import("@/components/review/CreateReview.vue"),
   },
 
   {
