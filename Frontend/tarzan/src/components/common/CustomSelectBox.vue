@@ -115,6 +115,7 @@ const selectOption = (option: Option) => {
 .selected-item span {
   margin-right: $input-margin-default;
   text-align: left;
+  white-space: nowrap;
 }
 .input-item-image {
   @include custom-icon-style;
