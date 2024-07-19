@@ -1,10 +1,11 @@
 <template>
   <div class="building-item-container" @click="handleClick">
     <div class="building-content">
-      <h3 id="building-title">{{ building.title }}</h3>
-      <p id="building-content">{{ building.content }}</p>
-    </div>
     <div class="building-meta">
+      <h3 id="building-title">{{ building.title }}</h3>
+      <p id="building-categoty">{{ building.categoty }}</p>
+      </div>
+      <p id="building-content">{{ building.content }}</p>
     </div>
   </div>
 </template>
@@ -46,7 +47,14 @@ export default {
 
 #building-title {
   @include custom-text($font-size: 14px);
-  width:100%;
+  white-space: nowrap;  /* 텍스트를 한 줄로 유지 */
+  overflow: hidden;  /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis;  /* 넘치는 텍스트를 말줄임표로 표시 */
+}
+
+#building-categoty {
+  font-size: 12px;
+  color: #9F9F9F;
   white-space: nowrap;  /* 텍스트를 한 줄로 유지 */
   overflow: hidden;  /* 내용이 넘치면 숨김 */
   text-overflow: ellipsis;  /* 넘치는 텍스트를 말줄임표로 표시 */
@@ -62,9 +70,9 @@ export default {
 }
 
 .building-item-container .building-meta {
+  align-items: flex-end;
   display:flex;
-  width: 100%;
-  justify-content: space-between;
+  gap: 8px;
   font-size: 12px;
   color: #9F9F9F;
 }
