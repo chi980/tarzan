@@ -9,7 +9,11 @@
           descriptionTitle="동네주민과<br/>얘기해보세요!"
           descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
           backgroundColor="#FFF7D9"/>
-      <TagButtonGroup />
+
+      <div class="tag-button-container">
+        <TagButtonGroup />
+      </div>
+      
       <PostList />
       <div class="write-button" @click="goToPostCreate">
         <img id="post-write-icon" src="@/assets/icons/Filter/post-write-icon.png" />
@@ -57,6 +61,14 @@ export default {
     flex-direction: column;
     width: 100%;
     height: 100%;
+  }
+
+  .tag-button-container {
+    padding: 8px;
+  }
+
+  :deep(.tag-button-container) {
+    overflow-x: auto;
   }
 
   .center-container .write-button {

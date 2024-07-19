@@ -44,10 +44,7 @@ export default {
 .tag-button-container {
   display: flex;
   flex-wrap: nowrap;
-  overflow-x: auto; /* 수평 스크롤 활성화 */
+  // overflow-x: auto; /* 수평 스크롤 활성화 */
   gap: 5px;
-  padding-left: $padding-small;
-  padding-top: $padding-default;
-  padding-bottom: $padding-small;
 }
 </style>
