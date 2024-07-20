@@ -68,6 +68,10 @@ const routes = [
         path: "special-contract",
         component: () => import("@/components/fraud/CheckSpecialContract.vue"),
       },
+      {
+        path: "real-estate",
+        component: () => import("@/components/fraud/CheckRealEstateBroker.vue"),
+      },
     ],
   },
 

@@ -4,7 +4,7 @@
     * 선택된 idx -->
 
 <template>
-  <div class="select-wrapper">
+  <div class="select-wrapper" style="min-width: max-content">
     <div class="dropdown">
       <div
         :style="parentStyle"
@@ -24,6 +24,7 @@
       <div
         class="scrollable-container dropdown-content"
         :class="['dropdown-content', { show: isDropDownOpen }]"
+        style="min-width: max-content"
         @click="controllDropDown"
       >
         <div class="scrollable-list">
