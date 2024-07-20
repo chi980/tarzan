@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      selectedButton: 0, // 기본으로 첫 번째 버튼 선택
+      selectedButton: 0,
       buttons: [
         { label: '전체' },
         { label: '교통' },
@@ -46,5 +46,6 @@ export default {
   flex-wrap: nowrap;
   // overflow-x: auto; /* 수평 스크롤 활성화 */
   gap: 5px;
+
 }
 </style>

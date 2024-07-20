@@ -1,7 +1,6 @@
 <template>
   <div class="post-list-container">
     <div class="post-items-container">
-      <ResultBar />
       <PostItem
       v-for="post in posts"
       :key="post.id"
@@ -21,13 +20,11 @@
   </div>
 </template>
 <script>
-import ResultBar from "@/components/common/ResultBar.vue";
 import PostItem from '@/components/post/PostItem.vue';
 
 export default {
   components: {
     PostItem,
-    ResultBar,
   },
   data() {
     return {

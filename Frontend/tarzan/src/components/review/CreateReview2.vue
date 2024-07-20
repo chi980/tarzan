@@ -21,7 +21,7 @@
           <TagButtonGroup />
         </div>
 
-        <button>다음으로</button>
+        <button>후기 작성 완료</button>
 
       </div>
     </div>
@@ -45,10 +45,10 @@ export default {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    gap: 32px;
     width: 100%;
     box-sizing: border-box;
     @include custom-padding-x;
+    gap: 32px;
 
     overflow-y: auto;
     @include custom-scrollbar-style;
@@ -85,5 +85,9 @@ export default {
   :deep(.tag-button-container) {
     overflow-x: auto;
     flex-wrap: wrap;
+  }
+
+  button {
+    margin-bottom: 26px;
   }
 </style>
