@@ -69,6 +69,16 @@
   border-radius: 13px;
 }
 
+@mixin custom-input-style-basic {
+  font-family: "Pretendard", sans-serif;
+  height: 48px;
+  appearance: none;
+  border: none;
+  outline: none;
+  background-color: $input-color;
+  border-radius: 13px;
+}
+
 // 기본 텍스트 스타일 믹스인
 @mixin custom-text(
   $font-color: $text-color-default,
