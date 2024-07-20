@@ -118,8 +118,13 @@ const routes = [
     name: "Review",
     children: [
       {
+        path: "",
+        name: "Review",
+        component: () => import("@/components/review/Review.vue"),
+      },
+      {
         path: "/review/create1",
-        name: "CreateReview",
+        name: "CreateReview1",
         component: () => import("@/components/review/CreateReview1.vue"),
       },
       {

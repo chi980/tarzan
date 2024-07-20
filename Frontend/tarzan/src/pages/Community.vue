@@ -13,8 +13,13 @@
       <div class="tag-button-container">
         <TagButtonGroup />
       </div>
-      
+
+      <div class="result-bar-conatier">
+        <ResultBar resultTitle="결과" :sortOptions="sortOptions" />
+      </div>
+
       <PostList />
+
       <div class="write-button" @click="goToPostCreate">
         <img id="post-write-icon" src="@/assets/icons/Filter/post-write-icon.png" />
         글쓰기
@@ -30,6 +35,7 @@ import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import SearchBar from "../components/common/SearchBar.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
+import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue"; 
 import PostList from "@/components/post/PostList.vue"
 
@@ -39,6 +45,7 @@ export default {
     BottomBar,
     SearchBar,
     DescriptionComponent,
+    ResultBar,
     TagButtonGroup,
     PostList,
   },
@@ -47,6 +54,15 @@ export default {
       this.$router.push({ name: 'PostCreate' });
     },
   },
+  data() {
+    return {
+      sortOptions: [
+        {idx: 1, value: 'date', name: '날짜순' },
+        { idx: 2, value: 'popularity', name: '인기순' },
+        { idx: 3, value: 'rating', name: '평점순' },
+      ]
+    }
+  }
 }
 </script>
 
