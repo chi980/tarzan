@@ -15,7 +15,9 @@
 
       <div class="star-rating-container">
         <h2 class="input-title">만족도</h2>
-        <StarRating />
+        <div class="star">
+          <StarRating />
+        </div>
       </div>
 
       <Divider />
@@ -68,6 +70,7 @@ import PhotoUpload from "./PhotoUpload.vue"
 import StarRrating from "./StarRating.vue"
 import Divider from "../common/Divider.vue"
 import CustomSelectBox from "../common/CustomSelectBox.vue"
+import StarRating from "./StarRating.vue"
 
 export default {
   components: {
@@ -75,8 +78,8 @@ export default {
     AddressCard,
     PhotoUpload,
     Divider,
-    StarRrating,
     CustomSelectBox,
+    StarRating,
   },
   data() {
     return {
@@ -121,6 +124,11 @@ export default {
     font-weight: 500;
     color: #969696;
     text-align: left;
+  }
+
+  .star-rating-container .star {
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   .input-container {

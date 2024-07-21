@@ -46,6 +46,5 @@ export default {
   flex-wrap: nowrap;
   // overflow-x: auto; /* 수평 스크롤 활성화 */
   gap: 5px;
-
 }
 </style>
