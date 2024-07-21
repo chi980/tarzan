@@ -30,18 +30,29 @@ export default {
 
 <style lang="scss" scoped>
   .tag-button {
-    background: none;
+    background: white;
     border-radius: 20px;
     border: 1px solid #E5E5E5;
     padding: 13px 14px;
     @include custom-text($font-weight: 600);
     font-size: 12px;
     white-space: nowrap; /* 버튼 텍스트 줄바꿈 방지 */
+
+    /* 포커스 상태에서 기본 테두리 제거 */
+    &:focus {
+      outline: none;
+    }
   }
 
   .tag-button.active {
-    background-color: $primary-color-light;
-    border-color: $primary-color-default;
+    background-color: $primary-color-50;
+    border-color: $primary-color-default; /* 활성화된 상태에서 테두리 색상 설정 */
+    border: 1.2px solid;
     color: $primary-color-default;
+  }
+
+  /* 포커스 상태에서 테두리 색상 설정 */
+  .tag-button:focus {
+    border-color: $primary-color-default;
   }
 </style>

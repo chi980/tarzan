@@ -1,7 +1,27 @@
 <template>
   <div class="sub-container">
-    <TopBar></TopBar>
+    <TopBar class="topbar"></TopBar>
+    <SearchHouseBar class="search-house-bar" v-if="showOverlay"></SearchHouseBar>
     <div class="center-container">
+      <div ref="mapContainer" class="map-container">
+        <div class="searchbar" @click="showOverlay = true">
+          <div class="input-icon-wrap">
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+            <input
+              v-model="searchQuery" 
+              type="text"
+              placeholder="찾고 싶은 집주소를 입력해주세요."/>
+          </div>
+        </div>
+        <div class="tag-button-container">
+          <TagButtonGroupHome />
+        </div>
+      <BuildingInfo class="building-info"/>
+      </div>
+    </div>
+    <BottomBar class="bottom-bar"></BottomBar>
+
+    <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
           <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
@@ -11,30 +31,23 @@
             placeholder="찾고 싶은 집주소를 입력해주세요."/>
         </div>
       </div>
-    </div>
-    <div ref="mapContainer" class="map-container" style="width: 100%; height: 100%"></div>
-    <BuildingInfo />
-    <BottomBar></BottomBar>
-    
-
-    <div v-if="showOverlay" class="overlay">
       <div class="overlay-content">
         <div class="overlay-body">
           <BuildingList />
+          <button @click="showOverlay = false">닫기</button>
         </div>
       </div>
     </div>
-
-
   </div>
 </template>
+
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
+import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import SearchBar from "../components/common/SearchBar.vue";
-import DescriptionComponent from "@/components/common/Description.vue";
+import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 import { KakaoMap } from 'vue3-kakao-maps';
@@ -67,6 +80,32 @@ const loadKakaoMap = (container) => {
 </script>
 
 <style lang="scss" scoped>
+.topbar {
+  z-index: 3;
+}
+
+.search-house-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 3; /* Higher than TopBar and overlay */
+}
+
+.building-info{
+  position: absolute;
+  bottom: 0px;
+  z-index: 3;
+}
+
+.bottombar {
+  z-index: 3;
+  height: 60px; /* Adjust according to the actual height */
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
 .sub-container {
   display: flex;
   flex-direction: column;
@@ -84,12 +123,15 @@ const loadKakaoMap = (container) => {
 
 .searchbar {
   display: flex;
-  padding-top: $margin-small;
-  padding-bottom: $margin-default;
-  @include custom-padding-x;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  padding: 0px;
+  z-index: 4; /* Ensure input-icon-wrap is above overlay */
   box-sizing: border-box;
   cursor: pointer;
-  z-index: 2;
 }
 
 .input-icon-wrap {
@@ -98,8 +140,11 @@ const loadKakaoMap = (container) => {
   width: 100%;
   height: 48px;
   border-radius: 13px;
-  background-color: $input-color;
+  background-color: white;
   padding-right: $padding-default;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Ensures it's positioned correctly */
+  z-index: 5; /* Higher than overlay */
 }
 
 .icon-search {
@@ -119,22 +164,39 @@ input {
 }
 
 .map-container {
+  display: flex;
   width: 100%;
-  height: 83%;
+  height: 100%;
   position: relative;
   z-index: 0;
 }
 
+.tag-button-container {
+  position: relative;
+  margin-top: 25px;
+  z-index: 2;
+  width: 100%;
+  overflow-x: auto;
+
+  /* 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+:deep(.tag-button-container) {
+  overflow-x: auto;
+}
+
 .overlay {
-  position: absolute;
-  top: 110px;
+  position: absolute; /* Keeping position relative */
+  top: 60px; /* Position below input-icon-wrap */
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 108px); /* Full height minus input-icon-wrap height and BottomBar height */
   background-color: white;
   display: flex;
   align-items: flex-start;
-  justify-content: center;
   z-index: 1;
 }
 
@@ -143,6 +205,6 @@ input {
   padding: 5px;
   border-radius: 5px;
   width: 100%;
+  z-index: 1;
 }
-
 </style>

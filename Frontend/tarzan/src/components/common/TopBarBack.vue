@@ -28,7 +28,7 @@ export default {
 
 <style lang="scss" scoped>
 .topbar {
-  background-color: yellowgreen;
+  background-color: white;
   display: flex;
   align-items: center;
   width: 100%;
