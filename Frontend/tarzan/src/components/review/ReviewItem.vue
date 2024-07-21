@@ -42,7 +42,6 @@ export default {
   }
 
   .profile-container {
-    background-color: yellowgreen;
     display: flex;
     gap: 16px;
   }

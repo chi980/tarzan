@@ -4,7 +4,14 @@
     <div class="center-container">
       
       <div class="rating-contaier">
-        <!-- <StarRating :value="averageRating" :readOnly="true" /> -->
+        <StarRating />
+        <div class="number">
+          <span id="average">4.0</span>
+          <span id="count">(45)</span>
+        </div>
+        <div class="tag">
+          <TagButtonGroup />
+        </div>
       </div>
 
       <div class="review-container">
@@ -41,21 +48,21 @@ import ResultBar from "@/components/common/ResultBar.vue"
 import PhotoUpload from "./PhotoUpload.vue";
 import Divider from "../common/Divider.vue";
 import ReviewItem from "./ReviewItem.vue";
-import StarRating from "./StarRating.vue"; 
+import StarRating from "./StarRating.vue";
+import TagButtonGroup from "../common/TagButtonGroup.vue";
 
 export default {
   components: {
     TopBarBack,
+    StarRating,
     ResultBar,
     PhotoUpload,
     Divider,
     ReviewItem,
-    StarRating,
+    TagButtonGroup,
   },
   data() {
     return {
-      averageRating: 3,  // 부모 컴포넌트에서 전달된 평균 별점
-      userRating: 0,     // 사용자가 매긴 별점
       sortOptions: [
         {idx: 1, value: 'date', name: '날짜순' },
         { idx: 2, value: 'popularity', name: '인기순' },
@@ -105,8 +112,37 @@ export default {
 
   .rating-contaier {
     background-color: white;
-    // box-sizing: border-box;
-    // @include custom-padding-x;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-sizing: border-box;
+    @include custom-padding-x;
+    @include custom-padding-y(24px);
+  }
+
+  .rating-contaier .number {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    
+  }
+
+  .rating-contaier .number #average {
+    @include custom-text-bold(red);
+  }
+
+  .rating-contaier .number #count {
+    font-size: 16px;
+    color: $secondary-color-200;
+  }
+
+  // :deep(.star svg) {
+  //   width: 36px;
+  // }
+
+  :deep(.tag-button-container) {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   .review-container {
@@ -130,5 +166,6 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    margin-top: 16px;
   }
 </style>
