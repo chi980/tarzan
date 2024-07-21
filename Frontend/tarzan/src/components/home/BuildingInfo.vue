@@ -96,7 +96,7 @@ export default {
   width: calc(100% - 50px); /* 좌우 패딩을 제외한 너비 */
   padding: 0 25px; /* 좌우 패딩 50px */
   overflow: hidden;
-  margin: 30px auto 0px auto;
+  margin: 30px auto 10px auto;
 }
 
 .responsive-image {

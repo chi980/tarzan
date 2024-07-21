@@ -1,7 +1,7 @@
 <template>
   <div class="building-info-list-container">
     <div class="post-items-container">
-      <ResultBar />
+      <ResultBar class="result-bar"/>
       <div class="content-indicator"></div>
       <BuildingItem
       v-for="building in buildings"
@@ -46,6 +46,10 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+
+.result-bar{
+padding: 60px 0px 0px;
+}
 
 // content를 구분해주는 회색 긴 선
 .content-indicator {
