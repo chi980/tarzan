@@ -1,15 +1,15 @@
 <template>
   <div class="review-item">
 
-    <div class="profile-container">
-      <img src="@/assets/icons/Filter/profile-icon.png" alt="profile-img">
-      <div class="profile-info">
+    <div class="writer-container">
+      <img src="@/assets/icons/Filter/writer-icon.png" alt="writer-img">
+      <div class="writer-info">
         <span class="username">{{ review.username }}</span>
         <span class="residence-period">{{ review.period }}</span>
       </div>
     </div>
 
-    <div class="review-container">
+    <div class="review-content-container">
       <div class="review-content">
         <h4>장점</h4>
         <p>{{ review.pros }}</p>
@@ -41,33 +41,33 @@ export default {
     gap: 16px;
   }
 
-  .profile-container {
+  .writer-container {
     display: flex;
     gap: 16px;
   }
 
-  .profile-container img {
+  .writer-container img {
     width: 40px;
     height: 40px;
   }
 
-  .profile-container .profile-info {
+  .writer-container .writer-info {
     display: flex;
     flex-direction: column;
     text-align: left;
     gap: 4px;
   }
 
-  .profile-container .profile-info .username {
+  .writer-container .writer-info .username {
     font-size: 14px;
     font-weight: 500;
   }
 
-  .profile-container .profile-info .residence-period {
+  .writer-container .writer-info .residence-period {
     font-size: 12px;
   }
 
-  .review-container {
+  .review-content-container {
     background-color: #F8F8F8;
     border-radius: 16px;
     display: flex;
@@ -76,19 +76,19 @@ export default {
     @include custom-padding;
   }
 
-  .review-container .review-content {
+  .review-content-container .review-content {
     display: flex;
     gap: 12px;
     text-align: left;
     align-items: baseline;
   }
 
-  .review-container .review-content h4 {
+  .review-content-container .review-content h4 {
     font-size: 12px;
     white-space: nowrap;
   }
 
-  .review-container .review-content p {
+  .review-content-container .review-content p {
     font-size: 12px;
     color: #969696;
     line-height: 1.5;
