@@ -39,8 +39,8 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  @include custom-margin-x;
-  @include custom-margin-y($margin-size: 12px);
+  // @include custom-margin-x;
+  // @include custom-margin-y($margin-size: 12px);
   gap: 8px;
   
 }

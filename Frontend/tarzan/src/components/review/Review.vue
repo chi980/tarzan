@@ -15,7 +15,6 @@
       </div>
 
       <div class="review-container">
-
         <div class="review-group" id="photo0">
           <ResultBar resultTitle="사진 후기" />
           <div class="reivew-content">
@@ -37,7 +36,6 @@
         </div>
 
         <button>더보기</button>
-
       </div>
     </div>
   </div>
@@ -63,11 +61,11 @@ export default {
   },
   data() {
     return {
-      sortOptions: [
-        {idx: 1, value: 'date', name: '날짜순' },
-        { idx: 2, value: 'popularity', name: '인기순' },
-        { idx: 3, value: 'rating', name: '평점순' },
-      ],
+      // sortOptions: [
+      //   {idx: 1, value: 'date', name: '날짜순' },
+      //   { idx: 2, value: 'popularity', name: '인기순' },
+      //   { idx: 3, value: 'rating', name: '평점순' },
+      // ],
       reviews: [
         {
           username: "abc0813",
@@ -96,7 +94,6 @@ export default {
   .sub-container {
     display: flex;
     flex-direction: column;
-    
   }
 
   .center-container {

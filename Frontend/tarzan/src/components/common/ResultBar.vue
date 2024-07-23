@@ -23,9 +23,18 @@ export default {
       required: true,
     },
     // Community.vue에서 전달받은 sortOptions prop을 정의
-    sortOptions: {
-      type: Array,
-      required: true,
+    // sortOptions: {
+    //   type: Array,
+    //   required: true,
+    // }
+  },
+  data() {
+    return {
+      sortOptions: [
+        {idx: 1, value: 'date', name: '날짜순' },
+        { idx: 2, value: 'popularity', name: '인기순' },
+        { idx: 3, value: 'rating', name: '평점순' },
+      ],
     }
   },
 }
@@ -35,6 +44,7 @@ export default {
   .resultbar {
     display: flex;
     align-items: center;
+    // background-color: yellow;
   }
 
   .resultbar-text {

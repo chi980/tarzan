@@ -14,11 +14,13 @@
         <TagButtonGroup />
       </div>
 
-      <div class="result-bar-conatier">
+      <div class="result-bar-container">
         <ResultBar resultTitle="결과" :sortOptions="sortOptions" />
       </div>
 
-      <PostList />
+      <div class="post-llist-container">
+        <PostList />
+      </div>
 
       <div class="write-button" @click="goToPostCreate">
         <img id="post-write-icon" src="@/assets/icons/Filter/post-write-icon.png" />
@@ -85,6 +87,14 @@ export default {
 
   :deep(.tag-button-container) {
     overflow-x: auto;
+  }
+
+  .result-bar-container {
+    @include custom-margin-x;
+  }
+
+  .post-llist-container {
+    @include custom-margin-x;
   }
 
   .center-container .write-button {

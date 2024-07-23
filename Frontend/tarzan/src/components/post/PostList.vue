@@ -45,8 +45,15 @@ export default {
   .post-list-container {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* 부모 요소에 높이를 채우도록 설정 */
+    flex-grow: 1; 
     justify-content: space-between;
+    gap: 16px;
+  }
+
+  .post-list-container .post-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
   
   #post-more-button {
