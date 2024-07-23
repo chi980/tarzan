@@ -76,6 +76,12 @@ const routes = [
   },
 
   {
+    path: "/mypage",
+    name: "MyPage",
+    component: () => import("@/pages/MyPage.vue"),
+  },
+
+  {
     path: "/home2",
     name: "Home2",
     component: () => import("@/components/Home2.vue"),
@@ -138,6 +144,7 @@ const routes = [
       },
     ],
   },
+
 
   {
     path: "/auth",
