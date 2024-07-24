@@ -15,7 +15,6 @@
       <span>{{ comment.time }}</span>
     </div>
   </div>
-  <hr class="custom-hr">
 </template>
 <script>
 export default {
@@ -47,8 +46,7 @@ export default {
   flex-direction: column;
   gap: 8px;
   text-align: left;
-  @include custom-padding-x($padding-size: $padding-default);
-  @include custom-padding-y($padding-size: 3px);
+  // @include custom-padding-x($padding-size: $padding-default);
 }
 
 .comment-container .comment-header {
@@ -74,11 +72,5 @@ export default {
   font-size: 12px;
   color: #9F9F9F;
   padding-top: 5px;
-}
-
-.custom-hr {
-  border: none;
-  border-top: 1px solid #EDEDED; /* 선의 색상을 지정합니다 */
-  width: 90%;
 }
 </style>
