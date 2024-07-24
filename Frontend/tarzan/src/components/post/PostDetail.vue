@@ -21,14 +21,10 @@
         </div>
       </div>
       <div class="comment-container">
-        <PostComment
-          v-for="(comment, index) in comments"
-          :key="index"
-          :comment="comment"
-          :index="index"
-          @delete-comment="deleteComment"
-        />
-        <CommentInput></CommentInput>
+        <div class="comment-list">
+          <CommentList />
+        </div>
+        <CommentInput />
       </div>
     </div>
     <BottomBar />
@@ -38,29 +34,18 @@
 <script>
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostTopBar from "./PostTopBar.vue";
-import PostComment from "@/components/post/PostComment.vue";
 import CommentInput from "./CommentInput.vue";
+import CommentList from "./CommentList.vue";
 
 export default {
   components: {
     PostTopBar,
     BottomBar,
-    PostComment,
+    CommentList,
     CommentInput,
-  },
-  data() {
-    return {
-      post: null,
-      comments: [
-        { writer: '톡기', content: '저는 주로 네일클로버 세탁방을 방문합니다.', time: '2024-07-01T08:00:00' },
-        { writer: '화이트', content: '하얀 세탁소 추천이요', time: '2024-07-01T09:00:00' },
-        { writer: '사자', content: '사자 세탁방도 좋아요.', time: '2024-07-01T10:00:00' },
-      ],
-    };
   },
   created() {
     const postId = this.$route.params.id;
-    // 실제 프로젝트에서는 API를 통해 게시물 데이터를 가져옴
     this.post = {
       id: postId,
       tag: '질문',
@@ -70,7 +55,6 @@ export default {
       elapsedTime: '20시간 전',
     };
   },
-  
 };
 </script>
 
@@ -133,5 +117,9 @@ export default {
     flex-grow: 1;
     padding-top: 15px;
     background-color: white;
+  }
+
+  .comment-container .comment-list {
+    @include custom-padding-x;
   }
 </style>

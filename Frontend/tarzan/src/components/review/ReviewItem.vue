@@ -13,12 +13,10 @@
       <div class="review-content">
         <h4>장점</h4>
         <p>{{ review.pros }}</p>
-        <!-- <p>1. 용자 없는 건물임. 2. 역이나 버스정류장에 가까워서 교통에 편함</p> -->
       </div>
       <div class="review-content">
         <h4>단점</h4>
         <p>{{ review.cons }}</p>
-        <!-- <p>여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …</p> -->
       </div>
     </div>
 

@@ -25,15 +25,18 @@
         <div class="result-bar">
           <ResultBar resultTitle="결과" />
         </div>
-        <div class="post">
-            <PostList />
-          </div>
+        <div class="my-comment">
+          <CommentList />
+        </div>
       </div>
 
       <div class="my-content">
         <h2 class="title">내가 작성한 후기</h2>
         <div class="result-bar">
           <ResultBar resultTitle="결과" />
+        </div>
+        <div class="my-review">
+          <ReviewList />
         </div>
       </div>
     </div>
@@ -44,13 +47,17 @@
 <script>
 import BottomBar from '../components/common/BottomBar.vue';
 import ResultBar from '../components/common/ResultBar.vue';
+import CommentList from '../components/post/CommentList.vue';
 import PostList from '../components/post/PostList.vue';
+import ReviewList from '../components/review/ReviewList.vue';
 
 export default {
   components : {
     BottomBar,
     ResultBar,
     PostList,
+    CommentList,
+    ReviewList,
   }
 }
 </script>

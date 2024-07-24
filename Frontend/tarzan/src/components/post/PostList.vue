@@ -7,6 +7,7 @@
       :post="post"
       @click="goToPostDetail(post.id)"/>
     </div>
+
     <div class="post-more-container">
       <button id="post-more-button">
         <span>더보기</span>
@@ -69,5 +70,4 @@ export default {
   #post-more-icon {
   @include custom-icon-style;
   }
-
 </style>
