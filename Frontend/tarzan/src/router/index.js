@@ -76,12 +76,6 @@ const routes = [
   },
 
   {
-    path: "/mypage",
-    name: "MyPage",
-    component: () => import("@/pages/MyPage.vue"),
-  },
-
-  {
     path: "/home2",
     name: "Home2",
     component: () => import("@/components/Home2.vue"),
@@ -133,14 +127,31 @@ const routes = [
         component: () => import("@/components/review/Review.vue"),
       },
       {
-        path: "/review/create1",
+        path: "create1",
         name: "CreateReview1",
         component: () => import("@/components/review/CreateReview1.vue"),
       },
       {
-        path: "/review/create2",
+        path: "create2",
         name: "CreateReview2",
         component: () => import("@/components/review/CreateReview2.vue"),
+      },
+    ],
+  },
+
+  {
+    path: "/mypage",
+    name: "MyPage",
+    children: [
+      {
+        path: "",
+        name: "MyPage",
+        component: () => import("@/pages/MyPage.vue"),
+      },
+      {
+        path: "edit-profile",
+        name: "EditProfile",
+        component: () => import("@/components/mypage/EditProfile1.vue"),
       },
     ],
   },
