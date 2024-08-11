@@ -69,87 +69,103 @@
       <div>
         <div class="content-indicator"></div>
       </div>
-      <div class="table-wrapper">
-        <div class="table-title">
-          <img :src="checkImgSrc" />
-          <p>가격</p>
+      <div class="custom-flex-column" style="margin-bottom: 30px">
+        <div class="table-wrapper">
+          <div class="table-title">
+            <img :src="checkImgSrc" />
+            <p>가격</p>
+          </div>
+          <div class="table-content-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th
+                    v-for="(house, index) in housesToCompare"
+                    :key="house.idx"
+                  >
+                    {{ house.name }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, index) in costList" :key="row.idx">
+                  <td>{{ row.kor }}</td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house[row.eng] }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+        <div class="table-wrapper">
+          <div class="table-title">
+            <img :src="checkImgSrc" />
+            <p>체크 사항</p>
+          </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th v-for="(house, index) in housesToCompare" :key="house.idx">
-                {{ house.name }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in costList" :key="row.idx">
-              <td>{{ row.kor }}</td>
-              <td v-for="house in housesToCompare" :key="house.idx">
-                {{ house[row.eng] }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="table-wrapper">
-        <div class="table-title">
-          <img :src="checkImgSrc" />
-          <p>체크 사항</p>
+          <div class="table-content-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th
+                    v-for="(house, index) in housesToCompare"
+                    :key="house.idx"
+                  >
+                    {{ house.name }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, index) in checkList" :key="row.idx">
+                  <td v-html="row.kor"></td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house[row.eng] }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+        <div class="table-wrapper">
+          <div class="table-title">
+            <img :src="checkImgSrc" />
+            <p>옵션</p>
+          </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th v-for="(house, index) in housesToCompare" :key="house.idx">
-                {{ house.name }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in checkList" :key="row.idx">
-              <td v-html="row.kor"></td>
-              <td v-for="house in housesToCompare" :key="house.idx">
-                {{ house[row.eng] }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="table-wrapper">
-        <div class="table-title">
-          <img :src="checkImgSrc" />
-          <p>옵션</p>
+          <div class="table-content-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th
+                    v-for="(house, index) in housesToCompare"
+                    :key="house.idx"
+                  >
+                    {{ house.name }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, index) in optionList" :key="row.idx">
+                  <td v-html="row.kor"></td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house[row.eng] }}
+                  </td>
+                </tr>
+
+                <tr class="special-row">
+                  <td>총계</td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house.totalScore }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th v-for="(house, index) in housesToCompare" :key="house.idx">
-                {{ house.name }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in optionList" :key="row.idx">
-              <td v-html="row.kor"></td>
-              <td v-for="house in housesToCompare" :key="house.idx">
-                {{ house[row.eng] }}
-              </td>
-            </tr>
-
-            <tr class="special-row">
-              <td>총계</td>
-              <td v-for="house in housesToCompare" :key="house.idx">
-                {{ house.totalScore }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -193,6 +209,36 @@ const housesToCompare: CompareHouse[] = [
     totalScore: 30, // 예시 값 (모든 평가 점수의 합계)
   },
 
+  {
+    idx: 3,
+    name: "홍시 빌라",
+    type: "빌라, 주택",
+    address: "서울 강남구 논현로70길 1 (우)06142",
+    score: 50,
+
+    moneyType: "월세", // 예시 값
+    deposit: 1000, // 예시 값 (단위: 만원)
+    rent: 50, // 예시 값 (단위: 만원)
+    utilities: 100, // 예시 값 (단위: 만원)
+
+    pet: "불가능", // 예시 값
+    parking: "없음", // 예시 값
+    roomCnt: 2, // 예시 값
+    bathroomCnt: 1, // 예시 값
+    movingDay: new Date("2024-10-01"), // 예시 값
+    floor: 2, // 예시 값
+    direction: "북향", // 예시 값
+
+    water: 3, // 예시 값 (평가 점수)
+    window: 4, // 예시 값 (평가 점수)
+    bathroom: 4, // 예시 값 (평가 점수)
+    surrounding: 3, // 예시 값 (평가 점수)
+    option: 3, // 예시 값 (평가 점수)
+    detail: 4, // 예시 값 (평가 점수)
+    security: 2, // 예시 값 (평가 점수)
+    etc: 3, // 예시 값 (평가 점수)
+    totalScore: 25, // 예시 값 (모든 평가 점수의 합계)
+  },
   {
     idx: 3,
     name: "홍시 빌라",
@@ -361,6 +407,12 @@ const optionList: rowInfo[] = [
   }
 }
 
+.custom-flex-column {
+  display: flex;
+  flex-direction: column;
+  gap: $padding-default;
+}
+
 .table-wrapper {
   @include custom-margin-x;
 
@@ -383,6 +435,7 @@ const optionList: rowInfo[] = [
     th,
     td {
       @include custom-padding;
+      min-width: 100px;
       line-height: 1.2;
       text-align: center; /* 수평 중앙 정렬 */
       vertical-align: middle; /* 수직 중앙 정렬 */
@@ -399,6 +452,32 @@ const optionList: rowInfo[] = [
 
     tr.special-row td {
       color: $primary-color-default !important;
+    }
+  }
+
+  .table-content-wrapper {
+    overflow-x: auto;
+    /* 스크롤바 전체 영역 */
+    &::-webkit-scrollbar {
+      width: 100%; /* 세로축 스크롤바 폭 너비 */
+      height: 4px; /* 가로축 스크롤바 폭 너비 */
+    }
+    &::-webkit-scrollbar-button {
+      display: none;
+    }
+    /* 스크롤바 막대 제외 부분 */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    /* 스크롤바 막대 */
+    &::-webkit-scrollbar-thumb {
+      border-radius: calc($border-radius-default * 2);
+      background: #f2f2f2;
+    }
+
+    table {
+      margin-top: $margin-default;
+      margin-bottom: 4px;
     }
   }
 }
@@ -562,10 +641,8 @@ const optionList: rowInfo[] = [
 }
 
 table {
-  @include custom-margin-y;
   background-color: $light-gray;
   border-radius: $border-radius-default;
-  width: 100%;
   border: none; /* 바깥쪽 테두리 제거 */
 
   th,
