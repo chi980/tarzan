@@ -100,3 +100,11 @@ img {
   src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Thin.woff")
     format("woff");
 }
+
+@font-face {
+  font-family: "BMJUA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
