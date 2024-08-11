@@ -45,6 +45,10 @@ const routes = [
         path: "check/checklist",
         component: () => import("@/components/bookmark/CheckCheckListPage.vue"),
       },
+      {
+        path: "compare",
+        component: () => import("@/components/bookmark/CompareHouses.vue"),
+      },
     ],
   },
 

@@ -199,7 +199,7 @@ const resultCnt: number = ref(0);
       align-items: center;
       gap: $padding-small;
 
-      input[type="text"] {
+      input[tgype="text"] {
         @include custom-input-style-basic;
         padding: 14px;
         box-sizing: border-box;
