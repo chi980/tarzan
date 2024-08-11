@@ -1,7 +1,9 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div class="top-bar-back">
-      <p>비교하기</p>
+    <div>
+      <div class="top-bar-back">
+        <p>비교하기</p>
+      </div>
     </div>
     <div class="center-container">
       <div id="compare-container-banner-wrapper">
