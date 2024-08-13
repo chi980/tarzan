@@ -68,6 +68,10 @@
           <p class="numeric-text">{{ house.score }}</p>
         </div>
       </div>
+      <div class="chart-wrapper">
+        <Chart :chartData="chartData"></Chart>
+      </div>
+
       <div>
         <div class="content-indicator"></div>
       </div>
@@ -174,11 +178,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import emojiSrc from "@/assets/emoji/face-with-monocle.png";
 import checkImgSrc from "@/assets/icons/Check/Check.svg";
 import CompareHouse from "@/data/house.ts";
-
+import ChartDataOption from "@/data/chart.ts";
+import Chart from "@/components/common/RadarChart.vue";
 const housesToCompare: CompareHouse[] = [
   {
     idx: 1,
@@ -209,6 +214,14 @@ const housesToCompare: CompareHouse[] = [
     security: 3, // 예시 값 (평가 점수)
     etc: 2, // 예시 값 (평가 점수)
     totalScore: 30, // 예시 값 (모든 평가 점수의 합계)
+
+    factor: {
+      transportation: 10,
+      shopping: 20,
+      amenity: 30,
+      security: 20,
+      clinic: 15,
+    },
   },
 
   {
@@ -240,6 +253,14 @@ const housesToCompare: CompareHouse[] = [
     security: 2, // 예시 값 (평가 점수)
     etc: 3, // 예시 값 (평가 점수)
     totalScore: 25, // 예시 값 (모든 평가 점수의 합계)
+
+    factor: {
+      transportation: 20,
+      shopping: 30,
+      amenity: 40,
+      security: 50,
+      clinic: 65,
+    },
   },
   {
     idx: 3,
@@ -270,8 +291,23 @@ const housesToCompare: CompareHouse[] = [
     security: 2, // 예시 값 (평가 점수)
     etc: 3, // 예시 값 (평가 점수)
     totalScore: 25, // 예시 값 (모든 평가 점수의 합계)
+
+    factor: {
+      transportation: 20,
+      shopping: 30,
+      amenity: 40,
+      security: 50,
+      clinic: 65,
+    },
   },
 ];
+
+const chartData: ChartDataOption[] = housesToCompare.map((raw) => {
+  return {
+    label: raw.name,
+    data: Object.values(raw.factor),
+  };
+});
 
 interface rowInfo {
   idx: number;
@@ -546,7 +582,12 @@ const optionList: rowInfo[] = [
 .numeric-text {
   @include custom-numeric-text;
 }
-
+.chart-wrapper {
+  @include custom-padding;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 // scoped
 
 #compare-container-banner {
