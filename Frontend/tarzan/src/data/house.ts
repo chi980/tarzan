@@ -30,4 +30,12 @@ export interface CompareHouse extends House {
   security: number;
   etc: number;
   totalScore: number;
+
+  factor: {
+    transportation: number;
+    shopping: number;
+    amenity: number;
+    security: number;
+    clinic: number;
+  };
 }
