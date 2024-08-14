@@ -1,13 +1,20 @@
 <template>
   <div class="bar bottom-bar">
-    <div v-for="item in items" :key="items.idx" class="bar-item">
+    <div 
+      v-for="item in items" 
+      :key="item.idx" 
+      class="bar-item" 
+      @click="navigateTo(item.url)"
+    >
       <img :src="item.icon" alt="Icon" />
       <span>{{ item.title }}</span>
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router"; // Vue Router 사용
 import homeIcon from "@/assets/icons/bottombar/home.svg";
 import checklistIcon from "@/assets/icons/bottombar/checklist.svg";
 import preventionIcon from "@/assets/icons/bottombar/prevention.svg";
@@ -18,17 +25,24 @@ interface BarItem {
   idx: number;
   icon: string;
   title: string;
-  url: string; // back
+  url: string;
 }
 
 const items = ref<BarItem[]>([
-  { idx: 1, icon: homeIcon, title: "홈", url: "/home" },
+  { idx: 1, icon: homeIcon, title: "홈", url: "/" },
   { idx: 2, icon: checklistIcon, title: "체크리스트", url: "/checklist" },
   { idx: 3, icon: preventionIcon, title: "사기 예방", url: "/prevention" },
   { idx: 4, icon: communityIcon, title: "커뮤니티", url: "/community" },
   { idx: 5, icon: mypageIcon, title: "마이페이지", url: "/mypage" },
 ]);
+
+const router = useRouter(); // Vue Router 훅 사용
+
+function navigateTo(url: string) {
+  router.push(url); // 해당 URL로 이동
+}
 </script>
+
 <style lang="scss" scoped>
 .bottom-bar {
   @include custom-text($font-weight: 400, $font-size: 12px);

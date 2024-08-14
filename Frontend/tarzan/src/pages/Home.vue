@@ -51,20 +51,16 @@ import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 import { KakaoMap } from 'vue3-kakao-maps';
-
 const mapContainer = ref(null)
 const showOverlay = ref(false);
 const searchQuery = ref("");
-
 onMounted(() => {
   loadKakaoMap(mapContainer.value)
 })
-
 const loadKakaoMap = (container) => {
   const script = document.createElement('script')
   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false`
   document.head.appendChild(script)
-
   script.onload = () => {
     window.kakao.maps.load(() => {
       const options = {
@@ -72,7 +68,6 @@ const loadKakaoMap = (container) => {
         level: 3, // 지도 확대 레벨
         maxLevel: 10, // 지도 축소 제한 레벨
       }
-
       const mapInstance = new window.kakao.maps.Map(container, options) // 지도 생성
     })
   }
@@ -83,7 +78,6 @@ const loadKakaoMap = (container) => {
 .topbar {
   z-index: 3;
 }
-
 .search-house-bar {
   position: absolute;
   top: 0;
@@ -91,13 +85,11 @@ const loadKakaoMap = (container) => {
   width: 100%;
   z-index: 3; /* Higher than TopBar and overlay */
 }
-
 .building-info{
   position: absolute;
-  bottom: 0px;
+  bottom: -640px;
   z-index: 3;
 }
-
 .bottombar {
   z-index: 3;
   height: 60px; /* Adjust according to the actual height */
@@ -105,14 +97,12 @@ const loadKakaoMap = (container) => {
   bottom: 0;
   width: 100%;
 }
-
 .sub-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   justify-content: space-between;
 }
-
 .center-container {
   position: relative;
   flex-grow: 1;
@@ -120,7 +110,6 @@ const loadKakaoMap = (container) => {
   display: flex;
   flex-direction: column;
 }
-
 .searchbar {
   display: flex;
   position: absolute;
@@ -133,7 +122,6 @@ const loadKakaoMap = (container) => {
   box-sizing: border-box;
   cursor: pointer;
 }
-
 .input-icon-wrap {
   display: flex;
   align-items: center;
@@ -146,14 +134,12 @@ const loadKakaoMap = (container) => {
   position: relative; /* Ensures it's positioned correctly */
   z-index: 5; /* Higher than overlay */
 }
-
 .icon-search {
   width: 16px;
   height: 16px;
   @include custom-margin-x;
   color: $input-placeholder-color;
 }
-
 input {
   width: 100%;
   appearance: none;
@@ -162,7 +148,6 @@ input {
   background: transparent;
   @include custom-text;
 }
-
 .map-container {
   display: flex;
   width: 100%;
@@ -170,24 +155,20 @@ input {
   position: relative;
   z-index: 0;
 }
-
 .tag-button-container {
   position: relative;
   margin-top: 25px;
   z-index: 2;
   width: 100%;
   overflow-x: auto;
-
   /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
     display: none;
   }
 }
-
 :deep(.tag-button-container) {
   overflow-x: auto;
 }
-
 .overlay {
   position: absolute; /* Keeping position relative */
   top: 60px; /* Position below input-icon-wrap */
@@ -199,7 +180,6 @@ input {
   align-items: flex-start;
   z-index: 1;
 }
-
 .overlay-content {
   background: white;
   padding: 5px;
