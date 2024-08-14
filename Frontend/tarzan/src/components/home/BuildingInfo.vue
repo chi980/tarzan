@@ -57,7 +57,7 @@ export default {
   bottom: -590px;
   left: 0;
   width: 100%;
-  height: 70%;
+  height: 80%;
   background-color: white;
   transition: transform 0.3s ease; /* 스와이프 후 애니메이션 추가 */
   }
