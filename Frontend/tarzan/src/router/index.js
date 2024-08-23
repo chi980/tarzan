@@ -61,6 +61,10 @@ const routes = [
         component: () => import("@/pages/Fraud.vue"),
       },
       {
+        path: "landlord",
+        component: () => import("@/components/fraud/CheckLandlord.vue"),
+      },
+      {
         path: "homeowner",
         component: () => import("@/components/fraud/CheckHouseOwner.vue"),
       },
