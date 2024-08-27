@@ -4,8 +4,7 @@
       v-for="item in items" 
       :key="item.idx" 
       class="bar-item" 
-      @click="navigateTo(item.url)"
-    >
+      @click="navigateTo(item.url)">
       <img :src="item.icon" alt="Icon" />
       <span>{{ item.title }}</span>
     </div>
@@ -14,7 +13,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router"; // Vue Router 사용
+import { useRouter } from "vue-router";
 import homeIcon from "@/assets/icons/bottombar/home.svg";
 import checklistIcon from "@/assets/icons/bottombar/checklist.svg";
 import preventionIcon from "@/assets/icons/bottombar/prevention.svg";
@@ -25,13 +24,13 @@ interface BarItem {
   idx: number;
   icon: string;
   title: string;
-  url: string;
+  url: string; // back
 }
 
 const items = ref<BarItem[]>([
   { idx: 1, icon: homeIcon, title: "홈", url: "/" },
-  { idx: 2, icon: checklistIcon, title: "체크리스트", url: "/checklist" },
-  { idx: 3, icon: preventionIcon, title: "사기 예방", url: "/prevention" },
+  { idx: 2, icon: checklistIcon, title: "체크리스트", url: "/bookmark" },
+  { idx: 3, icon: preventionIcon, title: "사기 예방", url: "/fraud" },
   { idx: 4, icon: communityIcon, title: "커뮤니티", url: "/community" },
   { idx: 5, icon: mypageIcon, title: "마이페이지", url: "/mypage" },
 ]);

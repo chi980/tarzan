@@ -1,6 +1,6 @@
 <template>
   <div class="tab-content">
-    <div class="button-in-tab">
+    <div class="button-in-tab" @click="navigateToMap">
       <p>직접 추가하기</p>
       <img :src="HouseAddSrc" />
     </div>
@@ -31,8 +31,15 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router'; // Vue Router import
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
+
+const router = useRouter(); // useRouter hook to access the router
+
+function navigateToMap() {
+  router.push('/bookmark/map'); // Navigate to /bookmark/map
+}
 </script>
 
 <style lang="scss" scoped>
@@ -65,6 +72,7 @@ import NonContent from "@/components/common/NonContent.vue";
     $icon-size: 18px,
     $height: 52px
   );
+  cursor: pointer; /* Pointer cursor to indicate it's clickable */
 }
 // scoped
 

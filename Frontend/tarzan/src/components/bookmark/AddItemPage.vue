@@ -9,7 +9,7 @@
         <div class="input-group">
           <h2 class="input-title">주소</h2>
           <div class="input-content">
-            <input type="text" placeholder="주소를 입력해주세요" />
+            <input type="text" v-model="address" placeholder="주소를 입력해주세요" />
           </div>
         </div>
         <div class="input-group">
@@ -34,7 +34,18 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import { useRoute } from 'vue-router';
+
+const address = ref(''); // Initialize address ref
+const route = useRoute(); // Get route instance
+
+onMounted(() => {
+  // Get the address query parameter from the route and set it to address ref
+  address.value = route.query.address as string || '';
+});
+</script>
 
 <style lang="scss" scoped>
 // 공통
@@ -102,7 +113,6 @@
     text-align: left;
   }
   .input-content {
-    @include custom-margin-input;
     display: flex;
     align-items: center;
     gap: $padding-default;

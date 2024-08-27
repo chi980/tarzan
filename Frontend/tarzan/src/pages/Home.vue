@@ -87,7 +87,7 @@ const loadKakaoMap = (container) => {
 }
 .building-info{
   position: absolute;
-  bottom: -640px;
+  bottom: -650px;
   z-index: 3;
 }
 .bottombar {
