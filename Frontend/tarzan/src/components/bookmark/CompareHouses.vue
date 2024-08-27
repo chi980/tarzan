@@ -72,104 +72,113 @@
         <Chart :chartData="chartData"></Chart>
       </div>
 
-      <div>
+      <!-- <div>
         <div class="content-indicator"></div>
-      </div>
-      <div class="custom-flex-column" style="margin-bottom: 30px">
-        <div class="table-wrapper">
+      </div> -->
+      <div
+        class="custom-flex-column"
+        style="margin-top: 8px; margin-bottom: 30px; gap: 24px"
+      >
+        <div class="table">
           <div class="table-title">
             <img :src="checkImgSrc" />
             <p>가격</p>
           </div>
           <div class="table-content-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th
-                    v-for="(house, index) in housesToCompare"
-                    :key="house.idx"
-                  >
-                    {{ house.name }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, index) in costList" :key="row.idx">
-                  <td>{{ row.kor }}</td>
-                  <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house[row.eng] }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th
+                      v-for="(house, index) in housesToCompare"
+                      :key="house.idx"
+                    >
+                      {{ house.name }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in costList" :key="row.idx">
+                    <td>{{ row.kor }}</td>
+                    <td v-for="house in housesToCompare" :key="house.idx">
+                      {{ house[row.eng] }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <div class="table-wrapper">
+        <div class="table">
           <div class="table-title">
             <img :src="checkImgSrc" />
             <p>체크 사항</p>
           </div>
 
           <div class="table-content-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th
-                    v-for="(house, index) in housesToCompare"
-                    :key="house.idx"
-                  >
-                    {{ house.name }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, index) in checkList" :key="row.idx">
-                  <td v-html="row.kor"></td>
-                  <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house[row.eng] }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th
+                      v-for="(house, index) in housesToCompare"
+                      :key="house.idx"
+                    >
+                      {{ house.name }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in checkList" :key="row.idx">
+                    <td v-html="row.kor"></td>
+                    <td v-for="house in housesToCompare" :key="house.idx">
+                      {{ house[row.eng] }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-        <div class="table-wrapper">
+        <div class="table">
           <div class="table-title">
             <img :src="checkImgSrc" />
             <p>옵션</p>
           </div>
 
           <div class="table-content-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th
-                    v-for="(house, index) in housesToCompare"
-                    :key="house.idx"
-                  >
-                    {{ house.name }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(row, index) in optionList" :key="row.idx">
-                  <td v-html="row.kor"></td>
-                  <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house[row.eng] }}
-                  </td>
-                </tr>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th
+                      v-for="(house, index) in housesToCompare"
+                      :key="house.idx"
+                    >
+                      {{ house.name }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in optionList" :key="row.idx">
+                    <td v-html="row.kor"></td>
+                    <td v-for="house in housesToCompare" :key="house.idx">
+                      {{ house[row.eng] }}
+                    </td>
+                  </tr>
 
-                <tr class="special-row">
-                  <td>총계</td>
-                  <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house.totalScore }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  <tr class="special-row">
+                    <td>총계</td>
+                    <td v-for="house in housesToCompare" :key="house.idx">
+                      {{ house.totalScore }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -451,7 +460,7 @@ const optionList: rowInfo[] = [
   gap: $padding-default;
 }
 
-.table-wrapper {
+.table {
   @include custom-margin-x;
 
   p {
@@ -513,9 +522,14 @@ const optionList: rowInfo[] = [
       background: #f2f2f2;
     }
 
+    .table-wrapper {
+      @include custom-margin-y;
+      @include custom-padding($padding-size: 12px);
+
+      background-color: $light-gray;
+      border-radius: $border-radius-default;
+    }
     table {
-      margin-top: $margin-default;
-      margin-bottom: 4px;
     }
   }
 }
