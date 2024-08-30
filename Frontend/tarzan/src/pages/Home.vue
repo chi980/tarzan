@@ -88,7 +88,7 @@ const loadKakaoMap = (container) => {
 .building-info{
   position: absolute;
   bottom: -650px;
-  z-index: 3;
+  z-index: 2;
 }
 .bottombar {
   z-index: 3;
@@ -109,6 +109,7 @@ const loadKakaoMap = (container) => {
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 .searchbar {
   display: flex;
@@ -153,7 +154,8 @@ input {
   width: 100%;
   height: 100%;
   position: relative;
-  z-index: 0;
+  z-index: 1;
+  pointer-events: auto;
 }
 .tag-button-container {
   position: relative;
@@ -186,5 +188,15 @@ input {
   border-radius: 5px;
   width: 100%;
   z-index: 1;
+}
+
+/* 지도 위에 위치한 다른 요소들에 대해 pointer-events 설정 */
+.tag-button-container {
+  pointer-events: none; /* 지도와 상호작용하지 않도록 설정 */
+}
+
+/* 필요 시 특정 요소만 상호작용 가능하게 설정 */
+.searchbar input, .searchbar .icon-search {
+  pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
 }
 </style>
