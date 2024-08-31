@@ -50,6 +50,7 @@ import StarRating from "./StarRating.vue";
 import TagButtonGroup from "../common/TagButtonGroup.vue";
 
 export default {
+  name: 'Review',
   components: {
     TopBarBack,
     StarRating,
@@ -87,7 +88,7 @@ export default {
         },
       ],
     }
-  }
+  },
 }
 </script>
 <style lang="scss" scoped>
