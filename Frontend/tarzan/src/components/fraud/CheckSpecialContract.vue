@@ -1,8 +1,6 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div class="top-bar-back">
-      <p>특약 사항 확인하기</p>
-    </div>
+    <TopBarBack title="특약 사항 작성하기" />
     <div class="center-container">
       <div class="card-wrapper">
         <p>
@@ -41,7 +39,9 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  import TopBarBack from '../common/TopBarBack.vue';
+</script>
 
 <style lang="scss" scoped>
 // 공통

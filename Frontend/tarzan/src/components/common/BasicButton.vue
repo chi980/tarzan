@@ -18,7 +18,8 @@ export default {
   },
   methods: {
     navigate() {
-      this.$router.push(this.to);
+      // this.$router.push(this.to);
+      this.$router.push({ name: this.to });
     }
   }
 };

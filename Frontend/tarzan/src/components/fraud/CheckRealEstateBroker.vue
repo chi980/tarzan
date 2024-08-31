@@ -1,8 +1,6 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div class="top-bar-back">
-      <p>공인중개소 확인</p>
-    </div>
+    <TopBarBack title="공인중개사 확인" />
     <div class="center-container">
       <form class="input-form">
         <!-- 컴포넌트 화 하기 -->
@@ -81,6 +79,7 @@ import { ref } from "vue";
 import { Option } from "@/data/options";
 import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import TopBarBack from "../common/TopBarBack.vue";
 
 const seoulDistrictOptions: Option[] = [
   { idx: 0, name: "서울시 종로구", value: "JONGNO" },

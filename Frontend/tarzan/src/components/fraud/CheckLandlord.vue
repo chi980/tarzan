@@ -32,6 +32,10 @@
                   3. 대리인 확인절차 거치기
                 </p>
               </div>
+
+              <div class="next-button-container">
+                <BasicButton label="예방하러 가기" to="PreventFakeLandlord"/>
+              </div>
             </div>
           </BasicAccordion>
 
@@ -69,15 +73,19 @@
                   2. 신탁이 맞다면 -> 임대해줄 권한자 확인
                 </p>
               </div>
+
+              <div class="next-button-container">
+                <BasicButton label="예방하러 가기" to="PreventTrustee"/>
+              </div>
             </div>
           </BasicAccordion>
         </div>
       </div>
     </div>
 
-    <div class="next-button-container">
+    <!-- <div class="next-button-container">
       <BasicButton label="예방하러 가기" to="/fraud/homeowner"/>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
