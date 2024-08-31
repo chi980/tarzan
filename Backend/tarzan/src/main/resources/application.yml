@@ -5,13 +5,13 @@ spring:
   session:
     store-type: redis # session 을 redis 로 설정
   redis:
-    host: 43.203.126.22
+    host: 3.35.149.241
     port: 6379
     password: "strawberry_tarzan_8960!"
   datasource:
-    url: jdbc:postgresql://43.203.126.22/tarzan
+    url: jdbc:postgresql://3.35.149.241/tarzan
     username: postgres
-    password: '@strawberry_tarzan_8960!'
+    password: '@tarzan_zxcvbnm123!'
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
