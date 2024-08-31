@@ -21,7 +21,7 @@
           <TagButtonGroup />
         </div>
 
-        <button>후기 작성 완료</button>
+        <button @click="goToNextPage">후기 작성 완료</button>
 
       </div>
     </div>
@@ -33,10 +33,16 @@ import AddressCard from "./AddressCard.vue"
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue"
 
 export default {
+  name: 'CreateReview2',
   components: {
     TopBarBack,
     AddressCard,
     TagButtonGroup,
+  },
+  methods: {
+    goToNextPage() {
+      this.$router.push({ name: 'Review' });
+    }
   },
 }
 </script>

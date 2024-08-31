@@ -57,7 +57,7 @@
           </div>
         </div>
 
-        <button>다음으로</button>
+        <button @click="goToNextPage">다음으로</button>
 
       </div> 
     </div>
@@ -73,6 +73,7 @@ import CustomSelectBox from "../common/CustomSelectBox.vue"
 import StarRating from "./StarRating.vue"
 
 export default {
+  name: 'CreateReview1',
   components: {
     TopBarBack,
     AddressCard,
@@ -88,7 +89,12 @@ export default {
       { idx: 2, name: "전세", value: "yearly" },
       ]
     }
-  }
+  },
+  methods: {
+    goToNextPage() {
+      this.$router.push({ name: 'CreateReview2' });
+    }
+  },
 }
 </script>
 <style scoped lang="scss">
