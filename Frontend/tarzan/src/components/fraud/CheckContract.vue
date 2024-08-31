@@ -1,8 +1,6 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div class="top-bar-back">
-      <p>계약 내용 확인하기</p>
-    </div>
+    <TopBarBack title="계약 내용 확인하기" />
     <div class="center-container">
       <div class="card-wrapper">
         <div class="card-title">
@@ -45,6 +43,7 @@
 
 <script setup lang="ts">
 import CheckIcon from "@/assets/icons/Check/Check.svg";
+import TopBarBack from "../common/TopBarBack.vue";
 </script>
 
 <style lang="scss" scoped>

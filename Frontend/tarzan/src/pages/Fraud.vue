@@ -16,6 +16,7 @@
             class="content-container"
             v-for="content in contents"
             :key="content.idx"
+            @click="navigateToPage(content.idx)"
           >
             <p class="content-title" v-html="content.title"></p>
             <p class="content-description" v-html="content.description"></p>
@@ -32,6 +33,7 @@ import { ref } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
+import { useRouter } from "vue-router";
 
 interface FraudContent {
   idx: number;
@@ -42,7 +44,7 @@ interface FraudContent {
 const contents: FraudContent[] = ref([
   {
     idx: 1,
-    title: "주택 소유자 확인",
+    title: "임대인 확인",
     description: "계약의 상대방이 주택 소유자 본인이 맞는지 확인",
   },
   {
@@ -66,6 +68,23 @@ const contents: FraudContent[] = ref([
     description: "피해를 예방하기 위한 특약사항 작성",
   },
 ]);
+
+const router = useRouter();
+
+const navigateToPage = (idx: number) => {
+  if (idx === 1) {
+    router.push({ name: 'CheckLandlord' });
+  } else if (idx === 2) {
+    router.push({ name: 'CheckRealEstateBroker' });
+  } else if (idx === 3) {
+    router.push({ name: 'CheckValue' });
+  } else if (idx === 4) {
+    router.push({ name: 'CheckContract' });
+  } else {
+    router.push({ name: 'CheckSpecialContract' });
+  }
+};
+
 </script>
 
 <style lang="scss" setup>
