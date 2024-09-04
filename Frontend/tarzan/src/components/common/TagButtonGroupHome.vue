@@ -1,12 +1,12 @@
 <template>
   <div class="tag-button-container">
     <TagButton
-      class="tag=button"
-      v-for="(TagButton, index) in buttons"
+      class="tag-button"
+      v-for="(button, index) in buttons"
       :key="index"
-      :label="TagButton.label"
+      :label="button.label"
       :isActive="selectedButton === index"
-      @click="selectButton(index)"
+      @click="handleClick(index)"
     />
   </div>
 </template>
@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      selectedButton: 0, // 기본으로 첫 번째 버튼 선택
+      selectedButton: 0,
       buttons: [
         { label: '원룸' },
         { label: '오피스텔' },
@@ -31,11 +31,15 @@ export default {
         { label: '버스정류장' },
         { label: '지하철' },
       ]
-    }
+    };
   },
   methods: {
     selectButton(index) {
       this.selectedButton = index;
+      this.$emit('button-clicked', index); // 부모 컴포넌트에 클릭 이벤트 전달
+    },
+    handleClick(index) {
+      this.selectButton(index);
     }
   }
 }

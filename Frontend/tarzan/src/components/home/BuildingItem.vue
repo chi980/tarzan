@@ -3,7 +3,7 @@
     <div class="building-content">
     <div class="building-meta">
       <h3 id="building-title">{{ building.title }}</h3>
-      <p id="building-categoty">{{ building.categoty }}</p>
+      <p id="building-category">{{ building.category }}</p>
       </div>
       <p id="building-content">{{ building.content }}</p>
     </div>
@@ -52,7 +52,7 @@ export default {
   text-overflow: ellipsis;  /* 넘치는 텍스트를 말줄임표로 표시 */
 }
 
-#building-categoty {
+#building-category {
   font-size: 12px;
   color: #9F9F9F;
   white-space: nowrap;  /* 텍스트를 한 줄로 유지 */
