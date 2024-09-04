@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       buildings: [
-        { id: 1, title: 'CNP차앤박피부과도곡양재점', categoty:'종합병원', content: '서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)'},
+        { id: 1, title: 'CNP차앤박피부과도곡양재점', category:'종합병원', content: '서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)'},
       ],
       startY: 0,
       translateY: 0,

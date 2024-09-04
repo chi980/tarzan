@@ -1,13 +1,13 @@
 <template>
   <div class="tab-container">
     <div class="tab-title">
-    <TopBarBack title="검색하기" />
+    <TopBarBackHome title="검색하기" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import TopBarBack from "@/components/common/TopBarBack.vue"
+import TopBarBackHome from "@/components/common/TopBarBackHome.vue"
 
 
 </script>
