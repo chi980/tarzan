@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      selectedButton: 0,
+      selectedButton: null, // 아무 버튼도 눌리지 않은 상태로 초기화
       buttons: [
         { label: '원룸' },
         { label: '오피스텔' },
