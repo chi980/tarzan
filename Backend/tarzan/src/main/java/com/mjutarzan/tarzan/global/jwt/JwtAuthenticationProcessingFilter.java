@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.global.jwt;
 
 
 import com.mjutarzan.tarzan.domain.user.entity.User;
+import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Set;
 
 /**
  * Jwt 인증 필터
@@ -49,7 +52,8 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-    private static final String NO_CHECK_URL = "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
+//    private static final String NO_CHECK_URL= "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
+    private static final Set<String> NO_CHECK_URLS = Set.of("/login", "/oauth2/authorization");
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -58,12 +62,21 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (request.getRequestURI().equals(NO_CHECK_URL)) {
-            filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
-            return; // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
-        }
+        log.info("doFilterInternal in JwtAuthenticationProcessingFilter: {}", request.getRequestURI());
 
-        // 사용자 요청 헤더에서 RefreshToken 추출
+//        if (request.getRequestURI().equals(NO_CHECK_URL)) {
+//
+//            filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
+//            return; // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
+//        }
+        boolean skipFilter = NO_CHECK_URLS.stream().anyMatch(request.getRequestURI()::startsWith);
+
+        if (skipFilter) {
+            filterChain.doFilter(request, response); // 필터를 통과시킴
+            return;
+        }
+        log.info("JwtAuthenticationProcessingFilter");
+
         // -> RefreshToken이 없거나 유효하지 않다면(DB에 저장된 RefreshToken과 다르다면) null을 반환
         // 사용자의 요청 헤더에 RefreshToken이 있는 경우는, AccessToken이 만료되어 요청한 경우밖에 없다.
         // 따라서, 위의 경우를 제외하면 추출한 refreshToken은 모두 null
@@ -85,6 +98,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         if (refreshToken == null) {
             checkAccessTokenAndAuthentication(request, response, filterChain);
         }
+
+
     }
 
     /**
@@ -126,12 +141,28 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
         log.info("checkAccessTokenAndAuthentication() 호출");
+
+        boolean isAccessTokenValid = jwtService.extractAccessToken(request)
+                .filter(jwtService::isTokenValid)
+                .isPresent();
+
+        if (!isAccessTokenValid) {
+            // 403 상태 코드와 함께 JSON 응답을 작성
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            PrintWriter out = response.getWriter();
+            out.print("{\"error\": \"Access Token is invalid or expired\"}");
+            out.flush();
+            return; // 응답을 보낸 후, 더 이상 다음 필터로 진행하지 않도록 반환
+        }
         jwtService.extractAccessToken(request)
                 .filter(jwtService::isTokenValid)
                 .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
                         .ifPresent(email -> userRepository.findByEmail(email)
                                 .ifPresent(this::saveAuthentication)));
-
+        // AccessToken이 유효한 경우, 다음 필터로 진행
         filterChain.doFilter(request, response);
     }
 
@@ -161,11 +192,18 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .password(password)
                 .roles(myUser.getRole().name())
                 .build();
+//
+//        log.info("user details: {}", userDetailsUser.getUsername());
+//        Authentication authentication =
+//                new UsernamePasswordAuthenticationToken(userDetailsUser, null,
+//                        authoritiesMapper.mapAuthorities(userDetailsUser.getAuthorities()));
 
+        UserDto userDto = UserDto.getInstance(myUser, password);
+        log.info("user dto: {}", userDto);
         Authentication authentication =
-                new UsernamePasswordAuthenticationToken(userDetailsUser, null,
-                        authoritiesMapper.mapAuthorities(userDetailsUser.getAuthorities()));
-
+                new UsernamePasswordAuthenticationToken(userDto, null,
+                        authoritiesMapper.mapAuthorities(userDto.getAuthorities()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
+
 }

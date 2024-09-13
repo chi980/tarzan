@@ -1,22 +1,29 @@
 <template>
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
-    <SearchHouseBar class="search-house-bar" v-if="showOverlay"></SearchHouseBar>
+    <SearchHouseBar
+      class="search-house-bar"
+      v-if="showOverlay"
+    ></SearchHouseBar>
     <div class="center-container">
       <div ref="mapContainer" class="map-container">
         <div class="searchbar" @click="showOverlay = true">
           <div class="input-icon-wrap">
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+            <font-awesome-icon
+              :icon="['fas', 'magnifying-glass']"
+              class="icon-search"
+            />
             <input
-              v-model="searchQuery" 
+              v-model="searchQuery"
               type="text"
-              placeholder="찾고 싶은 집주소를 입력해주세요."/>
+              placeholder="찾고 싶은 집주소를 입력해주세요."
+            />
           </div>
         </div>
         <div class="tag-button-container">
           <TagButtonGroupHome />
         </div>
-      <BuildingInfo class="building-info"/>
+        <BuildingInfo class="building-info" />
       </div>
     </div>
     <BottomBar class="bottom-bar"></BottomBar>
@@ -24,11 +31,15 @@
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
-          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+          <font-awesome-icon
+            :icon="['fas', 'magnifying-glass']"
+            class="icon-search"
+          />
           <input
-            v-model="searchQuery" 
+            v-model="searchQuery"
             type="text"
-            placeholder="찾고 싶은 집주소를 입력해주세요."/>
+            placeholder="찾고 싶은 집주소를 입력해주세요."
+          />
         </div>
       </div>
       <div class="overlay-content">
@@ -40,7 +51,6 @@
     </div>
   </div>
 </template>
-
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
@@ -72,6 +82,8 @@ const loadKakaoMap = (container) => {
     })
   }
 }
+
+const oneroomlist = [{lat, lonfg...}]
 </script>
 
 <style lang="scss" scoped>
@@ -85,7 +97,7 @@ const loadKakaoMap = (container) => {
   width: 100%;
   z-index: 3; /* Higher than TopBar and overlay */
 }
-.building-info{
+.building-info {
   position: absolute;
   bottom: -650px;
   z-index: 2;
@@ -176,7 +188,9 @@ input {
   top: 60px; /* Position below input-icon-wrap */
   left: 0;
   width: 100%;
-  height: calc(100% - 108px); /* Full height minus input-icon-wrap height and BottomBar height */
+  height: calc(
+    100% - 108px
+  ); /* Full height minus input-icon-wrap height and BottomBar height */
   background-color: white;
   display: flex;
   align-items: flex-start;
@@ -196,7 +210,8 @@ input {
 }
 
 /* 필요 시 특정 요소만 상호작용 가능하게 설정 */
-.searchbar input, .searchbar .icon-search {
+.searchbar input,
+.searchbar .icon-search {
   pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
 }
 </style>

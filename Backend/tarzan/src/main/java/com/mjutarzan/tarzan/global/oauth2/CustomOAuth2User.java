@@ -2,7 +2,9 @@ package com.mjutarzan.tarzan.global.oauth2;
 
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 import java.util.Collection;
@@ -12,7 +14,8 @@ import java.util.Map;
  * DefaultOAuth2User를 상속하고, email과 role 필드를 추가로 가진다.
  */
 @Getter
-public class CustomOAuth2User extends DefaultOAuth2User {
+@ToString(of = {"email", "role"})
+public class CustomOAuth2User extends DefaultOAuth2User implements UserDetails {
 
     private String email;
     private Role role;
@@ -31,5 +34,35 @@ public class CustomOAuth2User extends DefaultOAuth2User {
         super(authorities, attributes, nameAttributeKey);
         this.email = email;
         this.role = role;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return super.getName();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

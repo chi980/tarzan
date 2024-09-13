@@ -12,6 +12,7 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "users") // h2는 user가 키워드이므로 이름 지정
+@ToString(of = {"id", "nickname", "role", "socialId","socialType"})
 public class User {
 
     @Id
@@ -94,4 +95,5 @@ public class User {
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
     }
+
 }
