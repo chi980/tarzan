@@ -39,6 +39,7 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
                 log.info("현재 사용자는 GUEST입니당");
                 String redirectUrl = "http://localhost:5173/login-processing?access_token=" + accessToken + "&refresh_token=";
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
+                log.info("redireciont 하자: {}", redirectUrl);
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.sendRedirect(redirectUrl);
             } else {

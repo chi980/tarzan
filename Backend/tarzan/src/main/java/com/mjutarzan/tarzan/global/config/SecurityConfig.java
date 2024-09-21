@@ -13,7 +13,6 @@ import com.mjutarzan.tarzan.global.oauth2.handler.OAuth2LoginFailureHandler;
 import com.mjutarzan.tarzan.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.mjutarzan.tarzan.global.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +24,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -59,7 +57,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/error").permitAll()
-                        .requestMatchers("/sign-up").permitAll()
+                        .requestMatchers("/sign-up", "/api/v1/board/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -79,6 +77,7 @@ public class SecurityConfig {
 //        http.addFilterBefore(jwtExceptionFilter(), JwtAuthenticationProcessingFilter.class);
 //        http.addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
+
 
         return http.build();
     }

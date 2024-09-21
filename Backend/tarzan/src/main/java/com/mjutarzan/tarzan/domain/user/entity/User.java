@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.user.entity;
 
+import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.domain.user.model.vo.SocialType;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
@@ -7,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.locationtech.jts.geom.Point;
+
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -69,6 +72,10 @@ public class User {
 
     @Column(columnDefinition = "geometry(Point,4326)", name = "user_job_location")
     private Point jobLocation;
+
+    @OneToMany
+    @JoinColumn
+    private List<Board> boardList;
 
     @Builder
     public User(String email, String password, Role role, SocialType socialType, String socialId,
