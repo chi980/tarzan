@@ -1,7 +1,7 @@
 package com.mjutarzan.tarzan.domain.board.api;
 
-import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDTO;
+import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import jakarta.validation.Valid;
@@ -10,10 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -28,8 +25,8 @@ public class BoardApi {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
-                            .success(false)
-                            .message("유효성 검사 오류")
+                    .success(false)
+                    .message("유효성 검사 오류")
                     .build());
         }
 
@@ -41,4 +38,11 @@ public class BoardApi {
                 .build());
     }
 
+    @DeleteMapping("/board/{boardIdx}")
+    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIdx, @AuthenticationPrincipal UserDto userDto) {
+        // 게시글 삭제 로직, 소유자가 일치하지 않으면 예외가 발생
+            boardService.deleteBoard(boardIdx, userDto);
+        // 삭제 성공 시 200 OK 반환
+        return ResponseEntity.ok().build();
+    }
 }
