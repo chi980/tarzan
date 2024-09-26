@@ -1,9 +1,7 @@
 <template>
   <div class="sub-container non-input-sub-container">
     <div style="width: 100%">
-      <div class="top-bar-back">
-        <p>점검하기</p>
-      </div>
+      <TopBarBack title="점검하기" />
     </div>
     <div class="center-container accordion-container">
       <BasicAccordion accordionTitle="수도와 배수">
@@ -76,6 +74,7 @@ import { ref } from "vue";
 import { Check } from "@/data/check";
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
 import CheckListItem from "@/components/common/CheckListItem.vue";
+import TopBarBack from "../common/TopBarBack.vue";
 
 const checkListAboutWater: Check[] = [
   { idx: 1, name: "싱크대/세면대/샤워기 물이 잘 나오는가?", value: false },
