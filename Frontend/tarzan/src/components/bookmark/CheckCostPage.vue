@@ -1,9 +1,7 @@
 <template>
   <div class="sub-container non-input-sub-container">
     <div style="width: 100%">
-      <div class="top-bar-back">
-        <p>추가하기</p>
-      </div>
+      <TopBarBack title="추가하기" />
     </div>
     <div class="center-container left-top-container">
       <form class="input-form">
@@ -114,6 +112,7 @@ import { ref } from "vue";
 
 import { Option } from "@/data/options";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import TopBarBack from "../common/TopBarBack.vue";
 
 // 부모 컴포넌트의 배열 데이터 정의
 const rentalOptions: Option[] = [

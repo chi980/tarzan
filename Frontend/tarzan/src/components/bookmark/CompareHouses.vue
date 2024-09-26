@@ -1,10 +1,6 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div>
-      <div class="top-bar-back">
-        <p>비교하기</p>
-      </div>
-    </div>
+    <TopBarBack title="비교하기" />
     <div class="center-container">
       <div id="compare-container-banner-wrapper">
         <img
@@ -193,6 +189,7 @@ import checkImgSrc from "@/assets/icons/Check/Check.svg";
 import CompareHouse from "@/data/house.ts";
 import ChartDataOption from "@/data/chart.ts";
 import Chart from "@/components/common/RadarChart.vue";
+import TopBarBack from "../common/TopBarBack.vue";
 const housesToCompare: CompareHouse[] = [
   {
     idx: 1,
