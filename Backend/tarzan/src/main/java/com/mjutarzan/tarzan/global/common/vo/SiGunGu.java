@@ -1,5 +1,7 @@
 package com.mjutarzan.tarzan.global.common.vo;
 
+import java.util.Arrays;
+
 public enum SiGunGu {
     JONGNO("종로구"),
     JUNG("중구"),
@@ -28,9 +30,27 @@ public enum SiGunGu {
     SiGunGu(String kor) {
         this.kor = kor;
     }
-
+    public String getName() {
+        return name();
+    }
     public String getKor() {
         return kor;
+    }
+
+    // Static method to convert a String to a SiGunGu enum using streams
+    public static SiGunGu fromName(String name) {
+        return Arrays.stream(SiGunGu.values())
+                .filter(sigungu -> sigungu.name().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No enum constant for the name: " + name));
+    }
+
+    // Static method to convert a Korean name to a SiGunGu enum using streams
+    public static SiGunGu fromKor(String kor) {
+        return Arrays.stream(SiGunGu.values())
+                .filter(sigungu -> sigungu.getKor().equals(kor))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No enum constant for the Korean name: " + kor));
     }
 }
 

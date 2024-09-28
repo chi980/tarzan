@@ -4,18 +4,21 @@ spring:
 
   session:
     store-type: redis # session 을 redis 로 설정
-  redis:
-    host: 3.35.149.241
-    port: 6379
-    password: "strawberry_tarzan_8960!"
+#  redis:
+#    host: 3.35.149.241
+#    port: 6379
+#    password: "strawberry_tarzan_8960!"
   datasource:
-    url: jdbc:postgresql://3.35.149.241/tarzan
+#    url: jdbc:postgresql://3.35.149.241/tarzan
+#    username: postgres
+#    password: '@tarzan_zxcvbnm123!'
+    url: jdbc:postgresql://localhost/tarzan
     username: postgres
-    password: '@tarzan_zxcvbnm123!'
+    password: '1234'
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
     properties:
       hibernate:
@@ -54,10 +57,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-  jwt:
-    secret: f3ea5bb104ef3a66b65f87dacf67411fa982fdd62bc99da583d3cd37102ff435
-    refresh-token-validity-in-seconds: 1209600 # 14일
-    access-token-validity-in-seconds: 43200 # 12시간
 
   batch:
     job:
@@ -70,3 +69,12 @@ spring:
   web:
     resources:
       static-locations: classpath:/static
+jwt:
+  secretKey: f3ea5bb104ef3a66b65f87dacf67411fa982fdd62bc99da583d3cd37102ff435
+  access:
+    expiration: 3600000 # 1시간(60분) (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h))
+    header: Authorization
+
+  refresh:
+    expiration: 1209600000 #  (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h) * 24L(h -> 하루) * 14(2주))
+    header: Authorization-refresh
