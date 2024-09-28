@@ -1,6 +1,6 @@
 package com.mjutarzan.tarzan.domain.board.service;
 
-import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDTO;
+import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
@@ -24,7 +24,7 @@ public class BoardServiceImpl implements BoardService{
     private final UserRepository userRepository;
 
     @Override
-    public void createBoard(BoardRequestDTO boardDto, UserDto loginedUserDto) {
+    public void createBoard(BoardRequestDto boardDto, UserDto loginedUserDto) {
         User loginedUser =  userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
         boardRepository.save(Board.builder()
                         .title(boardDto.getPostTitle())

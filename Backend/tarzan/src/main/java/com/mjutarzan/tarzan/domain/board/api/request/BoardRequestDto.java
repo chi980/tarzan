@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BoardRequestDTO {
+public class BoardRequestDto {
     @JsonProperty("post_title")
     @NotBlank(message = "제목은 필수입니다.")
     @Size(max = 100, message = "제목은 100자 이내여야 합니다.")

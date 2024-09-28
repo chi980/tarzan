@@ -1,6 +1,6 @@
 package com.mjutarzan.tarzan.domain.board.api;
 
-import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDTO;
+import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
@@ -20,8 +20,14 @@ public class BoardApi {
 
     private final BoardService boardService;
 
+    @GetMapping("/board")
+    public ResponseEntity<Object> getBoardList(){
+
+        return ResponseEntity.ok().body("dsf");
+    }
+
     @PostMapping("/board")
-    public ResponseEntity<Object> createBoard(@RequestBody @Valid BoardRequestDTO boardRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto) {
+    public ResponseEntity<Object> createBoard(@RequestBody @Valid BoardRequestDto boardRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto) {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
