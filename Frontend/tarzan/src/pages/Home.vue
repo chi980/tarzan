@@ -21,7 +21,7 @@
           </div>
         </div>
         <div class="tag-button-container">
-          <TagButtonGroupHome />
+          <TagButtonGroupHome @button-clicked="onButtonClicked" />
         </div>
         <BuildingInfo class="building-info" />
       </div>
@@ -45,7 +45,6 @@
       <div class="overlay-content">
         <div class="overlay-body">
           <BuildingList />
-          <button @click="showOverlay = false">닫기</button>
         </div>
       </div>
     </div>
@@ -60,30 +59,118 @@ import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
-import { KakaoMap } from 'vue3-kakao-maps';
-const mapContainer = ref(null)
+
+const mapContainer = ref(null);
 const showOverlay = ref(false);
 const searchQuery = ref("");
+let mapInstance;
+let clusterer; // 클러스터러 인스턴스
+let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
+
+/* 더미 데이터 */
+const roomData = [
+  { id: 1, title: "원룸 A", category: "원룸", content: "서울특별시 중구 세종대로 110", latitude: 37.5665, longitude: 126.9780 },
+  { id: 2, title: "원룸 B", category: "원룸", content: "서울특별시 중구 세종대로 100", latitude: 37.5666, longitude: 126.9781 },
+  { id: 3, title: "원룸 C", category: "원룸", content: "서울특별시 중구 세종대로 90", latitude: 37.5667, longitude: 126.9782 }
+];
+
+const officetelData = [
+  { id: 1, title: "오피스텔 A", category: "오피스텔", content: "서울특별시 중구 소공로 110", latitude: 37.5670, longitude: 126.9790 },
+  { id: 2, title: "오피스텔 B", category: "오피스텔", content: "서울특별시 중구 소공로 100", latitude: 37.5671, longitude: 126.9791 },
+  { id: 3, title: "오피스텔 C", category: "오피스텔", content: "서울특별시 중구 소공로 90", latitude: 37.5672, longitude: 126.9792 },
+  { id: 4, title: "오피스텔 D", category: "오피스텔", content: "서울특별시 중구 소공로 80", latitude: 37.5673, longitude: 126.9793 },
+  { id: 5, title: "오피스텔 E", category: "오피스텔", content: "서울특별시 중구 소공로 70", latitude: 37.5674, longitude: 126.9794 },
+
+  { id: 6, title: "원룸 A", category: "원룸", content: "서울특별시 중구 세종대로 110", latitude: 37.5665, longitude: 126.9780 },
+  { id: 7, title: "원룸 B", category: "원룸", content: "서울특별시 중구 세종대로 100", latitude: 37.5666, longitude: 126.9781 },
+  { id: 8, title: "원룸 C", category: "원룸", content: "서울특별시 중구 세종대로 90", latitude: 37.5667, longitude: 126.9782 }
+];
+
+const apartmentData = [
+  { id: 1, title: "아파트 A", category: "아파트", content: "서울특별시 종로구 종로 10", latitude: 37.5700, longitude: 126.9760 },
+  { id: 2, title: "아파트 B", category: "아파트", content: "서울특별시 종로구 종로 20", latitude: 37.5710, longitude: 126.9770 }
+];
+
+const hospitalData = [
+  { id: 1, title: "병원 A", category: "병원", content: "서울특별시 종로구 종로 30", latitude: 37.5720, longitude: 126.9780 },
+  { id: 2, title: "병원 B", category: "병원", content: "서울특별시 종로구 종로 40", latitude: 37.5730, longitude: 126.9790 }
+];
+
 onMounted(() => {
-  loadKakaoMap(mapContainer.value)
-})
+  loadKakaoMap(mapContainer.value);
+});
+
 const loadKakaoMap = (container) => {
-  const script = document.createElement('script')
-  script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false`
-  document.head.appendChild(script)
+  const script = document.createElement('script');
+  script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer';
+  document.head.appendChild(script);
+
   script.onload = () => {
     window.kakao.maps.load(() => {
       const options = {
-        center: new window.kakao.maps.LatLng(37.566535, 126.9779692), // 지도 중심 좌표
-        level: 3, // 지도 확대 레벨
-        maxLevel: 10, // 지도 축소 제한 레벨
-      }
-      const mapInstance = new window.kakao.maps.Map(container, options) // 지도 생성
-    })
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+        level: 5,
+        maxLevel: 10,
+      };
+      mapInstance = new window.kakao.maps.Map(container, options);
+
+      clusterer = new window.kakao.maps.MarkerClusterer({
+        map: mapInstance,
+        averageCenter: true,
+        minLevel: 3, // 클러스터를 생성하는 최소 레벨
+      });
+    });
+  };
+};
+
+const clearMarkers = () => {
+  clusterer.clear(); // 클러스터러에서 마커 제거
+};
+
+const addMarkers = (data) => {
+  clearMarkers(); // 새로운 마커를 추가하기 전에 기존 마커를 제거
+
+  const markers = data.map(item => {
+    const markerPosition = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+    return new window.kakao.maps.Marker({
+      position: markerPosition,
+    });
+  });
+  clusterer.addMarkers(markers); // 마커를 클러스터러에 추가
+};
+
+const filterDataByBounds = (data) => {
+  const bounds = mapInstance.getBounds(); // 현재 지도 범위를 가져옴
+  const filteredData = data.filter(item => {
+    const position = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+    return bounds.contain(position); // 현재 범위 내에 있는 데이터를 필터링
+  });
+  return filteredData;
+};
+
+const showInitialMarkers = (data) => {
+  if (!isMarkersInitialized) {
+    const visibleData = filterDataByBounds(data);
+    addMarkers(visibleData);
+    isMarkersInitialized = true; // 마커가 초기화되었음을 표시
   }
 }
 
 const oneroomlist = [{lat, lonfg...}]
+
+const onButtonClicked = (index) => {
+  isMarkersInitialized = false; // 버튼 클릭 시 마커 초기화 상태를 리셋
+
+  if (index === 0) { // '원룸' 버튼 클릭 시
+    showInitialMarkers(roomData); // 한 번만 마커를 표시
+  } else if (index === 1) { // '오피스텔' 버튼 클릭 시
+    showInitialMarkers(officetelData); // 한 번만 마커를 표시
+  } else if (index === 2) { // '아파트' 버튼 클릭 시
+    addMarkers(apartmentData);
+  } else if (index === 3) { // '병원' 버튼 클릭 시
+    addMarkers(hospitalData);
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -174,6 +261,7 @@ input {
   margin-top: 25px;
   z-index: 2;
   width: 100%;
+  height: 22%;
   overflow-x: auto;
   /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
@@ -202,11 +290,6 @@ input {
   border-radius: 5px;
   width: 100%;
   z-index: 1;
-}
-
-/* 지도 위에 위치한 다른 요소들에 대해 pointer-events 설정 */
-.tag-button-container {
-  pointer-events: none; /* 지도와 상호작용하지 않도록 설정 */
 }
 
 /* 필요 시 특정 요소만 상호작용 가능하게 설정 */

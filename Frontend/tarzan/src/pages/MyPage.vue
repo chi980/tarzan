@@ -7,7 +7,7 @@
               <span class="profile-id">abc1234</span>
               <span class="profile-address">서울시 중구 거주중</span>
           </div>
-          <button class="profile-edit-button">수정</button>
+          <button class="profile-edit-button" @click="goToNextPage">수정</button>
       </div>
 
       <div class="my-content">
@@ -58,7 +58,12 @@ export default {
     PostList,
     CommentList,
     ReviewList,
-  }
+  },
+  methods: {
+    goToNextPage() {
+      this.$router.push({ name: 'EditProfile' });
+    }
+  },
 }
 </script>
 <style lang="scss">

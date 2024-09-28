@@ -60,6 +60,7 @@ export default {
 
   #result-number{
     @include custom-text-bold($primary-color-default, 12px);
+    margin: 10px
   }
 
   :deep(.selected-item) {

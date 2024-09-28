@@ -64,26 +64,37 @@ const routes = [
       },
       {
         path: "landlord",
+        name: "CheckLandlord",
         component: () => import("@/components/fraud/CheckLandlord.vue"),
       },
       {
-        path: "homeowner",
-        component: () => import("@/components/fraud/CheckHouseOwner.vue"),
+        path: "fakeLandlord",
+        name: "PreventFakeLandlord",
+        component: () => import("@/components/fraud/PreventFakeLandlord.vue"),
+      },
+      {
+        path: "trustee",
+        name: "PreventTrustee",
+        component: () => import("@/components/fraud/PreventTrustee.vue"),
       },
       {
         path: "contract",
+        name: "CheckContract",
         component: () => import("@/components/fraud/CheckContract.vue"),
       },
       {
         path: "special-contract",
+        name: "CheckSpecialContract",
         component: () => import("@/components/fraud/CheckSpecialContract.vue"),
       },
       {
         path: "real-estate",
+        name: "CheckRealEstateBroker",
         component: () => import("@/components/fraud/CheckRealEstateBroker.vue"),
       },
       {
         path: "value-check",
+        name: "CheckValue",
         component: () => import("@/components/fraud/CheckValue.vue"),
       },
     ],
