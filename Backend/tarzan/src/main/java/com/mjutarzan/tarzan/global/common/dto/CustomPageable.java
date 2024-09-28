@@ -11,9 +11,9 @@ import org.springframework.data.domain.Sort;
 @ToString
 public class CustomPageable implements Pageable {
 
-    private final int page;
-    private final int size;
-    private final Sort sort;
+    private int page;
+    private int size;
+    private Sort sort;
 
     public CustomPageable(int page, int size, Sort sort) {
         this.page = page;

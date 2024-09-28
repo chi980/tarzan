@@ -12,7 +12,7 @@ public enum BoardTag {
 
     private final String kor;
 
-    public static BoardTag ofKor(String kor) {
+    public static BoardTag fromKor(String kor) {
         return Arrays.stream(BoardTag.values())
                 .filter(tag -> tag.getKor().equals(kor))
                 .findFirst()

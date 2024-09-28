@@ -3,6 +3,7 @@ package com.mjutarzan.tarzan.domain.board.entity;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
+import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,18 +37,23 @@ public class Board extends CommonEntity {
     private BoardTag tag;
 
     @Column(name = "board_read_count")
-    @ColumnDefault("0L")
+    @ColumnDefault("0")
     private Long readCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "board_gu")
+    private SiGunGu gu;
 
     @ManyToOne
     @JoinColumn(name = "board_writer")
     private User writer;
     @Builder
-    public Board(String title, String content, BoardTag tag, Long readCount, User writer) {
+    public Board(String title, String content, BoardTag tag, Long readCount, SiGunGu gu, User writer) {
         this.title = title;
         this.content = content;
         this.tag = tag;
         this.readCount = readCount;
+        this.gu = gu;
         this.writer = writer;
     }
 

@@ -1,6 +1,8 @@
 package com.mjutarzan.tarzan.domain.board.service;
 
+import com.mjutarzan.tarzan.domain.board.api.request.BoardListRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
+import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
@@ -8,11 +10,17 @@ import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
+import com.mjutarzan.tarzan.global.exception.RequiredParameterMissingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +35,10 @@ public class BoardServiceImpl implements BoardService{
     public void createBoard(BoardRequestDto boardDto, UserDto loginedUserDto) {
         User loginedUser =  userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
         boardRepository.save(Board.builder()
-                        .title(boardDto.getPostTitle())
-                        .content(boardDto.getContent())
-                        .tag(BoardTag.ofKor(boardDto.getPostTag()))
+                        .title(boardDto.getBoardTitle())
+                        .content(boardDto.getBoardContent())
+                        .tag(BoardTag.fromKor(boardDto.getBoardTag()))
+                        .gu(boardDto.getGu())
                         .writer(loginedUser)
                 .build());
     }
@@ -45,5 +54,19 @@ public class BoardServiceImpl implements BoardService{
         }
 
         boardRepository.deleteById(boardIdx);
+    }
+
+    @Override
+    public List<BoardListResponseDto> getBoards(BoardListRequestDto boardDto) {
+        Pageable pageable = PageRequest.of(boardDto.getPage(), boardDto.getPageSize(), boardDto.getSort());
+
+        if(boardDto.getGu() != null){
+            return boardRepository.findByGuAndTag(boardDto.getGu(), boardDto.getTag(), pageable)
+                    .stream()
+                    .map(BoardListResponseDto::new)
+                    .collect(Collectors.toList());
+        }else{
+            throw new RequiredParameterMissingException("구를 포함해야 합니다.");
+        }
     }
 }
