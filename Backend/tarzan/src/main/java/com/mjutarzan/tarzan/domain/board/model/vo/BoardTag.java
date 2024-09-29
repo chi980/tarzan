@@ -8,7 +8,7 @@ import java.util.Arrays;
 @Getter
 @RequiredArgsConstructor
 public enum BoardTag {
-    TRANSPORT("교통"), TASTE("맛집"),LIFE("생활팁"),QUESTION("질문"),MEETING("모임"),ETC("기탄");
+    TRANSPORT("교통"), TASTE("맛집"),LIFE("생활팁"),QUESTION("질문"),MEETING("모임"),ETC("기타");
 
     private final String kor;
 

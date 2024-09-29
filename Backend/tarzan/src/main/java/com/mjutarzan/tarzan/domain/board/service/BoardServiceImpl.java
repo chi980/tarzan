@@ -7,6 +7,7 @@ import com.mjutarzan.tarzan.domain.board.api.request.UpdateBoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListItemResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
+import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
@@ -64,7 +65,13 @@ public class BoardServiceImpl implements BoardService {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
         if (requestDto.getGu() != null) {
-            Page<Board> boardPages = boardRepository.findByGuAndTag(requestDto.getGu(), requestDto.getTag(), pageable);
+            Page<Board> boardPages = null;
+            String tag = requestDto.getTag().replace(" ","").toUpperCase();
+            if(tag.equals("ALL")){
+                boardPages = boardRepository.findByGu(requestDto.getGu(), pageable);
+            }else {
+                boardPages = boardRepository.findByGuAndTag(requestDto.getGu(), BoardTag.valueOf(tag), pageable);
+            }
             List<BoardListItemResponseDto> list = boardPages
                     .stream()
                     .map(board -> {

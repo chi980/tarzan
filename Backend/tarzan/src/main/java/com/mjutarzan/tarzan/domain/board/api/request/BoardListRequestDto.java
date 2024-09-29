@@ -1,6 +1,5 @@
 package com.mjutarzan.tarzan.domain.board.api.request;
 
-import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.global.common.dto.CustomPageable;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import lombok.Builder;
@@ -14,11 +13,11 @@ import org.springframework.data.domain.Sort;
 @ToString
 public class BoardListRequestDto extends CustomPageable {
     private SiGunGu gu;
-    private BoardTag tag;
+    private String tag;
     private String sortBy;
 
     @Builder
-    public BoardListRequestDto(int page, int size, String sortBy, SiGunGu gu, BoardTag tag){
+    public BoardListRequestDto(int page, int size, String sortBy, SiGunGu gu, String tag){
         super(page, size, null);
         this.gu = gu;
         this.tag = tag;

@@ -13,5 +13,5 @@ public interface CommentService {
 
     void deleteComment(Long commentIdx, UserDto userDto);
 
-    CommentListResponseDto getComments(CommentListRequestDto commentListRequestDto);
+    CommentListResponseDto getComments(CommentListRequestDto commentListRequestDto, UserDto userDto);
 }

@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.board.api.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import lombok.Builder;
@@ -11,15 +12,25 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class BoardListItemResponseDto {
+    @JsonProperty("board_id")
     private Long id;
+    @JsonProperty("board_title")
     private String title;
+    @JsonProperty("board_content")
     private String content;
+    @JsonProperty("board_tag")
     private BoardTag tag;
+    @JsonProperty("board_read_count")
     private Long readCount;
+    @JsonProperty("board_writer_id")
     private Long writerId;
+    @JsonProperty("board_writer_nickname")
     private String writerNickname;
+    @JsonProperty("board_created_at")
     private LocalDateTime createdAt;
+    @JsonProperty("board_comment_count")
     private long commentCount;
+    @JsonProperty("board_is_writer")
     private boolean isWriter;
 
     @Builder
