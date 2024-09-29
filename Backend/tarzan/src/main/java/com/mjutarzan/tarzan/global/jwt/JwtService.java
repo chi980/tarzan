@@ -115,7 +115,8 @@ public class JwtService {
      */
     public Optional<String> extractAccessToken(HttpServletRequest request) {
         log.info("extractAccessToken in JwtService");
-        log.info("accessHeader"+request.getHeader(accessHeader));
+        log.info("accessHeader: "+request.getHeader(accessHeader));
+
 
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .filter(refreshToken -> refreshToken.startsWith(BEARER))

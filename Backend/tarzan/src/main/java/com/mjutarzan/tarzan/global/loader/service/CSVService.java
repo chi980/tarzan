@@ -1,6 +1,5 @@
 package com.mjutarzan.tarzan.global.loader.service;
 
-import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
 import com.mjutarzan.tarzan.domain.map.entity.amenity.Amenity;
 import com.opencsv.CSVReader;
@@ -70,19 +69,19 @@ public class CSVService {
                     Double longitude = Double.valueOf(line[6]);
                     Point location = geometryFactory.createPoint(new Coordinate(longitude, latitude)); // 일반적으로 (경도, 위도) 순서
 
-                    Amenity amenity1 = Amenity.builder()
-                            .name(name)
-                            .sigungu(sigungu)
-                            .address(address)
-                            .location(location)
-                            .build();
-                    amenity.add(amenity1);
+//                    Amenity amenity1 = Amenity.builder()
+//                            .name(name)
+//                            .sigungu(sigungu)
+//                            .address(address)
+//                            .location(location)
+//                            .build();
+//                    amenity.add(amenity1);
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                     log.warn("CSV 파일의 데이터 형식이 올바르지 않거나 필드가 누락되었습니다. {}", e.getMessage());
                 }
             }
 
-            apiHouseRepository.saveAll(amenity);
+//            apiHouseRepository.saveAll(amenity);
         } catch (Exception e) {
             log.error("CSV 파일 처리 중 오류가 발생했습니다.", e);
             throw e;
