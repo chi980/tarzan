@@ -1,6 +1,14 @@
 package com.mjutarzan.tarzan.domain.user.api;
 
+import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
+import com.mjutarzan.tarzan.domain.board.api.response.CommentListResponseDto;
+import com.mjutarzan.tarzan.domain.board.service.BoardService;
+import com.mjutarzan.tarzan.domain.board.service.CommentService;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.service.UserService;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
@@ -11,10 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -23,6 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserApi {
 
     private final UserService userService;
+    private final BoardService boardService;
+    private final CommentService commentService;
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUser( @AuthenticationPrincipal UserDto userDto){
+        UserResponseDto userResponseDto = userService.getUser(userDto);
+        return ResponseEntity.ok().body(
+                BaseResponseDto.builder()
+                        .success(true)
+                        .message("완료되었습니다.")
+                        .data(userResponseDto)
+                        .build()
+        );
+    }
 
     @PostMapping("/user/check")
     public ResponseEntity<?> checkUnique(@RequestBody(required = true) String nickname, @AuthenticationPrincipal UserDto userDto){
@@ -59,8 +78,44 @@ public class UserApi {
                     .build());
         }
 
+        userService.registerUser(registerUserRequestDto, userDto);
 
+        return ResponseEntity.ok(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .build());
+    }
 
-        return ResponseEntity.ok().build();
+    @PutMapping("/user")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequestDto updateUserRequestDto, @AuthenticationPrincipal UserDto userDto){
+
+        userService.updateUser(updateUserRequestDto, userDto);
+
+        return ResponseEntity.ok(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .build());
+    }
+
+    @GetMapping("/user/board")
+    public ResponseEntity<?> getUserBoards(UserBoardRequestDto userBoardRequestDto, @AuthenticationPrincipal UserDto userDto){
+        BoardListResponseDto result = boardService.getBoards(userBoardRequestDto, userDto);
+
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .data(result)
+                .build());
+    }
+
+    @GetMapping("/user/comments")
+    public ResponseEntity<?> getUserComments(UserCommentRequestDto userCommentRequestDto, @AuthenticationPrincipal UserDto userDto){
+        CommentListResponseDto result = commentService.getComments(userCommentRequestDto, userDto);
+
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .data(result)
+                .build());
     }
 }

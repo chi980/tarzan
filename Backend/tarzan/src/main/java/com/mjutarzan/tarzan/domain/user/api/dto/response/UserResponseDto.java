@@ -1,24 +1,23 @@
-package com.mjutarzan.tarzan.domain.user.api.dto.request;
+package com.mjutarzan.tarzan.domain.user.api.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-public class RegisterUserRequestDto {
+@Getter
+@NoArgsConstructor
+public class UserResponseDto {
+
 
     @JsonProperty("user_image_url")
     private String imageUrl;
 
     @JsonProperty("user_nickname")
-    @NotBlank(message = "닉네임은 필수입니다.")
     private String nickname;
 
     @JsonProperty("user_gu")
-    @NotBlank(message = "시군구는 필수입니다.")
     private SiGunGu gu;
 
     @JsonProperty("user_have_animal")
@@ -35,5 +34,17 @@ public class RegisterUserRequestDto {
 
     @JsonProperty("user_longitude")
     private Double longitude;
+
+    @Builder
+    public UserResponseDto(String imageUrl, String nickname, SiGunGu gu, Boolean haveAnimal,Boolean haveCar, String jobAddress, Double latitude, Double longitude){
+        this.imageUrl = imageUrl;
+        this.nickname = nickname;
+        this.gu = gu;
+        this.haveAnimal = haveAnimal;
+        this.haveCar = haveCar;
+        this.jobAddress = jobAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
 }

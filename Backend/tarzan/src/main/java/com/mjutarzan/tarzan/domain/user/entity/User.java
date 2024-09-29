@@ -3,6 +3,8 @@ package com.mjutarzan.tarzan.domain.user.entity;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.entity.Comment;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.domain.user.model.vo.SocialType;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
@@ -118,13 +120,72 @@ public class User {
         this.commentList.add(comment);
     }
 
-    public void updateUser(RegisterUserRequestDto userRequestDto, Point jobLocation){
-        this.imageUrl = userRequestDto.getImageUrl();;
-        this.nickname = userRequestDto.getNickname();
-        this.gu = userRequestDto.getGu();
-        this.haveAnimal = userRequestDto.isHaveAnimal();
-        this.haveCar = userRequestDto.isHaveCar();
-        this.jobAddress = userRequestDto.getJobAddress();
-        this.jobLocation = jobLocation;
+    public void updateUser(RegisterUserRequestDto requestDto, Point jobLocation) {
+        if (requestDto.getImageUrl() != null && !requestDto.getImageUrl().isEmpty()) {
+            this.imageUrl = requestDto.getImageUrl();
+        }
+
+        if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            this.nickname = requestDto.getNickname();
+        }
+
+        if (requestDto.getGu() != null) {
+            this.gu = requestDto.getGu();
+        }
+
+        this.haveAnimal = requestDto.getHaveAnimal();
+        this.haveCar = requestDto.getHaveCar();
+
+        if (requestDto.getJobAddress() != null && !requestDto.getJobAddress().isEmpty()) {
+            this.jobAddress = requestDto.getJobAddress();
+        }
+
+        // jobLocation도 null 체크
+        if (jobLocation != null) {
+            this.jobLocation = jobLocation;
+        }
+    }
+
+    public void updateUser(UpdateUserRequestDto requestDto, Point jobLocation) {
+        if (requestDto.getImageUrl() != null && !requestDto.getImageUrl().isEmpty()) {
+            this.imageUrl = requestDto.getImageUrl();
+        }
+
+        if (requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            this.nickname = requestDto.getNickname();
+        }
+
+        if (requestDto.getGu() != null) {
+            this.gu = requestDto.getGu();
+        }
+
+        if(requestDto.getHaveAnimal() != null){
+            this.haveAnimal = requestDto.getHaveAnimal();
+        }
+        if(requestDto.getHaveCar() != null){
+            this.haveAnimal = requestDto.getHaveCar();
+        }
+
+        if (requestDto.getJobAddress() != null && !requestDto.getJobAddress().isEmpty()) {
+            this.jobAddress = requestDto.getJobAddress();
+        }
+
+        // jobLocation도 null 체크
+        if (jobLocation != null) {
+            this.jobLocation = jobLocation;
+        }
+    }
+
+    public UserResponseDto getInstance() {
+        return UserResponseDto.builder()
+                .imageUrl(this.imageUrl)
+                .nickname(this.nickname)
+                .gu(this.gu)
+                .haveAnimal(this.haveAnimal)
+                .haveCar(this.haveCar)
+                .jobAddress(this.jobAddress)
+                .latitude(this.jobLocation != null ? this.jobLocation.getY() : null) // 위도
+                .longitude(this.jobLocation != null ? this.jobLocation.getX() : null) // 경도
+                .build();
     }
 }

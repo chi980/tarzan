@@ -9,6 +9,7 @@ import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.entity.Comment;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
 import com.mjutarzan.tarzan.domain.board.repository.CommentRepository;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
@@ -76,6 +77,25 @@ public class CommentServiceImpl implements CommentService{
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
         Page<Comment> commentPage = commentRepository.findByBoard_Id(requestDto.getBoardIdx(), pageable);
+        List<CommentListItemResponseDto> list = commentPage
+                .stream()
+                .map(comment -> {
+                    return new CommentListItemResponseDto(comment, comment.getWriter().getEmail().equals(loginedUserDto.getEmail()));
+                })
+                .collect(Collectors.toList());
+
+        return CommentListResponseDto.builder()
+                .count(commentPage.getTotalElements())
+                .list(list)
+                .build();
+    }
+
+    @Override
+    public CommentListResponseDto getComments(UserCommentRequestDto requestDto, UserDto loginedUserDto) {
+        Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+
+        Page<Comment> commentPage = commentRepository.findByWriter(loginedUser, pageable);
         List<CommentListItemResponseDto> list = commentPage
                 .stream()
                 .map(comment -> {

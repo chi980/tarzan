@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.domain.board.repository;
 
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
+import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -16,4 +17,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query("SELECT b FROM Board b WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Board> findByTitleContaining(@Param("search") String search, Pageable pageable);
 
+    Page<Board> findByWriter(User writer, Pageable pageable);
 }

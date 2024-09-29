@@ -74,4 +74,5 @@ public class UserDto implements UserDetails {
                 .jobAddress(user.getJobAddress())
                 .build();
     }
+
 }

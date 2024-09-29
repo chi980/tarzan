@@ -9,6 +9,7 @@ import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
@@ -87,6 +88,24 @@ public class BoardServiceImpl implements BoardService {
         } else {
             throw new RequiredParameterMissingException("구를 포함해야 합니다.");
         }
+    }
+
+    @Override
+    public BoardListResponseDto getBoards(UserBoardRequestDto requestDto, UserDto loginedUserDto) {
+        Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
+        User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+
+        Page<Board> boardPages = boardRepository.findByWriter(loginedUser, pageable);
+        List<BoardListItemResponseDto> list = boardPages
+                .stream()
+                .map(board -> {
+                    return new BoardListItemResponseDto(board, true);
+                }).collect(Collectors.toList());
+
+        return BoardListResponseDto.builder()
+                .count(boardPages.getTotalElements())
+                .list(list)
+                .build();
     }
 
     @Override
