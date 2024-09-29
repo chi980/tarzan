@@ -2,6 +2,8 @@ package com.mjutarzan.tarzan.domain.board.api;
 
 import com.mjutarzan.tarzan.domain.board.api.request.BoardListRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
+import com.mjutarzan.tarzan.domain.board.api.request.BoardSearchRequestDto;
+import com.mjutarzan.tarzan.domain.board.api.request.UpdateBoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
@@ -14,8 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,13 +25,22 @@ public class BoardApi {
     private final BoardService boardService;
 
     @GetMapping("/board")
-    public ResponseEntity<Object> getBoardList(BoardListRequestDto boardListRequestDto){
-        log.info("response dto: "+boardListRequestDto);
-        List<BoardListResponseDto> boards = boardService.getBoards(boardListRequestDto);
+    public ResponseEntity<Object> getBoards(BoardListRequestDto boardListRequestDto,  @AuthenticationPrincipal UserDto userDto){
+        BoardListResponseDto result = boardService.getBoards(boardListRequestDto, userDto);
+
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                         .success(true)
                         .message("완료되었습니다.")
-                        .data(boards)
+                        .data(result)
+                .build());
+    }
+    @GetMapping("/board/search")
+    public ResponseEntity<Object> searchBoards(BoardSearchRequestDto boardSearchRequestDto,  @AuthenticationPrincipal UserDto userDto){
+        BoardListResponseDto result = boardService.searchBoard(boardSearchRequestDto, userDto);
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .data(result)
                 .build());
     }
 
@@ -51,6 +60,18 @@ public class BoardApi {
                 .success(true)
                 .message("게시물이 성공적으로 등록되었습니다.")
                 .build());
+    }
+
+    @PutMapping("/board/{boardIdx}")
+    public ResponseEntity<Object> updateBoard(@PathVariable Long boardIdx, @RequestBody @Valid UpdateBoardRequestDto updateBoardRequestDto, @AuthenticationPrincipal UserDto userDto){
+
+        boardService.updateBoard(boardIdx, updateBoardRequestDto,userDto);
+
+        return ResponseEntity.ok().body(
+                BaseResponseDto.builder()
+                        .success(true)
+                        .message("게시물이 성공적으로 수정되었습니다.")
+                        .build());
     }
 
     @DeleteMapping("/board/{boardIdx}")

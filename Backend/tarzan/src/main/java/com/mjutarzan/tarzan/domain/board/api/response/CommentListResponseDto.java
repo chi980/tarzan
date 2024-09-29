@@ -8,13 +8,12 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class BoardListResponseDto {
-
+public class CommentListResponseDto {
     private Long count;
-    private List<BoardListItemResponseDto> list;
+    private List<CommentListItemResponseDto> list;
 
     @Builder
-    public BoardListResponseDto(Long count, List<BoardListItemResponseDto> list){
+    public CommentListResponseDto(Long count, List<CommentListItemResponseDto> list){
         this.count = count;
         this.list = list;
 

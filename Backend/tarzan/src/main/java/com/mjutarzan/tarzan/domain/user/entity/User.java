@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.domain.user.entity;
 
 import com.mjutarzan.tarzan.domain.board.entity.Board;
+import com.mjutarzan.tarzan.domain.board.entity.Comment;
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.domain.user.model.vo.SocialType;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
@@ -9,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.locationtech.jts.geom.Point;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -75,7 +77,11 @@ public class User {
 
     @OneToMany
     @JoinColumn
-    private List<Board> boardList;
+    private List<Board> boardList = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn
+    private List<Comment> commentList = new ArrayList<>();
 
     @Builder
     public User(String email, String password, Role role, SocialType socialType, String socialId,
@@ -103,4 +109,11 @@ public class User {
         this.refreshToken = updateRefreshToken;
     }
 
+    public void addBoard(Board board) {
+        this.boardList.add(board);
+    }
+
+    public void addComment(Comment comment){
+        this.commentList.add(comment);
+    }
 }

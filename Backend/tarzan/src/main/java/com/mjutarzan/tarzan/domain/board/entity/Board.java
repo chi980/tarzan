@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Getter
@@ -47,6 +50,11 @@ public class Board extends CommonEntity {
     @ManyToOne
     @JoinColumn(name = "board_writer")
     private User writer;
+
+    @OneToMany
+    @JoinColumn
+    private List<Comment> commentList = new ArrayList<>();
+
     @Builder
     public Board(String title, String content, BoardTag tag, Long readCount, SiGunGu gu, User writer) {
         this.title = title;
@@ -55,6 +63,7 @@ public class Board extends CommonEntity {
         this.readCount = readCount;
         this.gu = gu;
         this.writer = writer;
+        this.writer.addBoard(this);
     }
 
     public void update(String title, String content, BoardTag tag){
@@ -63,4 +72,7 @@ public class Board extends CommonEntity {
         this.tag = tag;
     }
 
+    public void addComment(Comment comment){
+        this.commentList.add(comment);
+    }
 }
