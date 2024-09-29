@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.domain.user.entity;
 
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.entity.Comment;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.domain.user.model.vo.SocialType;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
@@ -115,5 +116,15 @@ public class User {
 
     public void addComment(Comment comment){
         this.commentList.add(comment);
+    }
+
+    public void updateUser(RegisterUserRequestDto userRequestDto, Point jobLocation){
+        this.imageUrl = userRequestDto.getImageUrl();;
+        this.nickname = userRequestDto.getNickname();
+        this.gu = userRequestDto.getGu();
+        this.haveAnimal = userRequestDto.isHaveAnimal();
+        this.haveCar = userRequestDto.isHaveCar();
+        this.jobAddress = userRequestDto.getJobAddress();
+        this.jobLocation = jobLocation;
     }
 }

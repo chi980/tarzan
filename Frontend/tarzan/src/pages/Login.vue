@@ -47,8 +47,9 @@ const clickGoogleBtn = () => {
 
 const clickBtn = () => {
   const token = authStore.accessToken;
+  const role = authStore.role;
   if (token) {
-    alert(token);
+    alert(`token=${token}, role=${role}`);
   } else {
     alert("token 없음");
   }

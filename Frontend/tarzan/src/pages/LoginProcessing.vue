@@ -16,16 +16,24 @@ onMounted(() => {
   const accessToken = urlParams.get("access_token");
   const refreshToken = urlParams.get("refresh_token");
 
+  const role = urlParams.get("role");
+  const gu = urlParams.get("gu");
+  const nickname = urlParams.get("nickname");
+
   if (accessToken && refreshToken) {
     // Pinia 스토어에 토큰 저장
     authStore.setTokens(accessToken, refreshToken);
-    alert(`accessToken=${accessToken}, refreshToken=${refreshToken}`);
+    authStore.setUserInfo(role, gu, nickname);
+    alert(
+      `accessToken=${accessToken}, refreshToken=${refreshToken}, role=${role}, gu=${gu}, nickname=${nickname}`
+    );
     alert(accessToken == refreshToken);
     // 이후 메인 페이지로 리다이렉트
     router.push("/"); // Vue Router를 사용할 때는 router.push 사용
   } else if (accessToken) {
     authStore.setAccessToken(accessToken);
-    alert("첫 로그인 당사자!!" + accessToken);
+    authStore.setRole(role);
+    alert(`첫 로그인, accessToken=${accessToken}, role=${role}`);
     router.push("/signup");
   } else {
     // 토큰이 없을 경우 로그인 실패 처리
