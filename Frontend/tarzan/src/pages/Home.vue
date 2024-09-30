@@ -8,7 +8,7 @@
           <div class="input-icon-wrap">
             <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
             <input
-              v-model="searchQuery" 
+              v-model="searchQuery"
               type="text"
               placeholder="찾고 싶은 집주소를 입력해주세요."/>
           </div>
@@ -24,11 +24,15 @@
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
-          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+          <font-awesome-icon
+            :icon="['fas', 'magnifying-glass']"
+            class="icon-search"
+          />
           <input
-            v-model="searchQuery" 
+            v-model="searchQuery"
             type="text"
-            placeholder="찾고 싶은 집주소를 입력해주세요."/>
+            placeholder="찾고 싶은 집주소를 입력해주세요."
+          />
         </div>
       </div>
       <div class="overlay-content">
@@ -93,7 +97,7 @@ const loadKakaoMap = (container) => {
   const script = document.createElement('script');
   script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer';
   document.head.appendChild(script);
-  
+
   script.onload = () => {
     window.kakao.maps.load(() => {
       const options = {
@@ -159,7 +163,9 @@ const showInitialMarkers = (data) => {
     addMarkers(visibleData);
     isMarkersInitialized = true; // 마커가 초기화되었음을 표시
   }
-};
+}
+
+const oneroomlist = [{lat, lonfg...}]
 
 const onButtonClicked = (index) => {
   isMarkersInitialized = false; // 버튼 클릭 시 마커 초기화 상태를 리셋
@@ -187,7 +193,7 @@ const onButtonClicked = (index) => {
   width: 100%;
   z-index: 3; /* Higher than TopBar and overlay */
 }
-.building-info{
+.building-info {
   position: absolute;
   bottom: -660px;
   z-index: 2;

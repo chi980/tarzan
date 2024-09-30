@@ -1,8 +1,6 @@
 // src/router/index.js
 import { useAuthStore } from "@/stores/authStore.js";
 import { createRouter, createWebHistory } from "vue-router";
-// import axios from "axios";
-import { createApiInstance } from "@/axios/axiosInstance.js";
 
 const routes = [
   {
@@ -183,7 +181,6 @@ const routes = [
     ],
   },
 
-
   {
     path: "/auth",
     // component: AuthLayout, // auth 레이아웃을 사용할 수도 있습니다.
@@ -208,34 +205,34 @@ const router = createRouter({
     return { top: 0 };
   },
 });
-
 router.beforeEach((to, from, next) => {
-  const authRequired = to.meta.requiresAuth;
+  const authStore = useAuthStore();
 
-  // 인증이 필요한 페이지이고, 사용자가 로그인되어 있지 않은 경우 로그인 페이지로 리다이렉트
-  if (authRequired && !useAuthStore.isAuthenticated) {
-    if (!useAuthStore.isRefreshToken) {
-      alert("아직 refreshToken이 존재합니다!");
-      const postData = {
-        refreshTokenString: userAuthStore.getAccessToken(),
-      };
-      createApiInstance
-        .post("/api/oauth/token/refresh", postData)
-        .then((res) => {
-          console.log("재발급 성공");
-          console.log(res.data);
-          // 새 토큰을 저장하는 로직
-          // 다음 단계로 이동
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+  // 예외 처리할 경로들
+  const publicPages = ["/login", "/signup", "/login-processing"];
 
-    alert("로그인이 필요합니다!");
-    next("/");
+  // 현재 경로가 예외 처리 대상인지 확인
+  const isPublicPage = publicPages.includes(to.path);
+
+  if (isPublicPage) {
+    next(); // 예외 처리 경로라면 통과
   } else {
-    next(); // 그렇지 않으면 다음 단계로 이동
+    // Token 확인 로직
+    if (authStore.accessToken && authStore.refreshToken) {
+      next(); // accessToken과 refreshToken이 모두 있으면 통과
+    } else if (authStore.accessToken && !authStore.refreshToken) {
+      if (to.name !== "SignUp") {
+        next({ name: "SignUp" }); // accessToken만 있고 refreshToken이 없으면 /signup으로 리다이렉트
+      } else {
+        next(); // 이미 /signup 페이지로 가는 경우에는 그대로 진행
+      }
+    } else {
+      if (to.name !== "Login") {
+        next({ name: "Login" }); // 둘 다 없으면 /login으로 리다이렉트
+      } else {
+        next(); // 이미 /login 페이지로 가는 경우에는 그대로 진행
+      }
+    }
   }
 });
 

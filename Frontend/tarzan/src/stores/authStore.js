@@ -1,37 +1,41 @@
 import { defineStore } from "pinia";
-/**
- * @ 1st parameter: name
- * @ 2nd parameter: option related with store
- */
-export const useAuthStore = defineStore("authStore", {
+
+export const useAuthStore = defineStore("auth", {
   state: () => ({
-    accessToken: null,
-    refreshToken: null,
+    accessToken: localStorage.getItem("accessToken") || null,
+    refreshToken: localStorage.getItem("refreshToken") || null,
+    role: null, // 사용자 역할
   }),
-  getters: {
-    isAuthenticated: (state) => !!state.accessToken,
-    isRefreshToken: (state) => !!state.refreshToken,
-    getAccessToken: (state) => {
-      return state.accessToken;
+  actions: {
+    setTokens(accessToken, refreshToken) {
+      setAccessToken(accessToken);
+      if (refreshToken) {
+        setRefreshToken(refreshToken);
+      }
     },
-    getRefreshToken: (state) => {
-      return state.refreshToken;
+    setAccessToken(accessToken) {
+      this.accessToken = accessToken;
+      localStorage.setItem("accessToken", accessToken);
+    },
+    setRefreshToken(refreshToken) {
+      this.refreshToken = refreshToken;
+      localStorage.setItem("refreshToken", refreshToken);
+    },
+    loadTokensFromStorage() {
+      // localStorage에서 JWT를 로드
+      this.accessToken = localStorage.getItem("accessToken");
+      this.refreshToken = localStorage.getItem("refreshToken");
+    },
+    clearAuth() {
+      this.accessToken = null;
+      this.refreshToken = null;
+      this.role = null;
+      // localStorage에서 JWT를 삭제
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
     },
   },
-  // 항상 일반 함수 사용!
-  actions: {
-    setAccessToken(newAccessToken) {
-      console.log(`newAccessToken: ${newAccessToken}`);
-      this.accessToken = newAccessToken;
-    },
-    setRefreshToken(newRefreshToken) {
-      console.log(`newRefreshToken: ${newRefreshToken}`);
-      this.refreshToken = newRefreshToken;
-    },
-    setToken(newAccessToken, newRefreshToken) {
-      console.log(`token 저장 완료`);
-      this.accessToken = newAccessToken;
-      this.refreshToken = newRefreshToken;
-    },
+  getters: {
+    isAuthenticated: (state) => !!state.accessToken,
   },
 });

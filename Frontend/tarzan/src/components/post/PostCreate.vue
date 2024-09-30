@@ -1,8 +1,6 @@
 <template>
   <div class="sub-container">
-    <div class="header">
-      <h3>글쓰기</h3>
-    </div>
+    <TopBarBack title="글쓰기" />
     <div class="input-container">
       <input class="input-item" type="text" placeholder="제목을 입력해주세요"  />
       
@@ -21,10 +19,12 @@
 
 <script>
 import CustomSelectBox from '../common/CustomSelectBox.vue';
+import TopBarBack from '../common/TopBarBack.vue';
 
 export default {
   components: {
     CustomSelectBox,
+    TopBarBack,
   },
   methods: {
     goToBack() {

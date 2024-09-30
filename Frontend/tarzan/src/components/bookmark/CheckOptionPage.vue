@@ -1,9 +1,7 @@
 <template>
   <div class="sub-container non-input-sub-container">
     <div style="width: 100%">
-      <div class="top-bar-back">
-        <p>점검하기</p>
-      </div>
+      <TopBarBack title="점검하기" />
     </div>
     <div class="center-container left-top-container">
       <div class="tag-wrapper">
@@ -80,6 +78,7 @@
 import { ref } from "vue";
 import { Check } from "@/data/check.ts";
 import Tag from "@/components/common/Tag.vue";
+import TopBarBack from "../common/TopBarBack.vue";
 
 const checkItemsInKitchen = ref<Check[]>([
   { name: "식탁", value: false },
