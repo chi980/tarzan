@@ -121,6 +121,8 @@ public class User {
     }
 
     public void updateUser(RegisterUserRequestDto requestDto, Point jobLocation) {
+        this.role = Role.USER;
+
         if (requestDto.getImageUrl() != null && !requestDto.getImageUrl().isEmpty()) {
             this.imageUrl = requestDto.getImageUrl();
         }

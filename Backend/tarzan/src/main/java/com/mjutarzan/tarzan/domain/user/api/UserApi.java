@@ -8,6 +8,7 @@ import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.response.RegisterUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.service.UserService;
@@ -78,11 +79,11 @@ public class UserApi {
                     .build());
         }
 
-        userService.registerUser(registerUserRequestDto, userDto);
-
+        RegisterUserResponseDto result = userService.registerUser(registerUserRequestDto, userDto);
         return ResponseEntity.ok(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")
+                .data(result)
                 .build());
     }
 
