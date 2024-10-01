@@ -117,15 +117,17 @@ const seoulDistrictOptions: Option[] = [
 
 // 부모 컴포넌트의 배열 데이터 정의
 const petOptions: Option[] = [
-  { idx: 1, name: "반려동물 없음", value: "DONTHAVE" },
-  { idx: 2, name: "반려동물 있음", value: "HAVE" },
+  { idx: 1, name: "반려동물 없음", value: false },
+  { idx: 2, name: "반려동물 있음", value: true },
   // { idx: 3, name: "반려동물 고민 중", value: "CONSIDERING" },
   // { idx: 4, name: "기타", value: "ETC" },
 ];
 const carOptions: Option[] = [
-  { idx: 1, name: "차 없음", value: "DONTHAVE" },
-  { idx: 2, name: "차 있음", value: "HAVE" },
+  { idx: 1, name: "차 없음", value: false },
+  { idx: 2, name: "차 있음", value: true },
 ];
+
+// refreshToken을 받아와서 설정, role 역시 변경
 </script>
 
 <style lang="scss" scoped>

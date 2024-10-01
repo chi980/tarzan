@@ -220,7 +220,7 @@ router.beforeEach((to, from, next) => {
     // Token 확인 로직
     if (authStore.accessToken && authStore.refreshToken) {
       next(); // accessToken과 refreshToken이 모두 있으면 통과
-    } else if (authStore.accessToken && !authStore.refreshToken) {
+    } else if (authStore.accessToken && authStore.role == "GUEST") {
       if (to.name !== "SignUp") {
         next({ name: "SignUp" }); // accessToken만 있고 refreshToken이 없으면 /signup으로 리다이렉트
       } else {

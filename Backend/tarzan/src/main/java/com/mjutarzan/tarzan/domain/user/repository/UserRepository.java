@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-
+//    login 사용 시작
     Optional<User> findByEmail(String email);
 
     Optional<User> findByNickname(String nickname);
@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     Optional<User> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
+//    login 사용 끝
+
+    boolean existsByNickname(String nickname);
 }

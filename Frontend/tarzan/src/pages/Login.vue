@@ -45,12 +45,21 @@ const clickGoogleBtn = () => {
   location.href = "http://localhost:8080/oauth2/authorization/google";
 };
 
-const clickBtn = () => {
+import { axiosInstance } from "@/plugins/axiosPlugin"; // axios 인스턴스 가져오기
+const clickBtn = async () => {
   const token = authStore.accessToken;
+  const role = authStore.role;
   if (token) {
-    alert(token);
+    alert(`token=${token}, role=${role}`);
   } else {
     alert("token 없음");
+  }
+  alert("api 통신 시작합니다.");
+  try {
+    const response = await axiosInstance.get("/test"); // API 요청
+    console.log(response.data); // 응답 데이터 출력
+  } catch (err) {
+    console.error(err); // 에러 처리
   }
 };
 
@@ -73,7 +82,7 @@ const { proxy } = getCurrentInstance();
 // };
 const checkBack = async () => {
   try {
-    const response = await proxy.$axios.get("/user"); // axiosInstance를 사용하여 API 호출
+    const response = await proxy.$axios.get("/test"); // axiosInstance를 사용하여 API 호출
     console.log(response);
     console.log("ㅇ러말이;");
     console.log(response.data);
