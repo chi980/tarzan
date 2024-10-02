@@ -1,20 +1,6 @@
 package com.mjutarzan.tarzan.domain.test;
 
-import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
 import com.mjutarzan.tarzan.domain.house.service.ApiHouseService;
-import com.mjutarzan.tarzan.domain.map.entity.amenity.CivicCenter;
-import com.mjutarzan.tarzan.domain.map.entity.amenity.Gym;
-import com.mjutarzan.tarzan.domain.map.entity.amenity.Park;
-import com.mjutarzan.tarzan.domain.map.entity.clinic.Hospital;
-import com.mjutarzan.tarzan.domain.map.entity.clinic.MedicalClinic;
-import com.mjutarzan.tarzan.domain.map.entity.clinic.Pharmacy;
-import com.mjutarzan.tarzan.domain.map.entity.security.Cctv;
-import com.mjutarzan.tarzan.domain.map.entity.security.Police;
-import com.mjutarzan.tarzan.domain.map.entity.shopping.ConvenienceStore;
-import com.mjutarzan.tarzan.domain.map.entity.shopping.Mart;
-import com.mjutarzan.tarzan.domain.map.entity.transportation.Bicycle;
-import com.mjutarzan.tarzan.domain.map.entity.transportation.Bus;
-import com.mjutarzan.tarzan.domain.map.entity.transportation.Subway;
 import com.mjutarzan.tarzan.global.common.service.DataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +8,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
 public class MainController {
-    private final DataService csvService;
+    private final DataService dataService;
     private final ApiHouseService apiHouseService;
 
     @GetMapping("/api/data/test")
@@ -41,16 +25,7 @@ public class MainController {
     @ResponseBody
     public String storeHouseList(){
         String filePath = "static/data/house.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-        List<ApiHouse> apiHouseList = csvService.GetEntityListFromStringList(list, ApiHouse.class, 5, 6);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", apiHouseList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", apiHouseList.size());
-
+        dataService.storeHouseList(filePath, 5, 6);
         return "ok";
     }
 
@@ -60,16 +35,7 @@ public class MainController {
     @ResponseBody
     public String storeCivicCenterList(){
         String filePath = "static/data/civic_center.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<CivicCenter> civicCenterList = csvService.GetEntityListFromStringList(list, CivicCenter.class, 4, 5);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", civicCenterList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", civicCenterList.size());
+        dataService.storeCivicCenterList(filePath, 4, 5);
 
         return "ok";
     }
@@ -78,17 +44,7 @@ public class MainController {
     @ResponseBody
     public String storeGymList(){
         String filePath = "static/data/gym.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Gym> gymList = csvService.GetEntityListFromStringList(list, Gym.class, 4, 5);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", gymList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", gymList.size());
-
+        dataService.storeGymList(filePath, 4, 5);
         return "ok";
     }
 
@@ -96,17 +52,7 @@ public class MainController {
     @ResponseBody
     public String storeParkList(){
         String filePath = "static/data/park.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Park> parkList = csvService.GetEntityListFromStringList(list, Park.class, 4, 5);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", parkList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", parkList.size());
-
+        dataService.storeParkList(filePath, 4, 5);
         return "ok";
     }
 
@@ -114,17 +60,7 @@ public class MainController {
     @ResponseBody
     public String storeHospitalList(){
         String filePath = "static/data/hospital.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Hospital> hospitalList = csvService.GetEntityListFromStringList(list, Hospital.class, 3, 4);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", hospitalList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", hospitalList.size());
-
+        dataService.storeHospitalList(filePath, 3, 4);
         return "ok";
     }
 
@@ -132,17 +68,7 @@ public class MainController {
     @ResponseBody
     public String storeMedicalClinicList(){
         String filePath = "static/data/medical_clinic.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<MedicalClinic> medicalClinicList = csvService.GetEntityListFromStringList(list, MedicalClinic.class, 3, 4);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", medicalClinicList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", medicalClinicList.size());
-
+        dataService.storeMedicalClinicList(filePath, 3, 4);
         return "ok";
     }
 
@@ -150,17 +76,7 @@ public class MainController {
     @ResponseBody
     public String storePharmacyList(){
         String filePath = "static/data/pharmacy.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Pharmacy> pharmacyList = csvService.GetEntityListFromStringList(list, Pharmacy.class, 3, 4);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", pharmacyList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", pharmacyList.size());
-
+        dataService.storePharmacyList(filePath, 3, 4);
         return "ok";
     }
 
@@ -168,17 +84,7 @@ public class MainController {
     @ResponseBody
     public String storeCctvList(){
         String filePath = "static/data/cctv.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Cctv> cctvList = csvService.GetEntityListFromStringList(list, Cctv.class, 2, 3);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", cctvList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", cctvList.size());
-
+        dataService.storeCctvList(filePath, 2, 3);
         return "ok";
     }
 
@@ -186,17 +92,7 @@ public class MainController {
     @ResponseBody
     public String storePoliceList(){
         String filePath = "static/data/police.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Police> policeList = csvService.GetEntityListFromStringList(list, Police.class, 6, 7);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", policeList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", policeList.size());
-
+        dataService.storePoliceList(filePath, 6, 7);
         return "ok";
     }
 
@@ -204,51 +100,21 @@ public class MainController {
     @ResponseBody
     public String storeConvenienceStoreList(){
         String filePath = "static/data/convenience_store.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<ConvenienceStore> convenienceStoreList = csvService.GetEntityListFromStringList(list, ConvenienceStore.class, 13, 14);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", convenienceStoreList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", convenienceStoreList.size());
-
+        dataService.storeConvenienceStoreList(filePath, 13, 14);
         return "ok";
     }
     @GetMapping("/api/data/mart")
     @ResponseBody
     public String storeMartList(){
         String filePath = "static/data/mart.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Mart> martList = csvService.GetEntityListFromStringList(list, Mart.class, 8, 9);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", martList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", martList.size());
-
+        dataService.storeMartList(filePath, 8, 9);
         return "ok";
     }
     @GetMapping("/api/data/subway")
     @ResponseBody
     public String storeSubwayList(){
         String filePath = "static/data/subway.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Subway> subwayList = csvService.GetEntityListFromStringList(list, Subway.class, 5, 6);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", subwayList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", subwayList.size());
-
+        dataService.storeSubwayList(filePath, 5, 6);
         return "ok";
     }
 
@@ -256,17 +122,7 @@ public class MainController {
     @ResponseBody
     public String storeBusList(){
         String filePath = "static/data/bus_stop.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
-
-        List<Bus> busList = csvService.GetEntityListFromStringList(list, Bus.class, 2, 3);
-
-        for (int i=0;i<4;i++){
-            log.info("{}", busList.get(i));
-        }
-
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", busList.size());
-
+        dataService.storeBusList(filePath, 2, 3);
         return "ok";
     }
 //수정 필
@@ -274,17 +130,70 @@ public class MainController {
     @ResponseBody
     public String storeBicycleList(){
         String filePath = "static/data/bicycle.csv";
-        List<String[]> list = csvService.readCsvFile(filePath);
+        dataService.storeBicycleList(filePath, 4, 5);
+        return "ok";
+    }
 
-        List<Bicycle> bicycleList = csvService.GetEntityListFromStringList(list, Bicycle.class, 4, 5);
+    @GetMapping("/api/data/all")
+    @ResponseBody
+    public String storeAllData() {
+        // house data
+        String houseFilePath = "static/data/house.csv";
+        dataService.storeHouseList(houseFilePath, 5, 6);
 
-        for (int i=0;i<4;i++){
-            log.info("{}", bicycleList.get(i));
-        }
+        // civic center data
+        String civicCenterFilePath = "static/data/civic_center.csv";
+        dataService.storeCivicCenterList(civicCenterFilePath, 4, 5);
 
-        log.info("바꾸기전 길이: {}", list.size());
-        log.info("바꾼 후 길이: {}", bicycleList.size());
+        // gym data
+        String gymFilePath = "static/data/gym.csv";
+        dataService.storeGymList(gymFilePath, 4, 5);
+
+        // park data
+        String parkFilePath = "static/data/park.csv";
+        dataService.storeParkList(parkFilePath, 4, 5);
+
+        // hospital data
+        String hospitalFilePath = "static/data/hospital.csv";
+        dataService.storeHospitalList(hospitalFilePath, 3, 4);
+
+        // medical clinic data
+        String medicalClinicFilePath = "static/data/medical_clinic.csv";
+        dataService.storeMedicalClinicList(medicalClinicFilePath, 3, 4);
+
+        // pharmacy data
+        String pharmacyFilePath = "static/data/pharmacy.csv";
+        dataService.storePharmacyList(pharmacyFilePath, 3, 4);
+
+        // cctv data
+        String cctvFilePath = "static/data/cctv.csv";
+        dataService.storeCctvList(cctvFilePath, 2, 3);
+
+        // police data
+        String policeFilePath = "static/data/police.csv";
+        dataService.storePoliceList(policeFilePath, 6, 7);
+
+        // convenience store data
+        String convenienceStoreFilePath = "static/data/convenience_store.csv";
+        dataService.storeConvenienceStoreList(convenienceStoreFilePath, 13, 14);
+
+        // mart data
+        String martFilePath = "static/data/mart.csv";
+        dataService.storeMartList(martFilePath, 8, 9);
+
+        // subway data
+        String subwayFilePath = "static/data/subway.csv";
+        dataService.storeSubwayList(subwayFilePath, 5, 6);
+
+        // bus data
+        String busFilePath = "static/data/bus_stop.csv";
+        dataService.storeBusList(busFilePath, 2, 3);
+
+        // bicycle data
+        String bicycleFilePath = "static/data/bicycle.csv";
+        dataService.storeBicycleList(bicycleFilePath, 4, 5);
 
         return "ok";
     }
+
 }

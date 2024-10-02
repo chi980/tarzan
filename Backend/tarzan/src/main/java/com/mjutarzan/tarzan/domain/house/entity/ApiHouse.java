@@ -34,4 +34,5 @@ public class ApiHouse extends House implements DataInstance {
 
         return this;
     }
+
 }
