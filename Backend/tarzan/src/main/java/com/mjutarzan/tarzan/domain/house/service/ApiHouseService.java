@@ -1,7 +1,9 @@
 package com.mjutarzan.tarzan.domain.house.service;
 
+import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
+
 import java.util.List;
 
 public interface ApiHouseService {
-    void saveApiHouses(List<String[]> list);
+    public void saveApiHouses(List<ApiHouse> apiHouseList);
 }
