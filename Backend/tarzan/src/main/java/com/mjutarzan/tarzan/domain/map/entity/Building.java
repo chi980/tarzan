@@ -1,19 +1,17 @@
 package com.mjutarzan.tarzan.domain.map.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "building_type")
 @Table(name = "building")
+@ToString
 public abstract class Building {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

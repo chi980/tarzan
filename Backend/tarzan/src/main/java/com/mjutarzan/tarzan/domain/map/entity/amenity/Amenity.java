@@ -8,7 +8,7 @@ import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @DiscriminatorValue("amenity")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Amenity extends Building {

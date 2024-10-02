@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.FileReader;
@@ -20,7 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CSVService {
+public class DataService {
+
     private final LocationService locationService;
 
     public List<String[]> readCsvFile(String filePath){
@@ -62,5 +64,9 @@ public class CSVService {
                 })
                 .filter(Objects::nonNull) // null이 아닌 항목만 필터링
                 .collect(Collectors.toList());
+    }
+
+    public <T extends DataInstance> void saveEntityList(List<T> entityList, JpaRepository<T, Long> repository) {
+        repository.saveAll(entityList);
     }
 }

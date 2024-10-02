@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
 @DiscriminatorValue("civic_center")
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class CivicCenter extends Amenity implements DataInstance {
 
     @Enumerated(EnumType.STRING)
