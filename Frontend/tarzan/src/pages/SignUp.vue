@@ -61,21 +61,82 @@
       <div class="input-group">
         <h2 class="input-title">학교/직장 주소</h2>
         <div class="input-content">
-          <input type="text" placeholder="주소를 입력해주세요" />
+          <input
+            type="text"
+            placeholder="주소 또는 건물 이름을 입력해주세요"
+            v-model="searchQuery"
+            @input="searchAddress"
+          />
         </div>
+      
+      <!-- 검색 결과 표시 -->
+        <ul v-if="searchResults.length" class="search-results">
+            <li
+              v-for="(result, index) in searchResults.slice(0, 10)"
+              :key="index"
+              @click="selectAddress(result)"
+              class="search-result-item"
+            >
+            <span class="place-name">{{ result.place_name }}</span><br />
+            <span class="address-name">{{ result.road_address_name || result.address_name }}</span>
+          </li>
+        </ul>
       </div>
     </form>
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref } from "vue";
+import axios from "axios";
+
+// 검색어와 결과를 저장할 상태 변수
+const searchQuery = ref("");  // 사용자가 입력한 검색어
+const searchResults = ref([]); // 검색 결과를 저장하는 배열
+
+// 위도와 경도를 저장할 상태 변수
+const selectedLocation = ref({ latitude: null, longitude: null });
+
 import userImage from "@/assets/signup_user_default_img.png";
 import userInputImage from "@/assets/signup_user_img_input.png";
 
 import { Option } from "@/data/options";
 import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+
+// 카카오 API 키 설정
+const KAKAO_API_KEY = "7975d213af9c016408b981c2fe60f335"; // 여기에 본인의 카카오 REST API 키를 입력하세요.
+
+// 주소 검색 함수
+const searchAddress = async () => {
+  if (!searchQuery.value) {
+    searchResults.value = [];
+    return;
+  }
+
+  try {
+    // 키워드 검색 API 호출
+    const response = await axios.get("https://dapi.kakao.com/v2/local/search/keyword.json", {
+      params: { query: searchQuery.value },
+      headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
+    });
+    searchResults.value = response.data.documents;  // 검색 결과 저장
+  } catch (error) {
+    console.error("주소 검색 중 오류 발생: ", error);
+    searchResults.value = [];
+  }
+};
+
+// 주소 선택 함수
+const selectAddress = (selectedPlace) => {
+  searchQuery.value = `${selectedPlace.place_name} - ${selectedPlace.road_address_name || selectedPlace.address_name}`;
+  searchResults.value = [];  // 검색 결과 목록 초기화
+
+    // 위도와 경도 저장
+  selectedLocation.value.latitude = selectedPlace.y;  // 위도
+  selectedLocation.value.longitude = selectedPlace.x; // 경도
+};
 
 // 반응형 변수 정의
 const userDefaultSrc = ref(userImage);
@@ -231,5 +292,41 @@ const carOptions: Option[] = [
   display: flex;
   flex-direction: column;
   gap: $padding-default;
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px; /* 최대 높이 지정 (5개의 항목) */
+  overflow-y: auto;  /* 스크롤 가능하게 설정 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.search-result-item {
+  padding: 10px 15px; /* 검색 결과 항목의 패딩 */
+  cursor: pointer;
+  border-bottom: 1px solid #f1f1f1; /* 항목 간의 구분선 */
+}
+
+.search-result-item:hover {
+  background-color: #f8f8f8; /* 항목을 hover했을 때 배경색 변경 */
+}
+
+.place-name {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.address-name {
+  font-size: 12px;
+  color: #9F9F9F;
+  width: 100%;
+  text-align: left;
+  padding: 0 15px 5px; /* 좌우 여백 추가 */
 }
 </style>
