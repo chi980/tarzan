@@ -15,7 +15,7 @@ public class MainController {
     private final DataService dataService;
     private final ApiHouseService apiHouseService;
 
-    @GetMapping("/api/data/test")
+    @GetMapping("/api/test")
     @ResponseBody
     public String testApi(){
         return "ok";
