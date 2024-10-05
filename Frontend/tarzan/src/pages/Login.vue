@@ -71,15 +71,6 @@ const clickLogOutBtn = () => {
 
 import { getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance();
-// const checkBack = async () => {
-//   try {
-//     const response = await this.$; // proxy를 통해 $axios 접근
-//     console.log("API 요청 성공!");
-//     console.log(response.data);
-//   } catch (error) {
-//     console.error("API 요청 중 오류가 발생했습니다:", error);
-//   }
-// };
 const checkBack = async () => {
   try {
     const response = await proxy.$axios.get("/test"); // axiosInstance를 사용하여 API 호출

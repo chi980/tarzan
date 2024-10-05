@@ -1,24 +1,71 @@
 pipeline {
     agent any
+
+    environment {
+        BACK_CONTAINER_NAME = "tarzan-back-container"
+        BACK_IMAGE_NAME = "tarzan-back-image"
+    }
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        stage('Check Current Directory') {
+
+        stage('Docker Delete') {
             steps {
                 script {
-                    // 현재 디렉토리 이름 출력
-                    sh 'echo "Current Directory:"'
-                    sh 'pwd'
-                    
-                    // 현재 디렉토리의 파일 및 디렉토리 목록 출력
-                    sh 'echo "Contents of Current Directory:"'
-                    sh 'ls -la'
-                    // 웹훅 확인
+                    try{
+                        sh 'echo "Docker Delete Start"'
+                        sh "docker stop ${BACK_CONTAINER_NAME}"
+                        sh "docker rm -f ${BACK_CONTAINER_NAME}"
+                    }catch (Exception e){
+                        echo "Docker container ${BACK_CONTAINER_NAME} does not exist. skip"
+                    }
+                    try{
+                        // 이미지 존재 시 삭제
+                        sh "docker image rm ${BACK_IMAGE_NAME}"
+                    }catch (Exception e){
+                        echo "Docker image ${BACK_IMAGE_NAME} does not exist. skip"
+                    }
                 }
             }
         }
+
+        stage('Dockerizing'){
+            steps{
+                dir('Backend'){
+                    dir('tarzan'){
+                        sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
+                        
+                        sh "docker images"
+
+                        sh 'echo "images build 성공!"'
+                    }
+                }                
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    dir('Backend') {
+                        dir('tarzan'){
+                            sh 'chmod +x gradlew'
+                            sh './gradlew clean build'
+                            sh 'ls -al ./build'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "docker run --name ${BACK_CONTAINER_NAME} -d -p 8080:8080 ${BACK_IMAGE_NAME}"
+                sh "docker ps"
+            }
+        }
+       
     }
 }
