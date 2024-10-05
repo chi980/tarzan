@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <DropDown :options="userImgInputOptions">
+    <!-- <DropDown :options="userImgInputOptions">
       <template #default="{ toggleDropdown }">
         <div class="custom-container" @click="toggleDropdown">
           <div id="custom-buttom-img">
@@ -13,14 +13,18 @@
           </div>
         </div>
       </template>
-    </DropDown>
-    <form class="input-form">
-      <!-- 컴포넌트 화 하기 -->
+    </DropDown> -->
+    <form class="input-form" @submit.prevent="submitForm">
+      <!-- 닉네임 입력 -->
       <div class="input-group">
         <h2 class="input-title">닉네임</h2>
         <div class="input-content-wrapper">
           <div class="input-content">
-            <input type="text" placeholder="닉네임을 입력해주세요" />
+            <input
+              type="text"
+              placeholder="닉네임을 입력해주세요"
+              v-model="nickname"
+            />
             <div id="check-duplicate-btn"><div>중복확인</div></div>
           </div>
           <div class="input-description">
@@ -35,99 +39,152 @@
           </div>
         </div>
       </div>
-      <!-- component 화 하기 // 들어가야 할것: title, options-->
+
+      <!-- 사는 곳 선택 -->
       <div class="input-group">
         <h2 class="input-title">사는 곳</h2>
-        <!--  select 박스 -->
         <div class="select-content">
-          <CustomSelectBox :options="seoulDistrictOptions" />
-        </div>
-      </div>
-      <div class="input-group">
-        <h2 class="input-title">반려동물 유무</h2>
-        <!--  select 박스 -->
-        <div class="select-content">
-          <CustomSelectBox :options="petOptions" />
-        </div>
-      </div>
-      <div class="input-group">
-        <h2 class="input-title">자차 유무</h2>
-        <!--  select 박스 -->
-        <div class="select-content">
-          <CustomSelectBox :options="carOptions" />
+          <CustomSelectBox
+            :options="seoulDistrictOptions"
+            @update:selected="handleSeoulDistrictSelectedIdx"
+          />
         </div>
       </div>
 
+      <!-- 반려동물 유무 선택 -->
+      <div class="input-group">
+        <h2 class="input-title">반려동물 유무</h2>
+        <div class="select-content">
+          <CustomSelectBox
+            :options="petOptions"
+            @update:selected="handlePetSelectedIdx"
+          />
+        </div>
+      </div>
+
+      <!-- 자차 유무 선택 -->
+      <div class="input-group">
+        <h2 class="input-title">자차 유무</h2>
+        <div class="select-content">
+          <CustomSelectBox
+            :options="carOptions"
+            @update:selected="handleCarSelectedIdx"
+          />
+        </div>
+      </div>
+
+      <!-- 학교/직장 주소 입력 -->
       <div class="input-group">
         <h2 class="input-title">학교/직장 주소</h2>
         <div class="input-content">
-          <input type="text" placeholder="주소를 입력해주세요" />
+          <input
+            type="text"
+            v-model="address"
+            placeholder="주소를 입력해주세요"
+          />
         </div>
       </div>
+      <button type="submit">제출</button>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import userImage from "@/assets/signup_user_default_img.png";
-import userInputImage from "@/assets/signup_user_img_input.png";
+// import userImage from "@/assets/signup_user_default_img.png";
+// import userInputImage from "@/assets/signup_user_img_input.png";
 
 import { Option } from "@/data/options";
-import DropDown from "@/components/common/DropDown.vue";
+// import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 
-// 반응형 변수 정의
-const userDefaultSrc = ref(userImage);
-const userInputSrc = ref(userInputImage);
+import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 
-const userImgInputOptions: Option[] = [
-  { idx: 1, name: "갤러리 보기", value: "galary" },
-  { idx: 2, name: "사진 촬영", value: "picture" },
-];
+// 반응형 변수 정의
+// const userDefaultSrc = ref(userImage);
+// const userInputSrc = ref(userInputImage);
+
+// const userImgInputOptions: Option[] = [
+// { idx: 1, name: "갤러리 보기", value: "galary" },
+// { idx: 2, name: "사진 촬영", value: "picture" },
+// ];
 
 // 부모 컴포넌트의 배열 데이터 정의
-const seoulDistrictOptions: Option[] = [
-  { idx: 1, name: "서울시 종로구", value: "JONGNO" },
-  { idx: 2, name: "서울시 중구", value: "JUNG" },
-  { idx: 3, name: "서울시 용산구", value: "YONGSAN" },
-  { idx: 4, name: "서울시 성동구", value: "SEONGDONG" },
-  { idx: 5, name: "서울시 광진구", value: "GWANGJIN" },
-  { idx: 6, name: "서울시 동대문구", value: "DONGDAEMUN" },
-  { idx: 7, name: "서울시 중랑구", value: "JUNGNANG" },
-  { idx: 8, name: "서울시 성북구", value: "SEONGBUK" },
-  { idx: 9, name: "서울시 강북구", value: "GANGBUK" },
-  { idx: 10, name: "서울시 도봉구", value: "DOBONG" },
-  { idx: 11, name: "서울시 노원구", value: "NOWON" },
-  { idx: 12, name: "서울시 은평구", value: "EUNPYEONG" },
-  { idx: 13, name: "서울시 서대문구", value: "SEODAEMUN" },
-  { idx: 14, name: "서울시 마포구", value: "MAPO" },
-  { idx: 15, name: "서울시 양천구", value: "YANGCHEON" },
-  { idx: 16, name: "서울시 강서구", value: "GANGSEO" },
-  { idx: 17, name: "서울시 구로구", value: "GURO" },
-  { idx: 18, name: "서울시 금천구", value: "GEUMCHEON" },
-  { idx: 19, name: "서울시 영등포구", value: "YEONGDEUNGPO" },
-  { idx: 20, name: "서울시 동작구", value: "DONGJAK" },
-  { idx: 21, name: "서울시 관악구", value: "GWANAK" },
-  { idx: 22, name: "서울시 서초구", value: "SEOCHO" },
-  { idx: 23, name: "서울시 강남구", value: "GANGNAM" },
-  { idx: 24, name: "서울시 송파구", value: "SONGPA" },
-  { idx: 25, name: "서울시 강동구", value: "GANGDONG" },
-];
+const seoulDistrictOptions: Option[] = seoulSiGunGu;
 
 // 부모 컴포넌트의 배열 데이터 정의
 const petOptions: Option[] = [
   { idx: 1, name: "반려동물 없음", value: false },
   { idx: 2, name: "반려동물 있음", value: true },
-  // { idx: 3, name: "반려동물 고민 중", value: "CONSIDERING" },
-  // { idx: 4, name: "기타", value: "ETC" },
 ];
 const carOptions: Option[] = [
   { idx: 1, name: "차 없음", value: false },
   { idx: 2, name: "차 있음", value: true },
 ];
 
+const nickname = ref<string | null>(null);
+
+const selectedSeoulSiGunGuIdx = ref<number | null>(null);
+const handleSeoulDistrictSelectedIdx = (idx: number) => {
+  selectedSeoulSiGunGuIdx.value = idx;
+  console.log("Selected idx:", selectedSeoulSiGunGuIdx.value);
+};
+
+const selectedPetIdx = ref<number | null>(null);
+const handlePetSelectedIdx = (idx: number) => {
+  selectedPetIdx.value = idx;
+  console.log("Selected idx:", selectedPetIdx.value);
+};
+
+const selectedCarIdx = ref<number | null>(null);
+const handleCarSelectedIdx = (idx: number) => {
+  selectedCarIdx.value = idx;
+  console.log("Selected idx:", selectedCarIdx.value);
+};
+
+const address = ref<string | null>(null);
 // refreshToken을 받아와서 설정, role 역시 변경
+
+import { getCurrentInstance } from "vue";
+const { proxy } = getCurrentInstance();
+import { useAuthStore } from "@/stores/authStore";
+const authStore = useAuthStore();
+
+const submitForm = async () => {
+  try {
+    const user_nickname = nickname.value == null ? "d" : nickname.value;
+    const gu =
+      seoulDistrictOptions[
+        selectedSeoulSiGunGuIdx.value == null
+          ? 0
+          : selectedSeoulSiGunGuIdx.value
+      ].value;
+    const formData = {
+      user_image_url: "https://example.com/image.jpg",
+      user_nickname,
+      user_gu: gu,
+      user_have_animal:
+        petOptions[selectedPetIdx.value == null ? 0 : selectedPetIdx.value]
+          .value,
+      user_have_car:
+        carOptions[selectedCarIdx.value == null ? 0 : selectedCarIdx.value]
+          .value,
+      user_job_address: address.value == null ? "d" : address.value,
+      user_latitude: 37.12345,
+      user_longitude: 127.12345,
+    };
+    console.log(formData);
+    // 백엔드 API에 데이터 전송 (여기서는 axios를 사용한다고 가정)
+    const response = await proxy.$axios.post("/v1/user", formData);
+    console.log(response.data); // 성공적으로 전송되었을 때의 응답 처리
+    const refreshToken = response.data.refresh_token;
+    const role = response.data.user_role;
+
+    authStore.registerUser(refreshToken, role, gu, user_nickname);
+  } catch (error) {
+    console.error("Error submitting form:", error);
+  }
+};
 </script>
 
 <style lang="scss" scoped>

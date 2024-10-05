@@ -40,6 +40,12 @@ export const useAuthStore = defineStore("auth", {
       this.nickname = nickname;
       localStorage.setItem("nickname", nickname);
     },
+    registerUser(refreshToken, role, gu, nickname) {
+      this.setRefreshToken(refreshToken);
+      this.setRole(role);
+      this.setGu(gu);
+      this.setNickname(nickname);
+    },
     loadTokensFromStorage() {
       // localStorage에서 JWT를 로드
       this.accessToken = localStorage.getItem("accessToken");
