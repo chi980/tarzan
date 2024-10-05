@@ -12,49 +12,48 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                script {
+                    dir('Backend') {
+                        dir('tarzan') {
+                            sh 'chmod +x gradlew'
+                            sh './gradlew clean build'
+                            sh 'ls -al ./build'
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Docker Delete') {
             steps {
                 script {
-                    try{
+                    try {
                         sh 'echo "Docker Delete Start"'
-                        sh "docker stop ${BACK_CONTAINER_NAME}"
-                        sh "docker rm -f ${BACK_CONTAINER_NAME}"
-                    }catch (Exception e){
+                        sh "docker stop ${BACK_CONTAINER_NAME} || true"
+                        sh "docker rm -f ${BACK_CONTAINER_NAME} || true"
+                    } catch (Exception e) {
                         echo "Docker container ${BACK_CONTAINER_NAME} does not exist. skip"
                     }
-                    try{
+                    try {
                         // 이미지 존재 시 삭제
-                        sh "docker image rm ${BACK_IMAGE_NAME}"
-                    }catch (Exception e){
+                        sh "docker image rm ${BACK_IMAGE_NAME} || true"
+                    } catch (Exception e) {
                         echo "Docker image ${BACK_IMAGE_NAME} does not exist. skip"
                     }
                 }
             }
         }
 
-        stage('Dockerizing'){
-            steps{
-                dir('Backend'){
-                    dir('tarzan'){
-                        sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
-                        
-                        sh "docker images"
-
-                        sh 'echo "images build 성공!"'
-                    }
-                }                
-            }
-        }
-
-        stage('Build') {
+        stage('Dockerizing') {
             steps {
-                script {
-                    dir('Backend') {
-                        dir('tarzan'){
-                            sh 'chmod +x gradlew'
-                            sh './gradlew clean build'
-                            sh 'ls -al ./build'
-                        }
+                dir('Backend') {
+                    dir('tarzan') {
+                        // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
+                        sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
+                        sh "docker images"
+                        sh 'echo "images build 성공!"'
                     }
                 }
             }
@@ -66,6 +65,5 @@ pipeline {
                 sh "docker ps"
             }
         }
-       
     }
 }
