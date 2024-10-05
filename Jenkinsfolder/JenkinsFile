@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Check Current Directory') {
+            steps {
+                script {
+                    // 현재 디렉토리 이름 출력
+                    sh 'echo "Current Directory:"'
+                    sh 'pwd'
+                    
+                    // 현재 디렉토리의 파일 및 디렉토리 목록 출력
+                    sh 'echo "Contents of Current Directory:"'
+                    sh 'ls -la'
+                }
+            }
+        }
+    }
+}
