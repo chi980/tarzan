@@ -208,7 +208,6 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  // 예외 처리할 경로들
   const publicPages = ["/login", "/signup", "/login-processing", "/community"];
 
   // 현재 경로가 예외 처리 대상인지 확인

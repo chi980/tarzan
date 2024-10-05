@@ -130,7 +130,7 @@ const addMarkers = (data) => {
     });
 
     // 마커 클릭 시 해당 데이터를 selectedBuilding에 설정
-    window.kakao.maps.event.addListener(marker, 'click', () => {
+    window.kakao.maps.event.addListener(marker, 'click', (e) => {
       if (item.radarData) {
         selectedBuilding.value = {
           ...item,
@@ -165,7 +165,7 @@ const showInitialMarkers = (data) => {
   }
 }
 
-const oneroomlist = [{lat, lonfg...}]
+// const oneroomlist = [{lat, lonfg...}]
 
 const onButtonClicked = (index) => {
   isMarkersInitialized = false; // 버튼 클릭 시 마커 초기화 상태를 리셋
