@@ -16,6 +16,7 @@ pipeline {
                     // 현재 디렉토리의 파일 및 디렉토리 목록 출력
                     sh 'echo "Contents of Current Directory:"'
                     sh 'ls -la'
+                    // 웹훅 확인
                 }
             }
         }
