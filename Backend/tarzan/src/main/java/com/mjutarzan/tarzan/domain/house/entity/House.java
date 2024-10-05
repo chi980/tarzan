@@ -5,11 +5,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.geolatte.geom.Geometry;
+import lombok.Setter;
 import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn
@@ -36,4 +37,5 @@ public abstract class House extends CommonEntity {
         this.address = address;
         this.location = location;
     }
+
 }
