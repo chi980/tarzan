@@ -86,16 +86,13 @@
                 <thead>
                   <tr>
                     <th></th>
-                    <th
-                      v-for="(house, index) in housesToCompare"
-                      :key="house.idx"
-                    >
+                    <th v-for="house in housesToCompare" :key="house.idx">
                       {{ house.name }}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, index) in costList" :key="row.idx">
+                  <tr v-for="row in costList" :key="row.idx">
                     <td>{{ row.kor }}</td>
                     <td v-for="house in housesToCompare" :key="house.idx">
                       {{ house[row.eng] }}
@@ -118,16 +115,13 @@
                 <thead>
                   <tr>
                     <th></th>
-                    <th
-                      v-for="(house, index) in housesToCompare"
-                      :key="house.idx"
-                    >
+                    <th v-for="house in housesToCompare" :key="house.idx">
                       {{ house.name }}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, index) in checkList" :key="row.idx">
+                  <tr v-for="row in checkList" :key="row.idx">
                     <td v-html="row.kor"></td>
                     <td v-for="house in housesToCompare" :key="house.idx">
                       {{ house[row.eng] }}
@@ -150,16 +144,13 @@
                 <thead>
                   <tr>
                     <th></th>
-                    <th
-                      v-for="(house, index) in housesToCompare"
-                      :key="house.idx"
-                    >
+                    <th v-for="house in housesToCompare" :key="house.idx">
                       {{ house.name }}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(row, index) in optionList" :key="row.idx">
+                  <tr v-for="row in optionList" :key="row.idx">
                     <td v-html="row.kor"></td>
                     <td v-for="house in housesToCompare" :key="house.idx">
                       {{ house[row.eng] }}
@@ -183,11 +174,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
 import emojiSrc from "@/assets/emoji/face-with-monocle.png";
 import checkImgSrc from "@/assets/icons/Check/Check.svg";
-import CompareHouse from "@/data/house.ts";
-import ChartDataOption from "@/data/chart.ts";
+import { CompareHouse } from "@/data/house.ts";
+import { ChartDataOption } from "@/data/chart.ts";
 import Chart from "@/components/common/RadarChart.vue";
 import TopBarBack from "../common/TopBarBack.vue";
 const housesToCompare: CompareHouse[] = [

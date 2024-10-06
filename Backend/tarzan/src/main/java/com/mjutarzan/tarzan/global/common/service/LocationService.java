@@ -15,7 +15,9 @@ public class LocationService {
     }
 
     public Point createPoint(double latitude, double longitude) {
-        Coordinate coordinate = new Coordinate(longitude, latitude); // 위도와 경도를 Coordinate로 생성 (X=경도, Y=위도)
-        return geometryFactory.createPoint(coordinate); // Point 생성
+        Coordinate coordinate = new Coordinate(longitude, latitude);
+        Point point = geometryFactory.createPoint(coordinate);
+        point.setSRID(4326);  // SRID 4326 설정
+        return point;
     }
 }

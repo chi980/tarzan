@@ -70,7 +70,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
 import { Check } from "@/data/check";
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
 import CheckListItem from "@/components/common/CheckListItem.vue";

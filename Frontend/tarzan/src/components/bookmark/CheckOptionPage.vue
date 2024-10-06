@@ -81,40 +81,40 @@ import Tag from "@/components/common/Tag.vue";
 import TopBarBack from "../common/TopBarBack.vue";
 
 const checkItemsInKitchen = ref<Check[]>([
-  { name: "식탁", value: false },
-  { name: "인덕션/가스레인지", value: false },
-  { name: "전자레인지", value: false },
-  { name: "냉장고", value: false },
-  { name: "세탁기", value: false },
-  { name: "싱크대", value: false },
+  { idx: 0, name: "식탁", value: false },
+  { idx: 1, name: "인덕션/가스레인지", value: false },
+  { idx: 2, name: "전자레인지", value: false },
+  { idx: 3, name: "냉장고", value: false },
+  { idx: 4, name: "세탁기", value: false },
+  { idx: 5, name: "싱크대", value: false },
 ]);
 
 const checkItemsInLivingRoom = ref<Check[]>([
-  { name: "TV", value: false },
-  { name: "천장/벽걸이에어컨", value: false },
-  { name: "전자레인지", value: false },
+  { idx: 0, name: "TV", value: false },
+  { idx: 1, name: "천장/벽걸이에어컨", value: false },
+  { idx: 2, name: "전자레인지", value: false },
 ]);
 
 const checkItemsInRoom = ref<Check[]>([
-  { name: "침대", value: false },
-  { name: "옷장/북박이장", value: false },
+  { idx: 0, name: "침대", value: false },
+  { idx: 1, name: "옷장/북박이장", value: false },
 ]);
 
 const checkItemsInBathRoom = ref<Check[]>([
-  { name: "샤워부스", value: false },
-  { name: "비데", value: false },
+  { idx: 0, name: "샤워부스", value: false },
+  { idx: 1, name: "비데", value: false },
 ]);
 const checkItemsInEtc = ref<Check[]>([
-  { name: "경비원/사설경비", value: false },
-  { name: "CCTV", value: false },
-  { name: "무인택배함", value: false },
-  { name: "현관보안", value: false },
-  { name: "인터폰/비디오폰", value: false },
-  { name: "카드키", value: false },
-  { name: "화재경보기", value: false },
-  { name: "베란다", value: false },
-  { name: "엘레베이터", value: false },
-  { name: "WIFI", value: false },
+  { idx: 0, name: "경비원/사설경비", value: false },
+  { idx: 1, name: "CCTV", value: false },
+  { idx: 2, name: "무인택배함", value: false },
+  { idx: 3, name: "현관보안", value: false },
+  { idx: 4, name: "인터폰/비디오폰", value: false },
+  { idx: 5, name: "카드키", value: false },
+  { idx: 6, name: "화재경보기", value: false },
+  { idx: 7, name: "베란다", value: false },
+  { idx: 8, name: "엘레베이터", value: false },
+  { idx: 9, name: "WIFI", value: false },
 ]);
 
 const updateCheckItem = (array: Check[], index: number, updatedItem: Check) => {

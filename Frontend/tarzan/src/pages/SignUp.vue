@@ -203,7 +203,7 @@ const handleCarSelectedIdx = (idx: number) => {
 const address = ref<string | null>(null);
 
 import { getCurrentInstance } from "vue";
-const { proxy } = getCurrentInstance();
+const instance = getCurrentInstance();
 import { useAuthStore } from "@/stores/authStore";
 const authStore = useAuthStore();
 
@@ -227,17 +227,23 @@ const submitForm = async () => {
         carOptions[selectedCarIdx.value == null ? 0 : selectedCarIdx.value]
           .value,
       user_job_address: address.value == null ? "d" : address.value,
-      user_latitude: 37.12345,
-      user_longitude: 127.12345,
+      user_latitude: 37.5665,
+      user_longitude: 126.978,
     };
     console.log(formData);
-    // 백엔드 API에 데이터 전송 (여기서는 axios를 사용한다고 가정)
-    const response = await proxy.$axios.post("/v1/user", formData);
-    console.log(response.data); // 성공적으로 전송되었을 때의 응답 처리
-    const refreshToken = response.data.refresh_token;
-    const role = response.data.user_role;
-
-    authStore.registerUser(refreshToken, role, gu, user_nickname);
+    if (instance && instance.proxy) {
+      const response = await (instance.proxy.$axios as any).post(
+        "/v1/user",
+        formData
+      );
+      // const response = await proxy.$axios.post("/v1/user", formData);
+      console.log(response.data);
+      const refreshToken = response.data.refresh_token;
+      const role = response.data.user_role;
+      authStore.registerUser(refreshToken, role, gu, user_nickname);
+    } else {
+      throw new Error("proxy 객체가 없습니다");
+    }
   } catch (error) {
     console.error("Error submitting form:", error);
   }

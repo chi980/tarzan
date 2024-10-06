@@ -20,7 +20,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TabBar from "@/components/common/TabBar.vue";

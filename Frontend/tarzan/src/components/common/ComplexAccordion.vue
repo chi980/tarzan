@@ -1,7 +1,7 @@
 <template>
   <div class="custom-accordion-item">
     <div class="accordion-header" @click="controllAccordion">
-      <p>{{ accordionTitle }}</p>
+      <p>{{ props.accordionTitle }}</p>
 
       <img
         :src="arrowDownSrc"
@@ -12,7 +12,7 @@
     </div>
     <div class="accordion-contents" v-if="canSeeContent">
       <div
-        v-for="accordionContent in accordionContents"
+        v-for="accordionContent in props.accordionContents"
         :key="accordionContent.idx"
         class="accordion-collapse"
       >
@@ -45,12 +45,11 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from "vue";
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 import starEmoji from "@/assets/emoji/Emoji-Star.png";
-import { CheckList, Check } from "@/data/check";
+import { CheckList } from "@/data/check";
 import CheckListItem from "./CheckListItem.vue";
 
 const props = defineProps({
@@ -64,12 +63,10 @@ const props = defineProps({
   },
 });
 
-console.log(props.accordionContents);
-
 // Emit 정의
-const emits = defineEmits<{
-  toggleAccordion: () => void;
-  toggleSubAccordion: (idx: number) => void;
+const emit = defineEmits<{
+  (event: "toggleAccordion"): void;
+  (event: "toggleSubAccordion", idx: number): void;
 }>();
 
 // 화살표 상태 관리
@@ -81,11 +78,11 @@ const canSeeContent = ref(false);
 const controllAccordion = () => {
   isRotated.value = !isRotated.value;
   canSeeContent.value = !canSeeContent.value;
-  emits("toggleAccordion");
+  emit("toggleAccordion");
 };
 
 const toggleSubAccordion = (idx: number) => {
-  emits("toggleSubAccordion", idx);
+  emit("toggleSubAccordion", idx);
 };
 </script>
 

@@ -1,9 +1,11 @@
 <template>
   <div class="topbar">
-    <img id="back-button"
-         src="@/assets/icons/Filter/back-icon.png" 
-         alt="back-button"
-         @click="goBack">
+    <img
+      id="back-button"
+      src="@/assets/icons/Filter/back-icon.png"
+      alt="back-button"
+      @click="goBack"
+    />
     <div class="title">{{ title }}</div>
     <slot></slot>
   </div>
@@ -11,18 +13,18 @@
 
 <script>
 export default {
-  name: 'Topbar',
+  name: "Topbar",
   props: {
     title: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     goBack() {
       this.$router.go(-1);
     },
-  }
+  },
 };
 </script>
 
