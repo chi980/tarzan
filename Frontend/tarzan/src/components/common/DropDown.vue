@@ -7,7 +7,7 @@
     >
       <ul>
         <li
-          v-for="option in options"
+          v-for="option in props.options"
           :key="option.idx"
           @click="selectOption(option)"
         >

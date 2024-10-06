@@ -101,17 +101,6 @@ const routes = [
   },
 
   {
-    path: "/home2",
-    name: "Home2",
-    component: () => import("@/components/Home2.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/tmp",
-    name: "Tmp",
-    component: () => import("@/pages/Tmp.vue"),
-  },
-  {
     path: "/login-processing",
     name: "LoginProcessing",
     component: () => import("@/pages/LoginProcessing.vue"),

@@ -24,7 +24,7 @@ import {
   Legend,
 } from "chart.js";
 import * as ChartData from "@/data/chart.ts";
-import { ChartColorOptionDefault } from "../../data/chart";
+// import { ChartColorOptionDefault } from "../../data/chart";
 
 // 차트에 필요한 Chart.js 구성 요소 등록
 ChartJS.register(

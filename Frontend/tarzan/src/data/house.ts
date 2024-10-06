@@ -6,6 +6,7 @@ export interface House {
 }
 
 export interface CompareHouse extends House {
+  [key: string]: any; // 모든 string 타입 키에 대해 any 타입 값을 허용
   score: number;
 
   moneyType: string;

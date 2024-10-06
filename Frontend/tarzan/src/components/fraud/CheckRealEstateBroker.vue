@@ -75,9 +75,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, Ref } from "vue";
+
 import { Option } from "@/data/options";
-import DropDown from "@/components/common/DropDown.vue";
+// import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import TopBarBack from "../common/TopBarBack.vue";
 
@@ -116,7 +117,7 @@ const searchOption: Option[] = [
   { idx: 3, name: "상호", value: "name" },
 ];
 
-const resultCnt: number = ref(0);
+const resultCnt: Ref<number> = ref(0);
 </script>
 
 <style lang="scss" scoped>

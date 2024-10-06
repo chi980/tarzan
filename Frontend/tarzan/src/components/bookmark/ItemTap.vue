@@ -40,8 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { Check, CheckList } from "@/data/check";
+import { CheckList } from "@/data/check";
 import {
   homeAppliances,
   fabrics,
@@ -51,17 +50,16 @@ import {
   householdGoods,
 } from "@/data/bookmark/itemTab";
 import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
-import CheckListItem from "@/components/common/CheckListItem.vue";
 
-const toggleAccordion = (contents: CheckList[]) => {
-  contents.value.forEach((controlledCheckList) => {
+const toggleAccordion = (contents: { value: CheckList[] }) => {
+  contents.value.forEach((controlledCheckList: CheckList) => {
     controlledCheckList.canSee = false;
     controlledCheckList.isRotated = false;
   });
 };
 
 const toggleSubAccordion = (contents: CheckList[], idx: number) => {
-  const controlledCheckList = contents.value.find((item) => item.idx === idx);
+  const controlledCheckList = contents.find((item) => item.idx === idx); // contents.values 대신 contents 사용
   if (controlledCheckList) {
     controlledCheckList.canSee = !controlledCheckList.canSee;
     controlledCheckList.isRotated = !controlledCheckList.isRotated;
@@ -72,37 +70,37 @@ const toggleAccordionHomeAppliances = () => {
   toggleAccordion(homeAppliances);
 };
 const toggleSubAccordionHomeAppliances = (idx: number) => {
-  toggleSubAccordion(homeAppliances, idx);
+  toggleSubAccordion(homeAppliances.value, idx);
 };
 const toggleAccordionFabrics = () => {
   toggleAccordion(fabrics);
 };
 const toggleSubAccordionFabrics = (idx: number) => {
-  toggleSubAccordion(fabrics, idx);
+  toggleSubAccordion(fabrics.value, idx);
 };
 const toggleAccordionBathroomSupplies = () => {
   toggleAccordion(bathroomSupplies);
 };
 const toggleSubAccordionBathroomSupplies = (idx: number) => {
-  toggleSubAccordion(bathroomSupplies, idx);
+  toggleSubAccordion(bathroomSupplies.value, idx);
 };
 const toggleAccordionIngredients = () => {
   toggleAccordion(ingredients);
 };
 const toggleSubAccordionIngredients = (idx: number) => {
-  toggleSubAccordion(ingredients, idx);
+  toggleSubAccordion(ingredients.value, idx);
 };
 const toggleAccordionKitchenUtensils = () => {
   toggleAccordion(kitchenUtensils);
 };
 const toggleSubAccordionKitchenUtensils = (idx: number) => {
-  toggleSubAccordion(kitchenUtensils, idx);
+  toggleSubAccordion(kitchenUtensils.value, idx);
 };
 const toggleAccordionHouseholdGoods = () => {
   toggleAccordion(householdGoods);
 };
 const toggleSubAccordionHouseholdGoods = (idx: number) => {
-  toggleSubAccordion(householdGoods, idx);
+  toggleSubAccordion(householdGoods.value, idx);
 };
 </script>
 

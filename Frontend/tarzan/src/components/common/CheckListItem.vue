@@ -1,12 +1,12 @@
 <template>
   <div class="checklist-item">
-    <p>{{ checkListItem.name }}</p>
-    <input type="checkbox" v-model="checkListItem.value" />
+    <p>{{ props.checkListItem.name }}</p>
+    <input type="checkbox" v-model="props.checkListItem.value" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, PropType } from "vue";
+import { defineProps, PropType } from "vue";
 import { Check } from "@/data/check.ts";
 const props = defineProps({
   checkListItem: {
