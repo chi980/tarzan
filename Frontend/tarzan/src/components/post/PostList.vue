@@ -8,7 +8,7 @@
       @click="goToPostDetail(post.id)"/>
     </div>
     <div v-else class="post-items-container">
-      <p>No posts available.</p>
+      <p>게시물이 없습니다.</p>
     </div>
 
     <div class="post-more-container">
