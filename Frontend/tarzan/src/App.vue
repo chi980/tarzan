@@ -15,4 +15,9 @@ div#main-container {
   position: relative;
 }
 </style>
-<script></script>
+
+<script>
+export default {
+  name: "App", // 컴포넌트 이름을 추가
+};
+</script>

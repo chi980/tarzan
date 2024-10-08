@@ -2,7 +2,7 @@
   <div class="non-content">
     <p>
       <i class="bi bi-info-circle"> </i>
-      {{ value }}
+      {{ props.value }}
     </p>
   </div>
 </template>

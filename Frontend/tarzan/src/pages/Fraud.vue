@@ -40,8 +40,7 @@ interface FraudContent {
   title: string;
   description: string;
 }
-
-const contents: FraudContent[] = ref([
+const contents = ref<FraudContent[]>([
   {
     idx: 1,
     title: "임대인 확인",
@@ -73,18 +72,17 @@ const router = useRouter();
 
 const navigateToPage = (idx: number) => {
   if (idx === 1) {
-    router.push({ name: 'CheckLandlord' });
+    router.push({ name: "CheckLandlord" });
   } else if (idx === 2) {
-    router.push({ name: 'CheckRealEstateBroker' });
+    router.push({ name: "CheckRealEstateBroker" });
   } else if (idx === 3) {
-    router.push({ name: 'CheckValue' });
+    router.push({ name: "CheckValue" });
   } else if (idx === 4) {
-    router.push({ name: 'CheckContract' });
+    router.push({ name: "CheckContract" });
   } else {
-    router.push({ name: 'CheckSpecialContract' });
+    router.push({ name: "CheckSpecialContract" });
   }
 };
-
 </script>
 
 <style lang="scss" setup>

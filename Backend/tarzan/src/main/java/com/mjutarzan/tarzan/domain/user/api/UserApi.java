@@ -70,7 +70,8 @@ public class UserApi {
 
     @PostMapping("/user")
     public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserRequestDto registerUserRequestDto, BindingResult bindingResult , @AuthenticationPrincipal UserDto userDto){
-
+        log.info("{}", "registerUser 진입");
+        log.info("{}", registerUserRequestDto.toString());
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
@@ -78,7 +79,6 @@ public class UserApi {
                     .message("유효성 검사 오류")
                     .build());
         }
-
         RegisterUserResponseDto result = userService.registerUser(registerUserRequestDto, userDto);
         return ResponseEntity.ok(BaseResponseDto.builder()
                 .success(true)

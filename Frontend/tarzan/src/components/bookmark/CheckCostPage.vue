@@ -108,8 +108,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from "vue";
-
 import { Option } from "@/data/options";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import TopBarBack from "../common/TopBarBack.vue";

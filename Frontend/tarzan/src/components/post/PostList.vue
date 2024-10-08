@@ -1,11 +1,14 @@
 <template>
   <div class="post-list-container">
-    <div class="post-items-container">
+    <div v-if="posts.length" class="post-items-container">
       <PostItem
       v-for="post in posts"
       :key="post.id"
       :post="post"
       @click="goToPostDetail(post.id)"/>
+    </div>
+    <div v-else class="post-items-container">
+      <p>게시물이 없습니다.</p>
     </div>
 
     <div class="post-more-container">
@@ -27,13 +30,11 @@ export default {
   components: {
     PostItem,
   },
-  data() {
-    return {
-      posts: [
-        { id: 1, tag: '교통', title: 'First Post', content: 'This is the first post.', comments: '3'},
-        { id: 2, tag: '정보', title: '오늘 중구 시청역더플라자호텔 버스정류장  앞에서 사고 났어요!', content: 'This is the second post. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', comments: '5'},
-      ],
-    };
+  props: {
+    posts: {
+      type: Array,
+      required: true
+    }
   },
   methods: {
     goToPostDetail(postId) {

@@ -1,7 +1,7 @@
 <template>
   <div class="custom-accordion-item">
     <div class="accordion-header" @click="controllAccordion">
-      <p>{{ accordionTitle }}</p>
+      <p>{{ props.accordionTitle }}</p>
 
       <img
         :src="arrowDownSrc"
@@ -19,7 +19,6 @@
 <script setup lang="ts">
 import { ref, defineProps } from "vue";
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
-import { Check } from "@/data/check";
 
 const props = defineProps({
   accordionTitle: {

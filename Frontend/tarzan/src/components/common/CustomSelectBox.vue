@@ -30,9 +30,9 @@
         <div class="scrollable-list">
           <ul>
             <li
-              v-for="option in options"
+              v-for="(option, index) in options"
               :key="option.idx"
-              @click="selectOption(option)"
+              @click="selectOption(option, index)"
             >
               {{ option.name }}
             </li>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, defineEmits } from "vue";
 import { Option } from "@/data/options";
 import { SelectStyle } from "@/data/selectStyle";
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
@@ -71,11 +71,17 @@ const props = defineProps({
 
 // 선택된 옵션 상태
 const selectedOption = ref<Option | null>(null);
+const selectedIdx = ref<number | null>(null);
 
 // 팝업 상태 관리
 const isDropDownOpen = ref(false);
 // 화살표 상태 관리
 const isRotated = ref(false);
+
+// emit 정의
+const emit = defineEmits<{
+  (e: "update:selected", idx: number): void;
+}>();
 
 const controllDropDown = () => {
   isDropDownOpen.value = !isDropDownOpen.value;
@@ -86,12 +92,17 @@ const controllDropDown = () => {
 onMounted(() => {
   if (props.options.length > 0) {
     selectedOption.value = props.options[0]; // options 배열의 첫 번째 항목을 선택된 옵션으로 설정
+    selectedIdx.value = 0;
   }
 });
 
 // 옵션 클릭 핸들러
-const selectOption = (option: Option) => {
+
+// 옵션 클릭 핸들러
+const selectOption = (option: Option, index: number) => {
   selectedOption.value = option;
+  selectedIdx.value = index;
+  emit("update:selected", index); // 선택한 옵션의 idx emit
 };
 </script>
 

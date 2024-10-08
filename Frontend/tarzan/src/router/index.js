@@ -101,17 +101,6 @@ const routes = [
   },
 
   {
-    path: "/home2",
-    name: "Home2",
-    component: () => import("@/components/Home2.vue"),
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/tmp",
-    name: "Tmp",
-    component: () => import("@/pages/Tmp.vue"),
-  },
-  {
     path: "/login-processing",
     name: "LoginProcessing",
     component: () => import("@/pages/LoginProcessing.vue"),
@@ -208,8 +197,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  // 예외 처리할 경로들
-  const publicPages = ["/login", "/signup", "/login-processing", "/"];
+  const publicPages = ["/login", "/signup", "/login-processing", "/community"];
 
   // 현재 경로가 예외 처리 대상인지 확인
   const isPublicPage = publicPages.includes(to.path);

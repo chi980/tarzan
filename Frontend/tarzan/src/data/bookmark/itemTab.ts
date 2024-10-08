@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { Check, CheckList } from "@/data/check";
+import { CheckList } from "@/data/check";
 
 export const homeAppliances = ref<CheckList[]>([
   {
@@ -16,6 +16,7 @@ export const homeAppliances = ref<CheckList[]>([
       { idx: 8, name: "세탁기", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
   {
     idx: 2,
@@ -29,6 +30,7 @@ export const homeAppliances = ref<CheckList[]>([
       { idx: 6, name: "전기장판", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
 ]);
 
@@ -45,6 +47,7 @@ export const fabrics = ref<CheckList[]>([
       { idx: 6, name: "매트리스 패드", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
   {
     idx: 2,
@@ -60,6 +63,7 @@ export const fabrics = ref<CheckList[]>([
       { idx: 8, name: "커튼(블라인드)", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
 ]);
 export const bathroomSupplies = ref<CheckList[]>([
@@ -76,6 +80,7 @@ export const bathroomSupplies = ref<CheckList[]>([
       { idx: 7, name: "대야", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
   {
     idx: 2,
@@ -90,6 +95,7 @@ export const bathroomSupplies = ref<CheckList[]>([
       { idx: 7, name: "면봉", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
 ]);
 export const ingredients = ref<CheckList[]>([
@@ -104,6 +110,7 @@ export const ingredients = ref<CheckList[]>([
       { idx: 5, name: "김", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
   {
     idx: 2,
@@ -121,6 +128,7 @@ export const ingredients = ref<CheckList[]>([
       { idx: 10, name: "잼", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
 ]);
 export const kitchenUtensils = ref<CheckList[]>([
@@ -138,6 +146,7 @@ export const kitchenUtensils = ref<CheckList[]>([
       { idx: 8, name: "키친타올, 물티슈", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
   {
     idx: 2,
@@ -160,6 +169,7 @@ export const kitchenUtensils = ref<CheckList[]>([
       { idx: 15, name: "행주, 고무장갑", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
 ]);
 export const householdGoods = ref<CheckList[]>([
@@ -176,6 +186,7 @@ export const householdGoods = ref<CheckList[]>([
       { idx: 7, name: "에프킬라(바퀴벌레, 모기용)", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
   {
     idx: 2,
@@ -197,5 +208,6 @@ export const householdGoods = ref<CheckList[]>([
       { idx: 14, name: "우산", value: false },
     ],
     canSee: false,
+    isRotated: false,
   },
 ]);

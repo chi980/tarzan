@@ -11,10 +11,11 @@ const props = defineProps({
   showChildDiv: Boolean,
 });
 
-const { emit } = defineEmits(["child-div-toggled"]);
+// defineEmits를 호출하여 emit 함수를 직접 사용
+const emit = defineEmits(["child-div-toggled"]);
 
 const toggleChildDiv = () => {
-  alert("child-vid click");
+  alert("child-div click");
   emit("child-div-toggled", !props.showChildDiv);
 };
 </script>

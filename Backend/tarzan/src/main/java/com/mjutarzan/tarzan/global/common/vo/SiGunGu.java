@@ -10,7 +10,7 @@ public enum SiGunGu {
     GWANGJIN("광진구"),
     DONGDAEMUN("동대문구"),
     JUNGNANG("중랑구"),
-    SUNGDONG("성북구"),
+    SEONGBUK("성북구"),
     GANGBUK("강북구"),
     DOBONG("도봉구"),
     NOWON("노원구"),
@@ -23,8 +23,11 @@ public enum SiGunGu {
     YANGCHEON("양천구"),
     GANGNAM("강남구"),
     SONGPA("송파구"),
-    GANGDONG("강동구");
-
+    GANGDONG("강동구"),
+    DONGJAK("동작구"),
+    GWANAK("관악구"),
+    YEONGDEUNGPO("영등포구"),
+    SEOCHO("서초구");
     private final String kor; // 한글 이름
 
     SiGunGu(String kor) {

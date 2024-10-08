@@ -1,12 +1,12 @@
 <template>
   <div
     class="description-container"
-    :style="{ backgroundColor: backgroundColor }"
+    :style="{ backgroundColor: props.backgroundColor }"
   >
-    <img :src="descriptionImgSrc" alt="img" />
+    <img :src="props.descriptionImgSrc" alt="img" />
     <div class="description-content">
-      <p v-html="descriptionTitle"></p>
-      <p v-html="descriptionContent"></p>
+      <p v-html="props.descriptionTitle"></p>
+      <p v-html="props.descriptionContent"></p>
     </div>
   </div>
 </template>
