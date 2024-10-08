@@ -76,7 +76,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { Check } from "@/data/check.ts";
+import { Check } from "@/data/check";
 import Tag from "@/components/common/Tag.vue";
 import TopBarBack from "../common/TopBarBack.vue";
 

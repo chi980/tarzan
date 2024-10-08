@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { defineProps, PropType, defineEmits } from "vue";
-import { Check } from "@/data/check.ts";
+import { Check } from "@/data/check";
 
 const props = defineProps({
   checkItem: {

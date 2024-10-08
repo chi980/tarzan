@@ -45,6 +45,32 @@
 </template>
 
 <script lang="ts" setup>
+/* Global declaration for kakao */
+declare global {
+  interface Window {
+    kakao: {
+      maps: {
+        load: (callback: () => void) => void;
+        Map: new (container: HTMLElement, options: any) => {
+          getBounds: () => {
+            extend: (latLng: kakao.maps.LatLng) => void;
+            contain: (latLng: kakao.maps.LatLng) => boolean;
+          };
+        };
+        LatLng: new (latitude: number, longitude: number) => any;
+        Marker: new (options: { position: kakao.maps.LatLng }) => any;
+        MarkerClusterer: new (options: { map: kakao.maps.Map; averageCenter: boolean; minLevel: number }) => any & {
+          clear: () => void;
+          addMarkers: (markers: any[]) => void;
+        };
+        event: {
+          addListener: (marker: any, event: string, callback: (e: any) => void) => void;
+        };
+      };
+    };
+  }
+}
+
 import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
@@ -53,12 +79,11 @@ import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
-
-const mapContainer = ref(null);
+const mapContainer = ref<HTMLElement | null>(null);
 const showOverlay = ref(false);
 const searchQuery = ref("");
-let mapInstance;
-let clusterer; // 클러스터러 인스턴스
+let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
+let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
 let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
 const selectedBuilding = ref(null); // 선택된 건물 정보를 저장
 
@@ -93,7 +118,7 @@ onMounted(() => {
   loadKakaoMap(mapContainer.value);
 });
 
-const loadKakaoMap = (container) => {
+const loadKakaoMap = (container: HTMLElement | null): void => {
   const script = document.createElement('script');
   script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer';
   document.head.appendChild(script);
@@ -105,36 +130,35 @@ const loadKakaoMap = (container) => {
         level: 4,
         maxLevel: 10,
       };
-      mapInstance = new window.kakao.maps.Map(container, options);
+      mapInstance = new window.kakao.maps.Map(container!, options); // Non-null assertion
 
       clusterer = new window.kakao.maps.MarkerClusterer({
         map: mapInstance,
         averageCenter: true,
-        minLevel: 3, // 클러스터를 생성하는 최소 레벨
+        minLevel: 3,
       });
     });
   };
 };
 
-const clearMarkers = () => {
+const clearMarkers = (): void => {
   clusterer.clear(); // 클러스터러에서 마커 제거
 };
 
-const addMarkers = (data) => {
+const addMarkers = (data: Array<any>): void => { // Specify the type here
   clearMarkers();
 
-  const markers = data.map(item => {
+  const markers = data.map((item: any) => { // Specify the type here
     const markerPosition = new window.kakao.maps.LatLng(item.latitude, item.longitude);
     const marker = new window.kakao.maps.Marker({
       position: markerPosition,
     });
 
-    // 마커 클릭 시 해당 데이터를 selectedBuilding에 설정
-    window.kakao.maps.event.addListener(marker, 'click', (e) => {
+    window.kakao.maps.event.addListener(marker, 'click', () => {
       if (item.radarData) {
         selectedBuilding.value = {
           ...item,
-          radarData: item.radarData,  // radarData를 명시적으로 포함
+          radarData: item.radarData,
         };
       } else {
         console.error("Radar data is missing for this building:", item.name);
@@ -144,30 +168,31 @@ const addMarkers = (data) => {
     return marker;
   });
 
-  clusterer.addMarkers(markers); // 마커를 클러스터러에 추가
+  clusterer.addMarkers(markers);
 };
 
 
-const filterDataByBounds = (data) => {
-  const bounds = mapInstance.getBounds(); // 현재 지도 범위를 가져옴
-  const filteredData = data.filter(item => {
+const filterDataByBounds = (data: Array<any>): Array<any> => { // Specify the type here
+  // @ts-ignore: Ignoring the error for getBounds method
+  const bounds = mapInstance.getBounds(); 
+  const filteredData = data.filter((item: any) => { // Specify the type here
     const position = new window.kakao.maps.LatLng(item.latitude, item.longitude);
-    return bounds.contain(position); // 현재 범위 내에 있는 데이터를 필터링
+    return bounds.contain(position);
   });
   return filteredData;
 };
 
-const showInitialMarkers = (data) => {
+const showInitialMarkers = (data: Array<any>): void => { // Specify the type here
   if (!isMarkersInitialized) {
     const visibleData = filterDataByBounds(data);
     addMarkers(visibleData);
-    isMarkersInitialized = true; // 마커가 초기화되었음을 표시
+    isMarkersInitialized = true; 
   }
 }
 
 // const oneroomlist = [{lat, lonfg...}]
 
-const onButtonClicked = (index) => {
+const onButtonClicked = (index: number): void => { // Specify the type here
   isMarkersInitialized = false; // 버튼 클릭 시 마커 초기화 상태를 리셋
 
   if (index === 0) { // '원룸' 버튼 클릭 시
@@ -180,6 +205,7 @@ const onButtonClicked = (index) => {
     addMarkers(hospitalData);
   }
 };
+
 </script>
 
 <style lang="scss" scoped>

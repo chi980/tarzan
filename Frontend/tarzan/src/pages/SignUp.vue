@@ -113,10 +113,21 @@ import { ref } from "vue";
 
 // 검색어와 결과를 저장할 상태 변수
 const searchQuery = ref(""); // 사용자가 입력한 검색어
-const searchResults = ref([]); // 검색 결과를 저장하는 배열
+interface SearchResult {
+  place_name: string;
+  road_address_name?: string;
+  address_name?: string;
+  x: string; // 경도
+  y: string; // 위도
+}
+
+const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
 
 // 위도와 경도를 저장할 상태 변수
-const selectedLocation = ref({ latitude: null, longitude: null });
+const selectedLocation = ref<{ latitude: string | null; longitude: string | null }>({
+  latitude: null,
+  longitude: null,
+});
 
 import { Option } from "@/data/options";
 // import DropDown from "@/components/common/DropDown.vue";
@@ -150,7 +161,7 @@ const searchAddress = async () => {
 };
 
 // 주소 선택 함수
-const selectAddress = (selectedPlace) => {
+const selectAddress = (selectedPlace: SearchResult) => {
   searchQuery.value = `${selectedPlace.place_name} - ${
     selectedPlace.road_address_name || selectedPlace.address_name
   }`;
@@ -160,6 +171,7 @@ const selectAddress = (selectedPlace) => {
   selectedLocation.value.latitude = selectedPlace.y; // 위도
   selectedLocation.value.longitude = selectedPlace.x; // 경도
 };
+
 // 반응형 변수 정의
 // const userDefaultSrc = ref(userImage);
 // const userInputSrc = ref(userInputImage);
