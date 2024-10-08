@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.security;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.persistence.Column;
@@ -18,13 +19,9 @@ import org.locationtech.jts.geom.Point;
 @ToString(callSuper = true)
 public class Police extends Security implements DataInstance {
 
-    @Column(name = "police_category", nullable = true)
-    private String category;
-
     @Builder(builderMethodName = "policeBuilder")
     public Police(String name, String address, Point location, String phoneNumber, SiGunGu gu, String category){
-        super(name, address, location, phoneNumber, gu);
-        this.category = category;
+        super(name, address, category!=null?category: BuildingType.POLICE.getKor(), location, phoneNumber, gu);
     }
 
     @Override
@@ -33,7 +30,7 @@ public class Police extends Security implements DataInstance {
         String gu = info[5].split(" ")[1].trim();
         super.setGu(SiGunGu.fromKor(gu));
         super.setName(info[2]);
-        this.category = info[3];
+        super.setCategory(info[3]);
         super.setPhoneNumber(info[4]);
         super.setAddress(info[5]);
         super.setLocation(location);

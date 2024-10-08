@@ -18,7 +18,7 @@ public class UserBoardRequestDto extends CustomPageable {
         super(page, size, null);
         this.sortBy = sortBy;
 
-        super.setSort(convertToSort(sortBy));
+        super.setSort(convertToSort(sortBy.trim()));
     }
 
     private Sort convertToSort(String sortBy) {

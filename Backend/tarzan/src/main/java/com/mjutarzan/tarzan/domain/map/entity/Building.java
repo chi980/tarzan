@@ -12,7 +12,7 @@ import org.locationtech.jts.geom.Point;
 @DiscriminatorColumn(name = "building_type")
 @Table(name = "building")
 @ToString
-public abstract class Building {
+public abstract class Building{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "building_id")
@@ -25,15 +25,19 @@ public abstract class Building {
     @Column(name = "building_address", nullable = true)
     private String address;
 
+    @Column(name="building_category", nullable = true)
+    private String category;
+
     @Column(columnDefinition = "geometry(Point,4326)", name = "building_location", nullable = false)
     private Point location;
 
     @Column(name = "building_phone_number", nullable = true)
     private String phoneNumber;
 
-    protected Building(String name, String address, Point location, String phoneNumber){
+    protected Building(String name, String address, String category, Point location, String phoneNumber){
         this.name = name;
         this.address = address;
+        this.category = category;
         this.location = location;
         this.phoneNumber = phoneNumber;
     }

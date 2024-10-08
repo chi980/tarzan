@@ -2,6 +2,8 @@ package com.mjutarzan.tarzan.domain.user.entity;
 
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.entity.Comment;
+import com.mjutarzan.tarzan.domain.house.entity.UserHouse;
+import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
@@ -78,14 +80,17 @@ public class User {
     @Column(columnDefinition = "geometry(Point,4326)", name = "user_job_location")
     private Point jobLocation;
 
-    @OneToMany
-    @JoinColumn
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boardList = new ArrayList<>();
 
-    @OneToMany
-    @JoinColumn
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviewList = new ArrayList<>(); // User가 작성한 Review 리스트
+
+    @OneToMany(mappedBy = "register", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserHouse> userHouseList = new ArrayList<>();
     @Builder
     public User(String email, String password, Role role, SocialType socialType, String socialId,
                 String refreshToken, String imageUrl, String nickname, SiGunGu gu, boolean haveAnimal,
@@ -119,6 +124,13 @@ public class User {
     public void addComment(Comment comment){
         this.commentList.add(comment);
     }
+
+    // Review 추가 메서드
+    public void addReview(Review review) {
+        this.reviewList.add(review);
+    }
+
+    public void addUserHouse(UserHouse userHouse){this.userHouseList.add(userHouse);}
 
     public void updateUser(RegisterUserRequestDto requestDto, Point jobLocation) {
         this.role = Role.USER;

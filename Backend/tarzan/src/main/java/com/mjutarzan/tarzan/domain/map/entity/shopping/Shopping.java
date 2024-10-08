@@ -17,13 +17,10 @@ public class Shopping  extends Building {
     @Column(name = "shopping_zip_code", nullable = true)
     private String zipCode;
 
-    @Column(name = "shopping_category", nullable = true)
-    private String category;
     @Builder
     public Shopping(String name, String address, Point location, String phoneNumber, String zipCode, String category){
-        super(name, address, location, phoneNumber);
+        super(name, address, category, location, phoneNumber);
 
         this.zipCode = zipCode;
-        this.category = category;
     }
 }

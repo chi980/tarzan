@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.amenity;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.persistence.*;
@@ -22,8 +23,8 @@ public class Park extends Amenity implements DataInstance {
 
 
     @Builder(builderMethodName = "parkBuilder")
-    public Park(String name, String address, Point location, String phoneNumber, SiGunGu gu){
-        super(name, address, location, phoneNumber);
+    public Park(String name, String address, String category, Point location, String phoneNumber, SiGunGu gu){
+        super(name, address, category!=null?category: BuildingType.PARK.getKor(), location, phoneNumber);
         this.gu = gu;
     }
 

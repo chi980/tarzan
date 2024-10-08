@@ -13,7 +13,7 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Clinic extends Building {
     @Builder(builderMethodName = "clinicBuilder")
-    public Clinic(String name, String address, Point location, String phoneNumber){
-        super(name, address, location, phoneNumber);
+    public Clinic(String name, String address, String category,  Point location, String phoneNumber){
+        super(name, address, category, location, phoneNumber);
     }
 }

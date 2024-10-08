@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.house.entity;
 
+import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.locationtech.jts.geom.Point;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -32,10 +36,22 @@ public abstract class House extends CommonEntity {
     @Column(columnDefinition = "geometry(Point,4326)", name = "house_location", nullable = false)
     private Point location;
 
-    protected House(String name, String address, Point location){
+    @Column(name = "house_category", nullable = false)
+    private String category;
+
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) // 지연 로딩 설정
+    private List<Review> reviewList = new ArrayList<>(); // House가 가지는 Review 리스트
+
+
+    protected House(String name, String address, Point location, String category){
         this.name = name;
         this.address = address;
         this.location = location;
+        this.category = category;
     }
 
+    // Review 추가 메서드
+    public void addReview(Review review) {
+        this.reviewList.add(review);
+    }
 }

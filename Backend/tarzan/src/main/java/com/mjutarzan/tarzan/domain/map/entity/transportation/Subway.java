@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.transportation;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -21,7 +22,7 @@ public class Subway extends Transportation implements DataInstance {
 
     @Builder(builderMethodName = "subwayBuilder")
     public Subway(String name, String address, Point location, String phoneNumber, String type){
-        super(name, address, location, phoneNumber);
+        super(name, address, BuildingType.SUBWAY.getKor(), location, phoneNumber);
         this.type = type;
     }
     @Override

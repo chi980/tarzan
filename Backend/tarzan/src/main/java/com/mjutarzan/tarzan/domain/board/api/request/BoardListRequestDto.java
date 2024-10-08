@@ -23,11 +23,11 @@ public class BoardListRequestDto extends CustomPageable {
         this.tag = tag;
         this.sortBy = sortBy;
 
-        super.setSort(convertToSort(sortBy));
+        super.setSort(convertToSort(sortBy.trim()));
     }
 
     private Sort convertToSort(String sortBy) {
-        if (sortBy.equals("최신순")) {
+        if (sortBy.trim().equals("최신순")) {
             return Sort.by(Sort.Direction.DESC, "createdAt");  // 최신순 정렬: createdAt 필드 기준으로 내림차순
         } else if (sortBy.equals("오래된순")) {
             return Sort.by(Sort.Direction.ASC, "createdAt");   // 오래된순 정렬: createdAt 필드 기준으로 오름차순

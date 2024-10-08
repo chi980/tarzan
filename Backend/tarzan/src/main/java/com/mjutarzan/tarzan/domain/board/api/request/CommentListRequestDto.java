@@ -21,7 +21,7 @@ public class CommentListRequestDto extends CustomPageable {
         this.boardIdx = boardIdx;
         this.sortBy = sortBy;
 
-        super.setSort(convertToSort(sortBy));
+        super.setSort(convertToSort(sortBy.trim()));
     }
 
     private Sort convertToSort(String sortBy) {
