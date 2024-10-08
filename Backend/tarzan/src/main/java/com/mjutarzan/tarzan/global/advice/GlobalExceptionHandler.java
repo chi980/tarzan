@@ -2,7 +2,7 @@ package com.mjutarzan.tarzan.global.advice;
 
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
-import com.mjutarzan.tarzan.global.exception.RequiredParameterMissingException;
+import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

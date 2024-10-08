@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.shopping;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -19,7 +20,7 @@ public class Mart extends Shopping implements DataInstance {
 
     @Builder(builderMethodName = "martBuilder")
     public Mart(String name, String address, Point location, String phoneNumber, String zipCode, String category){
-        super(name, address, location, phoneNumber, zipCode, category);
+        super(name, address, location, phoneNumber, zipCode, category!=null?category: BuildingType.MART.getKor());
 
     }
 

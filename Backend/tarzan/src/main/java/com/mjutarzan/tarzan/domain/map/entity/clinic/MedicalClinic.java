@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.clinic;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import org.locationtech.jts.geom.Point;
 public class MedicalClinic extends Clinic implements DataInstance {
     @Builder
     public MedicalClinic(String name, String address, Point location, String phoneNumber){
-        super(name, address, location, phoneNumber);
+        super(name, address, BuildingType.MEDICAL_CLINIC.getKor(), location, phoneNumber);
     }
 
     @Override

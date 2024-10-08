@@ -1,7 +1,6 @@
 package com.mjutarzan.tarzan.domain.house.entity;
 
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
-import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Builder;
@@ -15,13 +14,9 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor
 public class ApiHouse extends House implements DataInstance {
 
-    @Column(name = "api_house_category", nullable = true)
-    private String category;
-
     @Builder
     public ApiHouse(String name, String address, Point location, String category){
-        super(name, address, location);
-        this.category = category;
+        super(name, address, location, category);
     }
 
     @Override
@@ -30,7 +25,7 @@ public class ApiHouse extends House implements DataInstance {
         super.setAddress(info[0]);
         super.setName(info[1]);
         super.setLocation(location);
-        this.category = info[2];
+        super.setCategory(info[2]);
 
         return this;
     }

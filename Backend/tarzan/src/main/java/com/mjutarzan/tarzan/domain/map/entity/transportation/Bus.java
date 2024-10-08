@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.transportation;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -23,7 +24,7 @@ public class Bus  extends Transportation implements DataInstance {
 
     @Builder(builderMethodName = "busBuilder")
     public Bus(String name, String address, Point location, String phoneNumber, String uniqueNumber, String mobileNumber){
-        super(name, address, location, phoneNumber);
+        super(name, address, BuildingType.BUS.getKor(), location, phoneNumber);
         this.uniqueNumber = uniqueNumber;
         this.mobileNumber = mobileNumber;
     }

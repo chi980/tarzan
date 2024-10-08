@@ -1,13 +1,11 @@
 package com.mjutarzan.tarzan.domain.house.entity;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import com.mjutarzan.tarzan.domain.user.entity.User;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
-import org.geolatte.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 @Entity
 @Getter
@@ -15,8 +13,15 @@ import org.locationtech.jts.geom.Point;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserHouse extends House{
 
+    @ManyToOne
+    @JoinColumn(name = "user_house_register", nullable = true)
+    private User register;
+
     @Builder
-    public UserHouse(String name, String address, Point location){
-        super(name, address, location);
+    public UserHouse(String name, String address, Point location, String category, User register){
+        super(name, address, location, category);
+
+        this.register = register;
+        this.register.addUserHouse(this);
     }
 }

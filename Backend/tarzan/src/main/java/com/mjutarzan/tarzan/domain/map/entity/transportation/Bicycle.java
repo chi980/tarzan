@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.domain.map.entity.transportation;
 
 import com.mjutarzan.tarzan.domain.map.model.vo.BicycleOperType;
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.persistence.*;
@@ -34,7 +35,7 @@ public class Bicycle  extends Transportation implements DataInstance {
 
     @Builder(builderMethodName = "subwayBuilder")
     public Bicycle(String name, String address, Point location, String phoneNumber, Integer uniqueNumber, SiGunGu gu, Double lcdCnt, Double qrCnt, BicycleOperType operType){
-        super(name, address, location, phoneNumber);
+        super(name, address, BuildingType.BICYCLE.getKor(), location, phoneNumber);
         this.uniqueNumber = uniqueNumber;
         this.gu = gu;
         this.lcdCnt = lcdCnt;

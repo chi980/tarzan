@@ -21,7 +21,7 @@ public class BoardSearchRequestDto  extends CustomPageable {
         this.gu = gu;
         this.sortBy = sortBy;
 
-        super.setSort(convertToSort(sortBy));
+        super.setSort(convertToSort(sortBy.trim()));
     }
 
     private Sort convertToSort(String sortBy) {

@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.security;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.persistence.DiscriminatorValue;
@@ -19,7 +20,7 @@ public class Cctv extends Security implements DataInstance {
 
     @Builder(builderMethodName = "cctvBuilder")
     public Cctv(String name, String address, Point location, String phoneNumber, SiGunGu gu){
-        super(name, address, location, phoneNumber, gu);
+        super(name, address, BuildingType.CCTV.getKor(), location, phoneNumber, gu);
     }
 
     @Override

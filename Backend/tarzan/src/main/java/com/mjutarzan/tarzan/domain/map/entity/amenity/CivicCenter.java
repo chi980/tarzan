@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.map.entity.amenity;
 
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.persistence.*;
@@ -24,8 +25,8 @@ public class CivicCenter extends Amenity implements DataInstance {
     private String dong;
 
     @Builder(builderMethodName = "civicCenterBuilder")
-    public CivicCenter(String name, String address, Point location, String phoneNumber, SiGunGu gu, String dong){
-        super(name, address, location, phoneNumber);
+    public CivicCenter(String name, String address, String category, Point location, String phoneNumber, SiGunGu gu, String dong){
+        super(name, address, category!=null?category: BuildingType.CIVIC_CENTER.getKor(),location, phoneNumber);
         this.gu = gu;
         this.dong = dong;
     }

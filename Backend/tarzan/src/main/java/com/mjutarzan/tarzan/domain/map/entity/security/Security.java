@@ -19,8 +19,8 @@ public class Security  extends Building {
     private SiGunGu gu;
 
     @Builder
-    public Security(String name, String address, Point location, String phoneNumber, SiGunGu gu){
-        super(name, address, location, phoneNumber);
+    public Security(String name, String address, String category, Point location, String phoneNumber, SiGunGu gu){
+        super(name, address, category, location, phoneNumber);
         this.gu = gu;
     }
 }

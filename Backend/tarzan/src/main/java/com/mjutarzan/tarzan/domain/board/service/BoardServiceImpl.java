@@ -14,7 +14,7 @@ import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
-import com.mjutarzan.tarzan.global.exception.RequiredParameterMissingException;
+import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
