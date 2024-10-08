@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -88,28 +87,48 @@ public class DataService {
         return records;
     }
 
-    public <S extends DataInstance> List<S> GetEntityListFromStringList(List<String[]> list, Class<S> clazz, int latitudeIdx, int longitudeIdx) {
-        return (List<S>) list.stream()
-                .skip(1) // 첫 번째 항목 건너뛰기
-                .map(info -> {
-                    try {
-                        // 여기서 클래스의 getInstance 메서드를 호출해 S 타입 객체를 생성
-                        Double latitude = Double.parseDouble(info[latitudeIdx]);
-                        Double longitude = Double.parseDouble(info[longitudeIdx]);
-                        Point location = locationService.createPoint(latitude, longitude);
+//    public <S extends DataInstance> List<S> GetEntityListFromStringList(List<String[]> list, Class<S> clazz, int latitudeIdx, int longitudeIdx) {
+//        return (List<S>) list.stream()
+//                .skip(1) // 첫 번째 항목 건너뛰기
+//                .map(info -> {
+//                    try {
+//                        // 여기서 클래스의 getInstance 메서드를 호출해 S 타입 객체를 생성
+//                        Double latitude = Double.parseDouble(info[latitudeIdx]);
+//                        Double longitude = Double.parseDouble(info[longitudeIdx]);
+//                        Point location = locationService.createPoint(latitude, longitude);
+//
+//                        // Reflection을 통해 getInstance 호출
+//                        return clazz.getDeclaredConstructor().newInstance().getInstance(info, location);
+//                    } catch (Exception e) {
+//                        log.error("{}", e.getMessage());
+//                        log.error("오류: {}", Arrays.toString(info));
+//                        // 예외가 발생하면 null 반환 (처리 방식에 따라 다르게 처리 가능)
+//                        return null;
+//                    }
+//                })
+//                .filter(Objects::nonNull) // null이 아닌 항목만 필터링
+//                .collect(Collectors.toList());
+//    }
 
-                        // Reflection을 통해 getInstance 호출
-                        return clazz.getDeclaredConstructor().newInstance().getInstance(info, location);
-                    } catch (Exception e) {
-                        log.error("{}", e.getMessage());
-                        log.error("오류: {}", Arrays.toString(info));
-                        // 예외가 발생하면 null 반환 (처리 방식에 따라 다르게 처리 가능)
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull) // null이 아닌 항목만 필터링
-                .collect(Collectors.toList());
+    public <S extends DataInstance> List<S> GetEntityListFromStringList(List<String[]> list, Class<S> clazz, int latitudeIdx, int longitudeIdx) {
+        List<S> resultList = new ArrayList<>();
+        for (String[] info : list.stream().skip(1).collect(Collectors.toList())) {
+            try {
+                Double latitude = Double.parseDouble(info[latitudeIdx]);
+                Double longitude = Double.parseDouble(info[longitudeIdx]);
+                Point location = locationService.createPoint(latitude, longitude);
+
+                // Reflection을 통해 getInstance 호출
+                S instance = (S) clazz.getDeclaredConstructor().newInstance().getInstance(info, location);
+                resultList.add(instance);
+            } catch (Exception e) {
+                log.error("{}", e.getMessage());
+                log.error("오류: {}", Arrays.toString(info));
+            }
+        }
+        return resultList;
     }
+
 
     public <S extends DataInstance, R extends JpaRepository<S, Long>> void storeEntityList(
             String filePath, int latitudeIdx, int longitudeIdx, Class<S> clazz, R repository) {

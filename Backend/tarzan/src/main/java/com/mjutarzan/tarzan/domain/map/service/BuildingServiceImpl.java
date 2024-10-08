@@ -65,12 +65,14 @@ public class BuildingServiceImpl implements BuildingService{
     @Override
     public List<BuildingListItemResponseDto> getBuildings(BuildingRequestDto buildingListRequestDto) {
         Point location = locationService.createPoint(buildingListRequestDto.getLatitude(), buildingListRequestDto.getLongitude());
+        Double latitude = buildingListRequestDto.getLatitude();
+        Double longitude = buildingListRequestDto.getLongitude();
         double radius = buildingListRequestDto.getRadius();
         List<BuildingListItemResponseDto> list = null;
 
         switch (buildingListRequestDto.getType()) {
             case ALL -> {
-                list = buildingRepository.findAllWithinRadius(location, radius).stream()
+                list = buildingRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(building -> BuildingListItemResponseDto.builder()
                                 .name(building.getName())
                                 .category(building.getCategory())
@@ -82,7 +84,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case CIVIC_CENTER -> {
-                list = civicCenterRepository.findAllWithinRadius(location, radius).stream()
+                list = civicCenterRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(civicCenter -> BuildingListItemResponseDto.builder()
                                 .name(civicCenter.getName())
                                 .category(civicCenter.getCategory())
@@ -94,7 +96,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case GYM -> {
-                list = gymRepository.findAllWithinRadius(location, radius).stream()
+                list = gymRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(gym -> BuildingListItemResponseDto.builder()
                                 .name(gym.getName())
                                 .category(gym.getCategory())
@@ -106,7 +108,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case PARK -> {
-                list = parkRepository.findAllWithinRadius(location, radius).stream()
+                list = parkRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(park -> BuildingListItemResponseDto.builder()
                                 .name(park.getName())
                                 .category(park.getCategory())
@@ -118,7 +120,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case HOSPITAL -> {
-                list = hospitalRepository.findAllWithinRadius(location, radius).stream()
+                list = hospitalRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(hospital -> BuildingListItemResponseDto.builder()
                                 .name(hospital.getName())
                                 .category(hospital.getCategory())
@@ -130,7 +132,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case PHARMACY -> {
-                list = pharmacyRepository.findAllWithinRadius(location, radius).stream()
+                list = pharmacyRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(pharmacy -> BuildingListItemResponseDto.builder()
                                 .name(pharmacy.getName())
                                 .category(pharmacy.getCategory())
@@ -142,7 +144,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case MEDICAL_CLINIC -> {
-                list = medicalClinicRepository.findAllWithinRadius(location, radius).stream()
+                list = medicalClinicRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(clinic -> BuildingListItemResponseDto.builder()
                                 .name(clinic.getName())
                                 .category(clinic.getCategory())
@@ -154,7 +156,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case CCTV -> {
-                list = cctvRepository.findAllWithinRadius(location, radius).stream()
+                list = cctvRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(cctv -> BuildingListItemResponseDto.builder()
                                 .name(cctv.getName())
                                 .category(cctv.getCategory())
@@ -166,7 +168,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case POLICE -> {
-                list = policeRepository.findAllWithinRadius(location, radius).stream()
+                list = policeRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(police -> BuildingListItemResponseDto.builder()
                                 .name(police.getName())
                                 .category(police.getCategory())
@@ -178,7 +180,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case CONVENIENCE_STORE -> {
-                list = convenienceStoreRepository.findAllWithinRadius(location, radius).stream()
+                list = convenienceStoreRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(store -> BuildingListItemResponseDto.builder()
                                 .name(store.getName())
                                 .category(store.getCategory())
@@ -190,7 +192,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case MART -> {
-                list = martRepository.findAllWithinRadius(location, radius).stream()
+                list = martRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(mart -> BuildingListItemResponseDto.builder()
                                 .name(mart.getName())
                                 .category(mart.getCategory())
@@ -202,7 +204,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case SUBWAY -> {
-                list = subwayRepository.findAllWithinRadius(location, radius).stream()
+                list = subwayRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(subway -> BuildingListItemResponseDto.builder()
                                 .name(subway.getName())
                                 .category(subway.getCategory())
@@ -214,7 +216,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case BUS -> {
-                list = busRepository.findAllWithinRadius(location, radius).stream()
+                list = busRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(bus -> BuildingListItemResponseDto.builder()
                                 .name(bus.getName())
                                 .category(bus.getCategory())
@@ -226,7 +228,7 @@ public class BuildingServiceImpl implements BuildingService{
                         .collect(Collectors.toList());
             }
             case BICYCLE -> {
-                list = bicycleRepository.findAllWithinRadius(location, radius).stream()
+                list = bicycleRepository.findAllWithinRadius(longitude, latitude, radius).stream()
                         .map(bicycle -> BuildingListItemResponseDto.builder()
                                 .name(bicycle.getName())
                                 .category(bicycle.getCategory())

@@ -1,7 +1,9 @@
 package com.mjutarzan.tarzan.domain.review.entity;
 
 import com.mjutarzan.tarzan.domain.house.entity.House;
+import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.model.vo.LeaseType;
+import com.mjutarzan.tarzan.domain.review.model.vo.Tag;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
 import jakarta.persistence.*;
@@ -11,16 +13,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "review",  uniqueConstraints = @UniqueConstraint(columnNames = {"review_writer", "house_id"}))
+@Table(name = "review",  uniqueConstraints = @UniqueConstraint(columnNames = {"review_writer", "review_house"}))
 @DynamicInsert
 public class Review extends CommonEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
+
+    @Column(name = "review_img_url")
+    private String imgUrl;
+
+    @Column(name = "review_score")
+    private Integer score;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "review_lease_type")
@@ -105,15 +115,13 @@ public class Review extends CommonEntity{
 
 
     @Builder
-    public Review(Long id, LeaseType leaseType, Integer rent, Integer deposit, Integer managementFee,
+    public Review(Long id,String imgUrl, Integer score, LeaseType leaseType, Integer rent, Integer deposit, Integer managementFee,
                   Integer residencePeriod, Integer floor, String advantage, String disadvantage,
-                  Boolean optionNone, Boolean optionBug, Boolean optionBuildingManagement,
-                  Boolean optionParking, Boolean optionSoundProof, Boolean optionSecurity,
-                  Boolean optionTrail, Boolean optionSecurityGuard, Boolean optionVentilation,
-                  Boolean optionFlat, Boolean optionQuite, Boolean optionPreventHeat,
-                  Boolean optionPet, Boolean optionElevator, Boolean optionMold,
+                  List<Tag> advantageTagList, List<Tag> disadvantageTagList,
                   House house, User writer) {
         this.id = id;
+        this.imgUrl = imgUrl;
+        this.score = score;
         this.leaseType = leaseType;
         this.rent = rent;
         this.deposit = deposit;
@@ -122,24 +130,23 @@ public class Review extends CommonEntity{
         this.floor = floor;
         this.advantage = advantage;
         this.disadvantage = disadvantage;
-        this.optionNone = optionNone;
-        this.optionBug = optionBug;
-        this.optionBuildingManagement = optionBuildingManagement;
-        this.optionParking = optionParking;
-        this.optionSoundProof = optionSoundProof;
-        this.optionSecurity = optionSecurity;
-        this.optionTrail = optionTrail;
-        this.optionSecurityGuard = optionSecurityGuard;
-        this.optionVentilation = optionVentilation;
-        this.optionFlat = optionFlat;
-        this.optionQuite = optionQuite;
-        this.optionPreventHeat = optionPreventHeat;
-        this.optionPet = optionPet;
-        this.optionElevator = optionElevator;
-        this.optionMold = optionMold;
+
+        // option 설정하는 로직
+
         this.house = house;
         this.house.addReview(this);
         this.writer = writer;
         this.writer.addReview(this);
+    }
+
+    public void updateReview(UpdateReviewRequestDto requestDto) {
+    }
+
+    public List<Tag> getAdvantageTagList() {
+        return null;
+    }
+
+    public List<Tag> getDisadvantageTagList() {
+        return null;
     }
 }

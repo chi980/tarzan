@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.domain.review.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.domain.review.model.vo.LeaseType;
 import com.mjutarzan.tarzan.domain.review.model.vo.Tag;
 import lombok.Builder;
@@ -12,6 +13,9 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class ReviewListItemResponseDto {
+
+    @JsonProperty("review_id")
+    private Long id;
 
     @JsonProperty("review_img_url")
     private String imgUrl;
@@ -50,10 +54,11 @@ public class ReviewListItemResponseDto {
     private Boolean isWriter;
 
     @Builder
-    public ReviewListItemResponseDto(String imgUrl, Integer score, LeaseType leaseType, Integer deposit,
+    public ReviewListItemResponseDto(Long id, String imgUrl, Integer score, LeaseType leaseType, Integer deposit,
                                      Integer managementFee, Integer residencePeriod, Integer floor,
                                      String advantage, List<Tag> advantageTagList, String disadvantage,
                                      List<Tag> disadvantageTagList, Boolean isWriter) {
+        this.id = id;
         this.imgUrl = imgUrl;
         this.score = score;
         this.leaseType = leaseType;
@@ -65,6 +70,22 @@ public class ReviewListItemResponseDto {
         this.advantageTagList = advantageTagList;
         this.disadvantage = disadvantage;
         this.disadvantageTagList = disadvantageTagList;
+        this.isWriter = isWriter;
+    }
+
+    public ReviewListItemResponseDto(Review review, boolean isWriter) {
+        this.id = review.getId();
+        this.imgUrl = review.getImgUrl();
+        this.score = review.getScore();
+        this.leaseType = review.getLeaseType();
+        this.deposit = review.getDeposit();
+        this.managementFee = review.getManagementFee();
+        this.residencePeriod = review.getResidencePeriod();
+        this.floor = review.getFloor();
+        this.advantage = review.getAdvantage();
+        this.advantageTagList = review.getAdvantageTagList();
+        this.disadvantage = review.getDisadvantage();
+        this.disadvantageTagList = review.getDisadvantageTagList();
         this.isWriter = isWriter;
     }
 }

@@ -3,6 +3,8 @@ package com.mjutarzan.tarzan.domain.review.api;
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewListRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
 import com.mjutarzan.tarzan.domain.review.service.ReviewService;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
@@ -22,16 +24,20 @@ public class ReviewApi {
 
     private final ReviewService reviewService;
     @GetMapping("/reviews")
-    public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto){
+    public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto, @AuthenticationPrincipal UserDto userDto){
 
+        ReviewListResponseDto result = reviewService.getReviews(reviewListRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")
+                .data(result)
                 .build());
     }
 
     @GetMapping("/reviews/{reviewIdx}")
     public ResponseEntity<Object> getReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal UserDto userDto){
+
+        ReviewListItemResponseDto result = reviewService.getReview(reviewIdx, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
@@ -49,6 +55,8 @@ public class ReviewApi {
                     .build());
         }
 
+        reviewService.createReview(reviewRequestDto, userDto);
+
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("리뷰가 성공적으로 등록되었습니다.")
@@ -58,6 +66,8 @@ public class ReviewApi {
     @PutMapping("/reviews/{reviewIdx}")
     public ResponseEntity<Object> updateReview(@PathVariable Long reviewIdx, @RequestBody @Valid UpdateReviewRequestDto updateReviewRequestDto, @AuthenticationPrincipal UserDto userDto){
 
+        reviewService.updateReview(reviewIdx, updateReviewRequestDto, userDto);
+
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("리뷰가 성공적으로 수정되었습니다.")
@@ -66,6 +76,8 @@ public class ReviewApi {
 
     @DeleteMapping("/reviews/{reviewIdx}")
     public ResponseEntity<Object> deleteReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal UserDto userDto){
+
+        reviewService.deleteReview(reviewIdx, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
