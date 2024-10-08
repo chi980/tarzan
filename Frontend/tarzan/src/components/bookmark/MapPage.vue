@@ -18,18 +18,19 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router"; // Vue Router 사용
 
-const mapContainer = ref(null);
+// 타입 선언
+let popupTimer: number | null = null; // popupTimer를 number 타입으로 지정
+let currentMarker: any = null; // currentMarker의 타입을 any로 설정
+const mapContainer = ref<HTMLElement | null>(null); // mapContainer의 타입을 HTMLElement로 지정
 const popupVisible = ref(false);
 const address = ref("");
-let popupTimer = null;
-let currentMarker = null;
 const router = useRouter();
 
 onMounted(() => {
-  loadKakaoMap(mapContainer.value);
+  loadKakaoMap(mapContainer.value as HTMLElement);
 });
 
-const loadKakaoMap = (container) => {
+const loadKakaoMap = (container: HTMLElement) => { // container의 타입을 HTMLElement로 명시
   const script = document.createElement("script");
   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&libraries=services&autoload=false`;
   document.head.appendChild(script);
@@ -47,8 +48,8 @@ const loadKakaoMap = (container) => {
       window.kakao.maps.event.addListener(
         mapInstance,
         "mousedown",
-        (mouseEvent) => {
-          popupTimer = setTimeout(() => {
+        (mouseEvent: any) => { // mouseEvent의 타입을 any로 설정
+          popupTimer = window.setTimeout(() => { // setTimeout의 반환값을 number 타입으로 지정
             const latlng = mouseEvent.latLng;
 
             // 이전 마커 제거
@@ -57,11 +58,11 @@ const loadKakaoMap = (container) => {
             }
 
             // 역지오코딩 -> 도로명 주소
-            const geocoder = new window.kakao.maps.services.Geocoder();
+            const geocoder = new window.kakao.maps.services.Geocoder(); // services의 타입을 명시하지 않아도 오류 해결 가능
             geocoder.coord2Address(
               latlng.getLng(),
               latlng.getLat(),
-              (result, status) => {
+              (result: any, status: any) => { // result와 status의 타입을 any로 설정
                 if (status === window.kakao.maps.services.Status.OK) {
                   address.value = result[0].road_address
                     ? result[0].road_address.address_name
@@ -70,7 +71,6 @@ const loadKakaoMap = (container) => {
                   // 마커 생성
                   currentMarker = new window.kakao.maps.Marker({
                     position: latlng,
-                    map: mapInstance,
                   });
 
                   currentMarker.setMap(mapInstance);

@@ -176,8 +176,8 @@
 <script setup lang="ts">
 import emojiSrc from "@/assets/emoji/face-with-monocle.png";
 import checkImgSrc from "@/assets/icons/Check/Check.svg";
-import { CompareHouse } from "@/data/house.ts";
-import { ChartDataOption } from "@/data/chart.ts";
+import { CompareHouse } from "@/data/house";
+import { ChartDataOption } from "@/data/chart";
 import Chart from "@/components/common/RadarChart.vue";
 import TopBarBack from "../common/TopBarBack.vue";
 const housesToCompare: CompareHouse[] = [
