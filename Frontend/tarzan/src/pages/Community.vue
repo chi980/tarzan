@@ -73,7 +73,7 @@ export default {
     goToPostCreate() {
       this.$router.push({ name: 'PostCreate' });
     },
-    
+
   // api : 게시글 목록 불러오기
     async fetchPosts() {
       const queryParams = new URLSearchParams({
