@@ -52,11 +52,6 @@ export default {
     TagButtonGroup,
     PostList,
   },
-  // methods: {
-  //   goToPostCreate() {
-  //     this.$router.push({ name: 'PostCreate' });
-  //   },
-  // },
   data() {
     return {
       sortOptions: [
@@ -74,13 +69,11 @@ export default {
     this.fetchPosts(); // 컴포넌트가 생성될 때 데이터를 불러옴
   },
 
-
   methods: {
     goToPostCreate() {
       this.$router.push({ name: 'PostCreate' });
     },
 
-  // api 연결
   // api : 게시글 목록 불러오기
     async fetchPosts() {
       const queryParams = new URLSearchParams({
