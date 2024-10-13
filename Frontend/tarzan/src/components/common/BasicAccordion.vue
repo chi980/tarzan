@@ -17,7 +17,10 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { ref, defineProps } from "vue";
+
+// @ts-ignore
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
 const props = defineProps({
@@ -28,11 +31,14 @@ const props = defineProps({
 });
 
 // 화살표 상태 관리
+// @ts-ignore
 const isRotated = ref(false);
 
 // 콘텐츠 상태 관리
+// @ts-ignore
 const canSeeContent = ref(false);
 
+// @ts-ignore
 const controllAccordion = () => {
   isRotated.value = !isRotated.value;
   canSeeContent.value = !canSeeContent.value;
