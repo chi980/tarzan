@@ -1,9 +1,15 @@
 pipeline {
     agent any
+    tools {
+        nodejs 'NodeJS 18.16.1'
+    }
 
     environment {
         BACK_CONTAINER_NAME = "tarzan-back-container"
         BACK_IMAGE_NAME = "tarzan-back-image"
+
+        FRONT_CONTAINER_NAME = "tarzan-front-container"
+        FRONT_IMAGE_NAME = "tarzan-front-image"
     }
     stages {
         stage('Checkout') {
@@ -20,6 +26,13 @@ pipeline {
                             sh 'chmod +x gradlew'
                             sh './gradlew clean build'
                             sh 'ls -al ./build'
+                        }
+                    }
+                        
+                    dir('Frontend'){
+                        sh 'npm install'
+                        dir('tarzan'){
+                            sh 'npm run build'
                         }
                     }
                 }
@@ -42,26 +55,44 @@ pipeline {
                     } catch (Exception e) {
                         echo "Docker image ${BACK_IMAGE_NAME} does not exist. skip"
                     }
+
+                    try {
+                        sh 'echo "Docker Delete Start"'
+                        sh "docker stop ${FRONT_CONTAINER_NAME} || true"
+                        sh "docker rm -f ${FRONT_CONTAINER_NAME} || true"
+                    } catch (Exception e) {
+                        echo "Docker container ${FRONT_CONTAINER_NAME} does not exist. skip"
+                    }
+                    try {
+                        // 이미지 존재 시 삭제
+                        sh "docker image rm ${FRONT_IMAGE_NAME} || true"
+                    } catch (Exception e) {
+                        echo "Docker image ${FRONT_IMAGE_NAME} does not exist. skip"
+                    }
                 }
-            }
+            }   
         }
 
         stage('Dockerizing') {
             steps {
                 dir('Backend') {
                     dir('tarzan') {
-                        // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
                         sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
-                        sh "docker images"
-                        sh 'echo "images build 성공!"'
                     }
                 }
+                
+                dir('Frontend'){
+                    sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
+                }
+                
+                sh "docker images"
             }
         }
 
         stage('Deploy') {
             steps {
                 sh "docker run --name ${BACK_CONTAINER_NAME} -d -p 8080:8080 ${BACK_IMAGE_NAME}"
+                sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
                 sh "docker ps"
             }
         }
