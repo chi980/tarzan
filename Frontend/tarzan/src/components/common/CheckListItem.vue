@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { defineProps, PropType } from "vue";
 import { Check } from "@/data/check";
 const props = defineProps({

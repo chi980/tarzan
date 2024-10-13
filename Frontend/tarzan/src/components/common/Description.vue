@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { defineProps } from "vue";
 
 // 부모로부터 받아온 options

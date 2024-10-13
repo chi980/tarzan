@@ -23,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { defineProps, ref } from "vue";
 import { Option } from "@/data/options";
 
@@ -35,7 +36,7 @@ const props = defineProps({
 });
 
 // 팝업 상태 관리
-const isDropDownOpen = ref(false);
+const isDropDownOpen = ref<boolean>(false);
 
 const toggleDropdown = () => {
   isDropDownOpen.value = !isDropDownOpen.value;

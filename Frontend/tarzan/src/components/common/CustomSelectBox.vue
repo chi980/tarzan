@@ -48,9 +48,16 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import { ref, onMounted, defineEmits } from "vue";
+
+// @ts-ignore
 import { Option } from "@/data/options";
+
+// @ts-ignore
 import { SelectStyle } from "@/data/selectStyle";
+
+// @ts-ignore
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
 // 부모로부터 받아온 options
@@ -98,7 +105,7 @@ onMounted(() => {
 
 // 옵션 클릭 핸들러
 
-// 옵션 클릭 핸들러
+// @ts-ignore
 const selectOption = (option: Option, index: number) => {
   selectedOption.value = option;
   selectedIdx.value = index;

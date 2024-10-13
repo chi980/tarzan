@@ -1,10 +1,11 @@
 <template>
   <div class="bar bottom-bar">
-    <div 
-      v-for="item in items" 
-      :key="item.idx" 
-      class="bar-item" 
-      @click="navigateTo(item.url)">
+    <div
+      v-for="item in items"
+      :key="item.idx"
+      class="bar-item"
+      @click="navigateTo(item.url)"
+    >
       <img :src="item.icon" alt="Icon" />
       <span>{{ item.title }}</span>
     </div>
@@ -12,7 +13,9 @@
 </template>
 
 <script lang="ts" setup>
+// @ts-ignore
 import { ref } from "vue";
+// @ts-ignore
 import { useRouter } from "vue-router";
 import homeIcon from "@/assets/icons/bottombar/home.svg";
 import checklistIcon from "@/assets/icons/bottombar/checklist.svg";

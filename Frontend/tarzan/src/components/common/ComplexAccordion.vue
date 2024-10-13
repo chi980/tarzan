@@ -46,10 +46,18 @@
   </div>
 </template>
 <script setup lang="ts">
+// @ts-ignore
 import { ref, defineProps, defineEmits } from "vue";
+// @ts-ignore
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
+
+// @ts-ignore
 import starEmoji from "@/assets/emoji/Emoji-Star.png";
+
+// @ts-ignore
 import { CheckList } from "@/data/check";
+
+// @ts-ignore
 import CheckListItem from "./CheckListItem.vue";
 
 const props = defineProps({
@@ -70,10 +78,10 @@ const emit = defineEmits<{
 }>();
 
 // 화살표 상태 관리
-const isRotated = ref(false);
+const isRotated = ref<boolean>(false); // boolean 타입 지정
 
 // 콘텐츠 상태 관리
-const canSeeContent = ref(false);
+const canSeeContent = ref<boolean>(false); // boolean 타입 지정
 
 const controllAccordion = () => {
   isRotated.value = !isRotated.value;
