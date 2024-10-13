@@ -16,7 +16,8 @@
     "jsx": "preserve",
 
     /* Linting */
-    "strict": true,
+    // "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
@@ -27,6 +28,12 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.js", "kakao.maps.d.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.js",
+    "kakao.maps.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
