@@ -9,7 +9,7 @@ spring:
 #    port: 6379
 #    password: "strawberry_tarzan_8960!"
   datasource:
-    url: jdbc:postgresql://3.35.149.241/tarzan
+    url: jdbc:postgresql://13.125.225.29:5432/tarzan
     username: postgres
     password: '@tarzan_zxcvbnm123!'
 #    url: jdbc:postgresql://localhost/tarzan
@@ -57,14 +57,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-
-  batch:
-    job:
-#      name: ${job.name:NONE}
-      enabled: true
-    jdbc:
-#      initialize-schema: never
-       initialize-schema: always
 
   web:
     resources:

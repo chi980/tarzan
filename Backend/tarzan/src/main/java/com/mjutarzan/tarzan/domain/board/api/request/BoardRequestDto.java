@@ -27,5 +27,5 @@ public class BoardRequestDto {
 
     @JsonProperty("board_gu")
     @NotBlank(message = "구는 필수입니다.")
-        private SiGunGu gu;
+    private SiGunGu gu;
 }
