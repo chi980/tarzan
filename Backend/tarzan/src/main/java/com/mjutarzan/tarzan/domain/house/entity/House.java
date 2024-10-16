@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.house.entity;
 
+import com.mjutarzan.tarzan.domain.bookmark.entity.Bookmark;
 import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
 import jakarta.persistence.*;
@@ -40,7 +41,10 @@ public abstract class House extends CommonEntity {
     private String category;
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) // 지연 로딩 설정
-    private List<Review> reviewList = new ArrayList<>(); // House가 가지는 Review 리스트
+    private List<Review> reviewList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) // 지연 로딩 설정
+    private List<Bookmark> bookmarkList = new ArrayList<>();
 
 
     protected House(String name, String address, Point location, String category){
@@ -53,5 +57,9 @@ public abstract class House extends CommonEntity {
     // Review 추가 메서드
     public void addReview(Review review) {
         this.reviewList.add(review);
+    }
+
+    public void addBookmark(Bookmark bookmark){
+        this.bookmarkList.add(bookmark);
     }
 }

@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.domain.user.entity;
 
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.entity.Comment;
+import com.mjutarzan.tarzan.domain.bookmark.entity.Bookmark;
 import com.mjutarzan.tarzan.domain.house.entity.UserHouse;
 import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
@@ -91,6 +92,10 @@ public class User {
 
     @OneToMany(mappedBy = "register", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserHouse> userHouseList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Bookmark> bookmarkList = new ArrayList<>();
+
     @Builder
     public User(String email, String password, Role role, SocialType socialType, String socialId,
                 String refreshToken, String imageUrl, String nickname, SiGunGu gu, boolean haveAnimal,
@@ -131,6 +136,8 @@ public class User {
     }
 
     public void addUserHouse(UserHouse userHouse){this.userHouseList.add(userHouse);}
+
+    public void addBookmark(Bookmark bookmark){this.bookmarkList.add(bookmark);}
 
     public void updateUser(RegisterUserRequestDto requestDto, Point jobLocation) {
         this.role = Role.USER;
