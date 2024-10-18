@@ -72,6 +72,7 @@ public class Bookmark extends CommonEntity {
     @Column(name = "bookmark_floor")
     private Integer floor; // 층수
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "bookmark_direction")
     private HouseDirection direction;
 

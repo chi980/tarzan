@@ -89,4 +89,9 @@ public class BookmarkServiceImpl implements BookmarkService{
     public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto updateBookmarkRequestDto, UserDto userDto) {
 
     }
+
+    @Override
+    public void deleteBookmark(Long bookmarkIdx, UserDto userDto) {
+
+    }
 }
