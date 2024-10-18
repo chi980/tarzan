@@ -7,6 +7,7 @@ import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -218,7 +219,7 @@ public class Bookmark extends CommonEntity {
     @Column(name = "bookmark_check_etc4")
     private Boolean checkEtc4;
 
-    // 빌더 생성자
+    @Builder
     public Bookmark(
             House house, User user, LeaseType leaseType, Integer rent, Integer deposit, Integer commisionFee,
             Integer managementFee, String realEstate, String realEstatePhoneNumber, Boolean canAnimal, Integer parkingLotCoverage,
@@ -310,5 +311,8 @@ public class Bookmark extends CommonEntity {
         this.checkEtc2 = checkEtc2;
         this.checkEtc3 = checkEtc3;
         this.checkEtc4 = checkEtc4;
+
+        this.house.addBookmark(this);
+        this.user.addBookmark(this);
     }
 }
