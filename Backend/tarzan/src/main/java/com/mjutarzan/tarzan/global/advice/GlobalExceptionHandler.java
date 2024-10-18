@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.global.advice;
 
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
+import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,17 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
+                BaseResponseDto.builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .build()
+        );
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
