@@ -13,6 +13,9 @@ public class ChecklistResponseDto {
     @JsonProperty("count")
     private Long count;
 
+    @JsonProperty("id_list")
+    private List<Long> idList;
+
     @JsonProperty("name_list")
     private List<String> nameList;
 
@@ -20,8 +23,9 @@ public class ChecklistResponseDto {
     private List<Boolean> valueList;
 
     @Builder
-    public ChecklistResponseDto(Long count, List<String> nameList, List<Boolean> valueList) {
+    public ChecklistResponseDto(Long count, List<Long> idList, List<String> nameList, List<Boolean> valueList) {
         this.count = count;
+        this.idList = idList;
         this.nameList = nameList;
         this.valueList = valueList;
     }

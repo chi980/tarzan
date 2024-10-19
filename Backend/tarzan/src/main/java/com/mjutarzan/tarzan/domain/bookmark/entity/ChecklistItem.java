@@ -54,4 +54,8 @@ public class ChecklistItem extends CommonEntity {
         this.user = user;
         this.user.addCheckListItem(this);
     }
+
+    public void update(Boolean value) {
+        this.value = value;
+    }
 }

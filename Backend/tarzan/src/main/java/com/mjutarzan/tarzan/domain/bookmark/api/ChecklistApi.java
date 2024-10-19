@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.bookmark.api;
 
+import com.mjutarzan.tarzan.domain.bookmark.api.request.ChecklistRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.ChecklistResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.ChecklistType;
 import com.mjutarzan.tarzan.domain.bookmark.service.ChecklistService;
@@ -31,7 +32,7 @@ public class ChecklistApi {
                 .build());
     }
     @PostMapping("/checklist/mover")
-    public ResponseEntity<?> createMoverChecklist(@RequestBody Map<String, ChecklistResponseDto> checklistRequestDto,@AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> createMoverChecklist(@RequestBody ChecklistRequestDto checklistRequestDto,@AuthenticationPrincipal UserDto userDto){
 
         checklistService.createChecklist(ChecklistType.MOVER, checklistRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
@@ -50,7 +51,7 @@ public class ChecklistApi {
     }
 
     @PostMapping("/checklist/item")
-    public ResponseEntity<?> createItemChecklist(@RequestBody Map<String, ChecklistResponseDto> checklistRequestDto,@AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> createItemChecklist(@RequestBody ChecklistRequestDto checklistRequestDto, @AuthenticationPrincipal UserDto userDto){
 
         checklistService.createChecklist(ChecklistType.ITEM, checklistRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()

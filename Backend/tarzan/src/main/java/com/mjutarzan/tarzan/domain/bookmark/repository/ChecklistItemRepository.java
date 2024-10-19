@@ -15,4 +15,6 @@ public interface ChecklistItemRepository extends JpaRepository<ChecklistItem, Lo
             @Param("userId") Long userId,
             @Param("type") ChecklistType type);
 
+    List<ChecklistItem> findAllByIdIn(List<Long> ids);
+
 }
