@@ -14,12 +14,14 @@ import com.mjutarzan.tarzan.domain.bookmark.model.vo.BookmarkStatus;
 import com.mjutarzan.tarzan.domain.bookmark.repository.BookmarkChecklistItemRepository;
 import com.mjutarzan.tarzan.domain.bookmark.repository.BookmarkRepository;
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
+import com.mjutarzan.tarzan.domain.house.entity.House;
 import com.mjutarzan.tarzan.domain.house.entity.UserHouse;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
 import com.mjutarzan.tarzan.domain.house.repository.UserHouseRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
+import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import com.mjutarzan.tarzan.global.common.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -140,7 +142,19 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public void deleteBookmark(Long bookmarkIdx, UserDto userDto) {
+    public void deleteBookmark(Long bookmarkIdx, UserDto loginedUserDto) {
+        User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
+        if (!bookmark.getUser().getId().equals(loginedUser.getId())) {
+            throw new UnauthorizedException("북마크의 주인만 삭제할 수 있습니다.");
+        }
+        House house = bookmark.getHouse();
+        if (house instanceof UserHouse) {
+            UserHouse userHouse = (UserHouse) house;
+            userHouseRepository.delete(userHouse);
+        }
+
+        bookmarkRepository.delete(bookmark);
     }
 }

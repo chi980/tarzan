@@ -35,9 +35,7 @@ public class ChecklistServiceImpl implements ChecklistService{
         List<ChecklistItem> checklist = checklistItemRepository.findByUserIdAndType(loginedUser.getId(), checklistType);
         if(checklist.size() == 0 || checklistType.getCnt() != checklist.size()) {
 //            없는 경우 신규 사용자이므로 만든다.
-            log.info("{}", "신규 사용자이므로 생성");
             checklist = createChecklist(checklistType, loginedUser);
-            checklist = checklistItemRepository.saveAllAndFlush(checklist);
         }
 
         Map<String, ChecklistResponseDto> result = checklist.stream()
@@ -68,19 +66,22 @@ public class ChecklistServiceImpl implements ChecklistService{
     }
 
     private List<ChecklistItem> createChecklist(ChecklistType checklistType, User user) {
-        return checklistType.getNames().entrySet().stream()
+        log.info("{}", "신규 사용자이므로 생성");
+        List<ChecklistItem> result = checklistType.getNames().entrySet().stream()
                 .flatMap(entry ->
-                    entry.getValue().stream()
-                            .map(name -> ChecklistItem.builder()
-                                    .type(checklistType)
-                                    .title(entry.getKey())
-                                    .order(entry.getValue().indexOf(name))
-                                    .name(name)
-                                    .value(false)
-                                    .user(user)
-                                    .build())
+                        entry.getValue().stream()
+                                .map(name -> ChecklistItem.builder()
+                                        .type(checklistType)
+                                        .title(entry.getKey())
+                                        .order(entry.getValue().indexOf(name))
+                                        .name(name)
+                                        .value(false)
+                                        .user(user)
+                                        .build())
                 )
                 .collect(Collectors.toList());
+
+        return checklistItemRepository.saveAllAndFlush(result);
     }
 
     @Override
@@ -94,6 +95,9 @@ public class ChecklistServiceImpl implements ChecklistService{
 
         List<Long> idList = requestDto.getValueList().keySet().stream().collect(Collectors.toList());
         List<ChecklistItem> checklist = checklistItemRepository.findAllByIdIn(idList);
+        if(checklist.size() == 0){
+            checklist = createChecklist(checklistType, loginedUser);
+        }
         checklist.stream().forEach(checklistItem -> {
             if(!(checklistItem.getUser().getId() != loginedUser.getId())){
                 throw new UnauthorizedException("북마크의 주인만 수정할 수 있습니다.");

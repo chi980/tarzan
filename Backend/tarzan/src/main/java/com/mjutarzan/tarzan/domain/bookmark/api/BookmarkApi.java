@@ -106,6 +106,8 @@ public class BookmarkApi {
 
         bookmarkService.deleteBookmark(bookmarkIdx, userDto);
 
+
+
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("북마크가 성공적으로 삭제되었습니다.")
