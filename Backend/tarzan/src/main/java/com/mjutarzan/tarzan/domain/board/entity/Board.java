@@ -51,7 +51,7 @@ public class Board extends CommonEntity {
     @JoinColumn(name = "board_writer")
     private User writer;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> commentList = new ArrayList<>();
 
     @Builder

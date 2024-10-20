@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.bookmark.api.request;
 
+import com.mjutarzan.tarzan.domain.bookmark.model.vo.BookmarkStatus;
 import com.mjutarzan.tarzan.global.common.dto.CustomPageable;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,11 +12,13 @@ import org.springframework.data.domain.Sort;
 @Setter
 @ToString
 public class BookmarkListRequestDto extends CustomPageable {
+    private BookmarkStatus status;
    private String sortBy;
 
    @Builder
-    public BookmarkListRequestDto(int page, int size, String sortBy){
+    public BookmarkListRequestDto(BookmarkStatus status, int page, int size, String sortBy){
        super(page, size, null);
+       this.status = status;
        this.sortBy = sortBy;
        super.setSort(convertToSort(sortBy.trim()));
    }

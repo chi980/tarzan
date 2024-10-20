@@ -9,12 +9,18 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class ChecklistResponseDto {
+public class BookmarkChecklistResponseDto {
     @JsonProperty("count")
-    private Long count;
+    private Integer count;
+
+    @JsonProperty("title")
+    private String title;
 
     @JsonProperty("id_list")
     private List<Long> idList;
+
+    @JsonProperty("order_list")
+    private List<Integer> orderList;
 
     @JsonProperty("name_list")
     private List<String> nameList;
@@ -23,9 +29,11 @@ public class ChecklistResponseDto {
     private List<Boolean> valueList;
 
     @Builder
-    public ChecklistResponseDto(Long count, List<Long> idList, List<String> nameList, List<Boolean> valueList) {
+    public BookmarkChecklistResponseDto(Integer count, String title, List<Long> idList, List<Integer> orderList, List<String> nameList, List<Boolean> valueList) {
         this.count = count;
+        this.title = title;
         this.idList = idList;
+        this.orderList = orderList;
         this.nameList = nameList;
         this.valueList = valueList;
     }

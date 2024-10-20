@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.bookmark.service;
 
+import com.mjutarzan.tarzan.domain.bookmark.api.request.ChecklistRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.ChecklistResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.entity.ChecklistItem;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.ChecklistType;
@@ -7,7 +8,7 @@ import com.mjutarzan.tarzan.domain.bookmark.repository.ChecklistItemRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
-import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
+import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +33,9 @@ public class ChecklistServiceImpl implements ChecklistService{
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
         List<ChecklistItem> checklist = checklistItemRepository.findByUserIdAndType(loginedUser.getId(), checklistType);
-        if(checklist.size() == 0) {
-            throw new ResourceNotFoundException("체크리스트가 존재하지 않습니다.");
+        if(checklist.size() == 0 || checklistType.getCnt() != checklist.size()) {
+//            없는 경우 신규 사용자이므로 만든다.
+            checklist = createChecklist(checklistType, loginedUser);
         }
 
         Map<String, ChecklistResponseDto> result = checklist.stream()
@@ -48,6 +49,10 @@ public class ChecklistServiceImpl implements ChecklistService{
                             List<ChecklistItem> items = entry.getValue();
                             return ChecklistResponseDto.builder()
                                     .count((long) items.size())  // 아이템 수
+                                    .idList(items.stream()
+                                            .map(ChecklistItem::getId)
+                                            .collect(Collectors.toList())
+                                    )
                                     .nameList(items.stream()
                                             .map(ChecklistItem::getName)
                                             .collect(Collectors.toList()))  // name 리스트
@@ -60,40 +65,44 @@ public class ChecklistServiceImpl implements ChecklistService{
         return result;
     }
 
+    private List<ChecklistItem> createChecklist(ChecklistType checklistType, User user) {
+        log.info("{}", "신규 사용자이므로 생성");
+        List<ChecklistItem> result = checklistType.getNames().entrySet().stream()
+                .flatMap(entry ->
+                        entry.getValue().stream()
+                                .map(name -> ChecklistItem.builder()
+                                        .type(checklistType)
+                                        .title(entry.getKey())
+                                        .order(entry.getValue().indexOf(name))
+                                        .name(name)
+                                        .value(false)
+                                        .user(user)
+                                        .build())
+                )
+                .collect(Collectors.toList());
+
+        return checklistItemRepository.saveAllAndFlush(result);
+    }
+
     @Override
-    public void createChecklist(ChecklistType checklistType, Map<String, ChecklistResponseDto> requestDto, UserDto loginedUserDto) {
+    public void createChecklist(ChecklistType checklistType, ChecklistRequestDto requestDto, UserDto loginedUserDto) {
+
+        if(requestDto.getCount() != requestDto.getValueList().size()){
+            throw new IllegalArgumentException("리스트간 개수가 다릅니다.");
+        }
 
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
-
-        // ChecklistItem 목록 생성
-        List<ChecklistItem> checklistItems = requestDto.entrySet().stream()
-                .flatMap(entry -> {
-                    String title = entry.getKey();
-                    ChecklistResponseDto checklistResponseDto = entry.getValue();
-                    Long count = checklistResponseDto.getCount();
-                    List<String> nameList = checklistResponseDto.getNameList();
-                    List<Boolean> valueList = checklistResponseDto.getValueList();
-
-                    // 체크리스트 갯수가 동일하지 않을 경우 예외 처리
-                    if (nameList.size() != count || valueList.size() != count) {
-                        throw new IllegalArgumentException("체크리스트 갯수가 동일하지 않습니다.");
-                    }
-
-                    // IntStream을 사용하여 index로 ChecklistItem 생성
-                    return IntStream.range(0, count.intValue())
-                            .mapToObj(idx -> ChecklistItem.builder()
-                                    .type(checklistType)
-                                    .title(title)
-                                    .order(idx) // 순서는 0부터 시작
-                                    .name(nameList.get(idx))
-                                    .value(valueList.get(idx))
-                                    .user(loginedUser)
-                                    .build());
-                })
-                .collect(Collectors.toList());
-
-        // ChecklistItem을 DB에 저장
-        checklistItemRepository.saveAll(checklistItems);
+        List<Long> idList = requestDto.getValueList().keySet().stream().collect(Collectors.toList());
+        List<ChecklistItem> checklist = checklistItemRepository.findAllByIdIn(idList);
+        if(checklist.size() == 0){
+            checklist = createChecklist(checklistType, loginedUser);
+        }
+        checklist.stream().forEach(checklistItem -> {
+            if(!(checklistItem.getUser().getId() != loginedUser.getId())){
+                throw new UnauthorizedException("북마크의 주인만 수정할 수 있습니다.");
+            }
+            checklistItem.update(requestDto.getValueList().get(checklistItem.getId()));
+        });
     }
 }

@@ -5,18 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @ToString
 public class ChecklistRequestDto {
     @JsonProperty("count")
-    private Long count;
-
-    @JsonProperty("name_list")
-    private List<String> nameList;
+    private Integer count;
 
     @JsonProperty("value_list")
-    private List<Boolean> valueList;
+    private Map<Long, Boolean> valueList;
 }
