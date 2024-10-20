@@ -4,6 +4,7 @@ import com.mjutarzan.tarzan.domain.bookmark.api.request.BookmarkListRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.request.BookmarkWithApiHouseRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.request.BookmarkWithUserHouseRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.request.UpdateBookmarkRequestDto;
+import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkChecklistResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListItemResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListResponseDto;
@@ -32,8 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,7 +121,7 @@ public class BookmarkServiceImpl implements BookmarkService{
     @Override
     public BookmarkListResponseDto getBookmarks(BookmarkListRequestDto requestDto, UserDto loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
-        User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
         Page<BookmarkListItemResponseDto> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
 
@@ -132,22 +132,95 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public BookmarkDetailResponseDto getBookmark(Long bookmarkIdx, UserDto userDto) {
-        return null;
+    public BookmarkDetailResponseDto getBookmark(Long bookmarkIdx, UserDto loginedUserDto) {
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+
+        Map<String, BookmarkChecklistResponseDto> checklist = bookmark.getCheckListItemList().stream()
+                // type을 기준으로 그룹화
+                .collect(Collectors.groupingBy(
+                        item -> item.getType().name(), // type을 key로 사용
+                        Collectors.collectingAndThen(
+                                // 그룹화된 BookmarkChecklistItem들을 order 순으로 정렬
+                                Collectors.toList(),
+                                list -> {
+                                    list.sort(Comparator.comparing(BookmarkChecklistItem::getOrder)); // order 순으로 정렬
+
+                                    List<Long> idList = list.stream()
+                                            .map(BookmarkChecklistItem::getId)
+                                            .collect(Collectors.toList());
+
+                                    List<String> nameList = list.stream()
+                                            .map(BookmarkChecklistItem::getName)
+                                            .collect(Collectors.toList());
+
+                                    List<Integer> orderList = list.stream()
+                                            .map(BookmarkChecklistItem::getOrder)
+                                            .collect(Collectors.toList());
+
+                                    List<Boolean> valueList = list.stream()
+                                            .map(BookmarkChecklistItem::getValue)
+                                            .collect(Collectors.toList());
+
+
+
+                                    return BookmarkChecklistResponseDto.builder()
+                                            .count(list.size())
+                                            .title(list.get(0).getType().name())
+                                            .idList(idList)
+                                            .orderList(orderList)
+                                            .nameList(nameList)
+                                            .valueList(valueList)
+                                            .build();
+                                }
+                        )
+                ));
+
+
+
+        return BookmarkDetailResponseDto.builder()
+                .id(bookmark.getId())
+                .leaseType(bookmark.getLeaseType())
+                .rent(bookmark.getRent())
+                .deposit(bookmark.getDeposit())
+                .commissionFee(bookmark.getCommissionFee())
+                .managementFee(bookmark.getManagementFee())
+                .realEstate(bookmark.getRealEstate())
+                .realEstatePhoneNumber(bookmark.getRealEstatePhoneNumber())
+                .canAnimal(bookmark.getCanAnimal())
+                .parkingLogCoverage(bookmark.getParkingLotCoverage())
+                .roomCnt(bookmark.getRoomCnt())
+                .bathRoomCnt(bookmark.getBathRoomCnt())
+                .availableMoveInDate(bookmark.getAvailableMoveInDate())
+                .floor(bookmark.getFloor())
+                .direction(bookmark.getDirection())
+                .checklist(checklist)
+                .build();
     }
 
     @Override
-    public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto updateBookmarkRequestDto, UserDto userDto) {
+    public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto requestDto, UserDto loginedUserDto) {
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
+        if (!bookmark.getUser().getId().equals(loginedUser.getId())) {
+            throw new UnauthorizedException("북마크의 등록자만 수정할 수 있습니다.");
+        }
+
+        bookmark.update(requestDto);
+        List<BookmarkChecklistItem> checklist = bookmarkChecklistItemRepository.findAllById(requestDto.getChecklist().keySet().stream().collect(Collectors.toList()));
+        checklist.forEach(bookmarkChecklistItem -> {
+            bookmarkChecklistItem.update(requestDto.getChecklist().get(bookmarkChecklistItem.getId()));
+        });
     }
 
     @Override
     public void deleteBookmark(Long bookmarkIdx, UserDto loginedUserDto) {
-        User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
         if (!bookmark.getUser().getId().equals(loginedUser.getId())) {
-            throw new UnauthorizedException("북마크의 주인만 삭제할 수 있습니다.");
+            throw new UnauthorizedException("북마크의 등록자만 삭제할 수 있습니다.");
         }
         House house = bookmark.getHouse();
         if (house instanceof UserHouse) {

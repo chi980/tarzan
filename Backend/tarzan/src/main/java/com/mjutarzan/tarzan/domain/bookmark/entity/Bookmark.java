@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.bookmark.entity;
 
+import com.mjutarzan.tarzan.domain.bookmark.api.request.UpdateBookmarkRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.BookmarkStatus;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.HouseDirection;
 import com.mjutarzan.tarzan.domain.house.entity.House;
@@ -50,8 +51,8 @@ public class Bookmark extends CommonEntity {
     @Column(name = "bookmark_deposit")
     private Integer deposit; // 보증금
 
-    @Column(name = "bookmark_commision_fee")
-    private Integer commisionFee; // 중개수수료
+    @Column(name = "bookmark_commission_fee")
+    private Integer commissionFee; // 중개수수료
 
     @Column(name = "bookmark_management_fee")
     private Integer managementFee; // 관리비
@@ -87,14 +88,14 @@ public class Bookmark extends CommonEntity {
 
 
     @Builder
-    public Bookmark(House house, User user, BookmarkStatus status, LeaseType leaseType, Integer rent, Integer deposit, Integer commisionFee, Integer managementFee, String realEstate, String realEstatePhoneNumber, Boolean canAnimal, Integer parkingLotCoverage, Integer roomCnt, Integer bathRoomCnt, LocalDate availableMoveInDate, Integer floor, HouseDirection direction) {
+    public Bookmark(House house, User user, BookmarkStatus status, LeaseType leaseType, Integer rent, Integer deposit, Integer commissionFee, Integer managementFee, String realEstate, String realEstatePhoneNumber, Boolean canAnimal, Integer parkingLotCoverage, Integer roomCnt, Integer bathRoomCnt, LocalDate availableMoveInDate, Integer floor, HouseDirection direction) {
         this.house = house;
         this.user = user;
         this.status = status;
         this.leaseType = leaseType;
         this.rent = rent;
         this.deposit = deposit;
-        this.commisionFee = commisionFee;
+        this.commissionFee = commissionFee;
         this.managementFee = managementFee;
         this.realEstate = realEstate;
         this.realEstatePhoneNumber = realEstatePhoneNumber;
@@ -116,4 +117,65 @@ public class Bookmark extends CommonEntity {
     }
 
     public void addBookmarkCheckListItem(BookmarkChecklistItem bookmarkChecklistItem){this.checkListItemList.add(bookmarkChecklistItem);}
+
+    public void update(UpdateBookmarkRequestDto requestDto) {
+        this.status = BookmarkStatus.CHECK_COMPLETED;
+
+        if(requestDto.getLeaseType() != null){
+            this.leaseType = requestDto.getLeaseType();
+        }
+
+        if(requestDto.getRent() != null){
+            this.rent = requestDto.getRent();
+        }
+
+        if(requestDto.getDeposit() != null){
+            this.deposit = requestDto.getDeposit();
+        }
+
+        if(requestDto.getCommissionFee() != null){
+            this.commissionFee = requestDto.getCommissionFee();
+        }
+
+        if(requestDto.getManagementFee() != null){
+            this.managementFee = requestDto.getManagementFee();
+        }
+
+        if(requestDto.getRealEstate() != null){
+            this.realEstate = requestDto.getRealEstate();
+        }
+
+        if(requestDto.getRealEstatePhoneNumber() != null){
+            this.realEstatePhoneNumber = requestDto.getRealEstatePhoneNumber();
+        }
+
+        if(requestDto.getCanAnimal() != null){
+            this.canAnimal = requestDto.getCanAnimal();
+        }
+
+        if(requestDto.getParkingLogCoverage() != null){
+            this.parkingLotCoverage = requestDto.getParkingLogCoverage();
+        }
+
+        if(requestDto.getRoomCnt() != null){
+            this.roomCnt = requestDto.getRoomCnt();
+        }
+
+        if(requestDto.getBathRoomCnt() != null){
+            this.bathRoomCnt = requestDto.getBathRoomCnt();
+        }
+
+        if(requestDto.getAvailableMoveInDate() != null){
+            this.availableMoveInDate = requestDto.getAvailableMoveInDate();
+        }
+
+        if(requestDto.getFloor() != null){
+            this.floor = requestDto.getFloor();
+        }
+
+        if(requestDto.getDirection() != null){
+            this.direction = requestDto.getDirection();
+        }
+
+    }
 }

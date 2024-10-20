@@ -55,4 +55,7 @@ public class BookmarkChecklistItem {
         this.bookmark.addBookmarkCheckListItem(this);
     }
 
+    public void update(Boolean value) {
+        this.value = value;
+    }
 }
