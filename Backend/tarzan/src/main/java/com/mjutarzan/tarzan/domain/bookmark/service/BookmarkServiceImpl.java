@@ -1,17 +1,12 @@
 package com.mjutarzan.tarzan.domain.bookmark.service;
 
-import com.mjutarzan.tarzan.domain.bookmark.api.request.BookmarkListRequestDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.request.BookmarkWithApiHouseRequestDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.request.BookmarkWithUserHouseRequestDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.request.UpdateBookmarkRequestDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkChecklistResponseDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListItemResponseDto;
-import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListResponseDto;
+import com.mjutarzan.tarzan.domain.bookmark.api.request.*;
+import com.mjutarzan.tarzan.domain.bookmark.api.response.*;
 import com.mjutarzan.tarzan.domain.bookmark.entity.Bookmark;
 import com.mjutarzan.tarzan.domain.bookmark.entity.BookmarkChecklistItem;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.BookmarkChecklistType;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.BookmarkStatus;
+import com.mjutarzan.tarzan.domain.bookmark.model.vo.HouseIndexType;
 import com.mjutarzan.tarzan.domain.bookmark.repository.BookmarkChecklistItemRepository;
 import com.mjutarzan.tarzan.domain.bookmark.repository.BookmarkRepository;
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
@@ -33,7 +28,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -229,5 +227,52 @@ public class BookmarkServiceImpl implements BookmarkService{
         }
 
         bookmarkRepository.delete(bookmark);
+    }
+
+    @Override
+    public CompareBookmarkResponseDto compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, UserDto loginedUserDto) {
+        if(compareBookmarksRequestDto.getIdList().size() <= 1 || compareBookmarksRequestDto.getIdList().size()>3){
+            throw new IllegalArgumentException("2개 이상 3개 이하의 집들만 비교할 수 있습니다.");
+        }
+
+        List<Bookmark> bookmarks = bookmarkRepository.findAllById(compareBookmarksRequestDto.getIdList().stream().collect(Collectors.toList()));
+        if(bookmarks.size() <= 1 || bookmarks.size()>3){
+            throw new IllegalArgumentException("북마크의 id를 잘못 전달했습니다.");
+        }
+
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+        bookmarks.stream().forEach(bookmark -> {
+            if(bookmark.getUser().getId() != loginedUser.getId()) throw new UnauthorizedException("북마크의 작성자만 비교할 수 있습니다.");
+        });
+
+        List<CompareBookmarkDetailResponseDto> list = bookmarks.stream().map(bookmark -> {
+            House house = bookmark.getHouse();
+            
+            // index 구하는 과정
+            Map<HouseIndexType, Integer> indexes = getHouseIndexesScore(bookmark.getHouse());
+            Map<BookmarkChecklistType, Integer> checks = getCheckListScore(bookmark.getCheckListItemList());
+            
+            return CompareBookmarkDetailResponseDto.builder()
+                    .id(house.getId())
+                    .name(house.getName())
+                    .address(house.getAddress())
+                    .category(house.getCategory())
+                    .score(80)  // 항상 100점
+                    .indexes(indexes)
+                    .checks(checks)
+                    .build();
+        }).collect(Collectors.toList());
+
+        return CompareBookmarkResponseDto.builder()
+                .list(list)
+                .build();
+    }
+
+    private Map<BookmarkChecklistType, Integer> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
+        return null;
+    }
+
+    private Map<HouseIndexType, Integer> getHouseIndexesScore(House house) {
+        return null;
     }
 }
