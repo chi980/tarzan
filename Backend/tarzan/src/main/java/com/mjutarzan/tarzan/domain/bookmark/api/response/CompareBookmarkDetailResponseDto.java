@@ -29,13 +29,13 @@ public class CompareBookmarkDetailResponseDto {
     private Integer score;
 
     @JsonProperty("house_indexes")
-    Map<HouseIndexType, Integer> indexes;
+    Map<HouseIndexType, Long> indexes;
 
     @JsonProperty("house_checks")
-    Map<BookmarkChecklistType, Integer> checks;
+    Map<BookmarkChecklistType, Long> checks;
 
     @Builder
-    public CompareBookmarkDetailResponseDto(Long id, String name, String address, String category, Integer score, Map<HouseIndexType, Integer> indexes, Map<BookmarkChecklistType, Integer> checks) {
+    public CompareBookmarkDetailResponseDto(Long id, String name, String address, String category, Integer score, Map<HouseIndexType, Long> indexes, Map<BookmarkChecklistType, Long> checks) {
         this.id = id;
         this.name = name;
         this.address = address;

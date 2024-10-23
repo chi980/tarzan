@@ -249,8 +249,8 @@ public class BookmarkServiceImpl implements BookmarkService{
             House house = bookmark.getHouse();
             
             // index 구하는 과정
-            Map<HouseIndexType, Integer> indexes = getHouseIndexesScore(bookmark.getHouse());
-            Map<BookmarkChecklistType, Integer> checks = getCheckListScore(bookmark.getCheckListItemList());
+            Map<HouseIndexType, Long> indexes = getHouseIndexesScore(bookmark.getHouse());
+            Map<BookmarkChecklistType, Long> checks = getCheckListScore(bookmark.getCheckListItemList());
             
             return CompareBookmarkDetailResponseDto.builder()
                     .id(house.getId())
@@ -268,11 +268,24 @@ public class BookmarkServiceImpl implements BookmarkService{
                 .build();
     }
 
-    private Map<BookmarkChecklistType, Integer> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
-        return null;
+    private Map<BookmarkChecklistType, Long> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
+        return checkListItemList.stream()
+                // type이 CHECK로 시작하는 항목만 필터링
+                .filter(item -> item.getType().name().startsWith("CHECK"))
+                // type별로 그룹화
+                .collect(Collectors.groupingBy(
+                        BookmarkChecklistItem::getType,  // type으로 그룹화
+                        // 각 그룹에서 value가 true인 항목을 카운트
+                        Collectors.filtering(
+                                BookmarkChecklistItem::getValue, // value가 true인 항목만 필터링
+                                Collectors.counting() // true인 항목을 카운트
+                        )
+                ));
+
     }
 
-    private Map<HouseIndexType, Integer> getHouseIndexesScore(House house) {
+    private Map<HouseIndexType, Long> getHouseIndexesScore(House house) {
+        Point location = house.getLocation();
         return null;
     }
 }
