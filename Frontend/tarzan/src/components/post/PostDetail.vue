@@ -22,40 +22,49 @@
       </div>
       <div class="comment-container">
         <div class="comment-list">
-          <CommentList />
+          <CommentList :post-id="post.id" /> <!-- CommentList에 post.id 전달 -->
         </div>
-        <CommentInput />
+        <CommentInput :board-idx="post.id" /> <!-- CommentInput에 post.id 전달 -->
       </div>
     </div>
     <BottomBar />
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router'; // Vue Router에서 route 정보 가져오기
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostTopBar from "./PostTopBar.vue";
 import CommentInput from "./CommentInput.vue";
 import CommentList from "./CommentList.vue";
 
-export default {
-  components: {
-    PostTopBar,
-    BottomBar,
-    CommentList,
-    CommentInput,
-  },
-  created() {
-    const postId = this.$route.params.id;
-    this.post = {
-      id: postId,
-      tag: '질문',
-      writer: '호랑이',
-      title: `${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
-      content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
-      elapsedTime: '20시간 전',
-    };
-  },
+// 컴포넌트 등록
+const components = {
+  PostTopBar,
+  BottomBar,
+  CommentList,
+  CommentInput,
 };
+
+// route 정보 가져오기
+const route = useRoute();
+
+// 상태 변수 정의
+const post = ref({});
+
+// onMounted로 컴포넌트가 마운트될 때 post 데이터 설정
+onMounted(() => {
+  const postId = route.params.id;
+  post.value = {
+    id: postId,
+    tag: '질문',
+    writer: '호랑이',
+    title: `${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
+    content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
+    elapsedTime: '20시간 전',
+  };
+});
 </script>
 
 <style lang="scss" scoped>
