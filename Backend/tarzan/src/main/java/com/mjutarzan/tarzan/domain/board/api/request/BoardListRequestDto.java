@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.domain.board.api.request;
 
 import com.mjutarzan.tarzan.global.common.dto.CustomPageable;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 @Setter
 @ToString
 public class BoardListRequestDto extends CustomPageable {
+    @NotBlank
     private SiGunGu gu;
     private String tag;
     private String sortBy;
