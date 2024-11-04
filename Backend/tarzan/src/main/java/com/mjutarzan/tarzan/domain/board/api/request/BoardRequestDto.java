@@ -26,6 +26,6 @@ public class BoardRequestDto {
     private BoardTag tag;
 
     @JsonProperty("board_gu")
-    @NotBlank(message = "구는 필수입니다.")
-    private SiGunGu gu;
+    @NotNull(message = "구는 필수입니다.")
+        private SiGunGu gu;
 }

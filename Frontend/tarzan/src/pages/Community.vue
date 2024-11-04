@@ -90,6 +90,7 @@ export default {
         if (response.data.success) {
           this.posts = response.data.data.list; // 응답에서 게시글 목록을 가져옴
           console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
+          console.log(response.data.data);
           alert(`성공?`);
         } else {
           console.error('Failed:', response.data.message);

@@ -2,16 +2,16 @@
   <div class="post-item-container" @click="handleClick">
     <!-- <SmallTag /> -->
     <div class="post-tag">
-      <span>{{ post.tag }}</span>
+      <span>{{ post.board_tag }}</span>
     </div>
     <div class="post-content">
-      <h3 id="post-title">{{ post.title }}</h3>
-      <p id="post-content">{{ post.content }}</p>
+      <h3 id="post-title">{{ post.board_title }}</h3>
+      <p id="post-content">{{ post.board_content }}</p>
     </div>
     <div class="post-meta">
       <div class="time-views">
         <span id="time">20시간 전 · </span>
-        <span id="views">조회 5</span>
+        <span id="views"> 조회 {{ post.board_read_count }}</span>
       </div>
       <div class="comment">
         <font-awesome-icon id="comment-icon" :icon="['far', 'comment']" />
