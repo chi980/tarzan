@@ -1,14 +1,20 @@
 package com.mjutarzan.tarzan.domain.fraud.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mjutarzan.tarzan.domain.fraud.api.request.PriceRequestDto;
 import com.mjutarzan.tarzan.domain.fraud.api.request.RealEstateRequestDto;
+import com.mjutarzan.tarzan.domain.fraud.api.response.PriceListResponseDto;
 import com.mjutarzan.tarzan.domain.fraud.api.response.RealEstateListItemResponseDto;
 import com.mjutarzan.tarzan.domain.fraud.api.response.RealEstateListResponseDto;
+import com.mjutarzan.tarzan.domain.fraud.api.response.RentListItemResponseDto;
+import com.mjutarzan.tarzan.domain.fraud.entity.dto.TbLnOpendataRentVResponseWrapper;
 import com.mjutarzan.tarzan.domain.fraud.entity.dto.VWorldRealEstateApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,18 +23,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FraudServiceImpl implements FraudService{
+
+    // 부동산 중개업 url, key from vworld
+    @Value("${api.vworld.real-estate.url}")
+    private String vworldRealEstateUrl;
     @Value("${api.vworld.real-estate.develop.key}")
     private String vworldRealEstateKey;
 
+    // 서울시 부동산 시세
+    @Value("${api.data-seoul.url.rent}")
+    private String dataSeoulRentUrl;
+    @Value("${api.data-seoul.url.sale}")
+    private String dataSeoulSaleUrl;
+    @Value("${api.data-seoul.key}")
+    private String dataSeoulKey;
+
+    private final RestTemplate restTemplate;
+
     @Override
     public RealEstateListResponseDto getRealEstate(RealEstateRequestDto realEstateRequestDto) throws IOException {
-        StringBuilder urlBuilder = new StringBuilder("http://api.vworld.kr/ned/data/getEBOfficeInfo");
+        StringBuilder urlBuilder = new StringBuilder(vworldRealEstateUrl);
         StringBuilder parameter = new StringBuilder();
         parameter.append("?" + URLEncoder.encode("key", "UTF-8") + "=" + vworldRealEstateKey);
         parameter.append("&" + URLEncoder.encode("ldCode", "UTF-8") + "=" + URLEncoder.encode(realEstateRequestDto.getGu().getCode(), "UTF-8"));
@@ -76,4 +97,60 @@ public class FraudServiceImpl implements FraudService{
                 .isNext(apiResponse.getEdOffices().getTotalCount() > apiResponse.getEdOffices().getNumOfRows() * apiResponse.getEdOffices().getPageNo())
                 .build();
     }
+
+    @Override
+    public Map<String, PriceListResponseDto> getPrice(PriceRequestDto priceRequestDto) throws IOException {
+        return Map.of(
+                "rent", getRentPrice(priceRequestDto)
+//                "sale", getSalePrice(priceRequestDto)
+        );
+    }
+
+    private PriceListResponseDto getRentPrice(PriceRequestDto priceRequestDto)  throws IOException {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulRentUrl)
+                .queryParam("KEY", dataSeoulKey)
+                .queryParam("TYPE", "json")
+                .queryParam("SERVICE", "tbLnOpendataRentV")
+                .queryParam("START_INDEX", priceRequestDto.getPageNo())
+                .queryParam("END_INDEX", priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1)
+                .queryParam("CGG_CD", priceRequestDto.getGu().getCode())
+                .queryParam("STDG_CD", priceRequestDto.getDong());
+
+        String search = priceRequestDto.getSearch();
+        String searchBy = priceRequestDto.getSearchBy();
+
+        if("건물명".equals(searchBy)){
+            builder.queryParam("BLDG_NM", search);
+        }else if("지번".equals(searchBy)){
+            String[] streetNumber = search.split("-");
+            if(streetNumber.length!=2) throw new IllegalArgumentException("지번 형식이 잘못되었습니다.");
+
+            builder.queryParam("MNO", streetNumber[0]);
+            builder.queryParam("SNO", streetNumber[1]);
+        }
+
+        String uri = builder.toUriString();
+        TbLnOpendataRentVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataRentVResponseWrapper.class);
+
+        List<RentListItemResponseDto> list = response.getTbLnOpendataRentV().getRows().stream()
+                .map(RentListItemResponseDto::getInstance)
+                .collect(Collectors.toList());
+
+        return PriceListResponseDto.builder()
+                .count(response.getTbLnOpendataRentV().getListTotalCount())
+                .list(list)
+                .isNext(response.getTbLnOpendataRentV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
+                .build();
+    }
+
+    /**
+     * 부동산 실거래가
+     * @param priceRequestDto
+     * @return
+     */
+    private PriceListResponseDto getSalePrice(PriceRequestDto priceRequestDto) {
+        return null;
+    }
+
+
 }

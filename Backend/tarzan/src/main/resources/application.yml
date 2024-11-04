@@ -77,6 +77,16 @@ jwt:
 api:
   vworld:
     real-estate:
+      url:
+        "http://api.vworld.kr/ned/data/getEBOfficeInfo"
       develop:
         key:
           "EA6F08E6-F05D-380A-840A-709AF07229F4"
+  data-seoul:
+    url:
+      rent:
+        "http://openapi.seoul.go.kr:8088/sample/json/tbLnOpendataRentV/1/5/"
+      sale:
+        "http://openapi.seoul.go.kr:8088/sample/json/tbLnOpendataRtmsV/1/5/"
+    key:
+      "655351685763686938367558756e6f"
