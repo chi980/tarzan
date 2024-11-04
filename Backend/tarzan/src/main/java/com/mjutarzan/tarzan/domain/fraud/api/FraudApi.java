@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -42,15 +41,21 @@ public class FraudApi {
                 .build());
     }
 
-    @GetMapping("/price")
-    public ResponseEntity<?> getPrice(PriceRequestDto priceRequestDto){
-        Map<String, PriceListResponseDto> result = null;
-        try {
-            result = fraudService.getPrice(priceRequestDto);
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred while fetching price data", e);
-        }
+    @GetMapping("/price/sale")
+    public ResponseEntity<?> getSalePrice(PriceRequestDto priceRequestDto){
+        PriceListResponseDto result = fraudService.getSalePrice(priceRequestDto);
 
+
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .data(result)
+                .build());
+    }
+
+    @GetMapping("/price/rent")
+    public ResponseEntity<?> getRentPrice(PriceRequestDto priceRequestDto){
+        PriceListResponseDto result = fraudService.getRentPrice(priceRequestDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")

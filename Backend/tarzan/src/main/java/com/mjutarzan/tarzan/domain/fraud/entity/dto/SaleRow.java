@@ -1,14 +1,14 @@
 package com.mjutarzan.tarzan.domain.fraud.entity.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
-public class RentRow {
+public class SaleRow {
+
     @JsonProperty("RCPT_YR")
     private Integer rcptYr;
 
@@ -36,26 +36,29 @@ public class RentRow {
     @JsonProperty("SNO")
     private String sno;
 
-    @JsonProperty("FLR")
-    private Integer flr;
+    @JsonProperty("BLDG_NM")
+    private String bldgNm;
 
     @JsonProperty("CTRT_DAY")
     private String ctrtDay;
 
-    @JsonProperty("RENT_SE")
-    private String rentSe;
+    @JsonProperty("THING_AMT")
+    private Integer thingAmt; // 물건금액
 
-    @JsonProperty("RENT_AREA")
-    private Double rentArea;
+    @JsonProperty("ARCH_AREA")
+    private Double archArea;
 
-    @JsonProperty("GRFE")
-    private String grfe;
+    @JsonProperty("LAND_AREA")
+    private Double landArea;
 
-    @JsonProperty("RTFE")
-    private String rtfe;
+    @JsonProperty("FLR")
+    private Integer flr;
 
-    @JsonProperty("BLDG_NM")
-    private String bldgNm;
+    @JsonProperty("RGHT_SE")
+    private String rgthSe;
+
+    @JsonProperty("RTRCN_DAY")
+    private String rtrcnDay;
 
     @JsonProperty("ARCH_YR")
     private Integer archYr;
@@ -63,18 +66,9 @@ public class RentRow {
     @JsonProperty("BLDG_USG")
     private String bldgUsg;
 
-    @JsonProperty("CTRT_PRD")
-    private String ctrtPrd;
+    @JsonProperty("DCLR_SE")
+    private String dclrSe;
 
-    @JsonProperty("NEW_UPDT_YN")
-    private String newUpdtYn;
-
-    @JsonProperty("CTRT_UPDT_USE_YN")
-    private String ctrtUpdtUseYn;
-
-    @JsonProperty("BFR_GRFE")
-    private String bfrGrfe;
-
-    @JsonProperty("BFR_RTFE")
-    private String bfrRtfe;
+    @JsonProperty("OPBIZ_RESTAGNT_SGG_NM")
+    private String opbizRestagntSggNm;
 }

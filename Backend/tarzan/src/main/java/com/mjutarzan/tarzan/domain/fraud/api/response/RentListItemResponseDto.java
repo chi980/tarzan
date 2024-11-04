@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class RentListItemResponseDto extends PriceListItemResponseDto{
+    private String contractDateRange; // 계약 기간
     private String rentType; // 전월세 구분
     private Double rentArea; // 임대면적(㎡)
     private String security; //보증금
@@ -15,8 +16,9 @@ public class RentListItemResponseDto extends PriceListItemResponseDto{
     private String bfrRentFee; // 종전임대료
 
     @Builder
-    public RentListItemResponseDto(String gu, String dong, String streetNumber, String buildingName, String contractDate, String contractDateRange, Integer floor,String buildYear, BuildingUse buildingUse, String rentType, Double rentArea, String security, String rentFee, String bfrSecurity, String bfrRentFee) {
-        super(gu, dong, streetNumber, buildingName, contractDate, contractDateRange, floor, buildYear, buildingUse);
+    public RentListItemResponseDto(String gu, String dong, String streetNumber, String buildingName, String contractDate, String contractDateRange, Integer floor,Integer buildYear, BuildingUse buildingUse, String rentType, Double rentArea, String security, String rentFee, String bfrSecurity, String bfrRentFee) {
+        super(gu, dong, streetNumber, buildingName, contractDate, floor, buildYear, buildingUse);
+        this.contractDateRange = contractDateRange;
         this.rentType = rentType;
         this.rentArea = rentArea;
         this.security = security;

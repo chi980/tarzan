@@ -3,11 +3,9 @@ package com.mjutarzan.tarzan.domain.fraud.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjutarzan.tarzan.domain.fraud.api.request.PriceRequestDto;
 import com.mjutarzan.tarzan.domain.fraud.api.request.RealEstateRequestDto;
-import com.mjutarzan.tarzan.domain.fraud.api.response.PriceListResponseDto;
-import com.mjutarzan.tarzan.domain.fraud.api.response.RealEstateListItemResponseDto;
-import com.mjutarzan.tarzan.domain.fraud.api.response.RealEstateListResponseDto;
-import com.mjutarzan.tarzan.domain.fraud.api.response.RentListItemResponseDto;
+import com.mjutarzan.tarzan.domain.fraud.api.response.*;
 import com.mjutarzan.tarzan.domain.fraud.entity.dto.TbLnOpendataRentVResponseWrapper;
+import com.mjutarzan.tarzan.domain.fraud.entity.dto.TbLnOpendataSaleVResponseWrapper;
 import com.mjutarzan.tarzan.domain.fraud.entity.dto.VWorldRealEstateApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,14 +96,12 @@ public class FraudServiceImpl implements FraudService{
     }
 
     @Override
-    public Map<String, PriceListResponseDto> getPrice(PriceRequestDto priceRequestDto) throws IOException {
-        return Map.of(
-                "rent", getRentPrice(priceRequestDto)
-//                "sale", getSalePrice(priceRequestDto)
-        );
-    }
-
-    private PriceListResponseDto getRentPrice(PriceRequestDto priceRequestDto)  throws IOException {
+    /**
+     * 부동산 전월세
+     * @param priceRequestDto
+     * @return
+     */
+    public PriceListResponseDto getRentPrice(PriceRequestDto priceRequestDto) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulRentUrl)
                 .queryParam("KEY", dataSeoulKey)
                 .queryParam("TYPE", "json")
@@ -143,13 +138,47 @@ public class FraudServiceImpl implements FraudService{
                 .build();
     }
 
+    @Override
     /**
      * 부동산 실거래가
      * @param priceRequestDto
      * @return
      */
-    private PriceListResponseDto getSalePrice(PriceRequestDto priceRequestDto) {
-        return null;
+    public PriceListResponseDto getSalePrice(PriceRequestDto priceRequestDto) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulSaleUrl)
+                .queryParam("KEY", dataSeoulKey)
+                .queryParam("TYPE", "json")
+                .queryParam("SERVICE", "tbLnOpendataRtmsV")
+                .queryParam("START_INDEX", priceRequestDto.getPageNo())
+                .queryParam("END_INDEX", priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1)
+                .queryParam("CGG_CD", priceRequestDto.getGu().getCode())
+                .queryParam("STDG_CD", priceRequestDto.getDong());
+
+        String search = priceRequestDto.getSearch();
+        String searchBy = priceRequestDto.getSearchBy();
+
+        if("건물명".equals(searchBy)){
+            builder.queryParam("BLDG_NM", search);
+        }else if("지번".equals(searchBy)){
+            String[] streetNumber = search.split("-");
+            if(streetNumber.length!=2) throw new IllegalArgumentException("지번 형식이 잘못되었습니다.");
+
+            builder.queryParam("MNO", streetNumber[0]);
+            builder.queryParam("SNO", streetNumber[1]);
+        }
+
+        String uri = builder.toUriString();
+        TbLnOpendataSaleVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataSaleVResponseWrapper.class);
+
+        List<SaleListItemResponseDto> list = response.getTbLnOpendataSaleV().getRows().stream()
+                .map(SaleListItemResponseDto::getInstance)
+                .collect(Collectors.toList());
+
+        return PriceListResponseDto.builder()
+                .count(response.getTbLnOpendataSaleV().getListTotalCount())
+                .list(list)
+                .isNext(response.getTbLnOpendataSaleV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
+                .build();
     }
 
 
