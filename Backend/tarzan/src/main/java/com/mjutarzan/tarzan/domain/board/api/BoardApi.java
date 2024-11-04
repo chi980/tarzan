@@ -4,6 +4,8 @@ import com.mjutarzan.tarzan.domain.board.api.request.BoardListRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardSearchRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.UpdateBoardRequestDto;
+import com.mjutarzan.tarzan.domain.board.api.response.BoardDetailResponseDto;
+import com.mjutarzan.tarzan.domain.board.api.response.BoardListItemResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
@@ -43,7 +45,16 @@ public class BoardApi {
                 .data(result)
                 .build());
     }
+    @GetMapping("/board/{boardIdx}")
+    public ResponseEntity<Object> getBoard(@PathVariable Long boardIdx, @AuthenticationPrincipal UserDto userDto){
+        BoardDetailResponseDto result = boardService.getBoard(boardIdx, userDto);
 
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                .success(true)
+                .message("완료되었습니다.")
+                .data(result)
+                .build());
+    }
     @PostMapping("/board")
     public ResponseEntity<Object> createBoard(@RequestBody @Valid BoardRequestDto boardRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto) {
         if (bindingResult.hasErrors()) {

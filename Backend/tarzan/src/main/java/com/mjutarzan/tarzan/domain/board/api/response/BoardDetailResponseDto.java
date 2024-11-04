@@ -1,7 +1,6 @@
 package com.mjutarzan.tarzan.domain.board.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +10,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class BoardListItemResponseDto {
-    @JsonProperty("board_id")
-    private Long id;
+public class BoardDetailResponseDto {
+
     @JsonProperty("board_title")
     private String title;
     @JsonProperty("board_content")
@@ -28,14 +26,11 @@ public class BoardListItemResponseDto {
     private String writerNickname;
     @JsonProperty("board_created_at")
     private LocalDateTime createdAt;
-    @JsonProperty("board_comment_count")
-    private Long commentCount;
     @JsonProperty("board_is_writer")
     private Boolean isWriter;
 
     @Builder
-    public BoardListItemResponseDto(Long id, String title, String content, BoardTag tag, Long readCount, Long writerId, String writerNickname, LocalDateTime createdAt, Long commentCount, Boolean isWriter){
-        this.id = id;
+    public BoardDetailResponseDto(String title, String content, BoardTag tag, Long readCount, Long writerId, String writerNickname, LocalDateTime createdAt, Boolean isWriter) {
         this.title = title;
         this.content = content;
         this.tag = tag;
@@ -43,20 +38,6 @@ public class BoardListItemResponseDto {
         this.writerId = writerId;
         this.writerNickname = writerNickname;
         this.createdAt = createdAt;
-        this.commentCount = commentCount;
         this.isWriter = isWriter;
-    }
-
-    public BoardListItemResponseDto(Board board, Boolean isWriter){
-        this.id = board.getId();
-        this.title = board.getTitle();
-        this.content = board.getContent();
-        this.tag = board.getTag();
-        this.readCount = board.getReadCount();
-        this.writerId = board.getWriter().getId();
-        this.writerNickname = board.getWriter().getNickname();
-        this.commentCount = board.getCommentList().stream().count();
-        this.createdAt = board.getCreatedAt();
-        this.isWriter= isWriter;
     }
 }
