@@ -3,14 +3,12 @@ package com.mjutarzan.tarzan.domain.fraud.entity.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
-@ToString(callSuper = true)
-public class TbLnOpendataRentVResponse {
+public class TbLnOpendataSaleVResponse {
     @JsonProperty("list_total_count")
     private int listTotalCount;
 
@@ -18,5 +16,5 @@ public class TbLnOpendataRentVResponse {
     private Result result;
 
     @JsonProperty("row")
-    private List<RentRow> rows;
+    private List<SaleRow> rows;
 }

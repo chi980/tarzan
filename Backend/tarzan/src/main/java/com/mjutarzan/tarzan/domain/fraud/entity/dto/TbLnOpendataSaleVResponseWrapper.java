@@ -8,10 +8,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class RentResult {
-    @JsonProperty("CODE")
-    private String code;
-
-    @JsonProperty("MESSAGE")
-    private String message;
+public class TbLnOpendataSaleVResponseWrapper {
+    @JsonProperty("tbLnOpendataRtmsV")
+    private TbLnOpendataSaleVResponse tbLnOpendataSaleV;
 }
