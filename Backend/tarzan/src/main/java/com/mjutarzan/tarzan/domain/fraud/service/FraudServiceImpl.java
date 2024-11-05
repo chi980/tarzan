@@ -7,6 +7,7 @@ import com.mjutarzan.tarzan.domain.fraud.api.response.*;
 import com.mjutarzan.tarzan.domain.fraud.entity.dto.TbLnOpendataRentVResponseWrapper;
 import com.mjutarzan.tarzan.domain.fraud.entity.dto.TbLnOpendataSaleVResponseWrapper;
 import com.mjutarzan.tarzan.domain.fraud.entity.dto.VWorldRealEstateApiResponse;
+import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,10 +36,8 @@ public class FraudServiceImpl implements FraudService{
     private String vworldRealEstateKey;
 
     // 서울시 부동산 시세
-    @Value("${api.data-seoul.url.rent}")
-    private String dataSeoulRentUrl;
-    @Value("${api.data-seoul.url.sale}")
-    private String dataSeoulSaleUrl;
+    @Value("${api.data-seoul.url}")
+    private String dataSeoulUrl;
     @Value("${api.data-seoul.key}")
     private String dataSeoulKey;
 
@@ -102,40 +101,45 @@ public class FraudServiceImpl implements FraudService{
      * @return
      */
     public PriceListResponseDto getRentPrice(PriceRequestDto priceRequestDto) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulRentUrl)
-                .queryParam("KEY", dataSeoulKey)
-                .queryParam("TYPE", "json")
-                .queryParam("SERVICE", "tbLnOpendataRentV")
-                .queryParam("START_INDEX", priceRequestDto.getPageNo())
-                .queryParam("END_INDEX", priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1)
-                .queryParam("CGG_CD", priceRequestDto.getGu().getCode())
-                .queryParam("STDG_CD", priceRequestDto.getDong());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
+                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRentV",
+                        String.valueOf(priceRequestDto.getPageNo()),
+                        String.valueOf(priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1))
+                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
+
 
         String search = priceRequestDto.getSearch();
         String searchBy = priceRequestDto.getSearchBy();
 
-        if("건물명".equals(searchBy)){
-            builder.queryParam("BLDG_NM", search);
-        }else if("지번".equals(searchBy)){
+        if("지번".equals(searchBy)){
             String[] streetNumber = search.split("-");
             if(streetNumber.length!=2) throw new IllegalArgumentException("지번 형식이 잘못되었습니다.");
 
-            builder.queryParam("MNO", streetNumber[0]);
-            builder.queryParam("SNO", streetNumber[1]);
+            builder.pathSegment(streetNumber[0], streetNumber[1]);
+        }else if("건물명".equals(searchBy)){
+            builder.path("/ / / ").pathSegment(search);
         }
+        builder.encode();
 
         String uri = builder.toUriString();
+        log.info("url: {}", uri);
         TbLnOpendataRentVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataRentVResponseWrapper.class);
+        log.info("res: {}", response);
 
-        List<RentListItemResponseDto> list = response.getTbLnOpendataRentV().getRows().stream()
-                .map(RentListItemResponseDto::getInstance)
-                .collect(Collectors.toList());
+        if(response.getTbLnOpendataRentV() != null){
+            List<RentListItemResponseDto> list = response.getTbLnOpendataRentV().getRows().stream()
+                    .map(RentListItemResponseDto::getInstance)
+                    .collect(Collectors.toList());
+            return PriceListResponseDto.builder()
+                    .count(response.getTbLnOpendataRentV().getListTotalCount())
+                    .list(list)
+                    .isNext(response.getTbLnOpendataRentV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
+                    .build();
 
-        return PriceListResponseDto.builder()
-                .count(response.getTbLnOpendataRentV().getListTotalCount())
-                .list(list)
-                .isNext(response.getTbLnOpendataRentV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
-                .build();
+        }else{
+            throw new ResourceNotFoundException("자료가 없습니다.");
+        }
+
     }
 
     @Override
@@ -145,40 +149,42 @@ public class FraudServiceImpl implements FraudService{
      * @return
      */
     public PriceListResponseDto getSalePrice(PriceRequestDto priceRequestDto) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulSaleUrl)
-                .queryParam("KEY", dataSeoulKey)
-                .queryParam("TYPE", "json")
-                .queryParam("SERVICE", "tbLnOpendataRtmsV")
-                .queryParam("START_INDEX", priceRequestDto.getPageNo())
-                .queryParam("END_INDEX", priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1)
-                .queryParam("CGG_CD", priceRequestDto.getGu().getCode())
-                .queryParam("STDG_CD", priceRequestDto.getDong());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
+                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRtmsV",
+                        String.valueOf(priceRequestDto.getPageNo()),
+                        String.valueOf(priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1))
+                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ / "); // 접수연도, 지번구분, 지번구분명 고려X
 
         String search = priceRequestDto.getSearch();
         String searchBy = priceRequestDto.getSearchBy();
 
-        if("건물명".equals(searchBy)){
-            builder.queryParam("BLDG_NM", search);
-        }else if("지번".equals(searchBy)){
+        if("지번".equals(searchBy)){
             String[] streetNumber = search.split("-");
             if(streetNumber.length!=2) throw new IllegalArgumentException("지번 형식이 잘못되었습니다.");
 
-            builder.queryParam("MNO", streetNumber[0]);
-            builder.queryParam("SNO", streetNumber[1]);
+            builder.pathSegment(streetNumber[0], streetNumber[1]);
+        }else if("건물명".equals(searchBy)){
+            builder.path("/ / ").pathSegment(search);
         }
+        builder.encode();
 
         String uri = builder.toUriString();
+        log.info("url: {}", uri);
         TbLnOpendataSaleVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataSaleVResponseWrapper.class);
+        log.info("res: {}", response);
+        if(response.getTbLnOpendataSaleV() != null) {
+            List<SaleListItemResponseDto> list = response.getTbLnOpendataSaleV().getRows().stream()
+                    .map(SaleListItemResponseDto::getInstance)
+                    .collect(Collectors.toList());
 
-        List<SaleListItemResponseDto> list = response.getTbLnOpendataSaleV().getRows().stream()
-                .map(SaleListItemResponseDto::getInstance)
-                .collect(Collectors.toList());
-
-        return PriceListResponseDto.builder()
-                .count(response.getTbLnOpendataSaleV().getListTotalCount())
-                .list(list)
-                .isNext(response.getTbLnOpendataSaleV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
-                .build();
+            return PriceListResponseDto.builder()
+                    .count(response.getTbLnOpendataSaleV().getListTotalCount())
+                    .list(list)
+                    .isNext(response.getTbLnOpendataSaleV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
+                    .build();
+        }else{
+            throw new ResourceNotFoundException("자료가 없습니다.");
+        }
     }
 
 
