@@ -31,7 +31,6 @@ public class Board extends CommonEntity {
     @Column(name = "board_title")
     private String title;
 
-    @Lob
     @Column(name = "board_content", columnDefinition = "TEXT")
     private String content;
 
