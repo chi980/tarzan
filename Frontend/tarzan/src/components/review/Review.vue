@@ -48,6 +48,8 @@ import Divider from "../common/Divider.vue";
 import ReviewItem from "./ReviewItem.vue";
 import StarRating from "./StarRating.vue";
 import TagButtonGroup from "../common/TagButtonGroup.vue";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
 
 export default {
   name: 'Review',
@@ -87,6 +89,39 @@ export default {
           cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
         },
       ],
+    }
+  },
+  
+  created() {
+    this.fetchPosts(); // 컴포넌트가 생성될 때 데이터를 불러옴
+  },
+
+  methods: {
+  // api : 게시글 목록 불러오기
+    async fetchPosts() {
+      const queryParams = new URLSearchParams({
+        houseIdx : 1,
+	      size : 3,
+      	page : 4,
+	      sortBy : "최신순"
+      }).toString();
+
+      try {
+        const response = await axiosInstance.get(`/v1/reviews?${queryParams}`); // Axios 인스턴스를 사용하여 GET 요청
+        
+        if (response.data.success) {
+          this.posts = response.data.data.list; // 응답에서 게시글 목록을 가져옴
+          console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
+          console.log(response.data.data);
+          alert(`성공?`);
+        } else {
+          console.error('Failed:', response.data.message);
+          alert(`Error: ${response.data.message}`); // 사용자에게 오류 메시지 표시
+        }
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        alert('게시글을 불러오는 데 실패했습니다.'); // 사용자에게 알림
+      }
     }
   },
 }
