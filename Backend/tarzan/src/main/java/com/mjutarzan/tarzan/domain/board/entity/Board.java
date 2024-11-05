@@ -32,7 +32,7 @@ public class Board extends CommonEntity {
     private String title;
 
     @Lob
-    @Column(name = "board_content") // 또는 CLOB
+    @Column(name = "board_content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "board_tag")

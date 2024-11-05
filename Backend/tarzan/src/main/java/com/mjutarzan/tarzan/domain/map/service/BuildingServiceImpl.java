@@ -39,7 +39,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Map.entry;
 
 @Service
 @RequiredArgsConstructor
@@ -62,201 +65,120 @@ public class BuildingServiceImpl implements BuildingService{
     private final SubwayRepository subwayRepository;
     private final BusRepository busRepository;
     private final BicycleRepository bicycleRepository;
+
+    private static final Map<Class<? extends Building>, BuildingType> buildingTypeMap = Map.ofEntries(
+            entry(CivicCenter.class, BuildingType.CIVIC_CENTER),
+            entry(Gym.class, BuildingType.GYM),
+            entry(Park.class, BuildingType.PARK),
+            entry(Hospital.class, BuildingType.HOSPITAL),
+            entry(Pharmacy.class, BuildingType.PHARMACY),
+            entry(MedicalClinic.class, BuildingType.MEDICAL_CLINIC),
+            entry(Cctv.class, BuildingType.CCTV),
+            entry(Police.class, BuildingType.POLICE),
+            entry(ConvenienceStore.class, BuildingType.CONVENIENCE_STORE),
+            entry(Mart.class, BuildingType.MART),
+            entry(Subway.class, BuildingType.SUBWAY),
+            entry(Bus.class, BuildingType.BUS),
+            entry(Bicycle.class, BuildingType.BICYCLE)
+    );
+
     @Override
     public List<BuildingListItemResponseDto> getBuildings(BuildingRequestDto buildingListRequestDto) {
         Point location = locationService.createPoint(buildingListRequestDto.getLatitude(), buildingListRequestDto.getLongitude());
         Double latitude = buildingListRequestDto.getLatitude();
         Double longitude = buildingListRequestDto.getLongitude();
         double radius = buildingListRequestDto.getRadius();
-        List<BuildingListItemResponseDto> list = null;
+        List<BuildingListItemResponseDto> list;
 
         switch (buildingListRequestDto.getType()) {
             case ALL -> {
                 list = buildingRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(building -> BuildingListItemResponseDto.builder()
-                                .name(building.getName())
-                                .category(building.getCategory())
-                                .address(building.getAddress())
-                                .latitude(building.getLocation().getX())
-                                .longitude(building.getLocation().getY())
-                                .type(getBuildingType(building))
-                                .build())
+                        .map(building -> mapToDto(building, getBuildingType(building)))
                         .collect(Collectors.toList());
             }
             case CIVIC_CENTER -> {
                 list = civicCenterRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(civicCenter -> BuildingListItemResponseDto.builder()
-                                .name(civicCenter.getName())
-                                .category(civicCenter.getCategory())
-                                .address(civicCenter.getAddress())
-                                .latitude(civicCenter.getLocation().getX())
-                                .longitude(civicCenter.getLocation().getY())
-                                .type(BuildingType.CIVIC_CENTER)
-                                .build())
+                        .map(civicCenter -> mapToDto(civicCenter, BuildingType.CIVIC_CENTER))
                         .collect(Collectors.toList());
             }
             case GYM -> {
                 list = gymRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(gym -> BuildingListItemResponseDto.builder()
-                                .name(gym.getName())
-                                .category(gym.getCategory())
-                                .address(gym.getAddress())
-                                .latitude(gym.getLocation().getX())
-                                .longitude(gym.getLocation().getY())
-                                .type(BuildingType.GYM)
-                                .build())
+                        .map(gym -> mapToDto(gym, BuildingType.GYM))
                         .collect(Collectors.toList());
             }
             case PARK -> {
                 list = parkRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(park -> BuildingListItemResponseDto.builder()
-                                .name(park.getName())
-                                .category(park.getCategory())
-                                .address(park.getAddress())
-                                .latitude(park.getLocation().getX())
-                                .longitude(park.getLocation().getY())
-                                .type(BuildingType.PARK)
-                                .build())
+                        .map(park -> mapToDto(park, BuildingType.PARK))
                         .collect(Collectors.toList());
             }
             case HOSPITAL -> {
                 list = hospitalRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(hospital -> BuildingListItemResponseDto.builder()
-                                .name(hospital.getName())
-                                .category(hospital.getCategory())
-                                .address(hospital.getAddress())
-                                .latitude(hospital.getLocation().getX())
-                                .longitude(hospital.getLocation().getY())
-                                .type(BuildingType.HOSPITAL)
-                                .build())
+                        .map(hospital -> mapToDto(hospital, BuildingType.HOSPITAL))
                         .collect(Collectors.toList());
             }
             case PHARMACY -> {
                 list = pharmacyRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(pharmacy -> BuildingListItemResponseDto.builder()
-                                .name(pharmacy.getName())
-                                .category(pharmacy.getCategory())
-                                .address(pharmacy.getAddress())
-                                .latitude(pharmacy.getLocation().getX())
-                                .longitude(pharmacy.getLocation().getY())
-                                .type(BuildingType.PHARMACY)
-                                .build())
+                        .map(pharmacy -> mapToDto(pharmacy, BuildingType.PHARMACY))
                         .collect(Collectors.toList());
             }
             case MEDICAL_CLINIC -> {
                 list = medicalClinicRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(clinic -> BuildingListItemResponseDto.builder()
-                                .name(clinic.getName())
-                                .category(clinic.getCategory())
-                                .address(clinic.getAddress())
-                                .latitude(clinic.getLocation().getX())
-                                .longitude(clinic.getLocation().getY())
-                                .type(BuildingType.MEDICAL_CLINIC)
-                                .build())
+                        .map(clinic -> mapToDto(clinic, BuildingType.MEDICAL_CLINIC))
                         .collect(Collectors.toList());
             }
             case CCTV -> {
                 list = cctvRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(cctv -> BuildingListItemResponseDto.builder()
-                                .name(cctv.getName())
-                                .category(cctv.getCategory())
-                                .address(cctv.getAddress())
-                                .latitude(cctv.getLocation().getX())
-                                .longitude(cctv.getLocation().getY())
-                                .type(BuildingType.CCTV)
-                                .build())
+                        .map(cctv -> mapToDto(cctv, BuildingType.CCTV))
                         .collect(Collectors.toList());
             }
             case POLICE -> {
                 list = policeRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(police -> BuildingListItemResponseDto.builder()
-                                .name(police.getName())
-                                .category(police.getCategory())
-                                .address(police.getAddress())
-                                .latitude(police.getLocation().getX())
-                                .longitude(police.getLocation().getY())
-                                .type(BuildingType.POLICE)
-                                .build())
+                        .map(police -> mapToDto(police, BuildingType.POLICE))
                         .collect(Collectors.toList());
             }
             case CONVENIENCE_STORE -> {
                 list = convenienceStoreRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(store -> BuildingListItemResponseDto.builder()
-                                .name(store.getName())
-                                .category(store.getCategory())
-                                .address(store.getAddress())
-                                .latitude(store.getLocation().getX())
-                                .longitude(store.getLocation().getY())
-                                .type(BuildingType.CONVENIENCE_STORE)
-                                .build())
+                        .map(store -> mapToDto(store, BuildingType.CONVENIENCE_STORE))
                         .collect(Collectors.toList());
             }
             case MART -> {
                 list = martRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(mart -> BuildingListItemResponseDto.builder()
-                                .name(mart.getName())
-                                .category(mart.getCategory())
-                                .address(mart.getAddress())
-                                .latitude(mart.getLocation().getX())
-                                .longitude(mart.getLocation().getY())
-                                .type(BuildingType.MART)
-                                .build())
+                        .map(mart -> mapToDto(mart, BuildingType.MART))
                         .collect(Collectors.toList());
             }
             case SUBWAY -> {
                 list = subwayRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(subway -> BuildingListItemResponseDto.builder()
-                                .name(subway.getName())
-                                .category(subway.getCategory())
-                                .address(subway.getAddress())
-                                .latitude(subway.getLocation().getX())
-                                .longitude(subway.getLocation().getY())
-                                .type(BuildingType.SUBWAY)
-                                .build())
+                        .map(subway -> mapToDto(subway, BuildingType.SUBWAY))
                         .collect(Collectors.toList());
             }
             case BUS -> {
                 list = busRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(bus -> BuildingListItemResponseDto.builder()
-                                .name(bus.getName())
-                                .category(bus.getCategory())
-                                .address(bus.getAddress())
-                                .latitude(bus.getLocation().getX())
-                                .longitude(bus.getLocation().getY())
-                                .type(BuildingType.BUS)
-                                .build())
+                        .map(bus -> mapToDto(bus, BuildingType.BUS))
                         .collect(Collectors.toList());
             }
             case BICYCLE -> {
                 list = bicycleRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(bicycle -> BuildingListItemResponseDto.builder()
-                                .name(bicycle.getName())
-                                .category(bicycle.getCategory())
-                                .address(bicycle.getAddress())
-                                .latitude(bicycle.getLocation().getX())
-                                .longitude(bicycle.getLocation().getY())
-                                .type(BuildingType.BICYCLE)
-                                .build())
+                        .map(bicycle -> mapToDto(bicycle, BuildingType.BICYCLE))
                         .collect(Collectors.toList());
             }
+            default -> throw new IllegalArgumentException("Invalid building type: " + buildingListRequestDto.getType());
         }
+
         return list;
     }
 
+    private BuildingListItemResponseDto mapToDto(Building building, BuildingType type) {
+        return BuildingListItemResponseDto.builder()
+                .name(building.getName())
+                .category(building.getCategory())
+                .address(building.getAddress())
+                .latitude(building.getLocation().getX())
+                .longitude(building.getLocation().getY())
+                .type(type)
+                .build();
+    }
+
     private BuildingType getBuildingType(Building building) {
-        if (building instanceof CivicCenter) return BuildingType.CIVIC_CENTER;
-        else if (building instanceof Gym) return BuildingType.GYM;
-        else if (building instanceof Park) return BuildingType.PARK;
-        else if (building instanceof Hospital) return BuildingType.HOSPITAL;
-        else if (building instanceof Pharmacy) return BuildingType.PHARMACY;
-        else if (building instanceof MedicalClinic) return BuildingType.MEDICAL_CLINIC;
-        else if (building instanceof Cctv) return BuildingType.CCTV;
-        else if (building instanceof Police) return BuildingType.POLICE;
-        else if (building instanceof ConvenienceStore) return BuildingType.CONVENIENCE_STORE;
-        else if (building instanceof Mart) return BuildingType.MART;
-        else if (building instanceof Subway) return BuildingType.SUBWAY;
-        else if (building instanceof Bus) return BuildingType.BUS;
-        else if (building instanceof Bicycle) return BuildingType.BICYCLE;
-        return BuildingType.ALL;
+        return buildingTypeMap.getOrDefault(building.getClass(), BuildingType.ALL);
     }
 }
