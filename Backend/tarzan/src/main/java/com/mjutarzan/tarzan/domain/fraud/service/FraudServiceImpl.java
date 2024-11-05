@@ -153,9 +153,7 @@ public class FraudServiceImpl implements FraudService{
                 .pathSegment(dataSeoulKey, "json", "tbLnOpendataRtmsV",
                         String.valueOf(priceRequestDto.getPageNo()),
                         String.valueOf(priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1))
-                .pathSegment(" ") // 접수연도 고려X
-                .pathSegment(priceRequestDto.getGu().getCode(), " ", priceRequestDto.getDong())
-                .pathSegment(" ", " "); // 지번구분, 지번구분명 고려X
+                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ / "); // 접수연도, 지번구분, 지번구분명 고려X
 
         String search = priceRequestDto.getSearch();
         String searchBy = priceRequestDto.getSearchBy();
@@ -166,21 +164,27 @@ public class FraudServiceImpl implements FraudService{
 
             builder.pathSegment(streetNumber[0], streetNumber[1]);
         }else if("건물명".equals(searchBy)){
-            builder.pathSegment(" "," ", search);
+            builder.path("/ / ").pathSegment(search);
         }
+        builder.encode();
 
         String uri = builder.toUriString();
+        log.info("url: {}", uri);
         TbLnOpendataSaleVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataSaleVResponseWrapper.class);
+        log.info("res: {}", response);
+        if(response.getTbLnOpendataSaleV() != null) {
+            List<SaleListItemResponseDto> list = response.getTbLnOpendataSaleV().getRows().stream()
+                    .map(SaleListItemResponseDto::getInstance)
+                    .collect(Collectors.toList());
 
-        List<SaleListItemResponseDto> list = response.getTbLnOpendataSaleV().getRows().stream()
-                .map(SaleListItemResponseDto::getInstance)
-                .collect(Collectors.toList());
-
-        return PriceListResponseDto.builder()
-                .count(response.getTbLnOpendataSaleV().getListTotalCount())
-                .list(list)
-                .isNext(response.getTbLnOpendataSaleV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
-                .build();
+            return PriceListResponseDto.builder()
+                    .count(response.getTbLnOpendataSaleV().getListTotalCount())
+                    .list(list)
+                    .isNext(response.getTbLnOpendataSaleV().getListTotalCount() > priceRequestDto.getNumOfRows() * priceRequestDto.getPageNo())
+                    .build();
+        }else{
+            throw new ResourceNotFoundException("자료가 없습니다.");
+        }
     }
 
 
