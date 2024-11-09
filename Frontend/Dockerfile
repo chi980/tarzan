@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 RUN ls
-RUN npm run
+RUN cat package.json  # package.json 파일의 내용을 출력
 
 RUN npm run build
 
