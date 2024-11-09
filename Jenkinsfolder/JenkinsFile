@@ -33,6 +33,7 @@ pipeline {
                         sh 'rm -rf node_modules package-lock.json'
                         sh 'npm install'
                         sh 'npm install -D vue-tsc'
+                        sh 'node -v'
                         dir('tarzan'){
                             sh 'npm run build'
                         }
