@@ -1,23 +1,23 @@
 <template>
   <div class="sub-container">
-    <PostTopBar />
+    <PostTopBar :isAuthor="post.board_is_writer"/>
     <div class="center-container">
       <div class="post-detail-container">
         <div class="post-tag">
-          <span>{{ post.tag }}</span>
+          <span>{{ post.board_tag }}</span>
         </div>
         <div class="post-writer">
-          <span clas>{{ post.writer }}</span>
+          <span clas>{{ post.board_writer_nickname }}</span>
         </div>
         <div class="post-title">
-          <h2>{{ post.title }}</h2>
+          <h2>{{ post.board_title }}</h2>
         </div>
         <div class="post-content">
-          <p>{{ post.content }}</p>   
+          <p>{{ post.board_content }}</p>   
         </div>
         <div class="post-time">
           <!-- 경과시간은 컴포넌트로 만들어야할 듯 -->
-          <span>{{ post.elapsedTime }}</span>
+          <span>{{ post.board_created_at }}</span>
         </div>
       </div>
       <div class="comment-container">
@@ -38,6 +38,8 @@ import BottomBar from "@/components/common/BottomBar.vue";
 import PostTopBar from "./PostTopBar.vue";
 import CommentInput from "./CommentInput.vue";
 import CommentList from "./CommentList.vue";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
 
 // 컴포넌트 등록
 const components = {
@@ -47,24 +49,30 @@ const components = {
   CommentInput,
 };
 
-// route 정보 가져오기
-const route = useRoute();
+const route = useRoute(); 
+const post = ref({}); 
+const boardIdx = route.params.id; // URL에서 게시글 ID를 가져옵니다.
 
-// 상태 변수 정의
-const post = ref({});
+const fetchPostDetail = async () => {
+  try {
+    const response = await axiosInstance.get(`/v1/board/${boardIdx}`);
+    console.log(response);
+    
+    if (response.data.success) {
+      post.value = response.data.data; // ref로 선언된 posts에 값 할당
+      console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
+      console.log(response.data.data);
+      console.log(post.value.board_is_writer);
+    } else {
+      console.error('Failed:', response.data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    alert('게시글을 불러오는 데 실패했습니다.');
+  }
+};
 
-// onMounted로 컴포넌트가 마운트될 때 post 데이터 설정
-onMounted(() => {
-  const postId = route.params.id;
-  post.value = {
-    id: postId,
-    tag: '질문',
-    writer: '호랑이',
-    title: `${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
-    content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
-    elapsedTime: '20시간 전',
-  };
-});
+onMounted(fetchPostDetail); // 컴포넌트가 마운트될 때 fetchPosts 호출
 </script>
 
 <style lang="scss" scoped>
@@ -79,6 +87,7 @@ onMounted(() => {
     justify-content: flex-start;
     background-color: #EDEDED;
     height: 100%;
+    width: 100%;
     gap: 10px;
   }
 

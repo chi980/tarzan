@@ -6,8 +6,14 @@
           :key="index"
           :comment="comment"
           :index="index"
-          @delete-comment="deleteComment"
         />
+        <!-- <CommentItem
+          v-for="(comment, index) in comments"
+          :key="index"
+          :comment="comment"
+          :index="index"
+          @delete-comment="deleteComment"
+        /> -->
     </div>
 
     <div class="comment-more-container">

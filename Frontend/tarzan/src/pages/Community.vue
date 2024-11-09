@@ -60,7 +60,8 @@ export default {
         { idx: 3, value: 'rating', name: '평점순' },
       ],
       posts: [
-
+        // { id: 1, tag: '교통', title: 'First Post', content: 'This is the first post.', comments: '3'},
+        // { id: 2, tag: '정보', title: '오늘 중구 시청역더플라자호텔 버스정류장  앞에서 사고 났어요!', content: 'This is the second post. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', comments: '5'},
       ],
     }
   },
@@ -89,8 +90,6 @@ export default {
         if (response.data.success) {
           this.posts = response.data.data.list; // 응답에서 게시글 목록을 가져옴
           console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
-          console.log(response.data.data);
-          alert(`성공?`);
         } else {
           console.error('Failed:', response.data.message);
           alert(`Error: ${response.data.message}`); // 사용자에게 오류 메시지 표시

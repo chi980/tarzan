@@ -3,7 +3,7 @@
     <div v-if="posts.length" class="post-items-container">
       <PostItem
       v-for="post in posts"
-      :key="post.id"
+      :key="post.board_id"
       :post="post"
       @click="goToPostDetail(post.board_id)"/>
     </div>
