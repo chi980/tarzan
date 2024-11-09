@@ -1,12 +1,10 @@
 pipeline {
     agent any
     tools {
-        nodejs 'NodeJS 22.6.0'
+        nodejs 'NodeJS 22.6.0' // NodeJS 설치
     }
-
+    
     environment {
-        BACK_CONTAINER_NAME = "tarzan-back-container"
-        BACK_IMAGE_NAME = "tarzan-back-image"
         FRONT_CONTAINER_NAME = "tarzan-front-container"
         FRONT_IMAGE_NAME = "tarzan-front-image"
     }
@@ -14,46 +12,48 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                checkout scm  // 소스 코드 checkout
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                // 이 블록에 실행할 코드가 없으면 `script` 블록을 사용하지 않거나
-                // 다음과 같이 `echo` 명령어로 간단한 출력을 추가할 수 있습니다.
-                echo 'Build stage is intentionally left blank as it is handled by Dockerfile.'
+                script {
+                    // 의존성 설치
+                    dir('Frontend') {
+                        sh 'rm -rf node_modules package-lock.json'
+                        sh 'npm install'
+                    }
+                }
             }
         }
 
         stage('Docker Delete') {
             steps {
                 script {
+                    // 기존 Docker 컨테이너 및 이미지 삭제
                     try {
-                        sh 'echo "Docker Delete Start"'
                         sh "docker stop ${FRONT_CONTAINER_NAME} || true"
                         sh "docker rm -f ${FRONT_CONTAINER_NAME} || true"
                     } catch (Exception e) {
-                        echo "Docker container ${FRONT_CONTAINER_NAME} does not exist. skip"
+                        echo "Docker container ${FRONT_CONTAINER_NAME} does not exist. Skip."
                     }
                     try {
                         sh "docker image rm ${FRONT_IMAGE_NAME} || true"
                     } catch (Exception e) {
-                        echo "Docker image ${FRONT_IMAGE_NAME} does not exist. skip"
+                        echo "Docker image ${FRONT_IMAGE_NAME} does not exist. Skip."
                     }
                 }
             }
         }
 
-        stage('Dockerizing') {
+        stage('Dockerize') {
             steps {
                 script {
-                    sh 'ls'
-                    sh "docker ps"
+                    // Docker 이미지 빌드
                     dir('Frontend') {
                         sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
                     }
-                    sh "docker images"
                 }
             }
         }
@@ -61,10 +61,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
+                    // Docker 컨테이너 실행
+                    sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 8080:80 ${FRONT_IMAGE_NAME}"
+                    // 실행 중인 Docker 컨테이너 확인
                     sh "docker ps"
                 }
             }
         }
     }
 }
+
