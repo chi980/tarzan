@@ -87,3 +87,8 @@ api:
       "http://openapi.seoul.go.kr:8088"
     key:
       "655351685763686938367558756e6f"
+
+
+tarzan:
+  data-truncate: false
+  data-load: false
