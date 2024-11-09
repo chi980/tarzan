@@ -13,8 +13,6 @@ RUN npm install
 # 소스 코드 복사
 COPY . .
 
-RUN cd tarzan
-
 RUN ls
 
 # Vite 빌드 실행
