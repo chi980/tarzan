@@ -20,9 +20,9 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    // 주석 처리된 부분이 있으므로 비워둠
-                }
+                // 이 블록에 실행할 코드가 없으면 `script` 블록을 사용하지 않거나
+                // 다음과 같이 `echo` 명령어로 간단한 출력을 추가할 수 있습니다.
+                echo 'Build stage is intentionally left blank as it is handled by Dockerfile.'
             }
         }
 
