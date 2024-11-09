@@ -34,7 +34,6 @@ pipeline {
                         sh 'npm install'
                         sh 'npm install -D vue-tsc'
                         sh 'node -v'
-
                         dir('tarzan'){
                             sh 'npm run build'
                         }
