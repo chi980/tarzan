@@ -39,7 +39,9 @@ pipeline {
                 script {
                     // Docker 이미지 빌드
                     dir('Frontend') {
-                        sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
+                        dir('tarzan'){
+                            sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
+                        }
                     }
                 }
             }
