@@ -1,14 +1,21 @@
-FROM node:alpine as builder
+# FROM node:22.6.0-alpine as builder
 
-WORKDIR /usr/src/app
-COPY ./package.json /usr/src/app/package.json
-RUN npm install --force
+# # 작업 폴더를 만들고 npm 설치
+# WORKDIR /usr/src/app
+# COPY package.json /usr/src/app/package.json
+# RUN npm install --force
 
-COPY . /usr/src/app
-RUN npm run build
+# # 소스를 작업폴더로 복사하고 빌드
+# COPY . /usr/src/app
+# RUN npm run build
+# Use a base image with Nginx
+FROM nginx:alpine
 
-FROM nginx
-EXPOSE 3000
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+# Copy the build files from the Vite build process
+COPY dist/ /usr/share/nginx/html/
 
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html
+# Expose port 80 for serving the app
+EXPOSE 80
+
+# Start Nginx when the container is run
+CMD ["nginx", "-g", "daemon off;"]

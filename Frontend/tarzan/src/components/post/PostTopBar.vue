@@ -13,8 +13,15 @@
       >
         <div class="scrollable-list">
           <ul>
-            <li
+            <!-- <li
               v-for="option in options"
+              :key="option.idx"
+              @click="selectOption(option)"
+            >
+              {{ option.name }}
+            </li> -->
+            <li
+              v-for="option in filteredOptions"
               :key="option.idx"
               @click="selectOption(option)"
             >
@@ -46,14 +53,11 @@ const options = ref([
   { idx: 3, name: '신고하기' }
 ]);
 
-// 작성자 여부에 따라 옵션 필터링
+// `isAuthor` 값에 따라 옵션을 필터링하는 computed 속성
 const filteredOptions = computed(() => {
-  if (props.isAuthor) {
-    // 작성자라면 수정/삭제만 보여줌
-    return options.filter(option => option.idx !== 3);
-  }
-  // 작성자가 아니라면 신고하기만 보여줌
-  return options.filter(option => option.idx === 3);
+  return props.isAuthor
+    ? options.value.filter(option => option.idx !== 3) // 작성자인 경우 '수정'과 '삭제'만
+    : options.value.filter(option => option.idx === 3); // 작성자가 아닌 경우 '신고하기'만
 });
 
 const goToBack = () => {

@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <PostTopBar :isAuthor="post.board_is_writer"/>
+    <PostTopBar v-if="post.board_is_writer !== undefined" :isAuthor="post.board_is_writer"/>
     <div class="center-container">
       <div class="post-detail-container">
         <div class="post-tag">
@@ -62,7 +62,6 @@ const fetchPostDetail = async () => {
       post.value = response.data.data; // ref로 선언된 posts에 값 할당
       console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
       console.log(response.data.data);
-      console.log(post.value.board_is_writer);
     } else {
       console.error('Failed:', response.data.message);
     }
