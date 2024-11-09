@@ -5,6 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN ls
 RUN npm run build
 
 # 두 번째 단계: Nginx 서버로 배포
