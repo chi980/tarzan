@@ -15,6 +15,8 @@ COPY . .
 
 RUN ls
 
+RUN cd tarzan
+
 # Vite 빌드 실행
 RUN npm run build
 
