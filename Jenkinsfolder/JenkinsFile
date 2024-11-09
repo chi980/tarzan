@@ -15,19 +15,6 @@ pipeline {
                 checkout scm  // 소스 코드 checkout
             }
         }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // 의존성 설치
-                    dir('Frontend') {
-                        sh 'rm -rf node_modules package-lock.json'
-                        sh 'npm install'
-                    }
-                }
-            }
-        }
-
         stage('Docker Delete') {
             steps {
                 script {
