@@ -2,9 +2,9 @@
   "devDependencies": {
     "sass": "^1.75.0",
     "vite-plugin-style-import": "^2.0.0"
-  }
-
+  },
   "scripts": {
     "build": "vite build",  // Vite 빌드 명령어
     "serve": "vite preview" // 빌드 후 미리보기 명령어
+  }
 }
