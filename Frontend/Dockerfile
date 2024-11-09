@@ -1,4 +1,4 @@
-FROM node:22.6.0-alpine as builder
+FROM node:22.6.0
 
 # 작업 디렉토리 설정
 WORKDIR /app
