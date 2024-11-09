@@ -4,6 +4,11 @@ import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: './', // 루트 디렉토리 확인
+  build: {
+    outDir: 'dist', // 빌드된 파일이 저장될 디렉토리
+  },
+  publicDir: 'public', // public 디렉토리 설정 (기본값은 'public')
   plugins: [vue()],
   resolve: {
     alias: {
