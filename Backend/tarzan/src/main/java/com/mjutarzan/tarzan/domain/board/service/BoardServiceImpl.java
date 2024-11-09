@@ -147,6 +147,9 @@ public class BoardServiceImpl implements BoardService {
     public BoardDetailResponseDto getBoard(Long boardIdx, UserDto loginedUserDto) {
         Board board = boardRepository.findById(boardIdx)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+        updateBoardReadCount(board);
+
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
 
         return BoardDetailResponseDto.builder()
@@ -159,5 +162,9 @@ public class BoardServiceImpl implements BoardService {
                 .createdAt(board.getCreatedAt())
                 .isWriter(board.getWriter().getId() == loginedUser.getId())
                 .build();
+    }
+
+    private void updateBoardReadCount(Board board) {
+        board.updateReadCount();
     }
 }
