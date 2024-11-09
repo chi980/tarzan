@@ -7,13 +7,13 @@ WORKDIR /app
 # 의존성 파일 복사 (package.json, package-lock.json)
 COPY package*.json ./
 
-RUN ls
-
 # 의존성 설치
 RUN npm install
 
 # 소스 코드 복사
 COPY . .
+
+RUN ls
 
 # Vite 빌드 실행
 RUN npm run build
