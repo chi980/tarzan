@@ -29,11 +29,11 @@ pipeline {
                     //     }
                     // }
                         
-                    dir('Frontend'){
-                        sh 'rm -rf node_modules package-lock.json'
-                        sh 'npm install'
-                        sh 'npm install -D vue-tsc'
-                        sh 'node -v'
+                    // dir('Frontend'){
+                    //     sh 'rm -rf node_modules package-lock.json'
+                    //     sh 'npm install'
+                    //     sh 'npm install -D vue-tsc'
+                    //     sh 'node -v'
                         // dir('tarzan'){
                         //     sh 'npm run build'
                         // }
@@ -83,6 +83,10 @@ pipeline {
                 //         sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
                 //     }
                 // }
+
+                sh 'ls'
+
+        
                 
                 dir('Frontend'){
                     sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
