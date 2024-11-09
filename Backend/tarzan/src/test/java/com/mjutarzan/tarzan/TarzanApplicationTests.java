@@ -3,8 +3,10 @@ package com.mjutarzan.tarzan;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
 import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
+import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.test.*;
 import com.mjutarzan.tarzan.domain.user.entity.User;
+import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import org.junit.jupiter.api.Test;
@@ -38,6 +40,9 @@ class TarzanApplicationTests {
 
 	@Autowired
 	private RockRepository rockRepository;
+
+	@Autowired
+	private BoardService boardService;
 
 	@Test
 	void contextLoads() {
@@ -117,5 +122,10 @@ class TarzanApplicationTests {
 		assertEquals(2, allAlbums.size(), "Album 리스트의 크기는 2이어야 합니다.");
 
 
+	}
+
+	@Test
+	void boardDetailTest(){
+		boardService.getBoard(55L, UserDto.builder().build());
 	}
 }

@@ -69,6 +69,10 @@ public class Board extends CommonEntity {
         this.tag = tag;
     }
 
+    public void updateReadCount(){
+        this.readCount++;
+    }
+
     public void addComment(Comment comment){
         this.commentList.add(comment);
     }
