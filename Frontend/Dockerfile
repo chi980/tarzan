@@ -4,7 +4,7 @@ FROM node:22.6.0 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
-COPY . 
+COPY . .
 RUN npm run build
 
 # 두 번째 단계: Nginx 서버로 배포
