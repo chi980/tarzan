@@ -27,36 +27,48 @@
     </div>
   </div>
 </template>
-<script>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import backIcon from '@/assets/icons/topbar/icon-back.png';
 import settingIcon from '@/assets/icons/topbar/icon-setting.png';
 
-export default {
-  data() {
-    return {
-      backIcon,
-      settingIcon,
-      isDropDownOpen: false,
-      options: [
-        { idx: 1, name: '수정' },
-        { idx: 2, name: '삭제' },
-      ],
-      selectedOption: null
-    };
-  },
-  methods: {
-    goToBack() {
-      this.$router.go(-1);
-    },
-    controllDropDown() {
-      this.isDropDownOpen = !this.isDropDownOpen;
-    },
-    selectOption(option) {
-      this.selectedOption = option;
-    }
+// 상태 변수 정의
+const router = useRouter();
+const isDropDownOpen = ref(false);
+const props = defineProps({ isAuthor: Boolean }); // isAuthor props
+console.log("isAuthor value:", props.isAuthor);
+
+const options = ref([
+  { idx: 1, name: '수정' },
+  { idx: 2, name: '삭제' },
+  { idx: 3, name: '신고하기' }
+]);
+
+// 작성자 여부에 따라 옵션 필터링
+const filteredOptions = computed(() => {
+  if (props.isAuthor) {
+    // 작성자라면 수정/삭제만 보여줌
+    return options.filter(option => option.idx !== 3);
   }
-}
+  // 작성자가 아니라면 신고하기만 보여줌
+  return options.filter(option => option.idx === 3);
+});
+
+const goToBack = () => {
+  router.go(-1);
+};
+
+const controllDropDown = () => {
+  isDropDownOpen.value = !isDropDownOpen.value;
+};
+
+const selectOption = (option) => {
+  selectedOption.value = option;
+};
 </script>
+
 <style scoped lang="scss">
 .post-topbar {
   width: 100%;
