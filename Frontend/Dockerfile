@@ -1,26 +1,19 @@
-FROM node:22.6.0
+# 첫 번째 빌드 단계 (Node.js 애플리케이션 빌드)
+FROM node:22.6.0 AS build
 
-# 작업 디렉토리 설정
 WORKDIR /app
-
-# 의존성 파일 복사
-COPY package.json package-lock.json ./
-
-# 의존성 설치
+COPY package*.json ./
 RUN npm install
-
-# Vite 프로젝트 빌드
 COPY . .
 RUN npm run build
 
-# 2. Production stage (Nginx를 사용하여 빌드된 파일 서빙)
+# 두 번째 단계: Nginx 서버로 배포
 FROM nginx:alpine
 
-# Nginx 설정 파일 복사 (필요시 Nginx 설정을 커스터마이즈할 수 있음)
+# 첫 번째 단계에서 빌드한 파일을 Nginx에 복사
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# 80 포트 노출
+# Nginx 포트 80 오픈
 EXPOSE 80
 
-# Nginx 실행
 CMD ["nginx", "-g", "daemon off;"]
