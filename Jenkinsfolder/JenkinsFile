@@ -49,6 +49,7 @@ pipeline {
             steps {
                 script {
                     sh 'ls'
+                    sh "docker ps"
                     dir('Frontend') {
                         sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
                     }
