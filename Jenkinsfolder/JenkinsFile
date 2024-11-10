@@ -7,6 +7,10 @@ pipeline {
     environment {
         FRONT_CONTAINER_NAME = "tarzan-front-container"
         FRONT_IMAGE_NAME = "tarzan-front-image"
+
+        
+        BACK_CONTAINER_NAME = "tarzan-back-container"
+        BACK_IMAGE_NAME = "tarzan-back-image"
     }
 
     stages {
@@ -15,10 +19,24 @@ pipeline {
                 checkout scm  // 소스 코드 checkout
             }
         }
+
+        stage('Backend Build') {
+            steps {
+                script {
+                    dir('Backend') {
+                        dir('tarzan') {
+                            sh 'chmod +x gradlew'
+                            sh './gradlew clean build'
+                            sh 'ls -al ./build'
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Docker Delete') {
             steps {
                 script {
-                    // 기존 Docker 컨테이너 및 이미지 삭제
                     try {
                         sh "docker stop ${FRONT_CONTAINER_NAME} || true"
                         sh "docker rm -f ${FRONT_CONTAINER_NAME} || true"
@@ -29,6 +47,19 @@ pipeline {
                         sh "docker image rm ${FRONT_IMAGE_NAME} || true"
                     } catch (Exception e) {
                         echo "Docker image ${FRONT_IMAGE_NAME} does not exist. Skip."
+                    }
+
+                    try {
+                        sh 'echo "Docker Delete Start"'
+                        sh "docker stop ${BACK_CONTAINER_NAME} || true"
+                        sh "docker rm -f ${BACK_CONTAINER_NAME} || true"
+                    } catch (Exception e) {
+                        echo "Docker container ${BACK_CONTAINER_NAME} does not exist. skip"
+                    }
+                    try {
+                        sh "docker image rm ${BACK_IMAGE_NAME} || true"
+                    } catch (Exception e) {
+                        echo "Docker image ${BACK_IMAGE_NAME} does not exist. skip"
                     }
                 }
             }
@@ -43,6 +74,15 @@ pipeline {
                             sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
                         }
                     }
+
+                    dir('Backend') {
+                        dir('tarzan') {
+                            // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
+                            sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
+                            sh "docker images"
+                            sh 'echo "images build 성공!"'
+                        }
+                    }
                 }
             }
         }
@@ -52,6 +92,7 @@ pipeline {
                 script {
                     // Docker 컨테이너 실행
                     sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
+                    sh "docker run --name ${BACK_CONTAINER_NAME} -d -p 8080:8080 ${BACK_IMAGE_NAME}"
                     // 실행 중인 Docker 컨테이너 확인
                     sh "docker ps"
                 }
@@ -59,4 +100,3 @@ pipeline {
         }
     }
 }
-
