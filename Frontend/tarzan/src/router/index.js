@@ -207,7 +207,8 @@ router.beforeEach((to, from, next) => {
   ];
 
   // 현재 경로가 예외 처리 대상인지 확인
-  const isPublicPage = publicPages.includes(to.path);
+  // const isPublicPage = publicPages.includes(to.path);
+  const isPublicPage = true;
 
   if (isPublicPage) {
     next(); // 예외 처리 경로라면 통과
