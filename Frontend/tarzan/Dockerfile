@@ -13,19 +13,17 @@ RUN npm install
 # 소스 코드 복사
 COPY . .
 
-RUN ls
-
 # Vite 빌드 실행
 RUN npm run build
 
 # 2단계: Nginx 배포 단계 (Production Stage)
 FROM nginx:alpine
+RUN rm -rf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # 빌드된 파일을 Nginx 컨테이너로 복사
+RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/dist /usr/share/nginx/html
-
-# Nginx 설정 파일 수정 (기존 설정 덮어쓰기)
-COPY nginx.conf /etc/nginx/nginx.conf  # 수정된 Nginx 설정을 복사
 
 # Nginx 포트 노출
 EXPOSE 80
