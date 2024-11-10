@@ -197,7 +197,14 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  const publicPages = ["/login", "/signup", "/login-processing", "/community", "/community/postcreate"];
+  const publicPages = [
+    "/",
+    "/login",
+    "/signup",
+    "/login-processing",
+    "/community",
+    "/community/postcreate",
+  ];
 
   // 현재 경로가 예외 처리 대상인지 확인
   const isPublicPage = publicPages.includes(to.path);
