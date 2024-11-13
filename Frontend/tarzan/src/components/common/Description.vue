@@ -3,7 +3,7 @@
     class="description-container"
     :style="{ backgroundColor: props.backgroundColor }"
   >
-    <img :src="props.descriptionImgSrc" alt="img" />
+    <img :src="descriptionImg" alt="img" />
     <div class="description-content">
       <p v-html="props.descriptionTitle"></p>
       <p v-html="props.descriptionContent"></p>
@@ -12,8 +12,7 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
 
 // 부모로부터 받아온 options
 const props = defineProps({
@@ -33,6 +32,10 @@ const props = defineProps({
     default: "#F2F2F2",
   },
 });
+
+const descriptionImg = computed(
+  () => new URL(`${props.descriptionImgSrc}`, import.meta.url).href
+);
 </script>
 
 <style lang="scss" scoped>
