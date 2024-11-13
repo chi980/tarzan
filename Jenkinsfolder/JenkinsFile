@@ -72,7 +72,6 @@ pipeline {
                     dir('Frontend') {
                         dir('tarzan'){
                             sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
-                            sh "docker exec -it ${FRONT_CONTAINER_NAME} rm -rf /var/cache/nginx/*"
                         }
                     }
 
