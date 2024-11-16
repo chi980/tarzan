@@ -2,9 +2,9 @@
   <div class="tag-button-container">
     <TagButton
       class="tag=button"
-      v-for="(TagButton, index) in buttons"
+      v-for="(button, index) in buttons"
       :key="index"
-      :label="TagButton.label"
+      :label="button.label"
       :isActive="selectedButton === index"
       @click="selectButton(index)"
     />
@@ -44,7 +44,7 @@ export default {
 .tag-button-container {
   display: flex;
   flex-wrap: nowrap;
-  // overflow-x: auto; /* 수평 스크롤 활성화 */
+  overflow-x: auto; /* 수평 스크롤 활성화 */
   gap: 5px;
 }
 </style>

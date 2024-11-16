@@ -1,6 +1,11 @@
 <template>
   <div class="sub-container">
-    <PostTopBar v-if="post.board_is_writer !== undefined" :isAuthor="post.board_is_writer"/>
+    <!-- <PostTopBar v-if="post.board_is_writer !== undefined" :isAuthor="post.board_is_writer"/> -->
+    <PostTopBar 
+      v-if="post.board_is_writer !== undefined" 
+      :isAuthor="post.board_is_writer" 
+      :boardIdx="boardIdx" 
+    />
     <div class="center-container">
       <div class="post-detail-container">
         <div class="post-tag">
