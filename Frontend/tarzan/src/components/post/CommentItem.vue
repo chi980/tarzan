@@ -1,44 +1,34 @@
 <template>
   <div class="comment-container">
     <div class="comment-header">
-        <span id="comment-writer">{{ comment.writer }}</span>
-        <div class="comment-edit-container">
+        <span id="comment-writer">{{ comment.comment_writer_nickname }}</span>
+        <EditButton />
+        <!-- <div class="comment-edit-container">
           <img id="comment-edit-icon" 
           src="@/assets/icons/Filter/comment-edit-icon.png" 
           alt="comment-edit-icon.png">
-        </div>
+        </div> -->
     </div>
     <div class="comment-content">
-      <p>{{ comment.content }}</p>
+      <p>{{ comment.comment_content }}</p>
     </div>
     <div class="comment-time">
-      <span>{{ comment.time }}</span>
+      <span>{{ comment.comment_created_at }}</span>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Comment',
-  props: {
-    comment: {
-      type: Object,
-      required: true
-    },
-    index: {
-      type: Number,
-      required: true
-    },
-  },
-  data() {
-    return {
-      edit: [
-        { id: 1, name: "수정하기", value: "edit" },
-        { id: 2, name: "삭제하기", value: "delete" }
-      ]
-    };
+<script setup>
+import { ref } from 'vue';
+import EditButton from './EditButton.vue';
+
+// props 정의
+defineProps({
+  comment: {
+    type: Object,
+    required: true
   }
-}
+});
 </script>
 
 <style scoped lang="scss">
