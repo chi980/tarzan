@@ -1,6 +1,5 @@
 <template>
   <div class="sub-container">
-    <!-- <PostTopBar v-if="post.board_is_writer !== undefined" :isAuthor="post.board_is_writer"/> -->
     <PostTopBar 
       v-if="post.board_is_writer !== undefined" 
       :isAuthor="post.board_is_writer" 
@@ -27,9 +26,9 @@
       </div>
       <div class="comment-container">
         <div class="comment-list">
-          <CommentList :post-id="post.id" /> <!-- CommentList에 post.id 전달 -->
+          <CommentList :post-id="post.id" /> 
         </div>
-        <CommentInput :board-idx="post.id" /> <!-- CommentInput에 post.id 전달 -->
+        <CommentInput :board-idx="post.id" /> 
       </div>
     </div>
     <BottomBar />
@@ -38,13 +37,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router'; // Vue Router에서 route 정보 가져오기
+import { useRoute } from 'vue-router'; 
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostTopBar from "./PostTopBar.vue";
 import CommentInput from "./CommentInput.vue";
 import CommentList from "./CommentList.vue";
-import { axiosInstance } from "@/plugins/axiosPlugin";
-
 
 // 컴포넌트 등록
 const components = {
@@ -56,7 +54,7 @@ const components = {
 
 const route = useRoute(); 
 const post = ref({}); 
-const boardIdx = route.params.id; // URL에서 게시글 ID를 가져옵니다.
+const boardIdx = route.params.id; 
 
 const fetchPostDetail = async () => {
   try {
@@ -65,18 +63,18 @@ const fetchPostDetail = async () => {
     
     if (response.data.success) {
       post.value = response.data.data; // ref로 선언된 posts에 값 할당
-      console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
+      console.log('게시물 상세 가져오기 성공');
       console.log(response.data.data);
     } else {
       console.error('Failed:', response.data.message);
     }
   } catch (error) {
     console.error('Error fetching posts:', error);
-    alert('게시글을 불러오는 데 실패했습니다.');
   }
 };
 
-onMounted(fetchPostDetail); // 컴포넌트가 마운트될 때 fetchPosts 호출
+// 컴포넌트가 마운트될 때 fetchPosts 호출
+onMounted(fetchPostDetail); 
 </script>
 
 <style lang="scss" scoped>
