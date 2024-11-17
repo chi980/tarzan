@@ -5,39 +5,43 @@
       <span id="result-number">1600</span>
     </div>
     <div class="post-sort">
-      <CustomSelectBox :options="sortOptions" />
+      <CustomSelectBox 
+      :options="sortOptions"
+      @update:selected="handleSortSelectedIdx"
+      />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, defineEmits } from "vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 
-export default {
-  components: {
-    CustomSelectBox,
+// props 정의
+const props = defineProps({
+  resultTitle: {
+    type: String,
+    required: true,
   },
-  props: {
-    resultTitle: {
-      type: String,
-      required: true,
-    },
-    // Community.vue에서 전달받은 sortOptions prop을 정의
-    // sortOptions: {
-    //   type: Array,
-    //   required: true,
-    // }
+  sortOptions: {
+    type: Array,
+    required: true,
   },
-  data() {
-    return {
-      sortOptions: [
-        {idx: 1, value: 'date', name: '날짜순' },
-        { idx: 2, value: 'popularity', name: '인기순' },
-        { idx: 3, value: 'rating', name: '평점순' },
-      ],
-    }
-  },
-}
+});
+
+// emits 정의
+const emit = defineEmits(["updateSortBy"]);
+
+// 선택된 인덱스 상태를 관리하는 ref
+const selectedSortIdx = ref(null);
+
+// 선택된 정렬 인덱스를 업데이트하는 함수
+const handleSortSelectedIdx = (idx) => {
+  selectedSortIdx.value = idx;
+  console.log("Selected idx:", selectedSortIdx.value);
+  emit("updateSortBy", idx); // 선택한 인덱스를 부모에게 전달
+
+};
 </script>
 
 <style lang="scss" scoped>

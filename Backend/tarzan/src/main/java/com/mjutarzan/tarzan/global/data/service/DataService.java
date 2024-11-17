@@ -1,4 +1,4 @@
-package com.mjutarzan.tarzan.global.common.service;
+package com.mjutarzan.tarzan.global.data.service;
 
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
@@ -15,6 +15,7 @@ import com.mjutarzan.tarzan.domain.map.entity.shopping.Mart;
 import com.mjutarzan.tarzan.domain.map.entity.transportation.Bicycle;
 import com.mjutarzan.tarzan.domain.map.entity.transportation.Bus;
 import com.mjutarzan.tarzan.domain.map.entity.transportation.Subway;
+import com.mjutarzan.tarzan.domain.map.repository.BuildingRepository;
 import com.mjutarzan.tarzan.domain.map.repository.amenity.CivicCenterRepository;
 import com.mjutarzan.tarzan.domain.map.repository.amenity.GymRepository;
 import com.mjutarzan.tarzan.domain.map.repository.amenity.ParkRepository;
@@ -29,6 +30,7 @@ import com.mjutarzan.tarzan.domain.map.repository.transportation.BicycleReposito
 import com.mjutarzan.tarzan.domain.map.repository.transportation.BusRepository;
 import com.mjutarzan.tarzan.domain.map.repository.transportation.SubwayRepository;
 import com.mjutarzan.tarzan.global.common.dto.DataInstance;
+import com.mjutarzan.tarzan.global.common.service.LocationService;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +55,7 @@ import java.util.stream.Collectors;
 public class DataService {
 
     private final LocationService locationService;
+    private final BuildingRepository buildingRepository;
     private final ApiHouseRepository apiHouseRepository;
     private final CivicCenterRepository civicCenterRepository;
     private final GymRepository gymRepository;
@@ -197,5 +200,9 @@ public class DataService {
 
     public void storeSubwayList(String filePath, int latitudeIdx, int longitudeIdx) {
         storeEntityList(filePath, latitudeIdx, longitudeIdx, Subway.class, subwayRepository);
+    }
+
+    public void deleteAll(){
+        buildingRepository.deleteAll();
     }
 }

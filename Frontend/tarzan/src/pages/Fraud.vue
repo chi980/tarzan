@@ -5,7 +5,7 @@
       <!--중요-->
       <div>
         <DescriptionComponent
-          descriptionImgSrc="/src/assets/etc/Fire_perspective.png"
+          descriptionImgSrc="/etc/Fire_perspective.png"
           descriptionTitle="사기를 당할까봐<br/>걱정이신가요?"
           descriptionContent="점검한 집에 대해 사기 여부를<br/>확인할 수 있어요!"
           backgroundColor="#FFEDED"

@@ -4,7 +4,7 @@
     <div class="center-container">
       <div>
         <DescriptionComponent
-          descriptionImgSrc="/src/assets/etc/Saly-26.png"
+          descriptionImgSrc="/etc/Saly-26.png"
           descriptionTitle="타잔이와 함께 체크해봐요!"
           descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
           backgroundColor="#f2ecff"

@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
 import { defineProps } from "vue";
 
 // 부모로부터 받아온 options
@@ -33,6 +32,7 @@ const props = defineProps({
     default: "#F2F2F2",
   },
 });
+// 이미지 경로 계산
 </script>
 
 <style lang="scss" scoped>

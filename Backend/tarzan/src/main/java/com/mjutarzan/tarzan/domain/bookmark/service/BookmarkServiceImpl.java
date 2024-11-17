@@ -14,9 +14,17 @@ import com.mjutarzan.tarzan.domain.house.entity.House;
 import com.mjutarzan.tarzan.domain.house.entity.UserHouse;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
 import com.mjutarzan.tarzan.domain.house.repository.UserHouseRepository;
+import com.mjutarzan.tarzan.domain.map.entity.Building;
+import com.mjutarzan.tarzan.domain.map.entity.amenity.Amenity;
+import com.mjutarzan.tarzan.domain.map.entity.clinic.Clinic;
+import com.mjutarzan.tarzan.domain.map.entity.security.Security;
+import com.mjutarzan.tarzan.domain.map.entity.shopping.Shopping;
+import com.mjutarzan.tarzan.domain.map.entity.transportation.Transportation;
+import com.mjutarzan.tarzan.domain.map.repository.BuildingRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
+import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import com.mjutarzan.tarzan.global.common.service.LocationService;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +53,9 @@ public class BookmarkServiceImpl implements BookmarkService{
     private final UserRepository userRepository;
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkChecklistItemRepository bookmarkChecklistItemRepository;
+    private final BuildingRepository buildingRepository;
+
+    private static final Double radiusHaveToCheck = 0.05;
 
     private final LocationService locationService;
 
@@ -249,15 +260,15 @@ public class BookmarkServiceImpl implements BookmarkService{
             House house = bookmark.getHouse();
             
             // index 구하는 과정
-            Map<HouseIndexType, Integer> indexes = getHouseIndexesScore(bookmark.getHouse());
-            Map<BookmarkChecklistType, Integer> checks = getCheckListScore(bookmark.getCheckListItemList());
+            Map<HouseIndexType, Long> indexes = getHouseIndexesScore(bookmark.getHouse());
+            Map<BookmarkChecklistType, Long> checks = getCheckListScore(bookmark.getCheckListItemList());
             
             return CompareBookmarkDetailResponseDto.builder()
                     .id(house.getId())
                     .name(house.getName())
                     .address(house.getAddress())
                     .category(house.getCategory())
-                    .score(80)  // 항상 100점
+                    .score(getScore(indexes, checks))  // 항상 100점
                     .indexes(indexes)
                     .checks(checks)
                     .build();
@@ -268,11 +279,46 @@ public class BookmarkServiceImpl implements BookmarkService{
                 .build();
     }
 
-    private Map<BookmarkChecklistType, Integer> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
-        return null;
+    private Integer getScore(Map<HouseIndexType, Long> indexes, Map<BookmarkChecklistType, Long> checks) {
+        return 80;
     }
 
-    private Map<HouseIndexType, Integer> getHouseIndexesScore(House house) {
-        return null;
+    private Map<BookmarkChecklistType, Long> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
+        return checkListItemList.stream()
+                // type이 CHECK로 시작하는 항목만 필터링
+                .filter(item -> item.getType().name().startsWith("CHECK"))
+                // type별로 그룹화
+                .collect(Collectors.groupingBy(
+                        BookmarkChecklistItem::getType,  // type으로 그룹화
+                        // 각 그룹에서 value가 true인 항목을 카운트
+                        Collectors.filtering(
+                                BookmarkChecklistItem::getValue, // value가 true인 항목만 필터링
+                                Collectors.counting() // true인 항목을 카운트
+                        )
+                ));
+
+    }
+
+    private Map<HouseIndexType, Long> getHouseIndexesScore(House house) {
+        Point location = house.getLocation();
+        double latitude = location.getY();  // 위도
+        double longitude = location.getX();  // 경도
+        List<Building> buildingList = buildingRepository.findAllWithinRadius(longitude, latitude, radiusHaveToCheck);
+
+        return buildingList.stream()
+                .map(building -> getHouseIndexTypeFromBuilding(building))
+                .collect(Collectors.groupingBy(
+                        houseIndexType -> houseIndexType, // 그룹화 기준 (key)
+                        Collectors.summingLong(e -> 1) // 각 그룹에 대해 count를 계산 (value)
+                ));
+    }
+
+    private HouseIndexType getHouseIndexTypeFromBuilding(Building building) {
+        if(building instanceof Amenity) return HouseIndexType.AMENITY;
+        else if(building instanceof Clinic) return HouseIndexType.CLINIC;
+        else if(building instanceof Security) return HouseIndexType.SECURITY;
+        else if(building instanceof Shopping) return HouseIndexType.SHOPPING;
+        else if(building instanceof Transportation) return HouseIndexType.TRANSPORTATION;
+        else throw new ResourceNotFoundException("지원하지 않는 타입입니다.");
     }
 }

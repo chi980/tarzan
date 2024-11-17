@@ -18,7 +18,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
     properties:
       hibernate:
@@ -70,3 +70,25 @@ jwt:
   refresh:
     expiration: 1209600000 #  (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h) * 24L(h -> 하루) * 14(2주))
     header: Authorization-refresh
+
+
+
+
+api:
+  vworld:
+    real-estate:
+      url:
+        "http://api.vworld.kr/ned/data/getEBOfficeInfo"
+      develop:
+        key:
+          "EA6F08E6-F05D-380A-840A-709AF07229F4"
+  data-seoul:
+    url:
+      "http://openapi.seoul.go.kr:8088"
+    key:
+      "655351685763686938367558756e6f"
+
+
+tarzan:
+  data-truncate: false
+  data-load: false

@@ -15,7 +15,11 @@
       </div>
 
       <div class="result-bar-container">
-        <ResultBar resultTitle="결과" :sortOptions="sortOptions" />
+        <ResultBar 
+        resultTitle="결과" 
+        :sortOptions="sortOptions"
+        @updateSortBy="updateSortBy"
+        />
       </div>
 
       <div class="post-llist-container">
@@ -52,52 +56,63 @@ export default {
     TagButtonGroup,
     PostList,
   },
+
   data() {
     return {
       sortOptions: [
-        {idx: 1, value: 'date', name: '날짜순' },
+        {idx: 1, value: 'date', name: '최신순' },
         { idx: 2, value: 'popularity', name: '인기순' },
         { idx: 3, value: 'rating', name: '평점순' },
       ],
+
       posts: [
-        { id: 1, tag: '교통', title: 'First Post', content: 'This is the first post.', comments: '3'},
-        { id: 2, tag: '정보', title: '오늘 중구 시청역더플라자호텔 버스정류장  앞에서 사고 났어요!', content: 'This is the second post. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', comments: '5'},
+        // { id: 1, tag: '교통', title: 'First Post', content: 'This is the first post.', comments: '3'},
+        // { id: 2, tag: '정보', title: '오늘 중구 시청역더플라자호텔 버스정류장  앞에서 사고 났어요!', content: 'This is the second post. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', comments: '5'},
       ],
     }
   },
+
+  // 컴포넌트가 생성될 때 데이터를 불러옴
   created() {
-    this.fetchPosts(); // 컴포넌트가 생성될 때 데이터를 불러옴
+    this.fetchPosts(); 
   },
 
   methods: {
     goToPostCreate() {
       this.$router.push({ name: 'PostCreate' });
     },
+    updateSortBy(selectedIndex) {
+    const selectedOption = this.sortOptions.find(option => option.idx === selectedIndex);
+    if (selectedOption) {
+      this.sortBy = selectedOption.name;
+      this.fetchPosts();
+    }
+  },
 
   // api : 게시글 목록 불러오기
     async fetchPosts() {
       const queryParams = new URLSearchParams({
         size: 5,
         page: 1,
-        sortBy: '최신순',
+        sortBy: this.sortBy,
         tag: 'ALL',
         gu: 'JONGNO'
       }).toString();
+      console.log(this.sortBy)
 
       try {
-        const response = await axiosInstance.get(`/v1/board?${queryParams}`); // Axios 인스턴스를 사용하여 GET 요청
+        const response = await axiosInstance.get(`/v1/board?${queryParams}`); 
         
         if (response.data.success) {
-          this.posts = response.data.data.list; // 응답에서 게시글 목록을 가져옴
+          this.posts = response.data.data.list; 
           console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
-          alert(`성공?`);
         } else {
           console.error('Failed:', response.data.message);
-          alert(`Error: ${response.data.message}`); // 사용자에게 오류 메시지 표시
+          alert(`Error: ${response.data.message}`); 
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
-        alert('게시글을 불러오는 데 실패했습니다.'); // 사용자에게 알림
+        alert('게시글을 불러오는 데 실패했습니다.'); 
       }
     }
   }
