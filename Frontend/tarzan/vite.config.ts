@@ -25,7 +25,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:8080",
+      "/api": "http://localhost:8080", // 백엔드 API 서버로 프록시 설정
     },
   },
 });

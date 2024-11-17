@@ -1,29 +1,40 @@
 <template>
-  <div class="post-list">
-    <PostItem
+  <div class="post-list-container">
+    <div v-if="posts.length" class="post-items-container">
+      <PostItem
       v-for="post in posts"
-      :key="post.id"
+      :key="post.board_id"
       :post="post"
-      @click="goToPostDetail(post.id)"
-    />
+      @click="goToPostDetail(post.board_id)"/>
+    </div>
+    <div v-else class="post-items-container">
+      <p>게시물이 없습니다.</p>
+    </div>
+
+    <div class="post-more-container">
+      <button id="post-more-button">
+        <span>더보기</span>
+        <img 
+          id="post-more-icon"
+          src="@/assets/icons/Arrows-chevron/Arrow-Down/Arrow-Down.png"
+          alt="arrowDown"
+        />
+      </button>
+    </div>
   </div>
 </template>
-
 <script>
-import PostItem from './PostItem.vue';
+import PostItem from '@/components/post/PostItem.vue';
 
 export default {
   components: {
     PostItem,
   },
-  data() {
-    return {
-      posts: [
-        { id: 1, tag: '교통', title: 'First Post', content: 'This is the first post.', comments: '3'},
-        { id: 2, tag: '정보', title: 'Second Post', content: 'This is the second post.', comments: '5'},
-        // 나중엔 진짜 데이터로
-      ],
-    };
+  props: {
+    posts: {
+      type: Array,
+      required: true
+    }
   },
   methods: {
     goToPostDetail(postId) {
@@ -32,6 +43,32 @@ export default {
   },
 };
 </script>
+<style scoped lang="scss">
+  .post-list-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; 
+    justify-content: space-between;
+    gap: 16px;
+  }
 
-<style scoped>
+  .post-list-container .post-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  #post-more-button {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #post-more-icon {
+  @include custom-icon-style;
+  }
 </style>

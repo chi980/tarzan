@@ -16,7 +16,7 @@ import org.locationtech.jts.geom.Point;
 public class Transportation extends Building {
 
     @Builder
-    public Transportation(String name, String address, Point location, String phoneNumber){
-        super(name, address, location, phoneNumber);
+    public Transportation(String name, String address, String category, Point location, String phoneNumber){
+        super(name, address, category, location, phoneNumber);
     }
 }

@@ -1,76 +1,145 @@
 <template>
   <div class="sub-container">
-    <!-- 여따 heaer 넣기 -->
-     
+    <PostTopBar 
+      v-if="post.board_is_writer !== undefined" 
+      :isAuthor="post.board_is_writer" 
+      :boardIdx="boardIdx" 
+    />
     <div class="center-container">
-      <div class="post-container">
+      <div class="post-detail-container">
         <div class="post-tag">
-          <span>{{ post.tag }}</span>
+          <span>{{ post.board_tag }}</span>
         </div>
-        <div class="post-witer">
-          <span clas>{{ post.writer }}</span>
+        <div class="post-writer">
+          <span clas>{{ post.board_writer_nickname }}</span>
         </div>
         <div class="post-title">
-          <h2>{{ post.title }}</h2>
+          <h2>{{ post.board_title }}</h2>
         </div>
         <div class="post-content">
-          <p>{{ post.content }}</p>   
+          <p>{{ post.board_content }}</p>   
         </div>
         <div class="post-time">
           <!-- 경과시간은 컴포넌트로 만들어야할 듯 -->
-          <span>{{ post.elapsedTime }}</span>
+          <span>{{ post.board_created_at }}</span>
         </div>
       </div>
-
       <div class="comment-container">
-        <PostComment
-          v-for="(comment, index) in comments"
-          :key="index"
-          :comment="comment"
-          :index="index"
-          @delete-comment="deleteComment"
-        />
+        <div class="comment-list">
+          <CommentList :post-id="post.id" /> 
+        </div>
+        <CommentInput :board-idx="post.id" /> 
       </div>
     </div>
-
     <BottomBar />
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router'; 
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import BottomBar from "@/components/common/BottomBar.vue";
-import PostComment from "@/components/post/PostComment.vue";
+import PostTopBar from "./PostTopBar.vue";
+import CommentInput from "./CommentInput.vue";
+import CommentList from "./CommentList.vue";
 
-export default {
-  components: {
-    BottomBar,
-    PostComment,
-  },
-  data() {
-    return {
-      post: null,
-      comments: [
-        { writer: '톡기', content: '저는 주로 네일클로버 세탁방을 방문합니다.', time: '2024-07-01T08:00:00' },
-        { writer: '화이트', content: '하얀 세탁소 추천이요', time: '2024-07-01T09:00:00' },
-        { writer: '사자', content: '사자 세탁방도 좋아요.', time: '2024-07-01T10:00:00' },
-      ],
-    };
-  },
-  created() {
-    const postId = this.$route.params.id;
-    // 실제 프로젝트에서는 API를 통해 게시물 데이터를 가져옴
-    this.post = {
-      id: postId,
-      tag: '생활팁',
-      writer: '호랑이',
-      title: `Post ${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
-      content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
-      elapsedTime: '20시간 전',
-    };
-  },
-  
+// 컴포넌트 등록
+const components = {
+  PostTopBar,
+  BottomBar,
+  CommentList,
+  CommentInput,
 };
+
+const route = useRoute(); 
+const post = ref({}); 
+const boardIdx = route.params.id; 
+
+const fetchPostDetail = async () => {
+  try {
+    const response = await axiosInstance.get(`/v1/board/${boardIdx}`);
+    console.log(response);
+    
+    if (response.data.success) {
+      post.value = response.data.data; // ref로 선언된 posts에 값 할당
+      console.log('게시물 상세 가져오기 성공');
+      console.log(response.data.data);
+    } else {
+      console.error('Failed:', response.data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+};
+
+// 컴포넌트가 마운트될 때 fetchPosts 호출
+onMounted(fetchPostDetail); 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .sub-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .center-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #EDEDED;
+    height: 100%;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .post-detail-container{
+    background-color: white;
+    text-align:left;
+    display:flex;
+    flex-direction: column;
+    gap: 12px;
+    @include custom-padding-x;
+    @include custom-padding-y;
+    // flex-basis: 230px;
+  }
+
+  .center-container .post-detail-container .post-tag span{
+    display: inline-block;
+    background-color: #F2F3F9;
+    @include custom-padding($margin-small);
+    border-radius: 10px;
+    font-size: 10px;
+  }
+
+  .center-container .post-detail-container .post-writer {
+    color: #9F9F9F;
+    font-size: 12px;
+  }
+
+  .center-container .post-detail-container .post-title {
+    @include custom-text-bold($font-color: $text-color-default, $font-size: 19px);
+  }
+
+  .center-container .post-detail-container .post-content {
+    line-height: 1.5;
+    font-size: 13px;
+  }
+  
+  .center-container .post-detail-container .post-time {
+    font-size: 12px;
+    color: #9F9F9F;
+    margin-top: 12px;
+  }
+
+  .comment-container {
+    position: relative;
+    flex-grow: 1;
+    padding-top: 15px;
+    background-color: white;
+  }
+
+  .comment-container .comment-list {
+    @include custom-padding-x;
+  }
 </style>

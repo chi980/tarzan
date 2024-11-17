@@ -8,6 +8,7 @@
   flex-direction: column; /* 세로 방향으로 요소 배치 */
   justify-content: center;
   align-items: center;
+  background-color: white;
 
   box-shadow: 0px 0px 20px rgba(166, 166, 166, 0.2);
 }
@@ -98,4 +99,12 @@ img {
   font-weight: 100;
   src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Thin.woff")
     format("woff");
+}
+
+@font-face {
+  font-family: "BMJUA";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }

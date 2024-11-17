@@ -12,7 +12,7 @@
 import { Option } from "@/data/options";
 import { SelectStyle } from "@/data/selectStyle";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
-// 부모 컴포넌트의 배열 데이터 정의
+
 const seoulDistrictOptions: Option[] = [
   { idx: 1, name: "서울시 종로구", value: "JONGNO" },
   { idx: 2, name: "서울시 중구", value: "JUNG" },
@@ -50,13 +50,15 @@ const topBarStyle: SelectStyle = {
 <style lang="scss" scoped>
 .top-bar {
   @include custom-text($font-weight: 800, $font-size: 16px);
-  @include custom-bar-style($height: 60px, $z-index: $z-index-top-bar);
+  @include custom-bar-style(
+    $height: $height-top-bar,
+    $z-index: $z-index-top-bar
+  );
   @include custom-none-select-basic;
-  // @include custom-shadow-style("bottom");
 }
+
 .select-content {
   @include custom-margin-x;
   width: 100%;
-  // background-color: aqua;
 }
 </style>

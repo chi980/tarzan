@@ -1,14 +1,12 @@
 // src/router/index.js
 import { useAuthStore } from "@/stores/authStore.js";
 import { createRouter, createWebHistory } from "vue-router";
-// import axios from "axios";
-import { createApiInstance } from "@/axios/axiosInstance.js";
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: () => import("@/components/Home.vue"),
+    component: () => import("@/pages/Home.vue"),
   },
   {
     path: "/login",
@@ -23,20 +21,83 @@ const routes = [
   {
     path: "/bookmark",
     name: "BookMark",
-    component: () => import("@/pages/BookMark.vue"),
+
+    children: [
+      {
+        path: "",
+        component: () => import("@/pages/BookMark.vue"),
+      },
+      {
+        path: "map",
+        component: () => import("@/components/bookmark/MapPage.vue"),
+      },
+      {
+        path: "add",
+        component: () => import("@/components/bookmark/AddItemPage.vue"),
+      },
+      {
+        path: "check/cost",
+        component: () => import("@/components/bookmark/CheckCostPage.vue"),
+      },
+      {
+        path: "check/option",
+        component: () => import("@/components/bookmark/CheckOptionPage.vue"),
+      },
+      {
+        path: "check/checklist",
+        component: () => import("@/components/bookmark/CheckCheckListPage.vue"),
+      },
+      {
+        path: "compare",
+        component: () => import("@/components/bookmark/CompareHouses.vue"),
+      },
+    ],
   },
 
   {
-    path: "/home2",
-    name: "Home2",
-    component: () => import("@/components/Home2.vue"),
-    meta: { requiresAuth: true },
-  },
-
-  {
-    path: "/tmp",
-    name: "Tmp",
-    component: () => import("@/pages/Tmp.vue"),
+    path: "/fraud",
+    name: "Fraud",
+    children: [
+      {
+        path: "",
+        component: () => import("@/pages/Fraud.vue"),
+      },
+      {
+        path: "landlord",
+        name: "CheckLandlord",
+        component: () => import("@/components/fraud/CheckLandlord.vue"),
+      },
+      {
+        path: "fakeLandlord",
+        name: "PreventFakeLandlord",
+        component: () => import("@/components/fraud/PreventFakeLandlord.vue"),
+      },
+      {
+        path: "trustee",
+        name: "PreventTrustee",
+        component: () => import("@/components/fraud/PreventTrustee.vue"),
+      },
+      {
+        path: "contract",
+        name: "CheckContract",
+        component: () => import("@/components/fraud/CheckContract.vue"),
+      },
+      {
+        path: "special-contract",
+        name: "CheckSpecialContract",
+        component: () => import("@/components/fraud/CheckSpecialContract.vue"),
+      },
+      {
+        path: "real-estate",
+        name: "CheckRealEstateBroker",
+        component: () => import("@/components/fraud/CheckRealEstateBroker.vue"),
+      },
+      {
+        path: "value-check",
+        name: "CheckValue",
+        component: () => import("@/components/fraud/CheckValue.vue"),
+      },
+    ],
   },
 
   {
@@ -52,19 +113,61 @@ const routes = [
   {
     path: "/community",
     name: "Community",
-    component: () => import("@/pages/Community.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("@/pages/Community.vue"),
+      },
+      {
+        path: ":id",
+        name: "PostDetail",
+        component: () => import("@/components/post/PostDetail.vue"),
+      },
+      {
+        path: "postcreate",
+        name: "PostCreate",
+        component: () => import("@/components/post/PostCreate.vue"),
+      },
+    ],
   },
 
   {
-    path: "/community/:id",
-    name: 'PostDetail',
-    component: () => import("@/components/post/PostDetail.vue"),
+    path: "/review",
+    name: "Review",
+    children: [
+      {
+        path: "",
+        name: "Review",
+        component: () => import("@/components/review/Review.vue"),
+      },
+      {
+        path: "create1",
+        name: "CreateReview1",
+        component: () => import("@/components/review/CreateReview1.vue"),
+      },
+      {
+        path: "create2",
+        name: "CreateReview2",
+        component: () => import("@/components/review/CreateReview2.vue"),
+      },
+    ],
   },
 
   {
-    path: "/community/postcreate",
-    name: 'PostCreate',
-    component: () => import("@/components/post/PostCreate.vue"),
+    path: "/mypage",
+    name: "MyPage",
+    children: [
+      {
+        path: "",
+        name: "MyPage",
+        component: () => import("@/pages/MyPage.vue"),
+      },
+      {
+        path: "edit-profile",
+        name: "EditProfile",
+        component: () => import("@/components/mypage/EditProfile1.vue"),
+      },
+    ],
   },
 
   {
@@ -91,34 +194,42 @@ const router = createRouter({
     return { top: 0 };
   },
 });
-
 router.beforeEach((to, from, next) => {
-  const authRequired = to.meta.requiresAuth;
+  const authStore = useAuthStore();
 
-  // 인증이 필요한 페이지이고, 사용자가 로그인되어 있지 않은 경우 로그인 페이지로 리다이렉트
-  if (authRequired && !useAuthStore.isAuthenticated) {
-    if (!useAuthStore.isRefreshToken) {
-      alert("아직 refreshToken이 존재합니다!");
-      const postData = {
-        refreshTokenString: userAuthStore.getAccessToken(),
-      };
-      createApiInstance
-        .post("/api/oauth/token/refresh", postData)
-        .then((res) => {
-          console.log("재발급 성공");
-          console.log(res.data);
-          // 새 토큰을 저장하는 로직
-          // 다음 단계로 이동
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
 
-    alert("로그인이 필요합니다!");
-    next("/");
+  const publicPages = [
+    "/",
+    "/login",
+    "/signup",
+    "/login-processing",
+    "/community",
+    "/community/postcreate",
+  ];
+
+  // 현재 경로가 예외 처리 대상인지 확인
+  // const isPublicPage = publicPages.includes(to.path);
+  const isPublicPage = true;
+
+  if (isPublicPage) {
+    next(); // 예외 처리 경로라면 통과
   } else {
-    next(); // 그렇지 않으면 다음 단계로 이동
+    // Token 확인 로직
+    if (authStore.accessToken && authStore.refreshToken) {
+      next(); // accessToken과 refreshToken이 모두 있으면 통과
+    } else if (authStore.accessToken && authStore.role == "GUEST") {
+      if (to.name !== "SignUp") {
+        next({ name: "SignUp" }); // accessToken만 있고 refreshToken이 없으면 /signup으로 리다이렉트
+      } else {
+        next(); // 이미 /signup 페이지로 가는 경우에는 그대로 진행
+      }
+    } else {
+      if (to.name !== "Login") {
+        next({ name: "Login" }); // 둘 다 없으면 /login으로 리다이렉트
+      } else {
+        next(); // 이미 /login 페이지로 가는 경우에는 그대로 진행
+      }
+    }
   }
 });
 

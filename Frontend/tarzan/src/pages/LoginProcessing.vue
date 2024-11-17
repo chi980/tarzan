@@ -1,58 +1,45 @@
-<script>
-import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/authStore.js";
-import { mapState, mapActions } from "pinia";
-
-export default {
-  data() {
-    return {
-      accessToken: "",
-      refreshToken: "",
-    };
-  },
-  created() {
-    const router = useRouter();
-
-    // 현재 라우터에서 쿼리 파라미터 읽기
-    this.accessToken = router.currentRoute.value.query.accessToken;
-    this.refreshToken = router.currentRoute.value.query.refreshToken;
-
-    if (!this.accessToken || !this.refreshToken) {
-      // alert 후
-      alert("로그인에 실패했습니다!");
-      // 로그인 화면으로 다시 리다이렉트
-      router.replace("/");
-    }
-
-    // console.log("토큰 정보");
-    // console.log(`access-token: ${this.accessToken}`);
-    // console.log(`refresh-token: ${this.refreshToken}`);
-
-    this.setToken();
-
-    alert("로그인에 성공해습니다!");
-    router.replace("/");
-  },
-  computed: {
-    ...mapState(useAuthStore, [
-      "accessToken",
-      "refreshToken",
-      "getAccessToken",
-      "getRefreshToken",
-    ]),
-  },
-  methods: {
-    ...mapActions(useAuthStore, ["setAccessToken", "setRefreshToken"]),
-    setToken() {
-      this.setAccessToken(this.accessToken);
-      this.setRefreshToken(this.refreshToken);
-    },
-  },
-};
-</script>
 <template>
-  <div>
-    <p>Processing login...</p>
-  </div>
+  <div>로그인 처리 중...</div>
 </template>
-<style scoped></style>
+
+<script setup>
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore";
+import { onMounted } from "vue";
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+onMounted(() => {
+  // 현재 URL에서 쿼리 파라미터 추출
+  const urlParams = new URLSearchParams(window.location.search);
+  const accessToken = urlParams.get("access_token");
+  const refreshToken = urlParams.get("refresh_token");
+
+  const role = urlParams.get("role");
+  const gu = urlParams.get("gu");
+  const nickname = urlParams.get("nickname");
+
+  if (accessToken && refreshToken) {
+    // Pinia 스토어에 토큰 저장
+    authStore.setTokens(accessToken, refreshToken);
+    authStore.setUserInfo(role, gu, nickname);
+    alert(
+      `accessToken=${accessToken}, refreshToken=${refreshToken}, role=${role}, gu=${gu}, nickname=${nickname}`
+    );
+    alert(accessToken == refreshToken);
+    // 이후 메인 페이지로 리다이렉트
+    router.push("/"); // Vue Router를 사용할 때는 router.push 사용
+  } else if (accessToken) {
+    authStore.setAccessToken(accessToken);
+    authStore.setRole(role);
+    alert(`첫 로그인, accessToken=${accessToken}, role=${role}`);
+    router.push("/signup");
+  } else {
+    // 토큰이 없을 경우 로그인 실패 처리
+    console.error("Authentication failed. No tokens found.");
+    alert("Authentication failed. No tokens found.");
+    router.push("/login");
+  }
+});
+</script>

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowJs": true, // JavaScript 파일을 허용
+    "checkJs": false, // JavaScript 파일에 대한 타입 검사를 비활성화
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -7,19 +9,31 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
 
     /* Linting */
-    "strict": true,
+    // "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Path aliasing */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/**/*.js",
+    "kakao.maps.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

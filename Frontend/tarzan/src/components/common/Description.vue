@@ -1,9 +1,12 @@
 <template>
-  <div class="description-container">
-    <img :src="descriptionImgSrc" alt="img" />
+  <div
+    class="description-container"
+    :style="{ backgroundColor: props.backgroundColor }"
+  >
+    <img :src="props.descriptionImgSrc" alt="img" />
     <div class="description-content">
-      <p v-html="descriptionTitle"></p>
-      <p v-html="descriptionContent"></p>
+      <p v-html="props.descriptionTitle"></p>
+      <p v-html="props.descriptionContent"></p>
     </div>
   </div>
 </template>
@@ -24,7 +27,12 @@ const props = defineProps({
     type: String,
     default: "기본 내용입니다",
   },
+  backgroundColor: {
+    type: String,
+    default: "#F2F2F2",
+  },
 });
+// 이미지 경로 계산
 </script>
 
 <style lang="scss" scoped>
@@ -34,8 +42,8 @@ const props = defineProps({
   justify-content: center; /* 가로축 중앙 정렬 */
   align-items: center; /* 세로축 중앙 정렬 */
   gap: $margin-default;
-  height: 164px;
-  background-color: #f2ecff;
+
+  height: 150px;
 }
 .description-container > img {
   height: 80px;
@@ -54,6 +62,7 @@ const props = defineProps({
 }
 .description-content > p:first-child {
   @include custom-text-bold($font-size: 18px);
+  line-height: 1.3em;
 }
 .description-content > p:last-child {
   @include custom-text($font-size: 12px, $font-color: $text-color-light);

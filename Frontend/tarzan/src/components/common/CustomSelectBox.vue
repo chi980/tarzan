@@ -4,7 +4,7 @@
     * 선택된 idx -->
 
 <template>
-  <div>
+  <div class="select-wrapper" style="min-width: max-content">
     <div class="dropdown">
       <div
         :style="parentStyle"
@@ -24,14 +24,15 @@
       <div
         class="scrollable-container dropdown-content"
         :class="['dropdown-content', { show: isDropDownOpen }]"
+        style="min-width: max-content"
         @click="controllDropDown"
       >
         <div class="scrollable-list">
           <ul>
             <li
-              v-for="option in options"
+              v-for="(option, index) in options"
               :key="option.idx"
-              @click="selectOption(option)"
+              @click="selectOption(option, index)"
             >
               {{ option.name }}
             </li>
@@ -47,9 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+// @ts-ignore
+import { ref, onMounted, defineEmits } from "vue";
+
+// @ts-ignore
 import { Option } from "@/data/options";
+
+// @ts-ignore
 import { SelectStyle } from "@/data/selectStyle";
+
+// @ts-ignore
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
 // 부모로부터 받아온 options
@@ -70,42 +78,47 @@ const props = defineProps({
 
 // 선택된 옵션 상태
 const selectedOption = ref<Option | null>(null);
+const selectedIdx = ref<number | null>(null);
 
 // 팝업 상태 관리
 const isDropDownOpen = ref(false);
 // 화살표 상태 관리
 const isRotated = ref(false);
 
+// emit 정의
+const emit = defineEmits<{
+  (e: "update:selected", idx: number): void;
+}>();
+
 const controllDropDown = () => {
   isDropDownOpen.value = !isDropDownOpen.value;
   isRotated.value = !isRotated.value;
 };
 
-// 팝업 열기 핸들러
-const openDropDown = () => {
-  isDropDownOpen.value = true;
-};
-
-// 팝업 닫기 핸들러
-const closeDropDown = () => {
-  isDropDownOpen.value = false;
-};
 // 초기 선택 옵션 설정
 onMounted(() => {
   if (props.options.length > 0) {
     selectedOption.value = props.options[0]; // options 배열의 첫 번째 항목을 선택된 옵션으로 설정
+    selectedIdx.value = 0;
   }
 });
 
 // 옵션 클릭 핸들러
-const selectOption = (option: Option) => {
+
+// @ts-ignore
+const selectOption = (option: Option, index: number) => {
   selectedOption.value = option;
+  selectedIdx.value = index;
+  emit("update:selected", index); // 선택한 옵션의 idx emit
 };
 </script>
 
 <style lang="scss" scoped>
+.select-wrapper {
+  display: flex;
+}
 .selected-item {
-  @include custom-text;
+  @include custom-text($font-size: 14px);
   @include custom-padding-x;
   // @include custom-margin-input;
 
@@ -121,6 +134,7 @@ const selectOption = (option: Option) => {
 .selected-item span {
   margin-right: $input-margin-default;
   text-align: left;
+  white-space: nowrap;
 }
 .input-item-image {
   @include custom-icon-style;
@@ -151,7 +165,7 @@ const selectOption = (option: Option) => {
   margin: 0;
 }
 .scrollable-list li {
-  @include custom-text;
+  @include custom-text($font-size: 14px);
   list-style-type: none;
   border-radius: $border-radius-default;
   padding: $padding-default;
@@ -180,8 +194,8 @@ const selectOption = (option: Option) => {
   @include custom-none-select-basic;
   position: relative;
   display: inline-block;
-  min-width: 150px;
-  width: 100%;
+  // width: 100%;
+  flex: 1;
 }
 .dropdown-exterior {
   display: none;
@@ -204,9 +218,8 @@ const selectOption = (option: Option) => {
 }
 .dropdown-content.show {
   display: block;
-  min-width: max-content;
   margin-top: $margin-small;
   z-index: $z-index-dropdown;
-  width: inherit;
+  width: 100%;
 }
 </style>

@@ -1,37 +1,70 @@
 import { defineStore } from "pinia";
-/**
- * @ 1st parameter: name
- * @ 2nd parameter: option related with store
- */
-export const useAuthStore = defineStore("authStore", {
+
+export const useAuthStore = defineStore("auth", {
   state: () => ({
-    accessToken: null,
-    refreshToken: null,
+    accessToken: localStorage.getItem("accessToken") || null,
+    refreshToken: localStorage.getItem("refreshToken") || null,
+    role: localStorage.getItem("role") || null, // 사용자 역할
+    gu: localStorage.getItem("gu") || null,
+    nickname: localStorage.getItem("nickname") || null,
   }),
-  getters: {
-    isAuthenticated: (state) => !!state.accessToken,
-    isRefreshToken: (state) => !!state.refreshToken,
-    getAccessToken: (state) => {
-      return state.accessToken;
+  actions: {
+    setTokens(accessToken, refreshToken) {
+      setAccessToken(accessToken);
+      if (refreshToken) {
+        setRefreshToken(refreshToken);
+      }
     },
-    getRefreshToken: (state) => {
-      return state.refreshToken;
+    setAccessToken(accessToken) {
+      this.accessToken = accessToken;
+      localStorage.setItem("accessToken", accessToken);
+    },
+    setRefreshToken(refreshToken) {
+      this.refreshToken = refreshToken;
+      localStorage.setItem("refreshToken", refreshToken);
+    },
+    setUserInfo(role, gu, nickname) {
+      setRole(role);
+      setGu(gu);
+      setNickname(nickname);
+    },
+    setRole(role) {
+      this.role = role;
+      localStorage.setItem("role", role);
+    },
+    setGu(gu) {
+      this.gu = gu;
+      localStorage.setItem("gu", gu);
+    },
+    setNickname(nickname) {
+      this.nickname = nickname;
+      localStorage.setItem("nickname", nickname);
+    },
+    registerUser(refreshToken, role, gu, nickname) {
+      this.setRefreshToken(refreshToken);
+      this.setRole(role);
+      this.setGu(gu);
+      this.setNickname(nickname);
+    },
+    loadTokensFromStorage() {
+      // localStorage에서 JWT를 로드
+      this.accessToken = localStorage.getItem("accessToken");
+      this.refreshToken = localStorage.getItem("refreshToken");
+    },
+    clearAuth() {
+      this.accessToken = null;
+      this.refreshToken = null;
+      this.role = null;
+      this.gu = null;
+      this.nickname = null;
+      // localStorage에서 JWT를 삭제
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("gu");
+      localStorage.removeItem("nickname");
     },
   },
-  // 항상 일반 함수 사용!
-  actions: {
-    setAccessToken(newAccessToken) {
-      console.log(`newAccessToken: ${newAccessToken}`);
-      this.accessToken = newAccessToken;
-    },
-    setRefreshToken(newRefreshToken) {
-      console.log(`newRefreshToken: ${newRefreshToken}`);
-      this.refreshToken = newRefreshToken;
-    },
-    setToken(newAccessToken, newRefreshToken) {
-      console.log(`token 저장 완료`);
-      this.accessToken = newAccessToken;
-      this.refreshToken = newRefreshToken;
-    },
+  getters: {
+    isAuthenticated: (state) => !!state.accessToken,
   },
 });
