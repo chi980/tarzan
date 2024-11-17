@@ -61,9 +61,9 @@ const components = {
 
 // 상태 관리
 const sortOptions = ref([
-  { idx: 1, value: "latest", name: "최신순" },
-  { idx: 2, value: "views", name: "조회수순" },
-  { idx: 3, value: "oldest", name: "오래된순" },
+  { idx: 0, value: "latest", name: "최신순" },
+  { idx: 1, value: "views", name: "조회수순" },
+  { idx: 2, value: "oldest", name: "오래된순" },
 ]);
 const posts = ref([]); // 게시글 데이터
 const sortBy = ref("최신순"); // 정렬 기준 (기본값)
@@ -75,11 +75,12 @@ const goToPostCreate = () => {
 };
 
 const updateSortBy = (selectedIndex) => {
+  console.log(selectedIndex)
   const selectedOption = sortOptions.value.find(
     (option) => option.idx === selectedIndex
   );
   if (selectedOption) {
-    sortBy.value = selectedOption.value;
+    sortBy.value = selectedOption.name;
     fetchPosts();
   }
 };
