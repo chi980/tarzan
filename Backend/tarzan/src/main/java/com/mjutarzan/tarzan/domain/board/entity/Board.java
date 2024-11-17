@@ -31,8 +31,7 @@ public class Board extends CommonEntity {
     @Column(name = "board_title")
     private String title;
 
-    @Lob
-    @Column(name = "board_content", columnDefinition = "TEXT") // 또는 CLOB
+    @Column(name = "board_content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "board_tag")
@@ -55,11 +54,10 @@ public class Board extends CommonEntity {
     private List<Comment> commentList = new ArrayList<>();
 
     @Builder
-    public Board(String title, String content, BoardTag tag, Long readCount, SiGunGu gu, User writer) {
+    public Board(String title, String content, BoardTag tag, SiGunGu gu, User writer) {
         this.title = title;
         this.content = content;
         this.tag = tag;
-        this.readCount = readCount;
         this.gu = gu;
         this.writer = writer;
         this.writer.addBoard(this);
@@ -69,6 +67,10 @@ public class Board extends CommonEntity {
         this.title = title;
         this.content = content;
         this.tag = tag;
+    }
+
+    public void updateReadCount(){
+        this.readCount++;
     }
 
     public void addComment(Comment comment){

@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.domain.board.api.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +14,6 @@ public class CommentRequestDto {
     private String content;
 
     @JsonProperty("comment_board_idx")
-    @NotBlank(message = "게시물 idx는 필수입니다.")
+    @NotNull(message = "게시물 idx는 필수입니다.")
     private Long boardIdx;
 }

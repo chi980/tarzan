@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByGu(SiGunGu gu, Pageable pageable);
     Page<Board> findByGuAndTag(SiGunGu gu, BoardTag tag, Pageable pageable);
@@ -18,4 +20,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByTitleContaining(@Param("search") String search, Pageable pageable);
 
     Page<Board> findByWriter(User writer, Pageable pageable);
+
+    List<Board> findByWriter(User writer);
 }

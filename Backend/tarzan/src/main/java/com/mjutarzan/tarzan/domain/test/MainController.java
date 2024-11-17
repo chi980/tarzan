@@ -1,7 +1,7 @@
 package com.mjutarzan.tarzan.domain.test;
 
 import com.mjutarzan.tarzan.domain.house.service.ApiHouseService;
-import com.mjutarzan.tarzan.global.common.service.DataService;
+import com.mjutarzan.tarzan.global.data.service.DataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

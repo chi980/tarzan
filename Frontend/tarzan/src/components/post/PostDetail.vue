@@ -1,61 +1,80 @@
 <template>
   <div class="sub-container">
-    <PostTopBar />
+    <PostTopBar 
+      v-if="post.board_is_writer !== undefined" 
+      :isAuthor="post.board_is_writer" 
+      :boardIdx="boardIdx" 
+    />
     <div class="center-container">
       <div class="post-detail-container">
         <div class="post-tag">
-          <span>{{ post.tag }}</span>
+          <span>{{ post.board_tag }}</span>
         </div>
         <div class="post-writer">
-          <span clas>{{ post.writer }}</span>
+          <span clas>{{ post.board_writer_nickname }}</span>
         </div>
         <div class="post-title">
-          <h2>{{ post.title }}</h2>
+          <h2>{{ post.board_title }}</h2>
         </div>
         <div class="post-content">
-          <p>{{ post.content }}</p>   
+          <p>{{ post.board_content }}</p>   
         </div>
         <div class="post-time">
           <!-- 경과시간은 컴포넌트로 만들어야할 듯 -->
-          <span>{{ post.elapsedTime }}</span>
+          <span>{{ post.board_created_at }}</span>
         </div>
       </div>
       <div class="comment-container">
         <div class="comment-list">
-          <CommentList />
+          <CommentList :post-id="post.id" /> 
         </div>
-        <CommentInput />
+        <CommentInput :board-idx="post.id" /> 
       </div>
     </div>
     <BottomBar />
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router'; 
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import BottomBar from "@/components/common/BottomBar.vue";
 import PostTopBar from "./PostTopBar.vue";
 import CommentInput from "./CommentInput.vue";
 import CommentList from "./CommentList.vue";
 
-export default {
-  components: {
-    PostTopBar,
-    BottomBar,
-    CommentList,
-    CommentInput,
-  },
-  created() {
-    const postId = this.$route.params.id;
-    this.post = {
-      id: postId,
-      tag: '질문',
-      writer: '호랑이',
-      title: `${postId} : 중구 신당동 주민분들!! 질문있습니다.`,
-      content: `안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.안녕하세요 새로 이사오게 되었습니다. 반갑습니다! 궁금한 것이 있어 이렇게 글을 씁니다.`,
-      elapsedTime: '20시간 전',
-    };
-  },
+// 컴포넌트 등록
+const components = {
+  PostTopBar,
+  BottomBar,
+  CommentList,
+  CommentInput,
 };
+
+const route = useRoute(); 
+const post = ref({}); 
+const boardIdx = route.params.id; 
+
+const fetchPostDetail = async () => {
+  try {
+    const response = await axiosInstance.get(`/v1/board/${boardIdx}`);
+    console.log(response);
+    
+    if (response.data.success) {
+      post.value = response.data.data; // ref로 선언된 posts에 값 할당
+      console.log('게시물 상세 가져오기 성공');
+      console.log(response.data.data);
+    } else {
+      console.error('Failed:', response.data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
+};
+
+// 컴포넌트가 마운트될 때 fetchPosts 호출
+onMounted(fetchPostDetail); 
 </script>
 
 <style lang="scss" scoped>
@@ -70,6 +89,7 @@ export default {
     justify-content: flex-start;
     background-color: #EDEDED;
     height: 100%;
+    width: 100%;
     gap: 10px;
   }
 

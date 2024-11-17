@@ -4,6 +4,7 @@ import com.mjutarzan.tarzan.domain.board.api.request.BoardListRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardSearchRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.UpdateBoardRequestDto;
+import com.mjutarzan.tarzan.domain.board.api.response.BoardDetailResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListItemResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.entity.Board;
@@ -140,5 +141,30 @@ public class BoardServiceImpl implements BoardService {
         board.update(requestDto.getTitle(), requestDto.getContent(), requestDto.getTag());
 
         boardRepository.deleteById(boardIdx);
+    }
+
+    @Override
+    public BoardDetailResponseDto getBoard(Long boardIdx, UserDto loginedUserDto) {
+        Board board = boardRepository.findById(boardIdx)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
+
+        updateBoardReadCount(board);
+
+        User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+
+        return BoardDetailResponseDto.builder()
+                .title(board.getTitle())
+                .content(board.getContent())
+                .tag(board.getTag())
+                .readCount(board.getReadCount())
+                .writerId(board.getWriter().getId())
+                .writerNickname(board.getWriter().getNickname())
+                .createdAt(board.getCreatedAt())
+                .isWriter(board.getWriter().getId() == loginedUser.getId())
+                .build();
+    }
+
+    private void updateBoardReadCount(Board board) {
+        board.updateReadCount();
     }
 }

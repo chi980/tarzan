@@ -29,12 +29,12 @@ public class BoardListItemResponseDto {
     @JsonProperty("board_created_at")
     private LocalDateTime createdAt;
     @JsonProperty("board_comment_count")
-    private long commentCount;
+    private Long commentCount;
     @JsonProperty("board_is_writer")
-    private boolean isWriter;
+    private Boolean isWriter;
 
     @Builder
-    public BoardListItemResponseDto(Long id, String title, String content, BoardTag tag, Long readCount, Long writerId, String writerNickname, LocalDateTime createdAt, long commentCount, boolean isWriter){
+    public BoardListItemResponseDto(Long id, String title, String content, BoardTag tag, Long readCount, Long writerId, String writerNickname, LocalDateTime createdAt, Long commentCount, Boolean isWriter){
         this.id = id;
         this.title = title;
         this.content = content;
@@ -47,7 +47,7 @@ public class BoardListItemResponseDto {
         this.isWriter = isWriter;
     }
 
-    public BoardListItemResponseDto(Board board, boolean isWriter){
+    public BoardListItemResponseDto(Board board, Boolean isWriter){
         this.id = board.getId();
         this.title = board.getTitle();
         this.content = board.getContent();
