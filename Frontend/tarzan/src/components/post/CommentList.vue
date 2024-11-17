@@ -37,7 +37,7 @@ const fetchComments = async () => {
     size: 5,
     page: 1,
     sortBy: '최신순', // 정렬 기준
-    boardIdx: '10', // 게시글 ID
+    boardIdx: '56', // 게시글 ID
   }).toString();
 
   try {

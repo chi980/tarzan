@@ -2,17 +2,17 @@ import { defineStore } from "pinia";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    accessToken: localStorage.getItem("accessToken") || null,
-    refreshToken: localStorage.getItem("refreshToken") || null,
-    role: localStorage.getItem("role") || null, // 사용자 역할
-    gu: localStorage.getItem("gu") || null,
-    nickname: localStorage.getItem("nickname") || null,
+    accessToken: localStorage.getItem("accessToken") || "",
+    refreshToken: localStorage.getItem("refreshToken") || "",
+    role: localStorage.getItem("role") || "guest", // 기본값 추가
+    gu: localStorage.getItem("gu") || "",
+    nickname: localStorage.getItem("nickname") || "익명",
   }),
   actions: {
     setTokens(accessToken, refreshToken) {
-      setAccessToken(accessToken);
+      this.setAccessToken(accessToken); // this 사용
       if (refreshToken) {
-        setRefreshToken(refreshToken);
+        this.setRefreshToken(refreshToken); // this 사용
       }
     },
     setAccessToken(accessToken) {
@@ -24,9 +24,9 @@ export const useAuthStore = defineStore("auth", {
       localStorage.setItem("refreshToken", refreshToken);
     },
     setUserInfo(role, gu, nickname) {
-      setRole(role);
-      setGu(gu);
-      setNickname(nickname);
+      this.setRole(role);
+      this.setGu(gu);
+      this.setNickname(nickname);
     },
     setRole(role) {
       this.role = role;
@@ -46,25 +46,21 @@ export const useAuthStore = defineStore("auth", {
       this.setGu(gu);
       this.setNickname(nickname);
     },
-    loadTokensFromStorage() {
-      // localStorage에서 JWT를 로드
-      this.accessToken = localStorage.getItem("accessToken");
-      this.refreshToken = localStorage.getItem("refreshToken");
-    },
     clearAuth() {
-      this.accessToken = null;
-      this.refreshToken = null;
-      this.role = null;
-      this.gu = null;
-      this.nickname = null;
+      this.accessToken = "";
+      this.refreshToken = "";
+      this.role = "guest"; // 기본값으로 초기화
+      this.gu = "";
+      this.nickname = "익명"; // 기본값으로 초기화
       // localStorage에서 JWT를 삭제
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      localStorage.removeItem("role");
       localStorage.removeItem("gu");
       localStorage.removeItem("nickname");
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.accessToken,
+    isAuthenticated: (state) => !!state.accessToken && state.accessToken !== "",
   },
 });

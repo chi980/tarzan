@@ -36,87 +36,84 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import SearchBar from "../components/common/SearchBar.vue";
+import SearchBar from "@/components/common/SearchBar.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
-import TagButtonGroup from "@/components/common/TagButtonGroup.vue"; 
-import PostList from "@/components/post/PostList.vue"
-import { axiosInstance } from "@/plugins/axiosPlugin";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
+import PostList from "@/components/post/PostList.vue";
 
-export default {
-  components: {
-    TopBar,
-    BottomBar,
-    SearchBar,
-    DescriptionComponent,
-    ResultBar,
-    TagButtonGroup,
-    PostList,
-  },
+// 컴포넌트 등록
+const components = {
+  TopBar,
+  BottomBar,
+  SearchBar,
+  DescriptionComponent,
+  ResultBar,
+  TagButtonGroup,
+  PostList,
+};
 
-  data() {
-    return {
-      sortOptions: [
-        {idx: 1, value: 'date', name: '최신순' },
-        { idx: 2, value: 'popularity', name: '인기순' },
-        { idx: 3, value: 'rating', name: '평점순' },
-      ],
+// 상태 관리
+const sortOptions = ref([
+  { idx: 1, value: "latest", name: "최신순" },
+  { idx: 2, value: "views", name: "조회수순" },
+  { idx: 3, value: "oldest", name: "오래된순" },
+]);
+const posts = ref([]); // 게시글 데이터
+const sortBy = ref("최신순"); // 정렬 기준 (기본값)
+const router = useRouter();
 
-      posts: [
-        // { id: 1, tag: '교통', title: 'First Post', content: 'This is the first post.', comments: '3'},
-        // { id: 2, tag: '정보', title: '오늘 중구 시청역더플라자호텔 버스정류장  앞에서 사고 났어요!', content: 'This is the second post. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', comments: '5'},
-      ],
-    }
-  },
+// 메서드
+const goToPostCreate = () => {
+  router.push({ name: "PostCreate" });
+};
 
-  // 컴포넌트가 생성될 때 데이터를 불러옴
-  created() {
-    this.fetchPosts(); 
-  },
-
-  methods: {
-    goToPostCreate() {
-      this.$router.push({ name: 'PostCreate' });
-    },
-    updateSortBy(selectedIndex) {
-    const selectedOption = this.sortOptions.find(option => option.idx === selectedIndex);
-    if (selectedOption) {
-      this.sortBy = selectedOption.name;
-      this.fetchPosts();
-    }
-  },
-
-  // api : 게시글 목록 불러오기
-    async fetchPosts() {
-      const queryParams = new URLSearchParams({
-        size: 5,
-        page: 1,
-        sortBy: this.sortBy,
-        tag: 'ALL',
-        gu: 'JONGNO'
-      }).toString();
-      console.log(this.sortBy)
-
-      try {
-        const response = await axiosInstance.get(`/v1/board?${queryParams}`); 
-        
-        if (response.data.success) {
-          this.posts = response.data.data.list; 
-          console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
-        } else {
-          console.error('Failed:', response.data.message);
-          alert(`Error: ${response.data.message}`); 
-        }
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-        alert('게시글을 불러오는 데 실패했습니다.'); 
-      }
-    }
+const updateSortBy = (selectedIndex) => {
+  const selectedOption = sortOptions.value.find(
+    (option) => option.idx === selectedIndex
+  );
+  if (selectedOption) {
+    sortBy.value = selectedOption.value;
+    fetchPosts();
   }
-}
+};
+
+// 게시글 데이터 불러오기
+const fetchPosts = async () => {
+  const queryParams = new URLSearchParams({
+    size: 5,
+    page: 0,
+    sortBy: sortBy.value,
+    tag: "ALL",
+    gu: "JONGNO",
+  }).toString();
+
+  console.log("현재 정렬 기준:", sortBy.value);
+
+  try {
+    const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+
+    if (response.data.success) {
+      posts.value = response.data.data.list;
+      console.log("게시글 목록 가져오기 성공!");
+    } else {
+      console.error("API 실패:", response.data.message);
+      alert(`Error: ${response.data.message}`);
+    }
+  } catch (error) {
+    console.error("게시글 데이터 요청 중 오류 발생:", error);
+    alert("게시글을 불러오는 데 실패했습니다.");
+  }
+};
+
+// 컴포넌트가 생성될 때 데이터를 로드
+onMounted(fetchPosts);
 </script>
 
 
