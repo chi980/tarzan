@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import TagButton from '@/components/common/TagButton.vue';
+import TagButton from "@/components/common/TagButton.vue";
 
 export default {
   components: {
@@ -25,27 +25,27 @@ export default {
     return {
       selectedButton: null, // 선택된 버튼의 인덱스를 저장
       buttons: [
-        { label: '주민센터', value: 'CIVIC_CENTER' },
-        { label: '체육관', value: 'GYM' },
-        { label: '공원', value: 'PARK' },
-        { label: '병원', value: 'HOSPITAL' },
-        { label: '약국', value: 'PHARMACY' },
-        { label: '의원', value: 'MEDICAL_CLINIC' },
-        { label: 'CCTV', value: 'CCTV' },
-        { label: '경찰서', value: 'POLICE' },
-        { label: '편의점', value: 'CONVENIENCE_STORE' },
-        { label: '마트', value: 'MART' },
-        { label: '지하철', value: 'SUBWAY' },
-        { label: '버스정류장', value: 'BUS' }
-      ]
+        { label: "주민센터", value: "CIVIC_CENTER" },
+        { label: "체육관", value: "GYM" },
+        { label: "공원", value: "PARK" },
+        { label: "병원", value: "HOSPITAL" },
+        { label: "약국", value: "PHARMACY" },
+        { label: "의원", value: "MEDICAL_CLINIC" },
+        { label: "CCTV", value: "CCTV" },
+        { label: "경찰서", value: "POLICE" },
+        { label: "편의점", value: "CONVENIENCE_STORE" },
+        { label: "마트", value: "MART" },
+        { label: "지하철", value: "SUBWAY" },
+        { label: "버스정류장", value: "BUS" },
+      ],
     };
   },
   methods: {
     handleClick(value) {
       this.selectedButton = value;
-      this.$emit('button-clicked', value); // 선택된 버튼의 value를 부모 컴포넌트에 전달
+      this.$emit("button-clicked", value); // 선택된 버튼의 value를 부모 컴포넌트에 전달
     },
-  }
+  },
 };
 </script>
 

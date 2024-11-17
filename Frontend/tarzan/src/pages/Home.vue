@@ -21,7 +21,10 @@
           </div>
         </div>
         <div class="tag-button-container">
-          <TagButtonGroupHome @button-clicked="onButtonClicked" />
+          <TagButtonGroupHome
+            :selectedType="selectedType"
+            @button-clicked="onButtonClicked"
+          />
         </div>
         <BuildingInfo
           :building="selectedBuilding"
@@ -29,7 +32,14 @@
           class="building-info"
         />
       </div>
+      <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
+      <div>
+        <div v-for="building in buildings" :key="building.name">
+          <p>{{ building.name }} - {{ building.address }}</p>
+        </div>
+      </div>
     </div>
+
     <BottomBar class="bottom-bar"></BottomBar>
 
     <div v-if="showOverlay" class="overlay">
@@ -56,28 +66,91 @@
 </template>
 
 <script lang="ts" setup>
-/* Global declaration for kakao */
+import { axiosInstance } from "@/plugins/axiosPlugin";
+import { ref, onMounted } from "vue";
+import TopBar from "@/components/common/TopBar.vue";
+import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
+import BottomBar from "@/components/common/BottomBar.vue";
+import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
+import BuildingInfo from "@/components/home/BuildingInfo.vue";
+import BuildingList from "@/components/home/BuildingList.vue";
+
+const buildings = ref([]);
+const selectedBuilding = ref(null);
+const showOverlay = ref(false);
+const searchQuery = ref("");
+const loading = ref(false);
+const selectedType = ref("CIVIC_CENTER"); // 기본값 설정
+
+// 빌딩 데이터 요청
+async function fetchBuildings(
+  type: string,
+  latitude: number,
+  longitude: number,
+  radius: number
+) {
+  if (loading.value) return;
+
+  // type이 선택되지 않은 경우 메시지를 출력하고 함수 종료
+  if (!type) {
+    console.error("type is not selected.");
+    return;
+  }
+
+  loading.value = true;
+
+  try {
+    const requestData = {
+      type,
+      latitude,
+      longitude,
+      radius,
+    };
+    console.log("Sending request with data:", requestData);
+
+    const response = await axiosInstance.get("/v1/building", {
+      params: requestData,
+    });
+
+    if (response.data.status === 200 && response.data.message === "OK") {
+      buildings.value = response.data.data;
+      showInitialMarkers(buildings.value); // 마커 초기화
+    } else {
+      console.error("Error:", response.data.message);
+      buildings.value = [];
+    }
+  } catch (error) {
+    console.error("Request failed:", error);
+    buildings.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+function onButtonClicked(type) {
+  if (loading.value) return;
+  selectedType.value = type;
+
+  const latitude = 37.566535;
+  const longitude = 126.9779692;
+  const radius = 150;
+
+  fetchBuildings(type, latitude, longitude, radius);
+}
+
 declare global {
   interface Window {
     kakao: {
       maps: {
         load: (callback: () => void) => void;
-        Map: new (container: HTMLElement, options: any) => {
-          getBounds: () => {
-            extend: (latLng: kakao.maps.LatLng) => void;
-            contain: (latLng: kakao.maps.LatLng) => boolean;
-          };
-        };
+        Map: new (container: HTMLElement, options: any) => any;
         LatLng: new (latitude: number, longitude: number) => any;
-        Marker: new (options: { position: kakao.maps.LatLng }) => any;
+        Marker: new (options: { position: any }) => any;
         MarkerClusterer: new (options: {
-          map: kakao.maps.Map;
+          map: any;
           averageCenter: boolean;
           minLevel: number;
-        }) => any & {
-          clear: () => void;
-          addMarkers: (markers: any[]) => void;
-        };
+        }) => any;
         event: {
           addListener: (
             marker: any,
@@ -90,220 +163,17 @@ declare global {
   }
 }
 
-import { ref, onMounted } from "vue";
-import TopBar from "@/components/common/TopBar.vue";
-import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
-import BottomBar from "@/components/common/BottomBar.vue";
-import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
-import BuildingInfo from "@/components/home/BuildingInfo.vue";
-import BuildingList from "@/components/home/BuildingList.vue";
-
 const mapContainer = ref<HTMLElement | null>(null);
-const showOverlay = ref(false);
-const searchQuery = ref("");
 let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
 let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
 let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
-const selectedBuilding = ref(null); // 선택된 건물 정보를 저장
-
-/* 더미 데이터 */
-const roomData = [
-  {
-    idx: 1,
-    name: "원룸 A",
-    type: "원룸",
-    address: "서울특별시 중구 세종대로 110",
-    latitude: 37.5665,
-    longitude: 126.978,
-    radarData: {
-      traffic: 80,
-      commercial: 60,
-      education: 40,
-      medical: 70,
-      safety: 50,
-    },
-  },
-  {
-    idx: 2,
-    name: "원룸 B",
-    type: "원룸",
-    address: "서울특별시 중구 세종대로 100",
-    latitude: 37.5666,
-    longitude: 126.9781,
-    radarData: {
-      traffic: 75,
-      commercial: 50,
-      education: 55,
-      medical: 60,
-      safety: 65,
-    },
-  },
-  {
-    idx: 3,
-    name: "원룸 C",
-    type: "원룸",
-    address: "서울특별시 중구 세종대로 90",
-    latitude: 37.5667,
-    longitude: 126.9782,
-    radarData: {
-      traffic: 90,
-      commercial: 70,
-      education: 65,
-      medical: 80,
-      safety: 85,
-    },
-  },
-];
-
-const officetelData = [
-  {
-    idx: 1,
-    name: "오피스텔 A",
-    type: "오피스텔",
-    address: "서울특별시 중구 소공로 110",
-    latitude: 37.567,
-    longitude: 126.979,
-    radarData: {
-      traffic: 85,
-      commercial: 65,
-      education: 70,
-      medical: 75,
-      safety: 60,
-    },
-  },
-  {
-    idx: 2,
-    name: "오피스텔 B",
-    type: "오피스텔",
-    address: "서울특별시 중구 소공로 100",
-    latitude: 37.5671,
-    longitude: 126.9791,
-    radarData: {
-      traffic: 60,
-      commercial: 55,
-      education: 50,
-      medical: 65,
-      safety: 55,
-    },
-  },
-  {
-    idx: 3,
-    name: "오피스텔 C",
-    type: "오피스텔",
-    address: "서울특별시 중구 소공로 90",
-    latitude: 37.5672,
-    longitude: 126.9792,
-    radarData: {
-      traffic: 70,
-      commercial: 75,
-      education: 45,
-      medical: 50,
-      safety: 70,
-    },
-  },
-  {
-    idx: 4,
-    name: "오피스텔 D",
-    type: "오피스텔",
-    address: "서울특별시 중구 소공로 80",
-    latitude: 37.5673,
-    longitude: 126.9793,
-    radarData: {
-      traffic: 95,
-      commercial: 85,
-      education: 60,
-      medical: 80,
-      safety: 90,
-    },
-  },
-  {
-    idx: 5,
-    name: "오피스텔 E",
-    type: "오피스텔",
-    address: "서울특별시 중구 소공로 70",
-    latitude: 37.5674,
-    longitude: 126.9794,
-    radarData: {
-      traffic: 100,
-      commercial: 90,
-      education: 75,
-      medical: 85,
-      safety: 95,
-    },
-  },
-];
-
-const apartmentData = [
-  {
-    idx: 1,
-    name: "아파트 A",
-    type: "아파트",
-    address: "서울특별시 종로구 종로 10",
-    latitude: 37.57,
-    longitude: 126.976,
-    radarData: {
-      traffic: 80,
-      commercial: 70,
-      education: 90,
-      medical: 85,
-      safety: 75,
-    },
-  },
-  {
-    idx: 2,
-    name: "아파트 B",
-    type: "아파트",
-    address: "서울특별시 종로구 종로 20",
-    latitude: 37.571,
-    longitude: 126.977,
-    radarData: {
-      traffic: 65,
-      commercial: 80,
-      education: 60,
-      medical: 70,
-      safety: 85,
-    },
-  },
-];
-
-const hospitalData = [
-  {
-    idx: 1,
-    name: "병원 A",
-    type: "병원",
-    address: "서울특별시 종로구 종로 30",
-    latitude: 37.572,
-    longitude: 126.978,
-    radarData: {
-      traffic: 75,
-      commercial: 85,
-      education: 55,
-      medical: 90,
-      safety: 60,
-    },
-  },
-  {
-    idx: 2,
-    name: "병원 B",
-    type: "병원",
-    address: "서울특별시 종로구 종로 40",
-    latitude: 37.573,
-    longitude: 126.979,
-    radarData: {
-      traffic: 80,
-      commercial: 90,
-      education: 65,
-      medical: 95,
-      safety: 85,
-    },
-  },
-];
 
 onMounted(() => {
   loadKakaoMap(mapContainer.value);
 });
 
-const loadKakaoMap = (container: HTMLElement | null): void => {
+function loadKakaoMap(container) {
+  if (!container) return;
   const script = document.createElement("script");
   script.src =
     "https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer";
@@ -311,21 +181,19 @@ const loadKakaoMap = (container: HTMLElement | null): void => {
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      const options = {
+      mapInstance = new window.kakao.maps.Map(container, {
         center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
         level: 4,
-        maxLevel: 10,
-      };
-      mapInstance = new window.kakao.maps.Map(container!, options); // Non-null assertion
-
+      });
       clusterer = new window.kakao.maps.MarkerClusterer({
         map: mapInstance,
         averageCenter: true,
         minLevel: 3,
       });
+      fetchBuildings(null, 37.566535, 126.9779692, 150);
     });
   };
-};
+}
 
 const clearMarkers = (): void => {
   clusterer.clear(); // 클러스터러에서 마커 제거
@@ -383,27 +251,6 @@ const showInitialMarkers = (data: Array<any>): void => {
     const visibleData = filterDataByBounds(data);
     addMarkers(visibleData);
     isMarkersInitialized = true;
-  }
-};
-
-// const oneroomlist = [{lat, lonfg...}]
-
-const onButtonClicked = (index: number): void => {
-  // Specify the type here
-  isMarkersInitialized = false; // 버튼 클릭 시 마커 초기화 상태를 리셋
-
-  if (index === 0) {
-    // '원룸' 버튼 클릭 시
-    showInitialMarkers(roomData); // 한 번만 마커를 표시
-  } else if (index === 1) {
-    // '오피스텔' 버튼 클릭 시
-    showInitialMarkers(officetelData); // 한 번만 마커를 표시
-  } else if (index === 2) {
-    // '아파트' 버튼 클릭 시
-    addMarkers(apartmentData);
-  } else if (index === 3) {
-    // '병원' 버튼 클릭 시
-    addMarkers(hospitalData);
   }
 };
 </script>
