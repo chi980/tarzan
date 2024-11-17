@@ -1,9 +1,24 @@
 <template>
-  <div class="post-topbar">
-    <div class="post-topbar-button">
-      <img :src="backIcon" alt="back-icon" @click="goToBack">
+  <div class="edit">
+  <div class="edit-button">
+    <img :src="settingIcon" alt="setting-icon" @click="controllDropDown">
+  </div>
+    <div class="scrollable-container dropdown-content"
+      :class="['dropdown-content', { show: isDropDownOpen }]"
+      @click="controllDropDown"
+    >
+      <div class="scrollable-list">
+        <ul>
+          <li
+            v-for="option in filteredOptions"
+            :key="option.idx"
+            @click="selectOption(option)"
+          >
+            {{ option.name }}
+          </li>
+        </ul>
+      </div>
     </div>
-    <EditButton />
   </div>
 </template>
 
@@ -11,20 +26,12 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { axiosInstance } from "@/plugins/axiosPlugin";
-import backIcon from '@/assets/icons/topbar/icon-back.png';
-// import settingIcon from '@/assets/icons/topbar/icon-setting.png';
-import EditButton from './EditButton.vue';
-
-// 상태 변수 정의
-const router = useRouter();
-const isDropDownOpen = ref(false);
+import settingIcon from '@/assets/icons/topbar/icon-setting.png';
 
 const props = defineProps({
   isAuthor: Boolean,
   boardIdx: String
 });
-console.log("isAuthor value:", props.isAuthor);
-console.log("postId value:", props.boardIdx);
 
 const options = ref([
   { idx: 1, name: '수정' },
@@ -39,10 +46,7 @@ const filteredOptions = computed(() => {
     : options.value.filter(option => option.idx === 3); // 작성자가 아닌 경우 '신고하기'만
 });
 
-const goToBack = () => {
-  router.go(-1);
-};
-
+const isDropDownOpen = ref(false);
 const controllDropDown = () => {
   isDropDownOpen.value = !isDropDownOpen.value;
 };
@@ -75,28 +79,16 @@ const selectOption = (option) => {
     selectedOption.value = option;
   }
 };
-
-
 </script>
 
-<style scoped lang="scss">
-.post-topbar {
-  width: 100%;
-  height: 54px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  @include custom-padding-x;
-  box-sizing: border-box;
-}
-
-.post-topbar img {
-  width: 24px;
-  height: 24px;
-}
-
+<style lang="scss" scoped>
 .edit {
   position: relative;
+}
+
+.edit img {
+  width: 24px;
+  height: 24px;
 }
 
 .edit-button{

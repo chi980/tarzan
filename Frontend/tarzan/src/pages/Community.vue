@@ -101,18 +101,18 @@ export default {
       console.log(this.sortBy)
 
       try {
-        const response = await axiosInstance.get(`/v1/board?${queryParams}`); // Axios 인스턴스를 사용하여 GET 요청
+        const response = await axiosInstance.get(`/v1/board?${queryParams}`); 
         
         if (response.data.success) {
-          this.posts = response.data.data.list; // 응답에서 게시글 목록을 가져옴
+          this.posts = response.data.data.list; 
           console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
         } else {
           console.error('Failed:', response.data.message);
-          alert(`Error: ${response.data.message}`); // 사용자에게 오류 메시지 표시
+          alert(`Error: ${response.data.message}`); 
         }
       } catch (error) {
         console.error('Error fetching posts:', error);
-        alert('게시글을 불러오는 데 실패했습니다.'); // 사용자에게 알림
+        alert('게시글을 불러오는 데 실패했습니다.'); 
       }
     }
   }
