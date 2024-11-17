@@ -10,7 +10,7 @@
     </div>
     <div class="post-meta">
       <div class="time-views">
-        <span id="time">20시간 전 · </span>
+        <span id="time">{{ post.board_created_at }} · </span>
         <span id="views"> 조회 {{ post.board_read_count }}</span>
       </div>
       <div class="comment">
