@@ -96,6 +96,7 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
     if (response.data.status === 200 && response.data.message === "OK") {
       buildings.value = response.data.data;
+      showInitialMarkers(buildings.value); // 마커 초기화
     } else {
       console.error("Error:", response.data.message);
       buildings.value = [];
@@ -137,8 +138,10 @@ declare global {
 }
 
 const mapContainer = ref<HTMLElement | null>(null);
-let mapInstance;
-let clusterer;
+let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
+let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
+let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
+
 
 onMounted(() => {
   loadKakaoMap(mapContainer.value);
@@ -158,6 +161,55 @@ function loadKakaoMap(container) {
     });
   };
 }
+
+const clearMarkers = (): void => {
+  clusterer.clear(); // 클러스터러에서 마커 제거
+};
+
+const addMarkers = (data: Array<any>): void => { // Specify the type here
+  clearMarkers();
+
+  const markers = data.map((item: any) => { // Specify the type here
+    const markerPosition = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+    const marker = new window.kakao.maps.Marker({
+      position: markerPosition,
+    });
+
+    window.kakao.maps.event.addListener(marker, 'click', () => {
+      if (item.radarData) {
+        selectedBuilding.value = {
+          ...item,
+          radarData: item.radarData,
+        };
+      } else {
+        console.error("Radar data is missing for this building:", item.name);
+      }
+    });
+
+    return marker;
+  });
+
+  clusterer.addMarkers(markers);
+};
+
+const filterDataByBounds = (data: Array<any>): Array<any> => { // Specify the type here
+  // @ts-ignore: Ignoring the error for getBounds method
+  const bounds = mapInstance.getBounds(); 
+  const filteredData = data.filter((item: any) => { // Specify the type here
+    const position = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+    return bounds.contain(position);
+  });
+  return filteredData;
+};
+
+const showInitialMarkers = (data: Array<any>): void => { // Specify the type here
+  if (!isMarkersInitialized) {
+    const visibleData = filterDataByBounds(data);
+    addMarkers(visibleData);
+    isMarkersInitialized = true; 
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
