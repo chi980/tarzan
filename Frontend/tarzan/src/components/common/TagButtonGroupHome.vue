@@ -3,10 +3,10 @@
     <TagButton
       class="tag-button"
       v-for="(button, index) in buttons"
-      :key="index"
+      :key="button.value"
       :label="button.label"
       :isActive="selectedButton === index"
-      @click="handleClick(index)"
+      @click="handleClick(button.value)"
     />
   </div>
 </template>
@@ -18,31 +18,35 @@ export default {
   components: {
     TagButton,
   },
+  props: {
+    selectedType: String, // Home.vue에서 전달받는 선택된 타입
+  },
   data() {
     return {
-      selectedButton: null, // 아무 버튼도 눌리지 않은 상태로 초기화
+      selectedButton: null, // 선택된 버튼의 인덱스를 저장
       buttons: [
-        { label: '원룸' },
-        { label: '오피스텔' },
-        { label: '아파트' },
-        { label: '병원' },
-        { label: '편의시설' },
-        { label: '상업시설' },
-        { label: '버스정류장' },
-        { label: '지하철' },
+        { label: '주민센터', value: 'CIVIC_CENTER' },
+        { label: '체육관', value: 'GYM' },
+        { label: '공원', value: 'PARK' },
+        { label: '병원', value: 'HOSPITAL' },
+        { label: '약국', value: 'PHARMACY' },
+        { label: '의원', value: 'MEDICAL_CLINIC' },
+        { label: 'CCTV', value: 'CCTV' },
+        { label: '경찰서', value: 'POLICE' },
+        { label: '편의점', value: 'CONVENIENCE_STORE' },
+        { label: '마트', value: 'MART' },
+        { label: '지하철', value: 'SUBWAY' },
+        { label: '버스정류장', value: 'BUS' }
       ]
     };
   },
   methods: {
-    selectButton(index) {
-      this.selectedButton = index;
-      this.$emit('button-clicked', index); // 부모 컴포넌트에 클릭 이벤트 전달
+    handleClick(value) {
+      this.selectedButton = value;
+      this.$emit('button-clicked', value); // 선택된 버튼의 value를 부모 컴포넌트에 전달
     },
-    handleClick(index) {
-      this.selectButton(index);
-    }
   }
-}
+};
 </script>
 
 <style scoped lang="scss">
@@ -50,12 +54,12 @@ export default {
   display: flex;
   flex-wrap: nowrap;
   padding: 20px;
-  overflow-x: scroll; /* 수평 스크롤 기능 활성화 */
+  overflow-x: scroll;
   gap: 5px;
 
   /* 스크롤바 숨기기 */
   &::-webkit-scrollbar {
-    display: none; /* WebKit 브라우저에서 스크롤바를 숨깁니다 */
+    display: none;
   }
 }
 </style>
