@@ -3,7 +3,7 @@
     class="description-container"
     :style="{ backgroundColor: props.backgroundColor }"
   >
-    <img :src="descriptionImg" alt="img" />
+    <img :src="props.descriptionImgSrc" alt="img" />
     <div class="description-content">
       <p v-html="props.descriptionTitle"></p>
       <p v-html="props.descriptionContent"></p>
@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import { defineProps } from "vue";
 
 // 부모로부터 받아온 options
 const props = defineProps({
@@ -32,10 +32,7 @@ const props = defineProps({
     default: "#F2F2F2",
   },
 });
-
-const descriptionImg = computed(
-  () => new URL(`${props.descriptionImgSrc}`, import.meta.url).href
-);
+// 이미지 경로 계산
 </script>
 
 <style lang="scss" scoped>
