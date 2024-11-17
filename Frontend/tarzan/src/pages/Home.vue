@@ -28,7 +28,6 @@
         </div>
       </div>
     </div>
-
     <BottomBar class="bottom-bar"></BottomBar>
 
     <div v-if="showOverlay" class="overlay">
