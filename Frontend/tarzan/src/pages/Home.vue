@@ -76,7 +76,7 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
   // type이 선택되지 않은 경우 메시지를 출력하고 함수 종료
   if (!type) {
-    console.error("type is not selected.");
+    console.log("type is not selected.");
     return;
   }
 
