@@ -61,7 +61,7 @@ const posts = ref([ ]);
 const sortBy = ref('최신순'); 
 const selectedButton = ref('ALL');
 
-// 메서드
+// 글쓰기 페이지로 이동
 const goToPostCreate = () => {
   router.push({ name: "PostCreate" });
 };
@@ -78,7 +78,7 @@ const updateSortBy = (selectedIndex) => {
   }
 };
 
-// 게시글 데이터 불러오기
+// API: 게시글 데이터 불러오기
 const fetchPosts = async () => {
   const queryParams = new URLSearchParams({
     size: 5,
@@ -105,7 +105,6 @@ const fetchPosts = async () => {
   }
 };
 
-// 컴포넌트가 생성될 때 데이터를 로드
 onMounted(fetchPosts);
 
 // selectedButton 값이 변경될 때마다 fetchPosts 호출
