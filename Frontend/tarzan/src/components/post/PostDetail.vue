@@ -6,6 +6,7 @@
       :boardIdx="boardIdx" 
     />
     <div class="center-container">
+      <!-- 게시글 상세 내용 -->
       <div class="post-detail-container">
         <div class="post-tag">
           <span>{{ post.board_tag }}</span>
@@ -20,17 +21,24 @@
           <p>{{ post.board_content }}</p>   
         </div>
         <div class="post-time">
-          <!-- 경과시간은 컴포넌트로 만들어야할 듯 -->
           <span>{{ post.board_created_at }}</span>
         </div>
       </div>
+
+      <!-- 댓글 영역 -->
       <div class="comment-container">
         <div class="comment-list">
-          <CommentList :post-id="post.id" /> 
+          <CommentList
+            :comments="comments"
+            :hasMore="hasMore"
+            @loadMore="fetchMoreComments"
+          /> 
         </div>
-        <CommentInput :board-idx="post.id" /> 
+        <CommentInput :boardIdx="boardIdx" @commentSubmitted="fetchComments" />
       </div>
     </div>
+
+    <!-- 하단 네비게이션 -->
     <BottomBar />
   </div>
 </template>
@@ -44,27 +52,22 @@ import PostTopBar from "./PostTopBar.vue";
 import CommentInput from "./CommentInput.vue";
 import CommentList from "./CommentList.vue";
 
-// 컴포넌트 등록
-const components = {
-  PostTopBar,
-  BottomBar,
-  CommentList,
-  CommentInput,
-};
-
+// 상태 변수
 const route = useRoute(); 
-const post = ref({}); 
-const boardIdx = route.params.id; 
+const post = ref({}); // 게시글 정보
+const comments = ref([]); // 댓글 목록
+const boardIdx = route.params.id; // 게시글 ID 
 
+// API: 게시글 상세 정보 가져오기
 const fetchPostDetail = async () => {
   try {
     const response = await axiosInstance.get(`/v1/board/${boardIdx}`);
     console.log(response);
     
     if (response.data.success) {
-      post.value = response.data.data; // ref로 선언된 posts에 값 할당
+      post.value = response.data.data;
       console.log('게시물 상세 가져오기 성공');
-      console.log(response.data.data);
+      console.log(post.value);
     } else {
       console.error('Failed:', response.data.message);
     }
@@ -73,8 +76,35 @@ const fetchPostDetail = async () => {
   }
 };
 
-// 컴포넌트가 마운트될 때 fetchPosts 호출
-onMounted(fetchPostDetail); 
+// API: 해당 게시글의 댓글 목록 가져오기
+const fetchComments = async () => {
+  const queryParams = new URLSearchParams({
+    size: 7,
+    page: 0,
+    sortBy: '최신순', 
+    boardIdx: boardIdx,
+  }).toString();
+
+  try {
+    const response = await axiosInstance.get(`/v1/comments?${queryParams}`); // 경로 수정
+    if (response.data.success) {
+      comments.value = response.data.data.list;
+      console.log('댓글 목록 가져오기 성공:', comments.value);
+    } else {
+      console.error('댓글 가져오기 실패:', response.data.message);
+      alert(`Error: ${response.data.message}`);
+    }
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    alert('댓글을 불러오는 중 오류가 발생했습니다.');
+  }
+};
+
+// 함수 호출
+onMounted(() => {
+  fetchPostDetail();
+  fetchComments();
+});
 </script>
 
 <style lang="scss" scoped>

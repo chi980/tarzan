@@ -43,6 +43,7 @@ export default {
   },
 };
 </script>
+
 <style scoped lang="scss">
   .post-list-container {
     display: flex;

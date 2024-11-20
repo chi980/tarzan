@@ -11,7 +11,8 @@
           backgroundColor="#FFF7D9"/>
 
       <div class="tag-button-container">
-        <TagButtonGroup />
+        <TagButtonGroup v-model:selectedButton="selectedButton" />
+        <!-- <TagButtonGroup v-model="selectedButton" /> -->
       </div>
 
       <div class="result-bar-container">
@@ -37,7 +38,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBar from "@/components/common/TopBar.vue";
@@ -48,26 +49,18 @@ import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
 
-// 컴포넌트 등록
-const components = {
-  TopBar,
-  BottomBar,
-  SearchBar,
-  DescriptionComponent,
-  ResultBar,
-  TagButtonGroup,
-  PostList,
-};
-
 // 상태 관리
+const router = useRouter();
+
 const sortOptions = ref([
   { idx: 0, value: "latest", name: "최신순" },
   { idx: 1, value: "views", name: "조회수순" },
   { idx: 2, value: "oldest", name: "오래된순" },
 ]);
-const posts = ref([]); // 게시글 데이터
-const sortBy = ref("최신순"); // 정렬 기준 (기본값)
-const router = useRouter();
+
+const posts = ref([ ]); 
+const sortBy = ref('최신순'); 
+const selectedButton = ref('ALL');
 
 // 메서드
 const goToPostCreate = () => {
@@ -82,6 +75,7 @@ const updateSortBy = (selectedIndex) => {
   if (selectedOption) {
     sortBy.value = selectedOption.name;
     fetchPosts();
+    console.log("현재 정렬 기준:", sortBy.value);
   }
 };
 
@@ -91,30 +85,32 @@ const fetchPosts = async () => {
     size: 5,
     page: 0,
     sortBy: sortBy.value,
-    tag: "ALL",
+    tag: selectedButton.value,
     gu: "JONGNO",
   }).toString();
 
-  console.log("현재 정렬 기준:", sortBy.value);
+  console.log(selectedButton.value);
 
   try {
     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
 
     if (response.data.success) {
-      posts.value = response.data.data.list;
       console.log("게시글 목록 가져오기 성공!");
+      posts.value = response.data.data.list;
     } else {
       console.error("API 실패:", response.data.message);
-      alert(`Error: ${response.data.message}`);
+
     }
   } catch (error) {
     console.error("게시글 데이터 요청 중 오류 발생:", error);
-    alert("게시글을 불러오는 데 실패했습니다.");
   }
 };
 
 // 컴포넌트가 생성될 때 데이터를 로드
 onMounted(fetchPosts);
+
+// selectedButton 값이 변경될 때마다 fetchPosts 호출
+watch(() => selectedButton.value, fetchPosts);
 </script>
 
 
