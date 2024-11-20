@@ -100,6 +100,7 @@ onMounted(() => {
   if (props.options.length > 0) {
     selectedOption.value = props.options[0]; // options 배열의 첫 번째 항목을 선택된 옵션으로 설정
     selectedIdx.value = 0;
+    emit("update:selected", 0); // 기본 선택된 인덱스를 부모에게 전달
   }
 });
 

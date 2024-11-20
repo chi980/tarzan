@@ -12,7 +12,6 @@
 
       <div class="tag-button-container">
         <TagButtonGroup v-model:selectedButton="selectedButton" />
-        <!-- <TagButtonGroup v-model="selectedButton" /> -->
       </div>
 
       <div class="result-bar-container">
