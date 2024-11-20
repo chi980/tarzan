@@ -39,6 +39,8 @@ const options = ref([
   { idx: 3, name: '신고하기' }
 ]);
 
+const router = useRouter();
+
 // `isAuthor` 값에 따라 옵션을 필터링하는 computed 속성
 const filteredOptions = computed(() => {
   return props.isAuthor
