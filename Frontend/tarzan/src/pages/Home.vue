@@ -74,7 +74,6 @@ const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
 async function fetchBuildings(type: string, latitude: number, longitude: number, radius: number) {
   if (loading.value) return;
 
-  // type이 선택되지 않은 경우 메시지를 출력하고 함수 종료
   if (!type) {
     console.log("type is not selected.");
     return;
@@ -82,16 +81,24 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
   loading.value = true;
 
-  try {
-    const requestData = {
-      type,
-      latitude,
-      longitude,
-      radius,
-    };
-    console.log("Sending request with data:", requestData);
+  const requestData = {
+    type,
+    latitude,
+    longitude,
+    radius,
+  };
 
-    const response = await axiosInstance.get('/v1/building', { params: requestData });
+  console.log("Sending request with data:", requestData);
+
+  try {
+    // '매물' 버튼이 선택된 경우
+    let response;
+    if (type === "HOUSE") {
+      response = await axiosInstance.get("/v1/houses", { params: requestData });
+    } else {
+      // 다른 버튼이 선택된 경우
+      response = await axiosInstance.get("/v1/building", { params: requestData });
+    }
 
     console.log("Response received from backend:", response.data);
 

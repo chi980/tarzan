@@ -25,6 +25,7 @@ export default {
     return {
       selectedButton: null, // 선택된 버튼의 인덱스를 저장
       buttons: [
+        { label: "매물", value: "HOUSE" },
         { label: "주민센터", value: "CIVIC_CENTER" },
         { label: "체육관", value: "GYM" },
         { label: "공원", value: "PARK" },
