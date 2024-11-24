@@ -4,6 +4,7 @@
       v-if="post.board_is_writer !== undefined" 
       :isAuthor="post.board_is_writer" 
       :boardIdx="boardIdx" 
+      type="'post'"
     />
     <div class="center-container">
       <!-- 게시글 상세 내용 -->
@@ -30,11 +31,11 @@
         <div class="comment-list">
           <CommentList
             :comments="comments"
-            :hasMore="hasMore"
-            @loadMore="fetchMoreComments"
           /> 
         </div>
-        <CommentInput :boardIdx="boardIdx" @commentSubmitted="fetchComments" />
+        <CommentInput 
+          :boardIdx="boardIdx" 
+          @commentSubmitted="fetchComments" />
       </div>
     </div>
 
@@ -58,16 +59,18 @@ const post = ref({}); // 게시글 정보
 const comments = ref([]); // 댓글 목록
 const boardIdx = route.params.id; // 게시글 ID 
 
+console.log("PostDetail의 게시물 번호 : " + boardIdx + typeof boardIdx);
+
 // API: 게시글 상세 정보 가져오기
 const fetchPostDetail = async () => {
   try {
     const response = await axiosInstance.get(`/v1/board/${boardIdx}`);
-    console.log(response);
+    // console.log(response);
     
     if (response.data.success) {
       post.value = response.data.data;
       console.log('게시물 상세 가져오기 성공');
-      console.log(post.value);
+      // console.log(post.value);
     } else {
       console.error('Failed:', response.data.message);
     }

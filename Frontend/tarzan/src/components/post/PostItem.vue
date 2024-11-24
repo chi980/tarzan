@@ -23,13 +23,8 @@
 <script>
 export default {
   props: {
-    post: Object,  // 부모 컴포넌트로부터 post라는 객체를 props로 받음
+    post: Object,
   },
-  // methods: {
-  //   handleClick() {
-  //     this.$emit('click');
-  //   },
-  // },
 };
 </script>
 

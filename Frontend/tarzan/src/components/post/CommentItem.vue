@@ -2,12 +2,11 @@
   <div class="comment-container">
     <div class="comment-header">
         <span id="comment-writer">{{ comment.comment_writer_nickname }}</span>
-        <EditButton />
-        <!-- <div class="comment-edit-container">
-          <img id="comment-edit-icon" 
-          src="@/assets/icons/Filter/comment-edit-icon.png" 
-          alt="comment-edit-icon.png">
-        </div> -->
+        <EditButton 
+          :isAuthor="comment.comment_is_writer" 
+          :targetId="comment.comment_id"  
+          :type="'comment'" 
+        />
     </div>
     <div class="comment-content">
       <p>{{ comment.comment_content }}</p>
@@ -22,8 +21,7 @@
 import { ref } from 'vue';
 import EditButton from './EditButton.vue';
 
-// props 정의
-defineProps({
+const props = defineProps({
   comment: {
     type: Object,
     required: true

@@ -18,7 +18,7 @@ import { axiosInstance } from "@/plugins/axiosPlugin";
 // Props 정의
 const props = defineProps({
   boardIdx: {
-    type: Number,
+    type: String,
     required: true
   }
 });
