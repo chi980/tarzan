@@ -5,8 +5,9 @@
     </div>
     <EditButton
       v-if="isAuthor" 
-      :isAuthor="isAuthor"
-      :boardIdx="boardIdx"
+      :isAuthor="props.isAuthor"
+      :targetId="props.boardIdx"
+      :type="'post'" 
     />
   </div>
 </template>
@@ -14,7 +15,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { axiosInstance } from "@/plugins/axiosPlugin";
 import backIcon from '@/assets/icons/topbar/icon-back.png';
 import EditButton from './EditButton.vue';
 
@@ -26,8 +26,9 @@ const props = defineProps({
   isAuthor: Boolean,
   boardIdx: String
 });
-console.log("isAuthor value:", props.isAuthor);
-console.log("postId value:", props.boardIdx);
+
+// console.log("isAuthor value:", props.isAuthor);
+// console.log("postId value:", props.boardIdx);
 
 const goToBack = () => {
   router.go(-1);
