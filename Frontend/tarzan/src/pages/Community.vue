@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <TopBar />
+    <TopBar @update:selected="updateDistrict" /> 
     
     <div class="center-container">
       <SearchBar />
@@ -60,14 +60,15 @@ const sortOptions = ref([
 const posts = ref([ ]); 
 const sortBy = ref('최신순'); 
 const selectedButton = ref('ALL');
+const selectedDistrict = ref('JONGNO'); // 기본값 설정
 
 // 글쓰기 페이지로 이동
 const goToPostCreate = () => {
   router.push({ name: "PostCreate" });
 };
 
+// 정렬 기준 변경 시 목록 업데이트
 const updateSortBy = (selectedIndex) => {
-  console.log(selectedIndex)
   const selectedOption = sortOptions.value.find(
     (option) => option.idx === selectedIndex
   );
@@ -78,6 +79,13 @@ const updateSortBy = (selectedIndex) => {
   }
 };
 
+// 지역구 변경 시 목록 업데이트
+const updateDistrict = (district) => {
+  console.log(district + "???????");
+  selectedDistrict.value = district;
+  fetchPosts();
+}
+
 // API: 게시글 데이터 불러오기
 const fetchPosts = async () => {
   const queryParams = new URLSearchParams({
@@ -85,10 +93,8 @@ const fetchPosts = async () => {
     page: 0,
     sortBy: sortBy.value,
     tag: selectedButton.value,
-    gu: "JONGNO",
+    gu: selectedDistrict.value, 
   }).toString();
-
-  console.log(selectedButton.value);
 
   try {
     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
@@ -107,8 +113,9 @@ const fetchPosts = async () => {
 
 onMounted(fetchPosts);
 
-// selectedButton 값이 변경될 때마다 fetchPosts 호출
+// 지역구/태그값이 변경될 때마다 fetchPosts 호출
 watch(() => selectedButton.value, fetchPosts);
+watch(() => selectedDistrict.value, fetchPosts);
 </script>
 
 

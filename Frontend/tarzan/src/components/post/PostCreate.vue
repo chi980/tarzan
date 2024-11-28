@@ -54,7 +54,8 @@ const submit = async () => {
       board_title: post.value.title,
       board_content: post.value.content,
       board_tag: selectedTag.value, // selectedTag에서 선택된 태그값 가져오기
-      board_gu: userGu.value,
+      // board_gu: userGu.value,
+      board_gu: "YONGSAN",
     });
 
     if (response.data.success) {

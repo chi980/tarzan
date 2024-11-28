@@ -116,6 +116,7 @@ const routes = [
     children: [
       {
         path: "",
+        name: "Community",
         component: () => import("@/pages/Community.vue"),
       },
       {
