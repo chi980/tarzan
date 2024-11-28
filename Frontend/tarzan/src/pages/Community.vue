@@ -3,7 +3,9 @@
     <TopBar @update:selected="updateDistrict" /> 
     
     <div class="center-container">
-      <SearchBar />
+      <SearchBar 
+        v-model:searchQuery="searchQuery" 
+        @search="searchPosts" />
       <DescriptionComponent
           descriptionImgSrc="/src/assets/etc/Saly-25.png"
           descriptionTitle="동네주민과<br/>얘기해보세요!"
@@ -57,10 +59,11 @@ const sortOptions = ref([
   { idx: 2, value: "oldest", name: "오래된순" },
 ]);
 
-const posts = ref([ ]); 
-const sortBy = ref('최신순'); 
-const selectedButton = ref('ALL');
-const selectedDistrict = ref('JONGNO'); // 기본값 설정
+const posts = ref([ ]);                 // 게시물 목록
+const sortBy = ref('최신순');             // 정렬 기준
+const selectedButton = ref('ALL');      // 태그
+const selectedDistrict = ref('JONGNO'); // 지역구
+const searchQuery = ref(''); // 검색어 상태
 
 // 글쓰기 페이지로 이동
 const goToPostCreate = () => {
@@ -81,7 +84,6 @@ const updateSortBy = (selectedIndex) => {
 
 // 지역구 변경 시 목록 업데이트
 const updateDistrict = (district) => {
-  console.log(district + "???????");
   selectedDistrict.value = district;
   fetchPosts();
 }
@@ -93,7 +95,7 @@ const fetchPosts = async () => {
     page: 0,
     sortBy: sortBy.value,
     tag: selectedButton.value,
-    gu: selectedDistrict.value, 
+    gu: selectedDistrict.value,
   }).toString();
 
   try {
@@ -110,6 +112,34 @@ const fetchPosts = async () => {
     console.error("게시글 데이터 요청 중 오류 발생:", error);
   }
 };
+
+const searchPosts = async (query) => {  
+  const queryParams = new URLSearchParams({
+    size: 5,
+    page: 0,
+    sortBy: sortBy.value,
+    tag: selectedButton.value,
+    gu: selectedDistrict.value,
+    search: query,
+  }).toString();
+
+  try {
+    const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+
+    if (response.data.success) {
+      console.log("검색 결과 가져오기 성공!");
+      posts.value = response.data.data.list;
+      // posts.value.forEach((post, index) => {
+      // console.log(`게시글 ${index + 1}:`, post);
+      // });
+    } else {
+      console.error("검색 API 실패:", response.data.message);
+    }
+  } catch (error) {
+    console.error("검색 API 요청 중 오류 발생:", error);
+  }
+};
+
 
 onMounted(fetchPosts);
 
