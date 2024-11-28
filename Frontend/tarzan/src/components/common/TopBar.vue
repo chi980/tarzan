@@ -4,11 +4,13 @@
       <CustomSelectBox
         :options="seoulDistrictOptions"
         :parentStyle="topBarStyle"
+        @update:selected="handleDistrictSelect"
       />
     </div>
   </div>
 </template>
 <script lang="ts" setup>
+import { ref } from "vue";
 import { Option } from "@/data/options";
 import { SelectStyle } from "@/data/selectStyle";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
@@ -41,11 +43,27 @@ const seoulDistrictOptions: Option[] = [
   { idx: 25, name: "서울시 강동구", value: "GANGDONG" },
 ];
 
+const selectedDistrict = ref<string | null>(null); // 지역구 이름 저장
+
+// emit 정의
+const emit = defineEmits<{
+  (e: "update:selected", district: string): void;
+}>();
+
+const handleDistrictSelect = (idx: number) => {
+  const selectedOption = seoulDistrictOptions.find(option => option.idx === idx + 1);
+  selectedDistrict.value = selectedOption?.value || null; 
+  // console.log(`선택된 옵션의 인덱스: ${idx}`);
+  console.log(`탑바: ${selectedDistrict.value}`);
+  emit("update:selected", selectedDistrict.value);
+};
+
 const topBarStyle: SelectStyle = {
   backgroundColor: "white",
   fontWeight: 700,
   justifyContent: "center",
 };
+
 </script>
 <style lang="scss" scoped>
 .top-bar {
