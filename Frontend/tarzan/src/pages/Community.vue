@@ -18,9 +18,9 @@
 
       <div class="result-bar-container">
         <ResultBar 
-        resultTitle="결과" 
-        :sortOptions="sortOptions"
-        @updateSortBy="updateSortBy"
+          resultTitle="결과" 
+          :sortOptions="sortOptions"
+          @updateSortBy="updateSortBy"
         />
       </div>
 
@@ -113,6 +113,7 @@ const fetchPosts = async () => {
   }
 };
 
+// API: 게시글 검색
 const searchPosts = async (query) => {  
   const queryParams = new URLSearchParams({
     size: 5,
@@ -129,9 +130,9 @@ const searchPosts = async (query) => {
     if (response.data.success) {
       console.log("검색 결과 가져오기 성공!");
       posts.value = response.data.data.list;
-      // posts.value.forEach((post, index) => {
-      // console.log(`게시글 ${index + 1}:`, post);
-      // });
+      posts.value.forEach((post, index) => {
+      console.log(`게시글 ${index + 1}:`, post);
+      });
     } else {
       console.error("검색 API 실패:", response.data.message);
     }
@@ -139,7 +140,6 @@ const searchPosts = async (query) => {
     console.error("검색 API 요청 중 오류 발생:", error);
   }
 };
-
 
 onMounted(fetchPosts);
 

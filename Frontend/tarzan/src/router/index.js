@@ -165,7 +165,7 @@ const routes = [
       },
       {
         path: "edit-profile",
-        name: "EditProfile",
+        name: "EditProfile1",
         component: () => import("@/components/mypage/EditProfile1.vue"),
       },
     ],

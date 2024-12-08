@@ -4,18 +4,22 @@
     <div class="center-container">
       <div class="my-profile">
           <div class="profile-info">
-              <span class="profile-id">abc1234</span>
-              <span class="profile-address">서울시 중구 거주중</span>
+              <span class="profile-id">{{ userNickname }}</span>
+              <span class="profile-address">{{ userGu }} 거주중</span>
           </div>
-          <button class="profile-edit-button" @click="goToNextPage">수정</button>
+          <button class="profile-edit-button" @click="goToEditProfile">수정</button>
       </div>
 
       <div class="my-content">
         <h2 class="title">내가 작성한 게시글</h2>
         <div class="result-bar">
-          <ResultBar resultTitle="결과" />
+          <ResultBar 
+            resultTitle="결과" 
+            :sortOptions="sortOptions"
+            @updateSortBy="updateSortBy"
+          />
           <div class="post">
-            <PostList />
+            <PostList :posts="posts" />
           </div>
         </div>
       </div>
@@ -23,10 +27,13 @@
       <div class="my-content">
         <h2 class="title">내가 작성한 댓글</h2>
         <div class="result-bar">
-          <ResultBar resultTitle="결과" />
+          <ResultBar 
+            resultTitle="결과" 
+            :sortOptions="sortOptions"
+          />
         </div>
         <div class="my-comment">
-          <CommentList />
+          <CommentList :comments="comments" /> 
         </div>
       </div>
 
@@ -44,28 +51,87 @@
     <BottomBar />
   </div>
 </template>
-<script>
+
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from 'vue-router';
+import { axiosInstance } from "@/plugins/axiosPlugin";
+import { useAuthStore } from "@/stores/authStore";
+
 import BottomBar from '../components/common/BottomBar.vue';
 import ResultBar from '../components/common/ResultBar.vue';
 import CommentList from '../components/post/CommentList.vue';
 import PostList from '../components/post/PostList.vue';
 import ReviewList from '../components/review/ReviewList.vue';
 
-export default {
-  components : {
-    BottomBar,
-    ResultBar,
-    PostList,
-    CommentList,
-    ReviewList,
-  },
-  methods: {
-    goToNextPage() {
-      this.$router.push({ name: 'EditProfile' });
+// Vue Router 사용
+const router = useRouter();
+
+// authStore에서 사용자 정보 가져오기
+const authStore = useAuthStore();
+const userNickname = computed(() => authStore.nickname);
+const userGu = computed(() => authStore.gu);
+
+// 정렬 기준
+const sortBy = ref('최신순');             
+const sortOptions = ref([
+  { idx: 0, value: "latest", name: "최신순" },
+  { idx: 1, value: "views", name: "조회수순" },
+  { idx: 2, value: "oldest", name: "오래된순" },
+]);
+
+// 정렬 기준 변경 시 목록 업데이트
+const updateSortBy = (selectedIndex) => {
+  const selectedOption = sortOptions.value.find(
+    (option) => option.idx === selectedIndex
+  );
+  if (selectedOption) {
+    sortBy.value = selectedOption.name;
+    fetchUserPosts();
+    console.log("현재 정렬 기준:", sortBy.value);
+  }
+};
+
+const posts = ref([ ]);   // 게시물 목록
+const comments = ref([ ]); // 댓글 목록
+
+// API: 게시글 데이터 불러오기
+const fetchUserPosts = async () => {
+  const queryParams = new URLSearchParams({
+    size: 5,
+    page: 0,
+    sortBy: '최신순',
+  }).toString();
+
+  try {
+    const response = await axiosInstance.get(`/v1/user/board?${queryParams}`);
+
+    if (response.data.success) {
+      console.log("사용자 게시글 목록 가져오기 성공!");
+      posts.value = response.data.data.list;
+    } else {
+      console.error("API 실패:", response.data.message);
+
     }
-  },
-}
+  } catch (error) {
+    console.error("게시글 데이터 요청 중 오류 발생:", error);
+  }
+};
+
+console.log(posts.value);
+
+
+onMounted(async () => {
+  await fetchUserPosts();
+  console.log("MyPage에서 posts 데이터 확인:", posts.value); // 비동기 완료 후 로그
+});
+
+// 수정 페이지로 이동
+const goToEditProfile = () => {
+  router.push({ name: 'SignUp' }); // 라우트 이름으로 이동
+};
 </script>
+
 <style lang="scss">
   .sub-container {
     display: flex;

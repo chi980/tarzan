@@ -57,6 +57,8 @@ const submit = async () => {
       board_gu: userGu.value,
     });
 
+    console.log(userGu.value);
+
     if (response.data.success) {
       message.value = '게시글이 성공적으로 생성되었습니다!';
       console.log(response.data);
