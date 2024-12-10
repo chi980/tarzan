@@ -65,6 +65,7 @@ const props = defineProps({
   options: {
     type: Array as () => Option[],
     required: true,
+    default: () => [],
   },
   parentStyle: {
     type: Object as () => SelectStyle,

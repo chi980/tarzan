@@ -73,24 +73,24 @@ const userNickname = computed(() => authStore.nickname);
 const userGu = computed(() => authStore.gu);
 
 // 정렬 기준
-const sortBy = ref('최신순');             
-const sortOptions = ref([
-  { idx: 0, value: "latest", name: "최신순" },
-  { idx: 1, value: "views", name: "조회수순" },
-  { idx: 2, value: "oldest", name: "오래된순" },
-]);
+// const sortBy = ref('최신순');             
+// const sortOptions = ref([
+//   { idx: 0, value: "latest", name: "최신순" },
+//   { idx: 1, value: "views", name: "조회수순" },
+//   { idx: 2, value: "oldest", name: "오래된순" },
+// ]);
 
 // 정렬 기준 변경 시 목록 업데이트
-const updateSortBy = (selectedIndex) => {
-  const selectedOption = sortOptions.value.find(
-    (option) => option.idx === selectedIndex
-  );
-  if (selectedOption) {
-    sortBy.value = selectedOption.name;
-    fetchUserPosts();
-    console.log("현재 정렬 기준:", sortBy.value);
-  }
-};
+// const updateSortBy = (selectedIndex) => {
+//   const selectedOption = sortOptions.value.find(
+//     (option) => option.idx === selectedIndex
+//   );
+//   if (selectedOption) {
+//     sortBy.value = selectedOption.name;
+//     fetchUserPosts();
+//     console.log("현재 정렬 기준:", sortBy.value);
+//   }
+// };
 
 const posts = ref([ ]);   // 게시물 목록
 const comments = ref([ ]); // 댓글 목록
