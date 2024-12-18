@@ -1,9 +1,11 @@
 <template>
   <div class="sub-container">
-    <TopBar />
+    <TopBar @update:selected="updateDistrict" /> 
     
     <div class="center-container">
-      <SearchBar />
+      <SearchBar 
+        v-model:searchQuery="searchQuery" 
+        @search="searchPosts" />
       <DescriptionComponent
           descriptionImgSrc="/src/assets/etc/Saly-25.png"
           descriptionTitle="동네주민과<br/>얘기해보세요!"
@@ -11,14 +13,14 @@
           backgroundColor="#FFF7D9"/>
 
       <div class="tag-button-container">
-        <TagButtonGroup />
+        <TagButtonGroup v-model:selectedButton="selectedButton" />
       </div>
 
       <div class="result-bar-container">
         <ResultBar 
-        resultTitle="결과" 
-        :sortOptions="sortOptions"
-        @updateSortBy="updateSortBy"
+          resultTitle="결과" 
+          :sortOptions="sortOptions"
+          @updateSortBy="updateSortBy"
         />
       </div>
 
@@ -37,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBar from "@/components/common/TopBar.vue";
@@ -48,73 +50,102 @@ import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
 
-// 컴포넌트 등록
-const components = {
-  TopBar,
-  BottomBar,
-  SearchBar,
-  DescriptionComponent,
-  ResultBar,
-  TagButtonGroup,
-  PostList,
-};
-
 // 상태 관리
+const router = useRouter();
+
 const sortOptions = ref([
   { idx: 0, value: "latest", name: "최신순" },
   { idx: 1, value: "views", name: "조회수순" },
   { idx: 2, value: "oldest", name: "오래된순" },
 ]);
-const posts = ref([]); // 게시글 데이터
-const sortBy = ref("최신순"); // 정렬 기준 (기본값)
-const router = useRouter();
 
-// 메서드
+const posts = ref([ ]);                 // 게시물 목록
+const sortBy = ref('최신순');             // 정렬 기준
+const selectedButton = ref('ALL');      // 태그
+const selectedDistrict = ref('JONGNO'); // 지역구
+const searchQuery = ref(''); // 검색어 상태
+
+// 글쓰기 페이지로 이동
 const goToPostCreate = () => {
   router.push({ name: "PostCreate" });
 };
 
+// 정렬 기준 변경 시 목록 업데이트
 const updateSortBy = (selectedIndex) => {
-  console.log(selectedIndex)
   const selectedOption = sortOptions.value.find(
     (option) => option.idx === selectedIndex
   );
   if (selectedOption) {
     sortBy.value = selectedOption.name;
     fetchPosts();
+    console.log("현재 정렬 기준:", sortBy.value);
   }
 };
 
-// 게시글 데이터 불러오기
+// 지역구 변경 시 목록 업데이트
+const updateDistrict = (district) => {
+  selectedDistrict.value = district;
+  fetchPosts();
+}
+
+// API: 게시글 데이터 불러오기
 const fetchPosts = async () => {
   const queryParams = new URLSearchParams({
     size: 5,
     page: 0,
     sortBy: sortBy.value,
-    tag: "ALL",
-    gu: "JONGNO",
+    tag: selectedButton.value,
+    gu: selectedDistrict.value,
   }).toString();
-
-  console.log("현재 정렬 기준:", sortBy.value);
 
   try {
     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
 
     if (response.data.success) {
-      posts.value = response.data.data.list;
       console.log("게시글 목록 가져오기 성공!");
+      posts.value = response.data.data.list;
     } else {
       console.error("API 실패:", response.data.message);
-      alert(`Error: ${response.data.message}`);
+
     }
   } catch (error) {
     console.error("게시글 데이터 요청 중 오류 발생:", error);
-    alert("게시글을 불러오는 데 실패했습니다.");
   }
 };
 
-// 컴포넌트가 생성될 때 데이터를 로드
+// API: 게시글 검색
+const searchPosts = async (query) => {  
+  const queryParams = new URLSearchParams({
+    size: 5,
+    page: 0,
+    sortBy: sortBy.value,
+    tag: selectedButton.value,
+    gu: selectedDistrict.value,
+    search: query,
+  }).toString();
+
+  try {
+    const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+
+    if (response.data.success) {
+      console.log("검색 결과 가져오기 성공!");
+      posts.value = response.data.data.list;
+      posts.value.forEach((post, index) => {
+      console.log(`게시글 ${index + 1}:`, post);
+      });
+    } else {
+      console.error("검색 API 실패:", response.data.message);
+    }
+  } catch (error) {
+    console.error("검색 API 요청 중 오류 발생:", error);
+  }
+};
+
 onMounted(fetchPosts);
+
+// 지역구/태그값이 변경될 때마다 fetchPosts 호출
+watch(() => selectedButton.value, fetchPosts);
+watch(() => selectedDistrict.value, fetchPosts);
 </script>
 
 

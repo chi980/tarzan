@@ -43,6 +43,8 @@
 
 <script setup lang="ts">
 import { Check } from "@/data/check";
+import { onMounted } from "vue";
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
 import CheckListItem from "@/components/common/CheckListItem.vue";
 
@@ -76,6 +78,26 @@ const checkListDdays: Check[] = [
   { idx: 5, name: "전입신고와 확정일자", value: false },
   { idx: 6, name: "우편물 이전 신청", value: false },
 ];
+
+// const checkedList: Check[] = []
+
+// // API: 게시글 데이터 불러오기
+// const fetchCheck = async () => {
+
+//   try {
+//     const response = await axiosInstance.get(`/v1/checklist/mover`);
+
+//     if (response.data.success) {
+//       console.log("게시글 목록 가져오기 성공!");
+//       checkedList.values = response.data.data.list;
+//     } else {
+//       console.error("API 실패:", response.data.message);
+
+//     }
+//   } catch (error) {
+//     console.error("게시글 데이터 요청 중 오류 발생:", error);
+//   }
+// };
 </script>
 
 <style lang="scss" scoped>

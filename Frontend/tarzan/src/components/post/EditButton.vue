@@ -23,15 +23,28 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, defineProps, defineEmits } from 'vue';
 import { useRouter } from 'vue-router';
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import settingIcon from '@/assets/icons/topbar/icon-setting.png';
 
+const router = useRouter();
+
+const isDropDownOpen = ref(false);
+const controllDropDown = () => {
+  isDropDownOpen.value = !isDropDownOpen.value;
+};
+
 const props = defineProps({
-  isAuthor: Boolean,
-  boardIdx: String
+  isAuthor: Boolean,    // 작성자 여부
+  targetId: String | Number,     // 게시글 또는 댓글의 ID
+  type: {               // 'post' 또는 'comment'
+    type: String,
+    required: true
+  }
 });
+
+const emit = defineEmits(); // emit 정의 추가
 
 const options = ref([
   { idx: 1, name: '수정' },
@@ -46,15 +59,25 @@ const filteredOptions = computed(() => {
     : options.value.filter(option => option.idx === 3); // 작성자가 아닌 경우 '신고하기'만
 });
 
-const isDropDownOpen = ref(false);
-const controllDropDown = () => {
-  isDropDownOpen.value = !isDropDownOpen.value;
+const selectOption = (option) => {
+  if (option.idx === 2) { // 삭제
+    if (confirm('정말로 삭제하시겠습니까?')) {
+      if (props.type === 'post') {
+        deletePost();   // 게시글 삭제
+      } else if (props.type === 'comment') {
+        deleteComment(); // 댓글 삭제
+      }
+    }
+  }
 };
 
+console.log("게시글/댓글 ID:", props.targetId, props.isAuthor, props.type); // 값을 확인
+
+// API: 게시물 삭제
 const deletePost = async () => {
   try {
-    const response = await axiosInstance.delete(`/v1/board/${props.boardIdx}`);
-    console.log(response);
+    const response = await axiosInstance.delete(`/v1/board/${props.targetId}`);
+    console.log("게시글/댓글 ID:", props.targetId); // 값을 확인
     
     if (response.data.success) {
       console.log('게시글 삭제 성공:', response.data);
@@ -70,13 +93,19 @@ const deletePost = async () => {
   }
 };
 
-const selectOption = (option) => {
-  if (option.idx === 2) { // '삭제' 옵션의 idx가 2라고 가정
-    if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-      deletePost();
+// API: 댓글 삭제
+const deleteComment = async () => {
+  try {
+    const response = await axiosInstance.delete(`/v1/comments/${props.targetId}`);
+    if (response.data.success) {
+      alert('댓글이 삭제되었습니다.');
+      emit('deleteItem', props.targetId, 'comment'); // 삭제 후 처리
+    } else {
+      alert('댓글 삭제에 실패했습니다.');
     }
-  } else {
-    selectedOption.value = option;
+  } catch (error) {
+    console.error('댓글 삭제 오류:', error);
+    alert('댓글 삭제에 실패했습니다.');
   }
 };
 </script>

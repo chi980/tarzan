@@ -65,6 +65,7 @@ const props = defineProps({
   options: {
     type: Array as () => Option[],
     required: true,
+    default: () => [],
   },
   parentStyle: {
     type: Object as () => SelectStyle,
@@ -100,6 +101,7 @@ onMounted(() => {
   if (props.options.length > 0) {
     selectedOption.value = props.options[0]; // options 배열의 첫 번째 항목을 선택된 옵션으로 설정
     selectedIdx.value = 0;
+    emit("update:selected", 0);
   }
 });
 
@@ -109,7 +111,8 @@ onMounted(() => {
 const selectOption = (option: Option, index: number) => {
   selectedOption.value = option;
   selectedIdx.value = index;
-  emit("update:selected", index); // 선택한 옵션의 idx emit
+  emit("update:selected", selectedIdx.value); // 선택한 옵션의 idx emit
+  // console.log("커스텀박스: ",selectedOption.value.value);
 };
 </script>
 

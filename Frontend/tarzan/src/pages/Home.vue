@@ -90,28 +90,37 @@ async function fetchBuildings(
 ) {
   if (loading.value) return;
 
-  // type이 선택되지 않은 경우 메시지를 출력하고 함수 종료
   if (!type) {
-    console.error("type is not selected.");
+    console.log("type is not selected.");
     return;
   }
 
   loading.value = true;
 
+  const requestData = {
+    type,
+    latitude,
+    longitude,
+    radius,
+  };
+
+  console.log("Sending request with data:", requestData);
+
   try {
-    const requestData = {
-      type,
-      latitude,
-      longitude,
-      radius,
-    };
-    console.log("Sending request with data:", requestData);
+    // '매물' 버튼이 선택된 경우
+    let response;
+    if (type === "HOUSE") {
+      response = await axiosInstance.get("/v1/houses", { params: requestData });
+    } else {
+      // 다른 버튼이 선택된 경우
+      response = await axiosInstance.get("/v1/building", {
+        params: requestData,
+      });
+    }
 
-    const response = await axiosInstance.get("/v1/building", {
-      params: requestData,
-    });
+    console.log("Response received from backend:", response.data);
 
-    if (response.status === 200 && response.data.success) {
+    if (response.data.success && response.data.message === "완료되었습니다.") {
       buildings.value = response.data.data;
       showInitialMarkers(buildings.value); // 마커 초기화
     } else {

@@ -1,6 +1,5 @@
 <template>
   <div class="post-item-container" @click="handleClick">
-    <!-- <SmallTag /> -->
     <div class="post-tag">
       <span>{{ post.board_tag }}</span>
     </div>
@@ -14,7 +13,7 @@
         <span id="views"> 조회 {{ post.board_read_count }}</span>
       </div>
       <div class="comment">
-        <font-awesome-icon id="comment-icon" :icon="['far', 'comment']" />
+        <!-- <font-awesome-icon id="comment-icon" :icon="['far', 'comment']" /> -->
         <span id="comment-count">{{ post.comments }}</span>
       </div>
     </div>
@@ -24,13 +23,8 @@
 <script>
 export default {
   props: {
-    post: Object,  // 부모 컴포넌트로부터 post라는 객체를 props로 받음
+    post: Object,
   },
-  // methods: {
-  //   handleClick() {
-  //     this.$emit('click');
-  //   },
-  // },
 };
 </script>
 

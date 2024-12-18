@@ -25,7 +25,6 @@ const props = defineProps({
   },
   sortOptions: {
     type: Array,
-    required: true,
   },
 });
 

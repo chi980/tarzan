@@ -5,16 +5,25 @@
         <input
           v-model="searchQuery" 
           type="text"
-          placeholder="찾고 싶은 글 제목을 입력해주세요." />
+          placeholder="찾고 싶은 글 제목을 입력해주세요."
+          @keyup.enter="onSearch" />
     </div>
   </div>
-      
 </template>
-<script>
-export default {
-  
-}
+
+<script setup>
+import { ref, defineEmits } from 'vue';
+
+const searchQuery = ref('');
+const emit = defineEmits();
+
+// 검색 버튼이나 Enter 키 입력 시 searchPosts 함수 호출
+const onSearch = () => {
+  console.log('검색어:', searchQuery.value);
+  emit('search', searchQuery.value); 
+};
 </script>
+
 <style lang="scss" scoped>
   .searchbar {
     display: flex;
