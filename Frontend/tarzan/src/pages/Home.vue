@@ -111,7 +111,7 @@ async function fetchBuildings(
       params: requestData,
     });
 
-    if (response.data.status === 200 && response.data.message === "OK") {
+    if (response.status === 200 && response.data.success) {
       buildings.value = response.data.data;
       showInitialMarkers(buildings.value); // 마커 초기화
     } else {

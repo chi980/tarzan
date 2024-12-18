@@ -57,13 +57,14 @@ function navigateTo(url: string) {
     $z-index: $z-index-bottom-bar
   );
   @include custom-none-select-basic;
+  background-color: inherit;
 }
 .bar-item > img {
   @include custom-icon-style;
-  fill: aqua;
 }
 .bar-item {
-  height: 80%;
+  margin-top: 10px;
+  height: 48px;
   min-width: 48px;
   display: flex;
   flex-direction: column;
@@ -71,6 +72,7 @@ function navigateTo(url: string) {
   align-items: center;
   margin-right: 10px;
   border-radius: calc($border-radius-default/2);
+  background-color: inherit;
 }
 .bar-item:last-child {
   margin-right: 0;

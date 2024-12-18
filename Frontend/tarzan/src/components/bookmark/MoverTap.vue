@@ -1,5 +1,5 @@
 <template>
-  <div class="accordion-wrapper">
+  <div class="accordion-wrapper tab-content">
     <BasicAccordion accordionTitle="이사 D-30">
       <CheckListItem
         v-for="checkItem in checkListBefore30Days"
@@ -80,7 +80,9 @@ const checkListDdays: Check[] = [
 
 <style lang="scss" scoped>
 // 공통
-
+.tab-content {
+  margin-top: 0;
+}
 .button-in-tab {
   @include custom-button-style(
     $bg-color: #f2f2f2,
