@@ -1,25 +1,36 @@
 <template>
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
-    <SearchHouseBar class="search-house-bar" v-if="showOverlay"></SearchHouseBar>
+    <SearchHouseBar
+      class="search-house-bar"
+      v-if="showOverlay"
+    ></SearchHouseBar>
     <div class="center-container">
       <div ref="mapContainer" class="map-container">
         <div class="searchbar" @click="showOverlay = true">
           <div class="input-icon-wrap">
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+            <font-awesome-icon
+              :icon="['fas', 'magnifying-glass']"
+              class="icon-search"
+            />
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="찾고 싶은 집주소를 입력해주세요."/>
+              placeholder="찾고 싶은 집주소를 입력해주세요."
+            />
           </div>
         </div>
         <div class="tag-button-container">
-          <TagButtonGroupHome 
-            :selectedType="selectedType" 
-            @button-clicked="onButtonClicked" 
+          <TagButtonGroupHome
+            :selectedType="selectedType"
+            @button-clicked="onButtonClicked"
           />
         </div>
-        <BuildingInfo :building="selectedBuilding" v-if="selectedBuilding" class="building-info"/>
+        <BuildingInfo
+          :building="selectedBuilding"
+          v-if="selectedBuilding"
+          class="building-info"
+        />
       </div>
       <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
       <div>
@@ -63,15 +74,20 @@ import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
-const buildings = ref([]);  
-const selectedBuilding = ref(null); 
+const buildings = ref([]);
+const selectedBuilding = ref(null);
 const showOverlay = ref(false);
 const searchQuery = ref("");
 const loading = ref(false);
-const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
+const selectedType = ref("CIVIC_CENTER"); // 기본값 설정
 
 // 빌딩 데이터 요청
-async function fetchBuildings(type: string, latitude: number, longitude: number, radius: number) {
+async function fetchBuildings(
+  type: string,
+  latitude: number,
+  longitude: number,
+  radius: number
+) {
   if (loading.value) return;
 
   if (!type) {
@@ -97,7 +113,9 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
       response = await axiosInstance.get("/v1/houses", { params: requestData });
     } else {
       // 다른 버튼이 선택된 경우
-      response = await axiosInstance.get("/v1/building", { params: requestData });
+      response = await axiosInstance.get("/v1/building", {
+        params: requestData,
+      });
     }
 
     console.log("Response received from backend:", response.data);
@@ -119,9 +137,9 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
 function onButtonClicked(type) {
   if (loading.value) return;
-  selectedType.value = type; 
+  selectedType.value = type;
 
-  const latitude = 37.566535; 
+  const latitude = 37.566535;
   const longitude = 126.9779692;
   const radius = 150;
 
@@ -136,9 +154,17 @@ declare global {
         Map: new (container: HTMLElement, options: any) => any;
         LatLng: new (latitude: number, longitude: number) => any;
         Marker: new (options: { position: any }) => any;
-        MarkerClusterer: new (options: { map: any; averageCenter: boolean; minLevel: number }) => any;
+        MarkerClusterer: new (options: {
+          map: any;
+          averageCenter: boolean;
+          minLevel: number;
+        }) => any;
         event: {
-          addListener: (marker: any, event: string, callback: (e: any) => void) => void;
+          addListener: (
+            marker: any,
+            event: string,
+            callback: (e: any) => void
+          ) => void;
         };
       };
     };
@@ -150,22 +176,29 @@ let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
 let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
 let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
 
-
 onMounted(() => {
   loadKakaoMap(mapContainer.value);
 });
 
 function loadKakaoMap(container) {
   if (!container) return;
-  const script = document.createElement('script');
-  script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer';
+  const script = document.createElement("script");
+  script.src =
+    "https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer";
   document.head.appendChild(script);
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      mapInstance = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.566535, 126.9779692), level: 4 });
-      clusterer = new window.kakao.maps.MarkerClusterer({ map: mapInstance, averageCenter: true, minLevel: 3 });
-      fetchBuildings(null, 37.566535, 126.9779692, 150); 
+      mapInstance = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+        level: 4,
+      });
+      clusterer = new window.kakao.maps.MarkerClusterer({
+        map: mapInstance,
+        averageCenter: true,
+        minLevel: 3,
+      });
+      fetchBuildings(null, 37.566535, 126.9779692, 150);
     });
   };
 }
@@ -174,16 +207,21 @@ const clearMarkers = (): void => {
   clusterer.clear(); // 클러스터러에서 마커 제거
 };
 
-const addMarkers = (data: Array<any>): void => { // Specify the type here
+const addMarkers = (data: Array<any>): void => {
+  // Specify the type here
   clearMarkers();
 
-  const markers = data.map((item: any) => { // Specify the type here
-    const markerPosition = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+  const markers = data.map((item: any) => {
+    // Specify the type here
+    const markerPosition = new window.kakao.maps.LatLng(
+      item.latitude,
+      item.longitude
+    );
     const marker = new window.kakao.maps.Marker({
       position: markerPosition,
     });
 
-    window.kakao.maps.event.addListener(marker, 'click', () => {
+    window.kakao.maps.event.addListener(marker, "click", () => {
       if (item.radarData) {
         selectedBuilding.value = {
           ...item,
@@ -200,24 +238,29 @@ const addMarkers = (data: Array<any>): void => { // Specify the type here
   clusterer.addMarkers(markers);
 };
 
-const filterDataByBounds = (data: Array<any>): Array<any> => { // Specify the type here
+const filterDataByBounds = (data: Array<any>): Array<any> => {
+  // Specify the type here
   // @ts-ignore: Ignoring the error for getBounds method
-  const bounds = mapInstance.getBounds(); 
-  const filteredData = data.filter((item: any) => { // Specify the type here
-    const position = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+  const bounds = mapInstance.getBounds();
+  const filteredData = data.filter((item: any) => {
+    // Specify the type here
+    const position = new window.kakao.maps.LatLng(
+      item.latitude,
+      item.longitude
+    );
     return bounds.contain(position);
   });
   return filteredData;
 };
 
-const showInitialMarkers = (data: Array<any>): void => { // Specify the type here
+const showInitialMarkers = (data: Array<any>): void => {
+  // Specify the type here
   if (!isMarkersInitialized) {
     const visibleData = filterDataByBounds(data);
     addMarkers(visibleData);
-    isMarkersInitialized = true; 
+    isMarkersInitialized = true;
   }
-}
-
+};
 </script>
 
 <style lang="scss" scoped>
@@ -338,7 +381,8 @@ input {
 }
 
 /* 필요 시 특정 요소만 상호작용 가능하게 설정 */
-.searchbar input, .icon-search {
+.searchbar input,
+.icon-search {
   pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
 }
 </style>

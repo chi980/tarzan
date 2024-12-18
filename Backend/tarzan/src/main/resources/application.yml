@@ -91,4 +91,18 @@ api:
 
 tarzan:
   data-truncate: false
-  data-load: false
+  data-load:
+    bicycle: false
+    bus-stop: false
+    cctv: false
+    civic-center: false
+    convenience-store: false
+    gym: false
+    hospital: false
+    house: false
+    mart: false
+    medical-clinic: false
+    park: false
+    pharmacy: false
+    police: false
+    subway: false

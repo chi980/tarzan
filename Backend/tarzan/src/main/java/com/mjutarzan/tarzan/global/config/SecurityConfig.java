@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/error").permitAll()
-                        .requestMatchers("/sign-up", "/api/test/**", "/api/data/**", "/api/fraud/**").permitAll()
+                        .requestMatchers("/sign-up", "/api/test/**", "/api/data/**", "/api/fraud/**", "/api/v1/building/**", "/api/v1/house/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

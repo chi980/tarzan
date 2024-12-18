@@ -73,6 +73,9 @@ const topBarStyle: SelectStyle = {
     $z-index: $z-index-top-bar
   );
   @include custom-none-select-basic;
+
+  justify-content: center;
+  align-items: center;
 }
 
 .select-content {

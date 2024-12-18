@@ -1,6 +1,8 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <TopBar></TopBar>
+    <div class="top-bar-wrapper">
+      <TopBar></TopBar>
+    </div>
     <div class="center-container">
       <div>
         <DescriptionComponent
@@ -12,10 +14,13 @@
         <TabBar :tabs="tabs"></TabBar>
       </div>
     </div>
-    <div class="center-container-fix-button">
+    <!-- <div class="center-container-fix-button">
       <img :src="CompareImgSrc" />비교하기
+    </div> -->
+
+    <div class="bottom-bar-wrapper">
+      <BottomBar></BottomBar>
     </div>
-    <BottomBar></BottomBar>
   </div>
 </template>
 
@@ -40,6 +45,19 @@ const tabs: Tab[] = [
 
 <style lang="scss" scoped>
 // 공통
+.top-bar-wrapper {
+  width: 100%;
+}
+.bottom-bar-wrapper {
+  display: flex;
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  // height: 100px;
+  width: 100%;
+  z-index: $z-index-bottom-bar-wrapper;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
+  background-color: aqua;
+}
+
 .non-input-sub-container {
   @include custom-none-select-basic;
   justify-content: space-between;
@@ -51,6 +69,8 @@ const tabs: Tab[] = [
 
   display: flex;
   flex-direction: column;
+
+  background-color: white;
 
   overflow-y: auto;
   /* 스크롤바 전체 영역 */
