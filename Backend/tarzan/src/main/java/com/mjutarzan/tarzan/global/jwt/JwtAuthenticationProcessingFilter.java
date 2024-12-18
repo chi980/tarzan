@@ -53,7 +53,9 @@ import java.util.Set;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
 //    private static final String NO_CHECK_URL= "/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
-    private static final Set<String> NO_CHECK_URLS = Set.of("/login", "/oauth2/authorization", "/api/test", "/api/data", "/api/fraud");
+    private static final Set<String> NO_CHECK_URLS = Set.of("/login",
+        "/oauth2/authorization", "/api/test", "/api/data",
+        "/api/fraud", "/api/v1/building", "/api/v1/house");
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
