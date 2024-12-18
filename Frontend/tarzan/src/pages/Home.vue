@@ -95,6 +95,7 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
     
     console.log("Response received from backend:", response.data);
 
+/*
     // 응답 데이터 유효성 검사 및 처리
     const responseData = response.data;
     if (responseData?.success && responseData.message === "완료되었습니다.") {
@@ -103,6 +104,11 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
       // 마커 표시
       addMarkers(buildings.value);
+*/
+    if (response.status === 200 && response.data.success) {
+      buildings.value = response.data.data;
+      showInitialMarkers(buildings.value); // 마커 초기화
+>>>>>>> e638fa2 (fix: m)
     } else {
       console.error("Backend returned an error:", responseData?.message || "Unknown error");
       buildings.value = [];

@@ -107,6 +107,9 @@ const toggleSubAccordionHouseholdGoods = (idx: number) => {
 <style lang="scss" scoped>
 // 공통
 
+.tab-content {
+  margin-top: 0;
+}
 // scoped
 .tab-content {
   display: flex;

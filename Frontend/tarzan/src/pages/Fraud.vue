@@ -24,7 +24,9 @@
         </div>
       </div>
     </div>
-    <BottomBar></BottomBar>
+    <div>
+      <BottomBar></BottomBar>
+    </div>
   </div>
 </template>
 

@@ -31,18 +31,21 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'; // Vue Router import
+import { useRouter } from "vue-router"; // Vue Router import
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
 
 const router = useRouter(); // useRouter hook to access the router
 
 function navigateToMap() {
-  router.push('/bookmark/map'); // Navigate to /bookmark/map
+  router.push("/bookmark/map"); // Navigate to /bookmark/map
 }
 </script>
 
 <style lang="scss" scoped>
+.tab-content {
+  margin-top: 0;
+}
 // content를 구분해주는 회색 긴 선
 .content-indicator {
   @include custom-margin-y;
@@ -66,13 +69,13 @@ function navigateToMap() {
   }
 }
 .button-in-tab {
-  @include custom-margin;
-  @include custom-button-style(
-    $bg-color: #f2f2f2,
-    $icon-size: 18px,
-    $height: 52px
-  );
-  cursor: pointer; /* Pointer cursor to indicate it's clickable */
+  // @include custom-margin-x;
+  // @include custom-button-style(
+  //   $bg-color: #f2f2f2,
+  //   $icon-size: 18px,
+  //   $height: 52px
+  // );
+  // cursor: pointer; /* Pointer cursor to indicate it's clickable */
 }
 // scoped
 

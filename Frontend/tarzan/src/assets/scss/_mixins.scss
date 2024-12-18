@@ -115,13 +115,10 @@
 }
 
 @mixin custom-bar-style($height: inherit, $z-index) {
-  width: 100%;
   height: $height;
   z-index: $z-index;
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: center;
   background-color: white;
 }
 
