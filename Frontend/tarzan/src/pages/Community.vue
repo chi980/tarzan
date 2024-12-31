@@ -142,10 +142,6 @@ const searchPosts = async (query) => {
 };
 
 onMounted(fetchPosts);
-
-// 지역구/태그값이 변경될 때마다 fetchPosts 호출
-watch(() => selectedButton.value, fetchPosts);
-watch(() => selectedDistrict.value, fetchPosts);
 </script>
 
 

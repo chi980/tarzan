@@ -60,7 +60,13 @@ const filteredOptions = computed(() => {
 });
 
 const selectOption = (option) => {
-  if (option.idx === 2) { // 삭제
+  if (option.idx === 1) { // 수정
+    if (props.type === 'post') {
+      router.push(`/community/${props.targetId}/edit`);
+    } else if (props.type === 'comment') {
+      // router.push(`/edit-comment/${props.commentId}`); // 댓글 수정 페이지로 이동
+    }
+  } else if (option.idx === 2) { // 삭제
     if (confirm('정말로 삭제하시겠습니까?')) {
       if (props.type === 'post') {
         deletePost();   // 게시글 삭제
@@ -71,7 +77,7 @@ const selectOption = (option) => {
   }
 };
 
-console.log("게시글/댓글 ID:", props.targetId, props.isAuthor, props.type); // 값을 확인
+// console.log("게시글/댓글 ID:", props.targetId, props.isAuthor, props.type); // 값을 확인
 
 // API: 게시물 삭제
 const deletePost = async () => {
