@@ -141,8 +141,6 @@ const fetchUserComments = async () => {
   }
 };
 
-
-
 onMounted(async () => {
   await fetchUserPosts();
   await fetchUserComments();
@@ -150,7 +148,7 @@ onMounted(async () => {
 
 // 수정 페이지로 이동
 const goToEditProfile = () => {
-  router.push({ name: 'SignUp' }); // 라우트 이름으로 이동
+  router.push({ name: 'EditProfile' }); // 라우트 이름으로 이동
 };
 </script>
 
