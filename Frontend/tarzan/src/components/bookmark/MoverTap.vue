@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { Check } from "@/data/check";
-import { onMounted } from "vue";
+import { onMounted, reactive } from "vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
 import CheckListItem from "@/components/common/CheckListItem.vue";
@@ -79,25 +79,55 @@ const checkListDdays: Check[] = [
   { idx: 6, name: "우편물 이전 신청", value: false },
 ];
 
-// const checkedList: Check[] = []
+// 상태 변수들
+const checkListData = reactive({
+  move_day_before_30days: [],
+  move_day_before_7days: [],
+  move_day_before_ddays: [],
+  move_day_before_1days: [],
+});
 
-// // API: 게시글 데이터 불러오기
-// const fetchCheck = async () => {
+// API: 체크리스트 API 호출
+const fetchCheckMoverList = async () => {
+  // const queryParams = new URLSearchParams({
+  //   size: 5,
+  //   page: 0,
+  //   sortBy: '최신순',
+  // }).toString();
 
-//   try {
-//     const response = await axiosInstance.get(`/v1/checklist/mover`);
+  try {
+    const response = await axiosInstance.get(`/v1/checklist/mover?`);
 
-//     if (response.data.success) {
-//       console.log("게시글 목록 가져오기 성공!");
-//       checkedList.values = response.data.data.list;
-//     } else {
-//       console.error("API 실패:", response.data.message);
+    if (response.data.success) {
+      console.log("이사 체크리스트 가져오기 성공!");
+      const data = response.data.data;
+      console.log("API 응답 데이터:", data);
 
-//     }
-//   } catch (error) {
-//     console.error("게시글 데이터 요청 중 오류 발생:", error);
-//   }
-// };
+
+      checkListData.move_day_before_30days = data.move_day_before_30days.name_list.map(
+        (name, index) => ({ idx: index + 1, name, value: data.move_day_before_30days.value_list[index] })
+      );
+
+      checkListData.move_day_before_7days = data.move_day_before_7days.name_list.map(
+        (name, index) => ({ idx: index + 1, name, value: data.move_day_before_7days.value_list[index] })
+      );
+
+      checkListData.move_day_before_ddays = data.move_day_before_ddays.name_list.map(
+        (name, index) => ({ idx: index + 1, name, value: data.move_day_before_ddays.value_list[index] })
+      );
+    } else {
+      console.error("체크리스트 데이터 없음", response.data.message);
+
+    }
+  } catch (error) {
+    console.error("API 요청 오류: ", error);
+  }
+};
+
+// 컴포넌트가 로드되었을 때 체크리스트 불러오기
+onMounted(() => {
+  fetchCheckMoverList();
+});
 </script>
 
 <style lang="scss" scoped>
