@@ -105,11 +105,11 @@ public class Review extends CommonEntity{
     @Column(name = "review_option_mold")
     private Boolean optionMold;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_house", nullable = false)
     private House house;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_writer", nullable = false)
     private User writer;
 

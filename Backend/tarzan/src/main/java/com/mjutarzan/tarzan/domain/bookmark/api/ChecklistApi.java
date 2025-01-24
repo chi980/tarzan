@@ -24,7 +24,7 @@ public class ChecklistApi {
 
     @GetMapping("/checklist/mover")
     public ResponseEntity<?> getMoverChecklist(@AuthenticationPrincipal UserDto userDto){
-        Map<String, ChecklistResponseDto> result =  checklistService.getChecklist(ChecklistType.ITEM, userDto);
+        Map<String, ChecklistResponseDto> result =  checklistService.getChecklist(ChecklistType.MOVER, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")
