@@ -65,17 +65,14 @@ console.log("PostDetail의 게시물 번호 : " + boardIdx + typeof boardIdx);
 const fetchPostDetail = async () => {
   try {
     const response = await axiosInstance.get(`/v1/board/${boardIdx}`);
-    // console.log(response);
-    
     if (response.data.success) {
       post.value = response.data.data;
-      console.log('게시물 상세 가져오기 성공');
-      // console.log(post.value);
+      console.log('게시물 상세 성공');
     } else {
-      console.error('Failed:', response.data.message);
+      console.error('게시물 상세 실패:', response.data.message);
     }
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('게시물 상세 오류:', error);
   }
 };
 
@@ -92,21 +89,20 @@ const fetchComments = async () => {
     const response = await axiosInstance.get(`/v1/comments?${queryParams}`); // 경로 수정
     if (response.data.success) {
       comments.value = response.data.data.list;
-      console.log('댓글 목록 가져오기 성공:', comments.value);
+      console.log('댓글 목록 성공:', comments.value);
     } else {
-      console.error('댓글 가져오기 실패:', response.data.message);
+      console.error('댓글 목록 실패:', response.data.message);
       alert(`Error: ${response.data.message}`);
     }
   } catch (error) {
-    console.error('Error fetching comments:', error);
+    console.error('댓글 목록 오류:', error);
     alert('댓글을 불러오는 중 오류가 발생했습니다.');
   }
 };
 
 // 함수 호출
-onMounted(() => {
-  fetchPostDetail();
-  fetchComments();
+onMounted(async () => {
+  await Promise.all([fetchPostDetail(), fetchComments()]);
 });
 </script>
 
