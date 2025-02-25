@@ -21,10 +21,10 @@
           </div>
         </div>
         <div class="tag-button-container">
-          <TagButtonGroupHome
+          <!-- <TagButtonGroupHome
             :selectedType="selectedType"
             @button-clicked="onButtonClicked"
-          />
+          /> -->
         </div>
         <BuildingInfo
           :building="selectedBuilding"
@@ -70,7 +70,7 @@ import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
+// import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
