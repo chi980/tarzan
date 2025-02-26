@@ -11,7 +11,7 @@ spring:
   datasource:
     url: jdbc:postgresql://13.125.225.29:5432/tarzan
     username: postgres
-    password: '@tarzan_zxcvbnm123!'
+    password: '@tarzan_zxcvbnm12345'
 #    url: jdbc:postgresql://localhost/tarzan
 #    username: postgres
 #    password: '1234'

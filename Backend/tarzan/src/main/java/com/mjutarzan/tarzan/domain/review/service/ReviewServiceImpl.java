@@ -43,7 +43,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         List<ReviewListItemResponseDto> list = reviewPages.stream()
                 .map(review -> {
-                    return new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail()));
+                    return new ReviewListItemResponseDto(review, loginedUserDto!=null?review.getWriter().getEmail().equals(loginedUserDto.getEmail()):false);
                 })
                 .collect(Collectors.toList());
 
@@ -58,6 +58,7 @@ public class ReviewServiceImpl implements ReviewService{
         Review review = reviewRepository.findById(reviewId).orElseThrow(()->new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         return new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail()));
     }
+    
 
     @Override
     public void createReview(ReviewRequestDto requestDto, UserDto loginedUserDto) {
