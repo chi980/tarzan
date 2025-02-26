@@ -28,7 +28,7 @@
         </div>
       </div>
     </div>
-    <BottomBar class="bottom-bar"></BottomBar>
+    <div><BottomBar class="bottom-bar"></BottomBar></div>
 
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
@@ -53,14 +53,16 @@ import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-// import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
+import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
 const buildings = ref([]);  
 const selectedBuilding = ref(null); 
 const loading = ref(false);
-const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
+
+// const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
+const selectedType = ref('');
 
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
@@ -95,7 +97,6 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
     
     console.log("Response received from backend:", response.data);
 
-/*
     // 응답 데이터 유효성 검사 및 처리
     const responseData = response.data;
     if (responseData?.success && responseData.message === "완료되었습니다.") {
@@ -104,11 +105,11 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
       // 마커 표시
       addMarkers(buildings.value);
-*/
+/*
     if (response.status === 200 && response.data.success) {
-      buildings.value = response.data.data;
-      showInitialMarkers(buildings.value); // 마커 초기화
->>>>>>> e638fa2 (fix: m)
+    buildings.value = response.data.data;
+    showInitialMarkers(buildings.value); // 마커 초기화
+*/
     } else {
       console.error("Backend returned an error:", responseData?.message || "Unknown error");
       buildings.value = [];
@@ -347,6 +348,7 @@ input {
   pointer-events: auto;
 }
 .tag-button-container {
+  display: flex;
   position: relative;
   margin-top: 25px;
   z-index: 2;

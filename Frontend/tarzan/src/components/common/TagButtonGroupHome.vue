@@ -1,29 +1,27 @@
 <template>
   <div class="tag-button-container">
-    <TagButton
-      class="tag-button"
-      v-for="(button, index) in buttons"
+    <button 
+      v-for="button in buttons" 
       :key="button.value"
-      :label="button.label"
-      :isActive="selectedButton === index"
-      @click="handleClick(button.value)"
-    />
+      class="tag-button"
+      :class="{ active: multiple ? selectedButtons.includes(button.value) : selectedButton === button.value }"
+      @click="handleClick(button.value)">
+      <slot :button="button">{{ button.label }}</slot>
+    </button>
   </div>
 </template>
 
 <script>
 // import TagButton from "@/components/common/TagButton.vue";
+import { ref, defineProps, defineEmits } from "vue";
 
 export default {
-  components: {
-    TagButton,
-  },
   props: {
     selectedType: String, // Home.vue에서 전달받는 선택된 타입
   },
   data() {
     return {
-      selectedButton: null, // 선택된 버튼의 인덱스를 저장
+      selectedButton: this.selectedType || null, // 초기값을 selectedType과 동기화
       buttons: [
         { label: "매물", value: "HOUSE" },
         { label: "주민센터", value: "CIVIC_CENTER" },
@@ -41,13 +39,19 @@ export default {
       ],
     };
   },
+  watch: {
+    selectedType(newVal) {
+      this.selectedButton = newVal; // 부모에서 변경된 값 반영
+    },
+  },
   methods: {
     handleClick(value) {
       this.selectedButton = value;
-      this.$emit("button-clicked", value); // 선택된 버튼의 value를 부모 컴포넌트에 전달
+      this.$emit("update:selectedType", value); // v-model을 위한 이벤트 발생
     },
   },
 };
+
 </script>
 
 <style scoped lang="scss">
@@ -62,5 +66,25 @@ export default {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.tag-button {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #E5E5E5;
+  font-size: 12px;
+  font-weight: 600;
+  height: 40px;
+  white-space: nowrap;
+  padding: 13px 14px;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
+}
+.tag-button.active {
+  background-color: $primary-color-50;
+  border: 1.2px solid $primary-color-default;
+  color: $primary-color-default;
 }
 </style>
