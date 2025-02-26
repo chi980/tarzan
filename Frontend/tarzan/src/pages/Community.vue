@@ -13,8 +13,13 @@
           backgroundColor="#FFF7D9"/>
 
       <div class="tag-button-container">
-        <TagButtonGroup v-model:selectedButton="selectedButton" />
+        <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="buttons" :multiple="false">
+          <template v-slot:default="{ button }">
+            <span>{{ button.label }}</span>
+          </template>
+        </TagButtonGroup>
       </div>
+
 
       <div class="result-bar-container">
         <ResultBar 
@@ -42,6 +47,9 @@
 import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+
+import { useInfiniteScroll } from "@/Composable/useInfiniteScroll.js";
+
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import SearchBar from "@/components/common/SearchBar.vue";
@@ -50,9 +58,19 @@ import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
 
+// 태그 버튼
+const buttons = ref([
+  { label: '전체', value: 'ALL' },
+  { label: '교통', value: 'TRANSPORT' },
+  { label: '맛집', value: 'TASTE' },
+  { label: '생활팁', value: 'LIFE' },
+  { label: '질문', value: 'QUESTION' },
+  { label: '모임', value: 'MEETING' },
+  { label: '기타', value: 'ETC' },
+]);
+
 // 상태 관리
 const router = useRouter();
-
 const sortOptions = ref([
   { idx: 0, value: "latest", name: "최신순" },
   { idx: 1, value: "views", name: "조회수순" },
@@ -142,10 +160,6 @@ const searchPosts = async (query) => {
 };
 
 onMounted(fetchPosts);
-
-// 지역구/태그값이 변경될 때마다 fetchPosts 호출
-watch(() => selectedButton.value, fetchPosts);
-watch(() => selectedDistrict.value, fetchPosts);
 </script>
 
 
@@ -162,11 +176,7 @@ watch(() => selectedDistrict.value, fetchPosts);
   }
 
   .tag-button-container {
-    padding: 8px;
-  }
-
-  :deep(.tag-button-container) {
-    overflow-x: auto;
+    margin: 8px;
   }
 
   .result-bar-container {

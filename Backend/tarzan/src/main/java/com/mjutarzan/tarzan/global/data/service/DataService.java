@@ -119,7 +119,7 @@ public class DataService {
             try {
                 Double latitude = Double.parseDouble(info[latitudeIdx]);
                 Double longitude = Double.parseDouble(info[longitudeIdx]);
-                Point location = locationService.createPoint(latitude, longitude);
+                Point location = locationService.createPoint(longitude, latitude);
 
                 // Reflection을 통해 getInstance 호출
                 S instance = (S) clazz.getDeclaredConstructor().newInstance().getInstance(info, location);
@@ -204,5 +204,6 @@ public class DataService {
 
     public void deleteAll(){
         buildingRepository.deleteAll();
+        apiHouseRepository.deleteAll();
     }
 }

@@ -7,6 +7,7 @@
       :post="post"
       @click="goToPostDetail(post.board_id)"/>
     </div>
+    
     <div v-else class="post-items-container">
       <p>게시물이 없습니다.</p>
     </div>

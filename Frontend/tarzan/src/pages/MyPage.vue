@@ -95,7 +95,7 @@ const userGu = computed(() => authStore.gu);
 const posts = ref([ ]);   // 게시물 목록
 const comments = ref([ ]); // 댓글 목록
 
-// API: 게시글 데이터 불러오기
+// API: 사용자의 게시글 데이터 불러오기
 const fetchUserPosts = async () => {
   const queryParams = new URLSearchParams({
     size: 5,
@@ -118,17 +118,37 @@ const fetchUserPosts = async () => {
   }
 };
 
-console.log(posts.value);
+// API: 사용자의 댓글 데이터 불러오기
+const fetchUserComments = async () => {
+  const queryParams = new URLSearchParams({
+    size: 5,
+    page: 0,
+    sortBy: '최신순',
+  }).toString();
 
+  try {
+    const response = await axiosInstance.get(`/v1/user/comments?${queryParams}`);
+
+    if (response.data.success) {
+      console.log("사용자 댓글 목록 가져오기 성공!");
+      comments.value = response.data.data.list;
+    } else {
+      console.error("API 실패:", response.data.message);
+
+    }
+  } catch (error) {
+    console.error("댓글 데이터 요청 중 오류 발생:", error);
+  }
+};
 
 onMounted(async () => {
   await fetchUserPosts();
-  console.log("MyPage에서 posts 데이터 확인:", posts.value); // 비동기 완료 후 로그
+  await fetchUserComments();
 });
 
 // 수정 페이지로 이동
 const goToEditProfile = () => {
-  router.push({ name: 'SignUp' }); // 라우트 이름으로 이동
+  router.push({ name: 'EditProfile' }); // 라우트 이름으로 이동
 };
 </script>
 

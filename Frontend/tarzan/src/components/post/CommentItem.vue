@@ -18,7 +18,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import EditButton from './EditButton.vue';
 
 const props = defineProps({

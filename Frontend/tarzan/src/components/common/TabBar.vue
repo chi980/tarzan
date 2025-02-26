@@ -13,7 +13,6 @@
         </Transition>
       </div>
     </div>
-
     <!-- 선택된 탭의 컨텐츠 -->
     <div class="tab-content">
       <component :is="currentTabComponent" />
@@ -51,14 +50,17 @@ const selectTab = (index: number) => {
 .tab-container {
   width: 100%;
   flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: white;
 }
 .tab-titles {
   @include custom-padding-x;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: $padding-default;
-  background-color: white;
 }
 .tab-title {
   @include custom-none-select-basic;
@@ -82,7 +84,7 @@ const selectTab = (index: number) => {
   bottom: 0; /* tab-title의 아래쪽에 위치 */
   left: 0; /* 중앙에서 시작 */
   width: 100%; /* 부모 요소의 전체 너비를 차지 */
-  height: 2px; /* 인디케이터 높이 */
+  height: 1px; /* 인디케이터 높이 */
   background-color: black;
 }
 

@@ -125,6 +125,11 @@ const routes = [
         component: () => import("@/components/post/PostDetail.vue"),
       },
       {
+        path: ":id/edit",
+        name: "PostEdit",
+        component: () => import("@/components/post/PostEdit.vue"),
+      },
+      {
         path: "postcreate",
         name: "PostCreate",
         component: () => import("@/components/post/PostCreate.vue"),
@@ -165,8 +170,8 @@ const routes = [
       },
       {
         path: "edit-profile",
-        name: "EditProfile1",
-        component: () => import("@/components/mypage/EditProfile1.vue"),
+        name: "EditProfile",
+        component: () => import("@/components/mypage/EditProfile.vue"),
       },
     ],
   },
