@@ -25,8 +25,10 @@ public class ReviewApi {
     private final ReviewService reviewService;
     @GetMapping("/reviews")
     public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto, @AuthenticationPrincipal UserDto userDto){
-
+//    public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto){
         ReviewListResponseDto result = reviewService.getReviews(reviewListRequestDto, userDto);
+//        log.info("/api/v1/reviews");
+//        ReviewListResponseDto result = reviewService.getReviews(reviewListRequestDto, null);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")

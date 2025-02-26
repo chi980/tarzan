@@ -6,6 +6,7 @@
       <SearchBar 
         v-model:searchQuery="searchQuery" 
         @search="searchPosts" />
+        
       <DescriptionComponent
           descriptionImgSrc="/src/assets/etc/Saly-25.png"
           descriptionTitle="동네주민과<br/>얘기해보세요!"
@@ -13,7 +14,8 @@
           backgroundColor="#FFF7D9"/>
 
       <div class="tag-button-container">
-        <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="buttons" :multiple="false">
+
+        <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="tagOptions" :multiple="false">
           <template v-slot:default="{ button }">
             <span>{{ button.label }}</span>
           </template>
@@ -29,9 +31,10 @@
         />
       </div>
 
-      <div class="post-llist-container">
-        <PostList :posts="posts" />
-      </div>
+      <PostList :posts="posts" />
+
+      <!-- 감시할 요소 -->
+      <div ref="target" class="loading-trigger">무한스크롤</div>
 
       <div class="write-button" @click="goToPostCreate">
         <img id="post-write-icon" src="@/assets/icons/Filter/post-write-icon.png" />
@@ -48,7 +51,7 @@ import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
-import { useInfiniteScroll } from "@/Composable/useInfiniteScroll.js";
+import { useInfiniteScroll } from "@/composables/useInfiniteScroll.js";
 
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
@@ -58,8 +61,9 @@ import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
 
-// 태그 버튼
-const buttons = ref([
+const router = useRouter();
+
+const tagOptions = ref([
   { label: '전체', value: 'ALL' },
   { label: '교통', value: 'TRANSPORT' },
   { label: '맛집', value: 'TASTE' },
@@ -69,97 +73,136 @@ const buttons = ref([
   { label: '기타', value: 'ETC' },
 ]);
 
-// 상태 관리
-const router = useRouter();
 const sortOptions = ref([
   { idx: 0, value: "latest", name: "최신순" },
   { idx: 1, value: "views", name: "조회수순" },
   { idx: 2, value: "oldest", name: "오래된순" },
 ]);
 
+const page = ref(1);
 const posts = ref([ ]);                 // 게시물 목록
 const sortBy = ref('최신순');             // 정렬 기준
 const selectedButton = ref('ALL');      // 태그
 const selectedDistrict = ref('JONGNO'); // 지역구
-const searchQuery = ref(''); // 검색어 상태
+const searchQuery = ref('');            // 검색어 상태
 
-// 글쓰기 페이지로 이동
-const goToPostCreate = () => {
-  router.push({ name: "PostCreate" });
-};
+// 정렬 기준(정렬 기준, 태그, 지역구) 변화 감지
+watch([sortBy, selectedButton, selectedDistrict], () => {
+  fetchPosts();
+});
 
 // 정렬 기준 변경 시 목록 업데이트
 const updateSortBy = (selectedIndex) => {
   const selectedOption = sortOptions.value.find(
     (option) => option.idx === selectedIndex
   );
-  if (selectedOption) {
-    sortBy.value = selectedOption.name;
-    fetchPosts();
-    console.log("현재 정렬 기준:", sortBy.value);
+
+  if (selectedOption && sortBy.value !== selectedOption.value) {
+    sortBy.value = selectedOption.name; // 변경되면 자동으로 fetchPosts() 호출됨
   }
 };
 
-// 지역구 변경 시 목록 업데이트
+// // 지역구 변경 시 목록 업데이트
 const updateDistrict = (district) => {
-  selectedDistrict.value = district;
-  fetchPosts();
-}
+  selectedDistrict.value = district; // 변경되면 자동으로 fetchPosts() 호출됨
+};
+
+// // API: 게시글 데이터 불러오기
+// const fetchPosts = async () => {
+
+//   const queryParams = new URLSearchParams({
+//     size: 5,
+//     page: 1,
+//     sortBy: sortBy.value,
+//     tag: selectedButton.value,
+//     gu: selectedDistrict.value,
+//   }).toString();
+
+//   try {
+//     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+
+//     if (response.data.success) {
+//       console.log("게시글 목록 가져오기 성공!");
+//       posts.value = response.data.data.list;
+//     } else {
+//       console.error("API 실패:", response.data.message);
+
+//     }
+//   } catch (error) {
+//     console.error("게시글 데이터 요청 중 오류 발생:", error);
+//   }
+// };
 
 // API: 게시글 데이터 불러오기
 const fetchPosts = async () => {
-  const queryParams = new URLSearchParams({
-    size: 5,
-    page: 0,
-    sortBy: sortBy.value,
-    tag: selectedButton.value,
-    gu: selectedDistrict.value,
-  }).toString();
 
-  try {
-    const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+const queryParams = new URLSearchParams({
+  size: 5,
+  page: page.value,
+  sortBy: sortBy.value,
+  tag: selectedButton.value,
+  gu: selectedDistrict.value,
+}).toString();
 
-    if (response.data.success) {
-      console.log("게시글 목록 가져오기 성공!");
-      posts.value = response.data.data.list;
-    } else {
-      console.error("API 실패:", response.data.message);
+try {
+  const response = await axiosInstance.get(`/v1/board?${queryParams}`);
 
+  if (response.data.success && response.data.data.list.length) {
+      posts.value.push(...response.data.data.list); // 기존 데이터에 추가
+      page.value++;
     }
-  } catch (error) {
-    console.error("게시글 데이터 요청 중 오류 발생:", error);
-  }
+} catch (error) {
+  console.error("게시글 데이터 요청 중 오류 발생:", error);
+}
 };
 
-// API: 게시글 검색
-const searchPosts = async (query) => {  
-  const queryParams = new URLSearchParams({
-    size: 5,
-    page: 0,
-    sortBy: sortBy.value,
-    tag: selectedButton.value,
-    gu: selectedDistrict.value,
-    search: query,
-  }).toString();
+// IntersectionObserver 사용
+const { target } = useInfiniteScroll(fetchPosts);
 
-  try {
-    const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+watch([sortBy, selectedButton, selectedDistrict], () => {
+  posts.value = [];
+  page.value = 1;
+  fetchPosts();
+});
 
-    if (response.data.success) {
-      console.log("검색 결과 가져오기 성공!");
-      posts.value = response.data.data.list;
-      posts.value.forEach((post, index) => {
-      console.log(`게시글 ${index + 1}:`, post);
-      });
-    } else {
-      console.error("검색 API 실패:", response.data.message);
-    }
-  } catch (error) {
-    console.error("검색 API 요청 중 오류 발생:", error);
-  }
+
+// // API: 게시글 검색
+// const searchPosts = async (query) => {  
+//   const queryParams = new URLSearchParams({
+//     size: 10,
+//     page: page,
+//     sortBy: sortBy.value,
+//     tag: selectedButton.value,
+//     gu: selectedDistrict.value,
+//     search: query,
+//   }).toString();
+
+//   try {
+//     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+
+//     if (response.data.success) {
+//       console.log("검색 결과 가져오기 성공!");
+//       return response.data.data.list;
+//       posts.value = response.data.data.list;
+//       posts.value.forEach((post, index) => {
+//       console.log(`게시글 ${index + 1}:`, post);
+//       });
+//     } else {
+//       console.error("검색 API 실패:", response.data.message);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error("검색 API 요청 중 오류 발생:", error);
+//     return [];
+//   }
+// };
+
+// onMounted(fetchPosts);
+
+// 글쓰기 페이지로 이동
+const goToPostCreate = () => {
+  router.push({ name: "PostCreate" });
 };
-
-onMounted(fetchPosts);
 </script>
 
 
@@ -172,7 +215,8 @@ onMounted(fetchPosts);
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
   }
 
   .tag-button-container {
@@ -183,8 +227,10 @@ onMounted(fetchPosts);
     @include custom-margin-x;
   }
 
-  .post-llist-container {
+  .post-list-container {
+    background-color: aqua;
     @include custom-margin-x;
+    flex-grow: 1;
   }
 
   .center-container .write-button {
