@@ -12,14 +12,14 @@
           descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
           backgroundColor="#FFF7D9"/>
 
-      <!-- <div class="tag-button-container">
-        <TagButtonGroup v-model:selectedButton="selectedButton" />
-      </div> -->
-      <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="buttons" :multiple="false">
-        <template v-slot:default="{ button }">
-          <span>{{ button.label }}</span>
-        </template>
-      </TagButtonGroup>
+      <div class="tag-button-container">
+        <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="buttons" :multiple="false">
+          <template v-slot:default="{ button }">
+            <span>{{ button.label }}</span>
+          </template>
+        </TagButtonGroup>
+      </div>
+
 
       <div class="result-bar-container">
         <ResultBar 
@@ -175,13 +175,9 @@ onMounted(fetchPosts);
     height: 100%;
   }
 
-  // .tag-button-container {
-  //   margin: 8px;
-  // }
-
-  // :deep(.tag-button-container) {
-  //   overflow-x: auto;
-  // }
+  .tag-button-container {
+    margin: 8px;
+  }
 
   .result-bar-container {
     @include custom-margin-x;
