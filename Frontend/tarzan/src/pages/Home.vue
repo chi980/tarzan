@@ -33,20 +33,14 @@
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
-          <font-awesome-icon
-            :icon="['fas', 'magnifying-glass']"
-            class="icon-search"
-          />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="찾고 싶은 집주소를 입력해주세요."
-          />
+          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
+          <input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />
         </div>
       </div>
       <div class="overlay-content">
         <div class="overlay-body">
-          <BuildingList />
+          <BuildingList :buildings="buildings" />
+          <button v-if="!isLastPage" @click="loadMore">더보기</button>
         </div>
       </div>
     </div>
@@ -65,57 +59,86 @@ import BuildingList from "@/components/home/BuildingList.vue";
 
 const buildings = ref([]);  
 const selectedBuilding = ref(null); 
-const showOverlay = ref(false);
-const searchQuery = ref("");
 const loading = ref(false);
 const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
 
+const showOverlay = ref(false);
+const searchQuery = ref(""); // 검색어 상태
+const page = ref(0); // 페이지 번호
+const size = ref(10); // 한 페이지에 보여줄 개수
+// const buildings = ref([]); // 검색 결과 데이터
+const totalCount = ref(0); // 총 검색 결과 수
+
+
 // 빌딩 데이터 요청
 async function fetchBuildings(type: string, latitude: number, longitude: number, radius: number) {
-  if (loading.value) return;
-
+  if (loading.value) return; // 이미 요청 중이라면 무시
   if (!type) {
-    console.log("type is not selected.");
+    console.warn("Type is not selected."); // 타입 누락 경고
     return;
   }
 
-  loading.value = true;
+  loading.value = true; // 로딩 상태 활성화
 
-  const requestData = {
-    type,
-    latitude,
-    longitude,
-    radius,
-  };
-
+  const requestData = { type, latitude, longitude, radius };
   console.log("Sending request with data:", requestData);
 
   try {
-    // '매물' 버튼이 선택된 경우
-    let response;
-    if (type === "HOUSE") {
-      response = await axiosInstance.get("/v1/houses", { params: requestData });
-    } else {
-      // 다른 버튼이 선택된 경우
-      response = await axiosInstance.get("/v1/building", { params: requestData });
-    }
+    // API 경로 설정
+    const endpoint = type === "HOUSE" ? "/v1/houses" : "/v1/building";
 
+    // API 요청 +타임아웃 설정 추가
+    const response = await axiosInstance.get(endpoint, {
+      params: requestData,
+      timeout: 5000, // 5초로 타임아웃 설정
+    });
+    
     console.log("Response received from backend:", response.data);
 
-    if (response.data.success && response.data.message === "완료되었습니다.") {
-      buildings.value = response.data.data;
-      showInitialMarkers(buildings.value); // 마커 초기화
+    // 응답 데이터 유효성 검사 및 처리
+    const responseData = response.data;
+    if (responseData?.success && responseData.message === "완료되었습니다.") {
+      buildings.value = responseData.data || [];
+      console.log("Buildings fetched successfully:", buildings.value);
+
+      // 마커 표시
+      addMarkers(buildings.value);
     } else {
-      console.error("Error:", response.data.message);
+      console.error("Backend returned an error:", responseData?.message || "Unknown error");
       buildings.value = [];
+      alert(`Error: ${responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."}`);
     }
-  } catch (error) {
-    console.error("Request failed:", error);
+  } catch (error: any) {
+    // 요청 실패 처리
+    console.error("Request failed:", error.message);
+
+    // 에러 응답 정보 확인
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+
+      const status = error.response.status;
+      if (status === 500) {
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } else if (status === 400) {
+        alert("잘못된 요청입니다. 입력값을 확인해주세요.");
+      } else {
+        alert(`요청 실패: ${status} - ${error.response.statusText}`);
+      }
+    } else if (error.code === "ECONNABORTED") {
+      alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
+    } else {
+      alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
+    }
+
     buildings.value = [];
   } finally {
+    // 로딩 상태 해제
     loading.value = false;
   }
 }
+
+
 
 function onButtonClicked(type) {
   if (loading.value) return;
@@ -123,7 +146,7 @@ function onButtonClicked(type) {
 
   const latitude = 37.566535; 
   const longitude = 126.9779692;
-  const radius = 150;
+  const radius = 50; // 단위: 미터
 
   fetchBuildings(type, latitude, longitude, radius);
 }
@@ -163,7 +186,7 @@ function loadKakaoMap(container) {
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      mapInstance = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.566535, 126.9779692), level: 4 });
+      mapInstance = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.566535, 126.9779692), level: 5 });
       clusterer = new window.kakao.maps.MarkerClusterer({ map: mapInstance, averageCenter: true, minLevel: 3 });
       fetchBuildings(null, 37.566535, 126.9779692, 150); 
     });
@@ -174,31 +197,45 @@ const clearMarkers = (): void => {
   clusterer.clear(); // 클러스터러에서 마커 제거
 };
 
-const addMarkers = (data: Array<any>): void => { // Specify the type here
+const addMarkers = (data: Array<any>): void => {
+  // 기존 마커들을 클러스터에서 지우는 함수
   clearMarkers();
 
-  const markers = data.map((item: any) => { // Specify the type here
-    const markerPosition = new window.kakao.maps.LatLng(item.latitude, item.longitude);
+  // 마커를 추가하는 로직
+  const markers = data.map((item: any) => {
+    console.log("Adding marker for:", item);  // 데이터 확인
+
+    // 위도, 경도를 기반으로 마커의 위치 생성
+    const markerPosition = new window.kakao.maps.LatLng(item.longitude, item.latitude);
     const marker = new window.kakao.maps.Marker({
       position: markerPosition,
     });
 
+    // 마커 클릭 시, 해당 건물 정보 설정
     window.kakao.maps.event.addListener(marker, 'click', () => {
       if (item.radarData) {
+        // radarData가 있을 경우, 선택된 건물 정보 설정
         selectedBuilding.value = {
           ...item,
           radarData: item.radarData,
         };
+
+        // 추가적인 UI 업데이트 필요 (예: BuildingInfo 컴포넌트에 표시)
+        console.log("Selected building:", selectedBuilding.value);
       } else {
+        // radarData가 없을 경우, 사용자에게 알림 (UI로 알리는 것이 좋음)
         console.error("Radar data is missing for this building:", item.name);
+        alert(`No radar data available for ${item.name}`);
       }
     });
 
     return marker;
   });
 
+  // 클러스터에 마커 추가
   clusterer.addMarkers(markers);
 };
+
 
 const filterDataByBounds = (data: Array<any>): Array<any> => { // Specify the type here
   // @ts-ignore: Ignoring the error for getBounds method
