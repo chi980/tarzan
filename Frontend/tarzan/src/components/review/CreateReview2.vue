@@ -55,18 +55,40 @@ const router = useRouter();
 
 // 장점 리스트
 const advantageButtons = ref([
-  { label: '깨끗함', value: 'CLEAN' },
-  { label: '조용함', value: 'QUIET' },
-  { label: '편리함', value: 'CONVENIENT' },
-  { label: '친절함', value: 'KIND' },
+  { label: '❌ 없음', value: '1' },
+  { label: '🐛 벌레', value: '22' },
+  { label: '🧹 건물 관리', value: '2' },
+  { label: '🚘 주차', value: '3' },
+  { label: '🔇 방음', value: '4' },
+  { label: '🚨 치안', value: '5' },
+  { label: '👮🏻 경비실', value: '6' },
+  { label: '🌳 산책로', value: '7' },
+  { label: '🪟 환기', value: '8' },
+  { label: '🤫 조용한 동네', value: '9' },
+  { label: '🥶 단열', value: 'CLEAN' },
+  { label: '🐶 반려동물 키우기', value: '10' },
+  { label: '🛗 엘레베이터', value: '11' },
+  { label: '🦠 곰팡이', value: '12' },
+  { label: '👟 평지', value: '13' },
 ]);
 
 // 단점 리스트
 const disadvantageButtons = ref([
-  { label: '시끄러움', value: 'NOISY' },
-  { label: '비쌈', value: 'EXPENSIVE' },
-  { label: '불친절함', value: 'UNFRIENDLY' },
-  { label: '불편함', value: 'INCONVENIENT' },
+  { label: '❌ 없음', value: '1' },
+  { label: '🐛 벌레', value: '22' },
+  { label: '🧹 건물 관리', value: '2' },
+  { label: '🚘 주차', value: '3' },
+  { label: '🔇 방음', value: '4' },
+  { label: '🚨 치안', value: '5' },
+  { label: '👮🏻 경비실', value: '6' },
+  { label: '🌳 산책로', value: '7' },
+  { label: '🪟 환기', value: '8' },
+  { label: '🤫 조용한 동네', value: '9' },
+  { label: '🥶 단열', value: 'CLEAN' },
+  { label: '🐶 반려동물 키우기', value: '10' },
+  { label: '🛗 엘레베이터', value: '11' },
+  { label: '🦠 곰팡이', value: '12' },
+  { label: '👟 평지', value: '13' },
 ]);
 
 // 선택된 태그
