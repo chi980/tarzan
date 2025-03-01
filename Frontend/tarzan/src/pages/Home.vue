@@ -45,13 +45,14 @@
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
           <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
-          <input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />
+          <input v-model="searchQuery" type="text" placeholder="찾고 싶은 집주소를 입력해주세요." />
+          <!--<input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />-->
         </div>
       </div>
       <div class="overlay-content">
         <div class="overlay-body">
           <BuildingList :buildings="buildings" />
-          <button v-if="!isLastPage" @click="loadMore">더보기</button>
+          <!--<button v-if="!isLastPage" @click="loadMore">더보기</button>-->
         </div>
       </div>
     </div>
@@ -79,10 +80,10 @@ const selectedType = ref('');
 
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
-const page = ref(0); // 페이지 번호
-const size = ref(10); // 한 페이지에 보여줄 개수
+// const page = ref(0); // 페이지 번호
+// const size = ref(10); // 한 페이지에 보여줄 개수
 // const buildings = ref([]); // 검색 결과 데이터
-const totalCount = ref(0); // 총 검색 결과 수
+// const totalCount = ref(0); // 총 검색 결과 수
 
 
 // 빌딩 데이터 요청
@@ -124,6 +125,7 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
     const responseData = response.data;
     if (responseData?.success && responseData.message === "완료되었습니다.") {
       buildings.value = responseData.data || [];
+      showInitialMarkers(buildings.value); // 마커 초기화
       console.log("Buildings fetched successfully:", buildings.value);
 
       // 마커 표시
@@ -284,6 +286,7 @@ const addMarkers = (data: Array<any>): void => {
   clusterer.addMarkers(markers);
 };
 
+
 const filterDataByBounds = (data: Array<any>): Array<any> => {
   // @ts-ignore: Ignoring the error for getBounds method
   const bounds = mapInstance.getBounds();
@@ -298,6 +301,8 @@ const filterDataByBounds = (data: Array<any>): Array<any> => {
   return filteredData;
 };
 
+
+
 const showInitialMarkers = (data: Array<any>): void => {
   // Specify the type here
   if (!isMarkersInitialized) {
@@ -306,6 +311,7 @@ const showInitialMarkers = (data: Array<any>): void => {
     isMarkersInitialized = true;
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
