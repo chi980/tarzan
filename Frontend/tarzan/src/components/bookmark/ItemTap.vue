@@ -52,6 +52,7 @@ import {
   householdGoods,
 } from "@/data/bookmark/itemTab";
 import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
+import { ref, onMounted } from "vue";
 
 const toggleAccordion = (contents: { value: CheckList[] }) => {
   contents.value.forEach((controlledCheckList: CheckList) => {
@@ -105,36 +106,113 @@ const toggleSubAccordionHouseholdGoods = (idx: number) => {
   toggleSubAccordion(householdGoods.value, idx);
 };
 
-// API: 체크리스트 API 호출
-// const fetchCheckMoverList = async () => {
+// // API: 체크리스트 API 호출
+// const fetchCheckItemList = async () => {
 //   try {
-//     const response = await axiosInstance.get(`/v1/checklist/mover?`);
+//     const response = await axiosInstance.get(`/v1/checklist/item?`);
 
 //     if (response.data.success) {
-//       console.log("이사 체크리스트 가져오기 성공!");
+//       console.log("아이템 체크리스트 가져오기 성공!");
 //       const data = response.data.data;
 //       console.log("API 응답 데이터:", data);
-
-//       Object.keys(checkListData).forEach((key) => {
-//         if (data[key]) {
-//           checkListData[key].splice( 
-//             0, 
-//             checkListData[key].length, // 기존 값 전부 제거
-//             ...data[key].name_list.map((name, index) => ({
-//               idx: data[key].id_list[index],
-//               name,
-//               value: data[key].value_list[index],
-//             }))
-//           );
-//         }
-//       });
+  
 //     } else {
-//       console.error("체크리스트 데이터 없음", response.data.message);
+//       console.error("아이템리스트 데이터 없음", response.data.message);
+
 //     }
 //   } catch (error) {
 //     console.error("API 요청 오류: ", error);
 //   }
 // };
+
+
+// const homeAppliances = ref([]);
+// const fabrics = ref([]);
+// const bathroomSupplies = ref([]);
+// const ingredients = ref([]);
+// const kitchenUtensils = ref([]);
+// const householdGoods = ref([]);
+
+// const transformData = (beforeData: any, afterData: any) => {
+//   const combinedList = [];
+
+//   if (beforeData) {
+//     beforeData.id_list.forEach((id: number, index: number) => {
+//       combinedList.push({
+//         id,
+//         name: beforeData.name_list[index],
+//         checked: beforeData.value_list[index],
+//       });
+//     });
+//   }
+
+//   if (afterData) {
+//     afterData.id_list.forEach((id: number, index: number) => {
+//       combinedList.push({
+//         id,
+//         name: afterData.name_list[index],
+//         checked: afterData.value_list[index],
+//       });
+//     });
+//   }
+
+//   return combinedList;
+// };
+
+// // API 호출 후 데이터 변환
+// const fetchCheckItemList = async () => {
+//   try {
+//     const response = await axiosInstance.get(`/v1/checklist/item?`);
+//     if (response.data.success) {
+//       console.log("아이템 체크리스트 가져오기 성공!");
+//       const data = response.data.data;
+
+//       homeAppliances.value = transformData(
+//         data.home_appliances_before_move,
+//         data.home_appliances_after_move
+//       );
+
+//       fabrics.value = transformData(
+//         data.furniture_fabric_before_move,
+//         data.furniture_fabric_after_move
+//       );
+
+//       bathroomSupplies.value = transformData(
+//         data.bathroom_before_move,
+//         data.bathroom_after_move
+//       );
+
+//       ingredients.value = transformData(
+//         data.food_before_move,
+//         data.food_after_move
+//       );
+
+//       kitchenUtensils.value = transformData(
+//         data.kitchen_before_move,
+//         data.kitchen_after_move
+//       );
+
+//       householdGoods.value = transformData(
+//         data.household_before_move,
+//         data.household_after_move
+//       );
+
+//     } else {
+//       console.error("아이템리스트 데이터 없음", response.data.message);
+//     }
+//   } catch (error) {
+//     console.error("API 요청 오류: ", error);
+//   }
+// };
+
+// onMounted(() => {
+//   fetchCheckItemList();
+// });
+
+
+// onMounted(() => {
+//   fetchCheckItemList();
+// });
 </script>
 
 <style lang="scss" scoped>
