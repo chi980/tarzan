@@ -21,10 +21,10 @@
           </div>
         </div>
         <div class="tag-button-container">
-          <!-- <TagButtonGroupHome
+          <TagButtonGroupHome
             :selectedType="selectedType"
             @button-clicked="onButtonClicked"
-          /> -->
+          />
         </div>
         <BuildingInfo
           :building="selectedBuilding"
@@ -39,19 +39,20 @@
         </div>
       </div>
     </div>
-    <BottomBar class="bottom-bar"></BottomBar>
+    <div><BottomBar class="bottom-bar"></BottomBar></div>
 
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
           <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
-          <input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />
+          <input v-model="searchQuery" type="text" placeholder="찾고 싶은 집주소를 입력해주세요." />
+          <!--<input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />-->
         </div>
       </div>
       <div class="overlay-content">
         <div class="overlay-body">
           <BuildingList :buildings="buildings" />
-          <button v-if="!isLastPage" @click="loadMore">더보기</button>
+          <!--<button v-if="!isLastPage" @click="loadMore">더보기</button>-->
         </div>
       </div>
     </div>
@@ -64,24 +65,26 @@ import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-// import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
+import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
-const showOverlay = ref(false);
-const searchQuery = ref("");
 const loading = ref(false);
-const selectedType = ref("CIVIC_CENTER"); // 기본값 설정
 
-// const showOverlay = ref(false);
-// const searchQuery = ref(""); // 검색어 상태
-const page = ref(0); // 페이지 번호
-const size = ref(10); // 한 페이지에 보여줄 개수
+// const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
+const selectedType = ref('');
+
+
+
+const showOverlay = ref(false);
+const searchQuery = ref(""); // 검색어 상태
+// const page = ref(0); // 페이지 번호
+// const size = ref(10); // 한 페이지에 보여줄 개수
 // const buildings = ref([]); // 검색 결과 데이터
-const totalCount = ref(0); // 총 검색 결과 수
+// const totalCount = ref(0); // 총 검색 결과 수
 
 
 // 빌딩 데이터 요청
@@ -109,12 +112,13 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
         params: requestData,
       });
     }
-
+/*
     // API 요청 +타임아웃 설정 추가
     const response = await axiosInstance.get(endpoint, {
       params: requestData,
       timeout: 5000, // 5초로 타임아웃 설정
     });
+*/
     
     console.log("Response received from backend:", response.data);
 
@@ -122,10 +126,16 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
     const responseData = response.data;
     if (responseData?.success && responseData.message === "완료되었습니다.") {
       buildings.value = responseData.data || [];
+      showInitialMarkers(buildings.value); // 마커 초기화
       console.log("Buildings fetched successfully:", buildings.value);
 
       // 마커 표시
       addMarkers(buildings.value);
+/*
+    if (response.status === 200 && response.data.success) {
+    buildings.value = response.data.data;
+    showInitialMarkers(buildings.value); // 마커 초기화
+*/
     } else {
       console.error("Backend returned an error:", responseData?.message || "Unknown error");
       buildings.value = [];
@@ -277,6 +287,7 @@ const addMarkers = (data: Array<any>): void => {
   clusterer.addMarkers(markers);
 };
 
+
 const filterDataByBounds = (data: Array<any>): Array<any> => {
   // @ts-ignore: Ignoring the error for getBounds method
   const bounds = mapInstance.getBounds();
@@ -291,6 +302,8 @@ const filterDataByBounds = (data: Array<any>): Array<any> => {
   return filteredData;
 };
 
+
+
 const showInitialMarkers = (data: Array<any>): void => {
   // Specify the type here
   if (!isMarkersInitialized) {
@@ -299,6 +312,7 @@ const showInitialMarkers = (data: Array<any>): void => {
     isMarkersInitialized = true;
   }
 };
+
 </script>
 
 <style lang="scss" scoped>
@@ -385,6 +399,7 @@ input {
   pointer-events: auto;
 }
 .tag-button-container {
+  display: flex;
   position: relative;
   margin-top: 25px;
   z-index: 2;

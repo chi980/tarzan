@@ -16,12 +16,14 @@
           backgroundColor="#FFF7D9"/>
 
       <div class="tag-button-container">
+
         <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="tagOptions" :multiple="false">
           <template v-slot:default="{ button }">
             <span>{{ button.label }}</span>
           </template>
         </TagButtonGroup>
       </div>
+
 
       <div class="result-bar-container">
         <ResultBar 
@@ -50,6 +52,7 @@
 import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+
 import { useInfiniteScroll } from "@/composables/useInfiniteScroll.js";
 
 import TopBar from "@/components/common/TopBar.vue";
@@ -59,6 +62,7 @@ import DescriptionComponent from "@/components/common/Description.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
+
 const router = useRouter();
 
 const tagOptions = ref([
