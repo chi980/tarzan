@@ -56,7 +56,6 @@ import StarRating from "./StarRating.vue";
 import TagButtonGroup from "../common/TagButtonGroup.vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
-// Reactive state
 // 태그 버튼
 const buttons = ref([
   { label: '전체', value: 'ALL' },

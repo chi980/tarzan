@@ -105,35 +105,36 @@ const toggleSubAccordionHouseholdGoods = (idx: number) => {
   toggleSubAccordion(householdGoods.value, idx);
 };
 
-// import { ref, onMounted } from 'vue';
-// const comments = ref([]);
-
-// // API: 사용자의 댓글 데이터 불러오기
-// const fetchUserComments = async () => {
-//   const queryParams = new URLSearchParams({
-//     size: 5,
-//     page: 0,
-//     sortBy: '최신순',
-//   }).toString();
-
+// API: 체크리스트 API 호출
+// const fetchCheckMoverList = async () => {
 //   try {
-//     const response = await axiosInstance.get(`/v1/user/comments?${queryParams}`);
+//     const response = await axiosInstance.get(`/v1/checklist/mover?`);
 
 //     if (response.data.success) {
-//       console.log("사용자 댓글 목록 가져오기 성공!");
-//       comments.value = response.data.data.list;
-//     } else {
-//       console.error("API 실패:", response.data.message);
+//       console.log("이사 체크리스트 가져오기 성공!");
+//       const data = response.data.data;
+//       console.log("API 응답 데이터:", data);
 
+//       Object.keys(checkListData).forEach((key) => {
+//         if (data[key]) {
+//           checkListData[key].splice( 
+//             0, 
+//             checkListData[key].length, // 기존 값 전부 제거
+//             ...data[key].name_list.map((name, index) => ({
+//               idx: data[key].id_list[index],
+//               name,
+//               value: data[key].value_list[index],
+//             }))
+//           );
+//         }
+//       });
+//     } else {
+//       console.error("체크리스트 데이터 없음", response.data.message);
 //     }
 //   } catch (error) {
-//     console.error("댓글 데이터 요청 중 오류 발생:", error);
+//     console.error("API 요청 오류: ", error);
 //   }
 // };
-
-// onMounted(async () => {
-//   await fetchUserComments();
-// });
 </script>
 
 <style lang="scss" scoped>

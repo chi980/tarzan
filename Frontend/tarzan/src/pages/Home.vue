@@ -76,8 +76,8 @@ const searchQuery = ref("");
 const loading = ref(false);
 const selectedType = ref("CIVIC_CENTER"); // 기본값 설정
 
-const showOverlay = ref(false);
-const searchQuery = ref(""); // 검색어 상태
+// const showOverlay = ref(false);
+// const searchQuery = ref(""); // 검색어 상태
 const page = ref(0); // 페이지 번호
 const size = ref(10); // 한 페이지에 보여줄 개수
 // const buildings = ref([]); // 검색 결과 데이터
