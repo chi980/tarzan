@@ -1,36 +1,30 @@
 <template>
   <div class="accordion-wrapper tab-content">
     <BasicAccordion accordionTitle="이사 D-30">
-      <!-- <CheckListItem
-        v-for="checkItem in checkListBefore30Days"
-        :key="checkItem.idx"
-        :checkListItem="checkItem"
-      /> -->
       <CheckListItem
         v-for="checkItem in checkListData.move_day_before_30days" 
         :key="checkItem.idx"
         :checkListItem="checkItem"
         @change="updateCheckItem('move_day_before_30days', checkItem.idx)"
-      />
+      ></CheckListItem>
     </BasicAccordion>
-
     <BasicAccordion accordionTitle="이사 D-7">
       <CheckListItem
-        v-for="checkItem in checkListBefore7Days"
+        v-for="checkItem in checkListData.move_day_before_7days"
         :key="checkItem.idx"
         :checkListItem="checkItem"
       ></CheckListItem>
     </BasicAccordion>
     <BasicAccordion accordionTitle="이사 D-1">
       <CheckListItem
-        v-for="checkItem in checkListBefore1Days"
+        v-for="checkItem in checkListData.move_day_before_1days"
         :key="checkItem.idx"
         :checkListItem="checkItem"
       ></CheckListItem>
     </BasicAccordion>
     <BasicAccordion accordionTitle="이사 D-DAY">
       <CheckListItem
-        v-for="checkItem in checkListDdays"
+        v-for="checkItem in checkListData.move_day_before_ddays"
         :key="checkItem.idx"
         :checkListItem="checkItem"
       ></CheckListItem>
@@ -49,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { Check } from "@/data/check";
+// import { Check } from "@/data/check";
 import { onMounted, reactive } from "vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
@@ -65,28 +59,28 @@ import CheckListItem from "@/components/common/CheckListItem.vue";
 //   { idx: 7, name: "인터넷 이전 신청", value: false },
 // ];
 
-const checkListBefore7Days: Check[] = [
-  { idx: 1, name: "가구 배치 시뮬레이션", value: false },
-  { idx: 2, name: "관리사무소 이사 일정 통보", value: false },
-  { idx: 3, name: "은행 이체 한도 확인", value: false },
-  { idx: 4, name: "도시 가스 요금 정산", value: false },
-];
+// const checkListBefore7Days: Check[] = [
+//   { idx: 1, name: "가구 배치 시뮬레이션", value: false },
+//   { idx: 2, name: "관리사무소 이사 일정 통보", value: false },
+//   { idx: 3, name: "은행 이체 한도 확인", value: false },
+//   { idx: 4, name: "도시 가스 요금 정산", value: false },
+// ];
 
-const checkListBefore1Days: Check[] = [
-  { idx: 1, name: "귀중품 점검", value: false },
-  { idx: 2, name: "냉장고, 세탁기 정리", value: false },
-];
+// const checkListBefore1Days: Check[] = [
+//   { idx: 1, name: "귀중품 점검", value: false },
+//   { idx: 2, name: "냉장고, 세탁기 정리", value: false },
+// ];
 
-const checkListDdays: Check[] = [
-  { idx: 1, name: "수도와 전기 요금 정산", value: false },
-  { idx: 2, name: "새 집 상태 점검", value: false },
-  { idx: 3, name: "쓰레기 봉투 구매", value: false },
-  { idx: 4, name: "이사 요금 지불", value: false },
-  { idx: 5, name: "전입신고와 확정일자", value: false },
-  { idx: 6, name: "우편물 이전 신청", value: false },
-];
+// const checkListDdays: Check[] = [
+//   { idx: 1, name: "수도와 전기 요금 정산", value: false },
+//   { idx: 2, name: "새 집 상태 점검", value: false },
+//   { idx: 3, name: "쓰레기 봉투 구매", value: false },
+//   { idx: 4, name: "이사 요금 지불", value: false },
+//   { idx: 5, name: "전입신고와 확정일자", value: false },
+//   { idx: 6, name: "우편물 이전 신청", value: false },
+// ];
 
-// 상태 변수들
+// 상태 변수 : 체크리스트
 const checkListData = reactive({
   move_day_before_30days: [],
   move_day_before_7days: [],
@@ -104,25 +98,49 @@ const fetchCheckMoverList = async () => {
       const data = response.data.data;
       console.log("API 응답 데이터:", data);
 
-
       // checkListData.move_day_before_30days = data.move_day_before_30days.name_list.map(
-      //   (name, index) => ({ idx: index + 1, name, value: data.move_day_before_30days.value_list[index] })
+      //   (name, index) => ({
+      //     idx: data.move_day_before_30days.id_list[index], 
+      //     name, 
+      //     value: data.move_day_before_30days.value_list[index], 
+      //   })
       // );
-      checkListData.move_day_before_30days = data.move_day_before_30days.name_list.map(
-        (name, index) => ({
-          idx: data.move_day_before_30days.id_list[index], 
-          name, 
-          value: data.move_day_before_30days.value_list[index], 
-        })
-      );
-
-      checkListData.move_day_before_7days = data.move_day_before_7days.name_list.map(
-        (name, index) => ({ idx: index + 1, name, value: data.move_day_before_7days.value_list[index] })
-      );
-
-      checkListData.move_day_before_ddays = data.move_day_before_ddays.name_list.map(
-        (name, index) => ({ idx: index + 1, name, value: data.move_day_before_ddays.value_list[index] })
-      );
+      // checkListData.move_day_before_7days = data.move_day_before_7days.name_list.map(
+      //   (name, index) => ({
+      //     idx: data.move_day_before_7days.id_list[index],
+      //     name,
+      //     value: data.move_day_before_7days.value_list[index],
+      //   })
+      // );
+      // checkListData.move_day_before_1days = data.move_day_before_1days.name_list.map(
+      //   (name, index) => ({
+      //     idx: data.move_day_before_1days.id_list[index],
+      //     name,
+      //     value: data.move_day_before_1days.value_list[index],
+      //   })
+      // );
+      // checkListData.move_day_before_ddays = data.move_day_before_ddays.name_list.map(
+      //   (name, index) => ({
+      //     idx: data.move_day_before_ddays.id_list[index],
+      //     name,
+      //     value: data.move_day_before_ddays.value_list[index],
+      //   })
+      // );
+      // 🔥 모든 카테고리를 한 번에 업데이트
+      Object.keys(checkListData).forEach((key) => {
+        if (data[key]) {
+          checkListData[key].splice( 
+            0, 
+            checkListData[key].length, // 기존 값 전부 제거
+            ...data[key].name_list.map((name, index) => ({
+              idx: data[key].id_list[index],
+              name,
+              value: data[key].value_list[index],
+            }))
+          );
+        }
+      });
+  
     } else {
       console.error("체크리스트 데이터 없음", response.data.message);
 

@@ -4,8 +4,10 @@
     
     <div class="center-container">
       <SearchBar 
-        v-model:searchQuery="searchQuery" 
-        @search="searchPosts" />
+        v-model:searchQuery="searchQuery"/>
+      <!-- <SearchBar 
+      v-model:searchQuery="searchQuery" 
+      @search="searchPosts" /> -->
         
       <DescriptionComponent
           descriptionImgSrc="/src/assets/etc/Saly-25.png"

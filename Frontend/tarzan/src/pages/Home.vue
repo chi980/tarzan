@@ -78,6 +78,7 @@ const loading = ref(false);
 const selectedType = ref('');
 
 
+
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
 // const page = ref(0); // 페이지 번호
