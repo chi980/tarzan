@@ -99,7 +99,7 @@ tarzan:
     convenience-store: false
     gym: false
     hospital: false
-    house: false
+    house: true
     mart: false
     medical-clinic: false
     park: false
