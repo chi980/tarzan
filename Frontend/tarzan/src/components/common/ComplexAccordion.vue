@@ -47,7 +47,7 @@
 </template>
 <script setup lang="ts">
 // @ts-ignore
-import { ref, defineProps, defineEmits } from "vue";
+import { watch, ref, defineProps, defineEmits } from "vue";
 // @ts-ignore
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
