@@ -11,6 +11,8 @@ pipeline {
         
         BACK_CONTAINER_NAME = "tarzan-back-container"
         BACK_IMAGE_NAME = "tarzan-back-image"
+
+        SPRING_PROFILES_ACTIVE = 'prod' // dev 프로파일을 활성화
     }
 
     stages {
@@ -75,12 +77,43 @@ pipeline {
                         }
                     }
 
+                    // dir('Backend') {
+                    //     dir('tarzan') {
+                    //         // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
+                    //         sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
+                    //         sh "docker images"
+                    //         sh 'echo "images build 성공!"'
+                    //     }
+                    // }
+
                     dir('Backend') {
                         dir('tarzan') {
-                            // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
-                            sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
-                            sh "docker images"
-                            sh 'echo "images build 성공!"'
+                            withCredentials([
+                                string(credentialsId: 'DB_URL', variable: 'DB_URL'),
+                                usernamePassword(credentialsId: 'DB-CREDENTIALS', usernameVariable: 'DB_USERNAME', passwordVariable: 'DB_PASSWORD'),
+                                usernamePassword(credentialsId: 'GOOGLE_CREDENTIALS', usernameVariable: 'GOOGLE_CLIENT_ID', passwordVariable: 'GOOGLE_CLIENT_SECRET'),
+                                usernamePassword(credentialsId: 'KAKAO_CREDENTIALS', usernameVariable: 'KAKAO_CLIENT_ID', passwordVariable: 'KAKAO_CLIENT_SECRET'),
+                                string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
+                                string(credentialsId: 'VWORLD_API_KEY', variable: 'VWORLD_API_KEY'),
+                                string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
+                            ]) {
+                                sh """
+                                docker build \
+                                --build-arg DB_URL=${DB_URL} \
+                                --build-arg DB_USERNAME=${DB_USERNAME} \
+                                --build-arg DB_PASSWORD=${DB_PASSWORD} \
+                                --build-arg GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+                                --build-arg GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} \
+                                --build-arg KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
+                                --build-arg KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} \
+                                --build-arg JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                                --build-arg VWORLD_API_KEY=${VWORLD_API_KEY} \
+                                --build-arg SEOUL_API_KEY=${SEOUL_API_KEY} \
+                                -t ${BACK_IMAGE_NAME} -f Dockerfile .
+                                """
+                                sh "docker images"
+                                sh 'echo "images build 성공!"'
+                            }
                         }
                     }
                 }
