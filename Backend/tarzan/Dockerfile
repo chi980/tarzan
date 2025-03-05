@@ -26,5 +26,11 @@ ENV JWT_SECRET_KEY=${JWT_SECRET_KEY}
 ENV VWORLD_API_KEY=${VWORLD_API_KEY}
 ENV SEOUL_API_KEY=${SEOUL_API_KEY}
 
+RUN echo "DB_URL: $DB_URL" && \
+    echo "DB_USERNAME: $DB_USERNAME" && \
+    echo "JWT_SECRET_KEY is set: " && \
+    ( [ -z "$JWT_SECRET_KEY" ] && echo "not set" || echo "set" )
+
+
 COPY build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
