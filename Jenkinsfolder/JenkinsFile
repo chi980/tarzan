@@ -97,6 +97,34 @@ pipeline {
                                 string(credentialsId: 'VWORLD_API_KEY', variable: 'VWORLD_API_KEY'),
                                 string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
                             ]) {
+
+                                    // DB_URL이 제대로 주입되었는지 확인 (민감하지 않은 정보)
+    sh 'echo "DB_URL: $DB_URL"'
+    
+    // DB_USERNAME, DB_PASSWORD가 모두 설정되었는지 간단히 확인 (값은 출력하지 않음)
+    sh '''
+    if [ -z "$DB_USERNAME" ]; then
+      echo "DB_USERNAME is not set"
+    else
+      echo "DB_USERNAME is set"
+    fi
+    if [ -z "$DB_PASSWORD" ]; then
+      echo "DB_PASSWORD is not set"
+    else
+      echo "DB_PASSWORD is set"
+    fi
+    '''
+    
+    // 다른 변수들도 동일하게 확인 (실제 값을 출력하면 안되므로 존재 여부만 체크)
+    sh '''
+    for var in GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET KAKAO_CLIENT_ID KAKAO_CLIENT_SECRET JWT_SECRET_KEY VWORLD_API_KEY SEOUL_API_KEY; do
+      if [ -z "${!var}" ]; then
+         echo "$var is not set"
+      else
+         echo "$var is set"
+      fi
+    done
+    '''
                                 sh """
                                 docker build \
                                 --build-arg DB_URL=${DB_URL} \
