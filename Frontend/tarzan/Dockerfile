@@ -1,5 +1,7 @@
 # 1단계: 빌드 단계 (Build Stage)
-FROM node:22.6.0 AS build
+# FROM node:22.6.0 AS build
+# 변경 후
+FROM node:20 AS build
 
 # 작업 디렉토리 설정
 WORKDIR /app
