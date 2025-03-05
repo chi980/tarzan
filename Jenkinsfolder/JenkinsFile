@@ -36,9 +36,10 @@ pipeline {
                                 string(credentialsId: 'VWORLD_API_KEY', variable: 'VWORLD_API_KEY'),
                                 string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
                             ]) {
-                            sh 'chmod +x gradlew'
-                            sh './gradlew clean build'
-                            sh 'ls -al ./build'
+                                sh 'printenv'
+                                sh 'chmod +x gradlew'
+                                sh './gradlew clean build'
+                                sh 'ls -al ./build'
                             }
                         }
                     }
