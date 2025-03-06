@@ -56,12 +56,13 @@ import AddHouseBar from "@/components/bookmark/AddHouseBar.vue";
 import CustomSelectBox from '@/components/common/CustomSelectBox.vue';
 
 const searchQuery = ref("");
-const router = useRouter(); // ✅ useRouter 선언
 
 const house_address = ref('');
 const house_name = ref('');
 const showError = ref(false);  // 오류 메시지 표시 여부
-const route = useRoute();
+const route = useRoute();      // useRoute: 현재 URL 정보
+const router = useRouter();    // useRouter: 페이지 이동
+
 
 // 건물 종류 선택지를 배열로 정의
 const HouseCategoryOptions = [
@@ -92,12 +93,11 @@ const handleAddHouseClick = async () => {
         house_name: house_name.value,
         house_address: house_address.value,
         house_category: HouseCategoryOptions[selectedBuildingCategoryIdx.value].name,
-        house_latitude: route.query.house_latitude,  // 전달된 위도
-        house_longitude: route.query.house_longitude,  // 전달된 경도
+        house_latitude: route.query.house_latitude,
+        house_longitude: route.query.house_longitude,
       });
 
       console.log("응답:", response.data);
-      // 성공적으로 저장되었으면 다른 페이지로 이동하거나 추가 작업 수행
       router.push({name: 'BookMark'});
     } catch (error) {
       console.error("저장 실패:", error);
@@ -125,7 +125,7 @@ onMounted(() => {
 
 .sub-container {
   display: flex;
-  flex-direction: column;  /* 세로로 배치 */
+  flex-direction: column;
   width: 100%;
 }
 
@@ -133,9 +133,9 @@ onMounted(() => {
   flex-grow: 1;
   width: 100%;
   display: flex;
-  flex-direction: column;  /* 입력 항목들이 세로로 배치 */
+  flex-direction: column;
   overflow-y: auto;
-  margin-top: 20px; /* AddHouseBar와 충분한 간격을 두기 위한 마진 추가 */
+  margin-top: 20px;
 }
 
 .input-group:first-child {
@@ -175,7 +175,7 @@ onMounted(() => {
 
   .error {
     border: 1px solid red;  /* 빨간색 테두리 */
-    border-radius: 14px;  /* 테두리의 radius 값 조정 */
+    border-radius: 14px;  /* 테두리의 radius 조정 */
   }
 
   .error-message {
