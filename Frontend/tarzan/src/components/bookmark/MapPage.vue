@@ -51,81 +51,82 @@ onMounted(() => {
   loadKakaoMap(mapContainer.value as HTMLElement);
 });
 
-watch([house_latitude, house_longitude], ([newLat, newLng]) => {
-  console.log("위도와 경도 변경됨:", newLat, newLng);
-});
-
 const loadKakaoMap = (container: HTMLElement) => {
+  if (window.kakao && window.kakao.maps) {
+    initMap(container); // 이미 로드된 경우 바로 지도 초기화
+    return;
+  }
+
   const script = document.createElement("script");
   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&libraries=services&autoload=false`;
-  document.head.appendChild(script);
-
   script.onload = () => {
-    window.kakao.maps.load(() => {
-      const options = {
-        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-        level: 3,
-        maxLevel: 10,
-      };
-      const mapInstance = new window.kakao.maps.Map(container, options);
-
-      // 📌 Geocoder 인스턴스를 미리 생성
-      const geocoder = new window.kakao.maps.services.Geocoder();
-
-      window.kakao.maps.event.addListener(
-        mapInstance,
-        "mousedown",
-        (mouseEvent: any) => {
-          popupTimer = window.setTimeout(() => {
-            const latlng = mouseEvent.latLng;
-
-            if (currentMarker) {
-              currentMarker.setMap(null);
-            }
-
-            house_latitude.value = latlng.getLat();
-            house_longitude.value = latlng.getLng();
-
-            // 📌 Geocoder 사용 (window.kakao.maps.load 내부에서 생성된 geocoder 사용)
-            geocoder.coord2Address(
-              latlng.getLng(),
-              latlng.getLat(),
-              (result: any, status: any) => {
-                if (status === window.kakao.maps.services.Status.OK) {
-                  house_address.value = result[0].road_address
-                    ? result[0].road_address.address_name
-                    : "도로명 주소가 없습니다";
-
-                  house_name.value = "클릭한 위치의 건물";
-                  house_category.value = "아파트";
-
-                  // 마커 생성 및 표시
-                  currentMarker = new window.kakao.maps.Marker({
-                    position: latlng,
-                  });
-                  currentMarker.setMap(mapInstance);
-                }
-              }
-            );
-
-            popupVisible.value = true;
-          }, 1000);
-        }
-      );
-
-      window.kakao.maps.event.addListener(mapInstance, "mouseup", () => {
-        if (popupTimer) {
-          clearTimeout(popupTimer);
-          popupTimer = null;
-        }
-      });
-    });
+    window.kakao.maps.load(() => initMap(container));
   };
+  document.head.appendChild(script);
 };
 
-// 📌 팝업 닫기
+const initMap = (container: HTMLElement) => {
+  const options = {
+    center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+    level: 3,
+    maxLevel: 10,
+  };
+  const mapInstance = new window.kakao.maps.Map(container, options);
+  const geocoder = new window.kakao.maps.services.Geocoder();
+
+  window.kakao.maps.event.addListener(mapInstance, "mousedown", (mouseEvent: any) => {
+    popupTimer = window.setTimeout(() => {
+      const latlng = mouseEvent.latLng;
+
+      if (currentMarker) {
+        currentMarker.setMap(null);
+      }
+
+      house_latitude.value = latlng.getLat();
+      house_longitude.value = latlng.getLng();
+
+      geocoder.coord2Address(latlng.getLng(), latlng.getLat(), (result: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          house_address.value = result[0].road_address
+            ? result[0].road_address.address_name
+            : "도로명 주소가 없습니다";
+
+          currentMarker = new window.kakao.maps.Marker({
+            position: latlng,
+          });
+          currentMarker.setMap(mapInstance);
+        }
+      });
+
+      popupVisible.value = true;
+    }, 1000);
+  });
+
+  window.kakao.maps.event.addListener(mapInstance, "mouseup", () => {
+    if (popupTimer) {
+      clearTimeout(popupTimer);
+      popupTimer = null;
+    }
+  });
+};
+
+
+// 팝업 닫기
 const closePopup = () => {
   popupVisible.value = false;
+};
+
+const goToAddHousePage = () => {
+  router.push({ 
+    name: 'AddHousePage', 
+    query: { 
+      house_address: house_address.value,
+      house_latitude: house_latitude.value,
+      house_longitude: house_longitude.value,
+      house_name: house_name.value,
+      house_category: house_category.value,
+    } 
+  });
 };
 
 // 📌 북마크 추가 (주소 + 위도·경도 함께 전달)
@@ -136,15 +137,9 @@ async function addBookmark() {
   console.log("Name:", house_name.value);
   console.log("Category:", house_category.value);
 
-  // 개별적으로 null 체크
   if (house_latitude.value === null || house_longitude.value === null) {
     console.error("Latitude or Longitude is null");
-    return; // latitude나 longitude가 null인 경우 함수 종료
-  }
-
-  if (!house_address.value || !house_name.value || !house_category.value) {
-    console.error("Address, Name, or Category is missing");
-    return; // 필요한 값이 없는 경우 함수 종료
+    return;
   }
 
   try {
@@ -153,9 +148,12 @@ async function addBookmark() {
       house_latitude: house_latitude.value,
       house_longitude: house_longitude.value,
       house_name: house_name.value,
-      category: house_category.value,
+      house_category: house_category.value,
     });
     console.log("Response:", response.data);
+    
+    // ✅ 페이지 이동하면서 house_address, house_name 전달
+    goToAddHousePage(); 
   } catch (error) {
     console.error("API 호출 중 오류 발생:", error);
   }
