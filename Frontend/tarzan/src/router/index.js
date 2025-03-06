@@ -32,8 +32,9 @@ const routes = [
         component: () => import("@/components/bookmark/MapPage.vue"),
       },
       {
-        path: "add",
-        component: () => import("@/components/bookmark/AddItemPage.vue"),
+        path: "user",
+        name: "AddHousePage",
+        component: () => import("@/components/bookmark/AddHousePage.vue"),
       },
       {
         path: "check/cost",
@@ -201,6 +202,10 @@ const router = createRouter({
   },
 });
 router.beforeEach((to, from, next) => {
+
+  console.log("Navigating to:", to.path);
+  console.log("From:", from.path);
+  
   const authStore = useAuthStore();
 
 
