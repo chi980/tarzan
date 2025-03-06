@@ -19,11 +19,7 @@
     <!-- 📌 클릭한 위치 정보 표시하는 팝업 -->
     <div v-if="popupVisible" class="popup-overlay" @click="closePopup">
       <div class="popup" @click.stop>
-        <div class="addr">{{ address }}</div>
-        <!--
-        <div>위도: {{ houseLatitude }}</div>
-        <div>경도: {{ houseLongitude }}</div>
-        -->
+        <div class="addr">{{ house_address }}</div>
         <p>이곳으로 등록할까요?</p>
         <div class="button-group">
           <button @click="closePopup" class="cancel-button">취소</button>
@@ -40,23 +36,22 @@ import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { watch } from "vue";
 
-
 let popupTimer: number | null = null;
 let currentMarker: any = null;
 const mapContainer = ref<HTMLElement | null>(null);
 const popupVisible = ref(false);
-const address = ref(""); // 📌 선택한 주소
-const houseLatitude = ref<number | null>(null); // 📌 선택한 위도
-const houseLongitude = ref<number | null>(null); // 📌 선택한 경도
-const houseName = ref(""); // 📌 건물 이름
-const houseCategory = ref(""); // 📌 건물 카테고리
+const house_address = ref(""); // 📌 선택한 주소
+const house_latitude = ref<number | null>(null); // 📌 선택한 위도
+const house_longitude = ref<number | null>(null); // 📌 선택한 경도
+const house_name = ref(""); // 📌 건물 이름
+const house_category = ref(""); // 📌 건물 카테고리
 const router = useRouter();
 
 onMounted(() => {
   loadKakaoMap(mapContainer.value as HTMLElement);
 });
 
-watch([houseLatitude, houseLongitude], ([newLat, newLng]) => {
+watch([house_latitude, house_longitude], ([newLat, newLng]) => {
   console.log("위도와 경도 변경됨:", newLat, newLng);
 });
 
@@ -88,8 +83,8 @@ const loadKakaoMap = (container: HTMLElement) => {
               currentMarker.setMap(null);
             }
 
-            houseLatitude.value = latlng.getLat();
-            houseLongitude.value = latlng.getLng();
+            house_latitude.value = latlng.getLat();
+            house_longitude.value = latlng.getLng();
 
             // 📌 Geocoder 사용 (window.kakao.maps.load 내부에서 생성된 geocoder 사용)
             geocoder.coord2Address(
@@ -97,14 +92,12 @@ const loadKakaoMap = (container: HTMLElement) => {
               latlng.getLat(),
               (result: any, status: any) => {
                 if (status === window.kakao.maps.services.Status.OK) {
-                  address.value = result[0].road_address
+                  house_address.value = result[0].road_address
                     ? result[0].road_address.address_name
                     : "도로명 주소가 없습니다";
 
-                  houseName.value = "클릭한 위치의 건물";
-                  houseCategory.value = "아파트";
-                  houseLatitude.value = 37.566535;
-                  houseLongitude.value = 126.9779692;
+                  house_name.value = "클릭한 위치의 건물";
+                  house_category.value = "아파트";
 
                   // 마커 생성 및 표시
                   currentMarker = new window.kakao.maps.Marker({
@@ -137,47 +130,36 @@ const closePopup = () => {
 
 // 📌 북마크 추가 (주소 + 위도·경도 함께 전달)
 async function addBookmark() {
-  console.log("Latitude:", houseLatitude.value);
-  console.log("Longitude:", houseLongitude.value);
-  console.log("Address:", address.value);
-  console.log("Name:", houseName.value);
-  console.log("Category:", houseCategory.value);
+  console.log("Latitude:", house_latitude.value);
+  console.log("Longitude:", house_longitude.value);
+  console.log("Address:", house_address.value);
+  console.log("Name:", house_name.value);
+  console.log("Category:", house_category.value);
 
   // 개별적으로 null 체크
-  if (houseLatitude.value === null) {
-    console.error("Latitude is null");
-  }
-  if (houseLongitude.value === null) {
-    console.error("Longitude is null");
-  }
-  if (address.value === null) {
-    console.error("Address is null");
-  }
-  if (houseName.value === null) {
-    console.error("Name is null");
-  }
-  if (houseCategory.value === null) {
-    console.error("Category is null");
+  if (house_latitude.value === null || house_longitude.value === null) {
+    console.error("Latitude or Longitude is null");
+    return; // latitude나 longitude가 null인 경우 함수 종료
   }
 
-  if (houseLatitude.value && houseLongitude.value && address.value && houseName.value && houseCategory.value) {
-    try {
-      const response = await axiosInstance.post('/v1/bookmark/user', {
-        address: address.value,
-        latitude: houseLatitude.value,
-        longitude: houseLongitude.value,
-        name: houseName.value,
-        category: houseCategory.value,
-      });
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("API 호출 중 오류 발생:", error);
-    }
-  } else {
-    console.error("Some fields are null or undefined.");
+  if (!house_address.value || !house_name.value || !house_category.value) {
+    console.error("Address, Name, or Category is missing");
+    return; // 필요한 값이 없는 경우 함수 종료
+  }
+
+  try {
+    const response = await axiosInstance.post('/v1/bookmark/user', {
+      house_address: house_address.value,
+      house_latitude: house_latitude.value,
+      house_longitude: house_longitude.value,
+      house_name: house_name.value,
+      category: house_category.value,
+    });
+    console.log("Response:", response.data);
+  } catch (error) {
+    console.error("API 호출 중 오류 발생:", error);
   }
 }
-
 
 </script>
 
