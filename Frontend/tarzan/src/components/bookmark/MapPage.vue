@@ -16,7 +16,7 @@
       </div>
     </div>
 
-    <!-- 📌 클릭한 위치 정보 표시하는 팝업 -->
+    <!-- 클릭한 위치 정보 표시하는 팝업 -->
     <div v-if="popupVisible" class="popup-overlay" @click="closePopup">
       <div class="popup" @click.stop>
         <div class="addr">{{ house_address }}</div>
@@ -40,11 +40,11 @@ let popupTimer: number | null = null;
 let currentMarker: any = null;
 const mapContainer = ref<HTMLElement | null>(null);
 const popupVisible = ref(false);
-const house_address = ref(""); // 📌 선택한 주소
-const house_latitude = ref<number | null>(null); // 📌 선택한 위도
-const house_longitude = ref<number | null>(null); // 📌 선택한 경도
-const house_name = ref(""); // 📌 건물 이름
-const house_category = ref(""); // 📌 건물 카테고리
+const house_address = ref("");
+const house_latitude = ref<number | null>(null);
+const house_longitude = ref<number | null>(null);
+const house_name = ref("");
+const house_category = ref("");
 const router = useRouter();
 
 onMounted(() => {
@@ -131,12 +131,6 @@ const goToAddHousePage = () => {
 
 // 📌 북마크 추가 (주소 + 위도·경도 함께 전달)
 async function addBookmark() {
-  console.log("Latitude:", house_latitude.value);
-  console.log("Longitude:", house_longitude.value);
-  console.log("Address:", house_address.value);
-  console.log("Name:", house_name.value);
-  console.log("Category:", house_category.value);
-
   if (house_latitude.value === null || house_longitude.value === null) {
     console.error("Latitude or Longitude is null");
     return;
@@ -152,7 +146,6 @@ async function addBookmark() {
     });
     console.log("Response:", response.data);
     
-    // ✅ 페이지 이동하면서 house_address, house_name 전달
     goToAddHousePage(); 
   } catch (error) {
     console.error("API 호출 중 오류 발생:", error);
