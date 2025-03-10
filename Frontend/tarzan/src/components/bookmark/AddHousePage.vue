@@ -55,7 +55,7 @@ import { axiosInstance } from "@/plugins/axiosPlugin";
 import AddHouseBar from "@/components/bookmark/AddHouseBar.vue";
 import CustomSelectBox from '@/components/common/CustomSelectBox.vue';
 
-const searchQuery = ref("");
+// const searchQuery = ref(""); 검색기능 사용시
 
 const house_address = ref('');
 const house_name = ref('');
@@ -66,17 +66,17 @@ const router = useRouter();    // useRouter: 페이지 이동
 
 // 건물 종류 선택지를 배열로 정의
 const HouseCategoryOptions = [
-  { name: '아파트' },
-  { name: '오피스텔' },
-  { name: '빌라' },
-  { name: '주택' }
+  { idx: 0, name: '아파트', value: '아파트' },
+  { idx: 1, name: '오피스텔', value: '오피스텔' },
+  { idx: 2, name: '빌라', value: '빌라' },
+  { idx: 3, name: '주택', value: '주택' }
 ];
 
 // 선택된 건물 종류의 인덱스를 저장할 변수
 const selectedBuildingCategoryIdx = ref(null);
 
 // 선택된 건물 종류를 처리하는 메서드
-const handleBuildingCategorySelected = (idx) => {
+const handleBuildingCategorySelected = (idx: number) => {
   selectedBuildingCategoryIdx.value = idx;
   console.log('선택된 건물 종류:', HouseCategoryOptions[idx].name);
 };
