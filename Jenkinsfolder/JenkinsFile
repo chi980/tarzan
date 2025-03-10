@@ -30,7 +30,7 @@ pipeline {
                             dir('src/main/resources'){
                                 withCredentials([
                                     string(credentialsId: 'DB_URL', variable: 'DB_URL'),
-                                    usernamePassword(credentialsId: 'DB-CREDENTIALS', usernameVariable: 'DB_USERNAME', passwordVariable: 'DB_PASSWORD'),
+                                    usernamePassword(credentialsId: 'DB_CREDENTIALS', usernameVariable: 'DB_USERNAME', passwordVariable: 'DB_PASSWORD'),
                                     usernamePassword(credentialsId: 'GOOGLE_CREDENTIALS', usernameVariable: 'GOOGLE_CLIENT_ID', passwordVariable: 'GOOGLE_CLIENT_SECRET'),
                                     usernamePassword(credentialsId: 'KAKAO_CREDENTIALS', usernameVariable: 'KAKAO_CLIENT_ID', passwordVariable: 'KAKAO_CLIENT_SECRET'),
                                     string(credentialsId: 'JWT_SECRET_KEY', variable: 'JWT_SECRET_KEY'),
