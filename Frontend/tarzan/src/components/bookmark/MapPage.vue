@@ -1,9 +1,25 @@
 <template>
   <div class="sub-container">
-    <div ref="mapContainer" style="width: 100%; height: 100%"></div>
+    <div ref="mapContainer" style="width: 100%; height: 100%">
+      <div class="searchbar" @click="showOverlay = true">
+        <div class="input-icon-wrap">
+          <font-awesome-icon
+            :icon="['fas', 'magnifying-glass']"
+            class="icon-search"
+          />
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="찾고 싶은 집주소를 입력해주세요."
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- 클릭한 위치 정보 표시하는 팝업 -->
     <div v-if="popupVisible" class="popup-overlay" @click="closePopup">
       <div class="popup" @click.stop>
-        <div class="addr">{{ address }}</div>
+        <div class="addr">{{ house_address }}</div>
         <p>이곳으로 등록할까요?</p>
         <div class="button-group">
           <button @click="closePopup" class="cancel-button">취소</button>
@@ -16,91 +32,126 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router"; // Vue Router 사용
+import { useRouter } from "vue-router";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+import { watch } from "vue";
 
-// 타입 선언
-let popupTimer: number | null = null; // popupTimer를 number 타입으로 지정
-let currentMarker: any = null; // currentMarker의 타입을 any로 설정
-const mapContainer = ref<HTMLElement | null>(null); // mapContainer의 타입을 HTMLElement로 지정
+let popupTimer: number | null = null;
+let currentMarker: any = null;
+const mapContainer = ref<HTMLElement | null>(null);
 const popupVisible = ref(false);
-const address = ref("");
+const house_address = ref("");
+const house_latitude = ref<number | null>(null);
+const house_longitude = ref<number | null>(null);
+const house_name = ref("");
+const house_category = ref("");
 const router = useRouter();
 
 onMounted(() => {
   loadKakaoMap(mapContainer.value as HTMLElement);
 });
 
-const loadKakaoMap = (container: HTMLElement) => { // container의 타입을 HTMLElement로 명시
+const loadKakaoMap = (container: HTMLElement) => {
+  if (window.kakao && window.kakao.maps) {
+    initMap(container); // 이미 로드된 경우 바로 지도 초기화
+    return;
+  }
+
   const script = document.createElement("script");
   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&libraries=services&autoload=false`;
-  document.head.appendChild(script);
-
   script.onload = () => {
-    window.kakao.maps.load(() => {
-      const options = {
-        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-        level: 3,
-        maxLevel: 10,
-      };
-      const mapInstance = new window.kakao.maps.Map(container, options);
-
-      // 지도에서 마우스를 눌렀을 때 타이머 시작
-      window.kakao.maps.event.addListener(
-        mapInstance,
-        "mousedown",
-        (mouseEvent: any) => { // mouseEvent의 타입을 any로 설정
-          popupTimer = window.setTimeout(() => { // setTimeout의 반환값을 number 타입으로 지정
-            const latlng = mouseEvent.latLng;
-
-            // 이전 마커 제거
-            if (currentMarker) {
-              currentMarker.setMap(null);
-            }
-
-            // 역지오코딩 -> 도로명 주소
-            const geocoder = new window.kakao.maps.services.Geocoder(); // services의 타입을 명시하지 않아도 오류 해결 가능
-            geocoder.coord2Address(
-              latlng.getLng(),
-              latlng.getLat(),
-              (result: any, status: any) => { // result와 status의 타입을 any로 설정
-                if (status === window.kakao.maps.services.Status.OK) {
-                  address.value = result[0].road_address
-                    ? result[0].road_address.address_name
-                    : "도로명 주소가 없습니다";
-
-                  // 마커 생성
-                  currentMarker = new window.kakao.maps.Marker({
-                    position: latlng,
-                  });
-
-                  currentMarker.setMap(mapInstance);
-                }
-              }
-            );
-
-            popupVisible.value = true;
-          }, 1000); // 1초 동안 클릭시 팝업 띄움
-        }
-      );
-
-      // 마우스를 뗄 때 타이머 초기화
-      window.kakao.maps.event.addListener(mapInstance, "mouseup", () => {
-        if (popupTimer) {
-          clearTimeout(popupTimer);
-          popupTimer = null;
-        }
-      });
-    });
+    window.kakao.maps.load(() => initMap(container));
   };
+  document.head.appendChild(script);
 };
 
+const initMap = (container: HTMLElement) => {
+  const options = {
+    center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+    level: 3,
+    maxLevel: 10,
+  };
+  const mapInstance = new window.kakao.maps.Map(container, options);
+  const geocoder = new window.kakao.maps.services.Geocoder();
+
+  window.kakao.maps.event.addListener(mapInstance, "mousedown", (mouseEvent: any) => {
+    popupTimer = window.setTimeout(() => {
+      const latlng = mouseEvent.latLng;
+
+      if (currentMarker) {
+        currentMarker.setMap(null);
+      }
+
+      house_latitude.value = latlng.getLat();
+      house_longitude.value = latlng.getLng();
+
+      geocoder.coord2Address(latlng.getLng(), latlng.getLat(), (result: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          house_address.value = result[0].road_address
+            ? result[0].road_address.address_name
+            : "도로명 주소가 없습니다";
+
+          currentMarker = new window.kakao.maps.Marker({
+            position: latlng,
+          });
+          currentMarker.setMap(mapInstance);
+        }
+      });
+
+      popupVisible.value = true;
+    }, 1000);
+  });
+
+  window.kakao.maps.event.addListener(mapInstance, "mouseup", () => {
+    if (popupTimer) {
+      clearTimeout(popupTimer);
+      popupTimer = null;
+    }
+  });
+};
+
+
+// 팝업 닫기
 const closePopup = () => {
   popupVisible.value = false;
 };
 
-const addBookmark = () => {
-  router.push({ path: "/bookmark/add", query: { address: address.value } });
+const goToAddHousePage = () => {
+  router.push({ 
+    name: 'AddHousePage', 
+    query: { 
+      house_address: house_address.value,
+      house_latitude: house_latitude.value,
+      house_longitude: house_longitude.value,
+      house_name: house_name.value,
+      house_category: house_category.value,
+    } 
+  });
 };
+
+// 📌 북마크 추가 (주소 + 위도·경도 함께 전달)
+async function addBookmark() {
+  if (house_latitude.value === null || house_longitude.value === null) {
+    console.error("Latitude or Longitude is null");
+    return;
+  }
+
+  try {
+    const response = await axiosInstance.post('/v1/bookmark/user', {
+      house_address: house_address.value,
+      house_latitude: house_latitude.value,
+      house_longitude: house_longitude.value,
+      house_name: house_name.value,
+      house_category: house_category.value,
+    });
+    console.log("Response:", response.data);
+    
+    goToAddHousePage(); 
+  } catch (error) {
+    console.error("API 호출 중 오류 발생:", error);
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -111,6 +162,45 @@ const addBookmark = () => {
 .addr {
   font-weight: bold;
   padding: 10px;
+}
+
+.searchbar {
+  display: flex;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  padding: 0px;
+  z-index: 4; /* Ensure input-icon-wrap is above overlay */
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.input-icon-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  border-radius: 13px;
+  background-color: white;
+  padding-right: $padding-default;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Ensures it's positioned correctly */
+  z-index: 5; /* Higher than overlay */
+}
+input {
+  width: 100%;
+  appearance: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  @include custom-text;
+}
+.icon-search {
+  width: 16px;
+  height: 16px;
+  @include custom-margin-x;
+  color: $input-placeholder-color;
 }
 
 .popup-overlay {

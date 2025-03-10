@@ -51,11 +51,9 @@ public class Review extends CommonEntity{
     @Column(name = "review_floor")
     private Integer floor;
 
-    @Lob
     @Column(name = "review_advantage", columnDefinition = "TEXT") // 또는 CLOB
     private String advantage;
 
-    @Lob
     @Column(name = "review_disadvantage", columnDefinition = "TEXT") // 또는 CLOB
     private String disadvantage;
 
