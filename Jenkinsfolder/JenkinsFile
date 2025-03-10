@@ -37,22 +37,35 @@ pipeline {
                                 string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
                             ]) {
 
-                                sh '''
-                                    export DB_URL=jdbc:postgresql://13.125.225.29:5432/tarzan
-                                    export DB_USERNAME=postgres
-                                    export DB_PASSWORD=@tarzan_zxcvbnm12345
-                                    export GOOGLE_CLIENT_ID=47134587732-6gq6500f5srhmscdv8bektl4uovnqr3t.apps.googleusercontent.com
-                                    export GOOGLE_CLIENT_SECRET=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
-                                    export KAKAO_CLIENT_ID=b70dc9585929d8782aa4c22017317c27
-                                    export KAKAO_CLIENT_SECRET=MKwCIvKkVfr4dziIyCfGjQzDdUYdeZ0O
-                                    export JWT_SECRET_KEY=f3ea5bb104ef3a66b65f87dacf67411fa982fdd62bc99da583d3cd37102ff435
-                                    export VWORLD_API_KEY=EA6F08E6-F05D-380A-840A-709AF07229F4
-                                    export SEOUL_API_KEY=655351685763686938367558756e6f
-                                    '''
+                                // sh '''
+                                //     export DB_URL=jdbc:postgresql://13.125.225.29:5432/tarzan
+                                //     export DB_USERNAME=postgres
+                                //     export DB_PASSWORD=@tarzan_zxcvbnm12345
+                                //     export GOOGLE_CLIENT_ID=47134587732-6gq6500f5srhmscdv8bektl4uovnqr3t.apps.googleusercontent.com
+                                //     export GOOGLE_CLIENT_SECRET=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
+                                //     export KAKAO_CLIENT_ID=b70dc9585929d8782aa4c22017317c27
+                                //     export KAKAO_CLIENT_SECRET=MKwCIvKkVfr4dziIyCfGjQzDdUYdeZ0O
+                                //     export JWT_SECRET_KEY=f3ea5bb104ef3a66b65f87dacf67411fa982fdd62bc99da583d3cd37102ff435
+                                //     export VWORLD_API_KEY=EA6F08E6-F05D-380A-840A-709AF07229F4
+                                //     export SEOUL_API_KEY=655351685763686938367558756e6f
+                                //     '''
 
                                 sh 'printenv'
                                 sh 'chmod +x gradlew'
-                                sh './gradlew clean build'  // 빌드 실행
+                                // sh './gradlew clean build'  // 빌드 실행
+                                sh '''
+                                    DB_URL=${DB_URL} \
+                                    DB_USERNAME=${DB_USERNAME} \
+                                    DB_PASSWORD=${DB_PASSWORD} \
+                                    GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
+                                    GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET} \
+                                    KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID} \
+                                    KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET} \
+                                    JWT_SECRET_KEY=${JWT_SECRET_KEY} \
+                                    VWORLD_API_KEY=${VWORLD_API_KEY} \
+                                    SEOUL_API_KEY=${SEOUL_API_KEY} \
+                                    ./gradlew clean build
+                                    '''
                                 sh 'ls -al ./build'
                             }
                         }
