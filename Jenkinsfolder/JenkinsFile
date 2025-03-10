@@ -37,6 +37,7 @@ pipeline {
                                     string(credentialsId: 'VWORLD_API_KEY', variable: 'VWORLD_API_KEY'),
                                     string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
                                 ]) {
+                                sh 'ls'
                                     sh 'echo ${DB_URL}'
                                     sh 'sed -i "s#\\${DB_URL}#$DB_URL#" application-prod.yml'
                                     sh 'sed -i "s#\\${DB_USERNAME}#$DB_USERNAME#" application-prod.yml'
