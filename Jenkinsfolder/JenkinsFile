@@ -94,11 +94,12 @@ pipeline {
                     dir('Backend') {
                         dir('tarzan') {
                             withCredentials([file(credentialsId: 'TARZAN_BACKEND_CREDENTIALS', variable: 'SECRET_FILE')]) {
+                                sh 'ls'
                                 sh 'cp $SECRET_FILE src/main/resources/application-prod.yml'
                                 sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
                                 sh "docker images"
+                                sh "docker logs ${BACK_CONTAINER_NAME}"
                             }   
-
                         }
                     }
                 }
