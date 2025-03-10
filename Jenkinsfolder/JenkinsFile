@@ -38,16 +38,17 @@ pipeline {
                                     string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
                                 ]) {
                                     sh 'echo ${DB_URL}'
-                                    sed -i "s#\${DB_URL}#$DB_URL#" application-prod.yml
-                                    sed -i "s#\${DB_USERNAME}#$DB_USERNAME#" application-prod.yml
-                                    sed -i "s#\${DB_PASSWORD}#$DB_PASSWORD#" application-prod.yml
-                                    sed -i "s#\${GOOGLE_CLIENT_ID}#$GOOGLE_CLIENT_ID#" application-prod.yml
-                                    sed -i "s#\${GOOGLE_CLIENT_SECRET}#$GOOGLE_CLIENT_SECRET#" application-prod.yml
-                                    sed -i "s#\${KAKAO_CLIENT_ID}#$KAKAO_CLIENT_ID#" application-prod.yml
-                                    sed -i "s#\${KAKAO_CLIENT_SECRET}#$KAKAO_CLIENT_SECRET#" application-prod.yml
-                                    sed -i "s#\${JWT_SECRET_KEY}#$JWT_SECRET_KEY#" application-prod.yml
-                                    sed -i "s#\${VWORLD_API_KEY}#$VWORLD_API_KEY#" application-prod.yml
-                                    sed -i "s#\${SEOUL_API_KEY}#$SEOUL_API_KEY#" application-prod.
+                                    sh 'sed -i "s#\\${DB_URL}#$DB_URL#" application-prod.yml'
+                                    sh 'sed -i "s#\\${DB_USERNAME}#$DB_USERNAME#" application-prod.yml'
+                                    sh 'sed -i "s#\\${DB_PASSWORD}#$DB_PASSWORD#" application-prod.yml'
+                                    sh 'sed -i "s#\\${GOOGLE_CLIENT_ID}#$GOOGLE_CLIENT_ID#" application-prod.yml'
+                                    sh 'sed -i "s#\\${GOOGLE_CLIENT_SECRET}#$GOOGLE_CLIENT_SECRET#" application-prod.yml'
+                                    sh 'sed -i "s#\\${KAKAO_CLIENT_ID}#$KAKAO_CLIENT_ID#" application-prod.yml'
+                                    sh 'sed -i "s#\\${KAKAO_CLIENT_SECRET}#$KAKAO_CLIENT_SECRET#" application-prod.yml'
+                                    sh 'sed -i "s#\\${JWT_SECRET_KEY}#$JWT_SECRET_KEY#" application-prod.yml'
+                                    sh 'sed -i "s#\\${VWORLD_API_KEY}#$VWORLD_API_KEY#" application-prod.yml'
+                                    sh 'sed -i "s#\\${SEOUL_API_KEY}#$SEOUL_API_KEY#" application-prod.yml'
+
                                     
                                      // 수정된 application-prod.yml 확인
                                     sh 'echo "====== application-prod.yml 내용 ======"'
