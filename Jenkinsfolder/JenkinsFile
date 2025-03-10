@@ -75,21 +75,12 @@ pipeline {
         stage('Dockerize') {
             steps {
                 script {
-                    // Docker 이미지 빌드
-                    // dir('Frontend') {
-                    //     dir('tarzan'){
-                    //         sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
-                    //     }
-                    // }
-
-                    // dir('Backend') {
-                    //     dir('tarzan') {
-                    //         // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
-                    //         sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
-                    //         sh "docker images"
-                    //         sh 'echo "images build 성공!"'
-                    //     }
-                    // }
+                    Docker 이미지 빌드
+                    dir('Frontend') {
+                        dir('tarzan'){
+                            sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
+                        }
+                    }
 
                     dir('Backend') {
                         dir('tarzan') {
@@ -109,7 +100,7 @@ pipeline {
             steps {
                 script {
                     // Docker 컨테이너 실행
-                    // sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
+                    sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
                     sh "docker run --name ${BACK_CONTAINER_NAME} -d -p 8080:8080 ${BACK_IMAGE_NAME}"
                     // 실행 중인 Docker 컨테이너 확인
                     sh "docker ps"
