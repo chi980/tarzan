@@ -99,7 +99,7 @@ pipeline {
                                     sh 'cp $SECRET_FILE application-prod.yml'
                                 }   
                             }
-                            sh "docker build -t ${BACK_CONTAINER_NAME} -f Dockerfile ."
+                            sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
                             sh "docker images"
                         }
                     }
