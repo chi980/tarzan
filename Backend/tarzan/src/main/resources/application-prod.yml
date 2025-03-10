@@ -1,0 +1,55 @@
+spring:
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  logging:
+    level:
+      org.springframework: INFO
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    use_sql_comments: true
+    database: postgresql
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-name: google
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope:
+              - profile
+              - email
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            scope: profile_nickname,profile_image,account_email
+            client-name: kakao
+
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+
+api:
+  vworld:
+    real-estate:
+      url: "http://api.vworld.kr/ned/data/getEBOfficeInfo"
+      key: ${VWORLD_API_KEY}
+  data-seoul:
+    url: "http://openapi.seoul.go.kr:8088"
+    key: ${SEOUL_API_KEY}
+
