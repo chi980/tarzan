@@ -4,7 +4,7 @@
     <div class="center-container">
       
       <div class="rating-contaier">
-        <StarRating />
+        <StarRating v-model="rating" />
         <div class="number">
           <span id="average">4.0</span>
           <span id="count">(45)</span>
@@ -46,6 +46,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
 import PhotoUpload from "./PhotoUpload.vue";
@@ -53,7 +54,6 @@ import Divider from "../common/Divider.vue";
 import ReviewItem from "./ReviewItem.vue";
 import StarRating from "./StarRating.vue";
 import TagButtonGroup from "../common/TagButtonGroup.vue";
-import { axiosInstance } from "@/plugins/axiosPlugin";
 
 // 태그 버튼
 const buttons = ref([
@@ -65,6 +65,10 @@ const buttons = ref([
   { label: '모임', value: 'MEETING' },
   { label: '기타', value: 'ETC' },
 ]);
+const selectedButton = ref('ALL');
+const sortOptions = ref(['최신순', '오래된순', '평점순']);
+
+const rating = ref(3); // 초기 별점 값
 
 const reviews = ref([]); // 게시글 목록
 // const reviews = ref([
