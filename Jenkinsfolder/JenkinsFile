@@ -76,11 +76,11 @@ pipeline {
             steps {
                 script {
                     // Docker 이미지 빌드
-                    dir('Frontend') {
-                        dir('tarzan'){
-                            sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
-                        }
-                    }
+                    // dir('Frontend') {
+                    //     dir('tarzan'){
+                    //         sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
+                    //     }
+                    // }
 
                     // dir('Backend') {
                     //     dir('tarzan') {
