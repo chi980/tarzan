@@ -35,5 +35,10 @@
     "src/**/*.js",
     "kakao.maps.d.ts"
   ],
+
+  "exclude": [
+    "node_modules" // 노드 모듈 제외
+  ],
+
   "references": [{ "path": "./tsconfig.node.json" }]
 }
