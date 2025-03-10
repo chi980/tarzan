@@ -37,7 +37,7 @@ pipeline {
                                     string(credentialsId: 'VWORLD_API_KEY', variable: 'VWORLD_API_KEY'),
                                     string(credentialsId: 'SEOUL_API_KEY', variable: 'SEOUL_API_KEY')
                                 ]) {
-                                sh 'ls'
+                                    sh 'ls'
                                     sh 'echo ${DB_URL}'
                                     sh 'sed -i "s#\\${DB_URL}#$DB_URL#" application-prod.yml'
                                     sh 'sed -i "s#\\${DB_USERNAME}#$DB_USERNAME#" application-prod.yml'
@@ -55,6 +55,11 @@ pipeline {
                                     sh 'echo "====== application-prod.yml 내용 ======"'
                                     sh 'cat application-prod.yml'
                                 }
+
+                                withCredentials([file(credentialsId: 'TARZAN_BACKEND_CREDENTIALS', variable: 'SECRET_FILE')]) {
+                                    // 필요한 경우 폴더가 없으면 미리 생성합니다.
+                                    sh 'cp $SECRET_FILE application-prod.yml'
+                                }   
                             }
                                 sh 'chmod +x gradlew'
                                 sh './gradlew clean build'
