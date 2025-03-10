@@ -75,7 +75,6 @@ pipeline {
         stage('Dockerize') {
             steps {
                 script {
-                    Docker 이미지 빌드
                     dir('Frontend') {
                         dir('tarzan'){
                             sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
@@ -100,7 +99,7 @@ pipeline {
             steps {
                 script {
                     // Docker 컨테이너 실행
-                    sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
+                    // sh "docker run --name ${FRONT_CONTAINER_NAME} -d -p 5173:80 ${FRONT_IMAGE_NAME}"
                     sh "docker run --name ${BACK_CONTAINER_NAME} -d -p 8080:8080 ${BACK_IMAGE_NAME}"
                     // 실행 중인 Docker 컨테이너 확인
                     sh "docker ps"
