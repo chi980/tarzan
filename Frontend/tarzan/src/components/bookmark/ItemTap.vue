@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { CheckList } from "@/data/check";
 import { axiosInstance } from "@/plugins/axiosPlugin";
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
 import {
   homeAppliances,
@@ -107,7 +107,6 @@ const toggleSubAccordionHouseholdGoods = (idx: number) => {
   toggleSubAccordion(householdGoods.value, idx);
 };
 
-
 const fetchCheckItemList = async () => {
   try {
     const response = await axiosInstance.get(`/v1/checklist/item`);
@@ -118,21 +117,23 @@ const fetchCheckItemList = async () => {
       console.log(data);
 
       // 🏠 "이사 전 필수품" (before_move) -> homeAppliances[0].contents에 삽입
-      homeAppliances.value[0].contents = data.home_appliances_before_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.home_appliances_before_move.name_list[index],
-          value: data.home_appliances_before_move.value_list[index],
-        })
-      );
+      homeAppliances.value[0].contents =
+        data.home_appliances_before_move.id_list.map(
+          (id: number, index: number) => ({
+            idx: id,
+            name: data.home_appliances_before_move.name_list[index],
+            value: data.home_appliances_before_move.value_list[index],
+          })
+        );
       // 🏠 "이사 후 사도 되는 물품" (after_move) -> homeAppliances[1].contents에 삽입
-      homeAppliances.value[1].contents = data.home_appliances_after_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.home_appliances_after_move.name_list[index],
-          value: data.home_appliances_after_move.value_list[index],
-        })
-      );
+      homeAppliances.value[1].contents =
+        data.home_appliances_after_move.id_list.map(
+          (id: number, index: number) => ({
+            idx: id,
+            name: data.home_appliances_after_move.name_list[index],
+            value: data.home_appliances_after_move.value_list[index],
+          })
+        );
 
       // 🛋 가구ㆍ패브릭 (fabrics)
       fabrics.value[0].contents = data.furniture_fabric_before_move.id_list.map(
@@ -151,13 +152,12 @@ const fetchCheckItemList = async () => {
       );
 
       // 🚿 욕실 용품 (bathroomSupplies)
-      bathroomSupplies.value[0].contents = data.bathroom_before_move.id_list.map(
-        (id: number, index: number) => ({
+      bathroomSupplies.value[0].contents =
+        data.bathroom_before_move.id_list.map((id: number, index: number) => ({
           idx: id,
           name: data.bathroom_before_move.name_list[index],
           value: data.bathroom_before_move.value_list[index],
-        })
-      );
+        }));
       bathroomSupplies.value[1].contents = data.bathroom_after_move.id_list.map(
         (id: number, index: number) => ({
           idx: id,
@@ -212,9 +212,7 @@ const fetchCheckItemList = async () => {
           name: data.household_after_move.name_list[index],
           value: data.household_after_move.value_list[index],
         })
-);
-
-      
+      );
     } else {
       console.error("아이템리스트 데이터 없음", response.data?.message);
     }

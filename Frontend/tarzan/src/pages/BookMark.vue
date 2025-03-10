@@ -33,7 +33,6 @@ import HouseTap from "@/components/bookmark/HouseTap.vue";
 import MoverTap from "@/components/bookmark/MoverTap.vue";
 import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
-import CompareImgSrc from "@/assets/icons/Filter/Style=Outlined.svg";
 
 // 탭 데이터 배열 초기화
 const tabs: Tab[] = [
