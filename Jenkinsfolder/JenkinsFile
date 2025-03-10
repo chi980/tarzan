@@ -98,7 +98,6 @@ pipeline {
                                 sh 'cp $SECRET_FILE src/main/resources/application-prod.yml'
                                 sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
                                 sh "docker images"
-                                sh "docker logs ${BACK_CONTAINER_NAME}"
                             }   
                         }
                     }
