@@ -39,15 +39,8 @@ public class ReviewServiceImpl implements ReviewService{
     public ReviewListResponseDto getReviews(ReviewListRequestDto requestDto, UserDto loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
-        List<Review> reviews = reviewRepository.findAll();
-        reviews.stream().forEach(review -> {
-            log.info("{}", review);
-
-        });
         Page<Review> reviewPages = reviewRepository.findReviewsByHouseId(requestDto.getHouseIdx(), pageable);
-        reviewPages.stream().forEach(review -> {
-            log.info("{}", review);
-        });
+
         List<ReviewListItemResponseDto> list = reviewPages.stream()
                 .map(review -> {
                     return new ReviewListItemResponseDto(review, loginedUserDto!=null?review.getWriter().getEmail().equals(loginedUserDto.getEmail()):false);
