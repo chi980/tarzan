@@ -36,6 +36,8 @@ import kakaoImage from "@/assets/icons/kakao_login_logo.png";
 import googleImage from "@/assets/icons/google_login_logo.png";
 import loginDescImage from "@/assets/login_desc.png";
 
+console.log(import.meta.env.VITE_API_BASE_URL);
+
 const authStore = useAuthStore();
 
 const clickKakaoBtn = () => {
@@ -55,8 +57,10 @@ import { getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance();
 const checkBack = async () => {
   try {
-    const response = await proxy.$axios.get("/test"); // axiosInstance를 사용하여 API 호출
-    console.log(response.data);
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    alert(apiBaseUrl); // 개발 환경: http://localhost:8080, 배포 환경: https://api.tazan.site
+    // const response = await proxy.$axios.get("/test"); // axiosInstance를 사용하여 API 호출
+    // console.log(response.data);
   } catch (err) {
     console.error(err);
   }
