@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler {
+
+    @Value("${vue.base-url}")
+    private String serverBaseUrl;
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -37,7 +41,7 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
 //                response.addHeader(jwtService.getRefreshHeader(), "Bearer "+refreshToken);
                 // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
                 log.info("현재 사용자는 GUEST입니당");
-                String redirectUrl = "http://localhost:5173/login-processing?access_token=" + accessToken + "&refresh_token=&role="+oAuth2User.getRole();
+                String redirectUrl = serverBaseUrl + "/login-processing?access_token=" + accessToken + "&refresh_token=&role="+oAuth2User.getRole();
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
                 log.info("redireciont 하자: {}", redirectUrl);
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -64,7 +68,7 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
 //        response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
 //        response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
 
-        String redirectUrl = "http://localhost:5173/login-processing?access_token=" + accessToken + "&refresh_token=" + refreshToken+"&gu="+oAuth2User.getGu()+"&nickname="+oAuth2User.getNickname()+"&role="+oAuth2User.getRole();
+        String redirectUrl = serverBaseUrl + "/login-processing?access_token=" + accessToken + "&refresh_token=" + refreshToken+"&gu="+oAuth2User.getGu()+"&nickname="+oAuth2User.getNickname()+"&role="+oAuth2User.getRole();
 
         jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
         jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);

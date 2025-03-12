@@ -13,6 +13,7 @@ import com.mjutarzan.tarzan.global.oauth2.handler.OAuth2LoginFailureHandler;
 import com.mjutarzan.tarzan.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.mjutarzan.tarzan.global.oauth2.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -39,6 +40,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Value("${vue.base-url}")
+    private String serverBaseUrl;
 
     private final LoginService loginService;
     private final JwtService jwtService;
@@ -149,7 +152,7 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:5173")); // ⭐️ 허용할 origin
+            config.setAllowedOriginPatterns(Collections.singletonList(serverBaseUrl)); // ⭐️ 허용할 origin
             config.setAllowCredentials(true);
             return config;
         };
