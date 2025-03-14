@@ -41,10 +41,12 @@ console.log(import.meta.env.VITE_API_BASE_URL);
 const authStore = useAuthStore();
 
 const clickKakaoBtn = () => {
-  location.href = "https://tazan.site/oauth2/authorization/kakao";
+  const kakaoLoginUrl = import.meta.env.VITE_API_KAKAO_URL;
+  location.href = kakaoLoginUrl;
 };
 const clickGoogleBtn = () => {
-  location.href = "https://tazan.site/oauth2/authorization/google";
+  const googleLoginUrl = import.meta.env.VITE_API_GOOGLE_URL;
+  location.href = googleLoginUrl;
 };
 
 const clickLogOutBtn = () => {
