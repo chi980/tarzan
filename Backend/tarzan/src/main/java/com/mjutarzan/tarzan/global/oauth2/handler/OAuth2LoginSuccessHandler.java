@@ -30,6 +30,8 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         log.info("OAuth2 Login 성공!");
+        log.info("front Base Url: {}", frontBaseUrl);
+
         try {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
@@ -59,6 +61,7 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
 
     // TODO : 소셜 로그인 시에도 무조건 토큰 생성하지 말고 JWT 인증 필터처럼 RefreshToken 유/무에 따라 다르게 처리해보기
     private String loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
+        log.info("front Base Url: {}", frontBaseUrl);
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
         String refreshToken = jwtService.createRefreshToken();
 //        response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
