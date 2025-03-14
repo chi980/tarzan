@@ -45,9 +45,9 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
                 // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
                 String redirectUrl = frontBaseUrl + "/login-processing?access_token=" + accessToken + "&refresh_token="+refreshToken+"&role="+oAuth2User.getRole();
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
-
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.sendRedirect(redirectUrl);
+
             } else {
                 String redirectUrl = loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
                 response.sendRedirect(redirectUrl);
