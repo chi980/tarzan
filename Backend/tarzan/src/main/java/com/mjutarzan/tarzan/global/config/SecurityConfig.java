@@ -40,8 +40,8 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${vue.base-url}")
-    private String serverBaseUrl;
+    @Value("${front.base-url}")
+    private String frontBaseUrl;
 
     private final LoginService loginService;
     private final JwtService jwtService;
@@ -152,7 +152,7 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(Collections.singletonList(serverBaseUrl)); // ⭐️ 허용할 origin
+            config.setAllowedOriginPatterns(Collections.singletonList(frontBaseUrl)); // ⭐️ 허용할 origin
             config.setAllowCredentials(true);
             return config;
         };
