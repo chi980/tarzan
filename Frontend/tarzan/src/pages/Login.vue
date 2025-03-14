@@ -93,7 +93,7 @@ const clickLogOutBtn = () => {
   right: 0;
 }
 
-#recommended-login-group:hover #recommended-login-desc {
+#recommended-login-desc {
   animation: shake 0.8s infinite alternate ease-in-out;
 }
 
