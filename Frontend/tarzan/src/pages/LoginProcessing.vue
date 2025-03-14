@@ -6,7 +6,7 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { onMounted } from "vue";
-import { Role } from "@/data/userRole"; // @/는 절대 경로 설정 시 가능, 아니면 ../constants/role
+import { Role } from "@/data/userRole.ts"; // @/는 절대 경로 설정 시 가능, 아니면 ../constants/role
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -20,8 +20,6 @@ onMounted(() => {
   const role = urlParams.get("role");
   const gu = urlParams.get("gu");
   const nickname = urlParams.get("nickname");
-
-  alert(role);
 
   if (role == Role.USER) {
     // Pinia 스토어에 토큰 저장
