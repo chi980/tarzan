@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
+import { Role } from "@/data/userRole";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     accessToken: localStorage.getItem("accessToken") || "",
     refreshToken: localStorage.getItem("refreshToken") || "",
-    role: localStorage.getItem("role") || "guest", // 기본값 추가
+    role: localStorage.getItem("role") || Role.ANONYMOUS, // 기본값 추가
     gu: localStorage.getItem("gu") || "",
     nickname: localStorage.getItem("nickname") || "익명",
   }),
@@ -27,6 +28,9 @@ export const useAuthStore = defineStore("auth", {
       this.setRole(role);
       this.setGu(gu);
       this.setNickname(nickname);
+      localStorage.setItem("role", role);
+      localStorage.setItem("gu", gu);
+      localStorage.setItem("nickname", nickname);
     },
     setRole(role) {
       this.role = role;
@@ -49,9 +53,9 @@ export const useAuthStore = defineStore("auth", {
     clearAuth() {
       this.accessToken = "";
       this.refreshToken = "";
-      this.role = "guest"; // 기본값으로 초기화
+      this.role = Role.ANONYMOUS;
       this.gu = "";
-      this.nickname = "익명"; // 기본값으로 초기화
+      this.nickname = "익명";
       // localStorage에서 JWT를 삭제
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
@@ -61,6 +65,12 @@ export const useAuthStore = defineStore("auth", {
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.accessToken && state.accessToken !== "",
+    isAuthenticated: (state) => {
+      return !!state.accessToken && state.role != Role.ANONYMOUS;
+    },
+    isGuest: (state) => state.role == Role.GUEST,
+    isAnonymous: (state) => state.role == Role.ANONYMOUS,
+    print: (state) =>
+      `accessToken: ${state.accessToken} \n refreshToken: ${state.refreshToken} \n role: ${state.role} \n gu: ${state.gu} \n nickname: ${state.nickname}`,
   },
 });

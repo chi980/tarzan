@@ -1,4 +1,5 @@
 // src/router/index.js
+import { ref } from "vue";
 import { useAuthStore } from "@/stores/authStore.js";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -181,16 +182,6 @@ const routes = [
       },
     ],
   },
-
-  {
-    path: "/auth",
-    // component: AuthLayout, // auth 레이아웃을 사용할 수도 있습니다.
-    meta: { requiresAuth: true },
-    children: [],
-  },
-
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: "/:catchAll(.*)",
     name: "NotFound",
@@ -206,37 +197,36 @@ const router = createRouter({
     return { top: 0 };
   },
 });
+
 router.beforeEach((to, from, next) => {
-  console.log("Navigating to:", to.path);
-  console.log("From:", from.path);
-
   const authStore = useAuthStore();
+  const isAuthenticated = authStore.isAuthenticated;
 
-  const publicPages = ["/", "/community", "/community/postcreate"];
+  const publicPages = ["/login-processing", "/login-failure", "/login"];
+  const isPublicPage = publicPages.includes(to.path);
 
-  // 현재 경로가 예외 처리 대상인지 확인
-  // const isPublicPage = publicPages.includes(to.path);
-  const isPublicPage = true;
-
+  // 인증된 상태이거나 모두에게 공개된 페이지의 경우 통과
+  // 인증이 필요 없는 페이지인 경우
   if (isPublicPage) {
-    next(); // 예외 처리 경로라면 통과
-  } else {
-    // Token 확인 로직
-    if (authStore.accessToken && authStore.refreshToken) {
-      next(); // accessToken과 refreshToken이 모두 있으면 통과
-    } else if (authStore.accessToken && authStore.role == "GUEST") {
-      if (to.name !== "SignUp") {
-        next({ name: "SignUp" }); // accessToken만 있고 refreshToken이 없으면 /signup으로 리다이렉트
+    next();
+  } else if (isAuthenticated) {
+    // 인증된 사용자일 경우
+    if (authStore.isGuest) {
+      // GUEST인 사용자는 SignUp 페이지로 리디렉션
+      if (to.path == "/signup") {
+        next();
       } else {
-        next(); // 이미 /signup 페이지로 가는 경우에는 그대로 진행
+        alert("개인 정보를 먼저 입력하셔야 합니다!");
+        next({ name: "SignUp" });
       }
     } else {
-      if (to.name !== "Login") {
-        next({ name: "Login" }); // 둘 다 없으면 /login으로 리다이렉트
-      } else {
-        next(); // 이미 /login 페이지로 가는 경우에는 그대로 진행
-      }
+      // 인증된 사용자는 정상적으로 페이지에 접근
+      next();
     }
+  } else {
+    // 인증되지 않은 사용자일 경우 로그인 페이지로 리디렉션
+    alert("로그인을 먼저 하셔야 합니다!");
+    next({ name: "Login" });
   }
 });
 

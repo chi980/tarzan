@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <button @click="clickBtn">토큰 확인</button>
+    <button @click="clickBtn">상태 확인</button>
     <button @click="clickLogOutBtn">로그아웃</button>
     <button @click="checkBack">확인하기</button>
   </div>
@@ -45,6 +45,10 @@ const clickGoogleBtn = () => {
 
 import { useAuthStore } from "@/stores/authStore";
 const authStore = useAuthStore();
+const clickBtn = () => {
+  alert(`${authStore.print}`);
+};
+
 const clickLogOutBtn = () => {
   authStore.clearAuth();
   // 로그아웃 후 로그인 페이지로 리다이렉트
