@@ -110,6 +110,11 @@ const routes = [
       refreshToken: route.query.refreshToken,
     }),
   },
+  {
+    path: "/login-failure",
+    name: "LoginFailure",
+    component: () => import("@/pages/LoginFailure.vue"),
+  },
 
   {
     path: "/community",
