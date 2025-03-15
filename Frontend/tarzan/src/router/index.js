@@ -207,7 +207,7 @@ router.beforeEach((to, from, next) => {
 
   // 인증된 상태이거나 모두에게 공개된 페이지의 경우 통과
   // 인증이 필요 없는 페이지인 경우
-  if (isPublicPage) {
+  if (true) {
     next();
   } else if (isAuthenticated) {
     // 인증된 사용자일 경우
