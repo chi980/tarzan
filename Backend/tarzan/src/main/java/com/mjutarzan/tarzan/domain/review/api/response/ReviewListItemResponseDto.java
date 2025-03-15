@@ -50,6 +50,9 @@ public class ReviewListItemResponseDto {
     @JsonProperty("review_disadvantage_tags")
     private List<Tag> disadvantageTagList;
 
+    @JsonProperty("review_writer_nickname")
+    private String writerNickname;
+
     @JsonProperty("review_is_writer")
     private Boolean isWriter;
 
@@ -57,7 +60,7 @@ public class ReviewListItemResponseDto {
     public ReviewListItemResponseDto(Long id, String imgUrl, Integer score, LeaseType leaseType, Integer deposit,
                                      Integer managementFee, Integer residencePeriod, Integer floor,
                                      String advantage, List<Tag> advantageTagList, String disadvantage,
-                                     List<Tag> disadvantageTagList, Boolean isWriter) {
+                                     List<Tag> disadvantageTagList, String writerNickname, Boolean isWriter) {
         this.id = id;
         this.imgUrl = imgUrl;
         this.score = score;
@@ -70,6 +73,7 @@ public class ReviewListItemResponseDto {
         this.advantageTagList = advantageTagList;
         this.disadvantage = disadvantage;
         this.disadvantageTagList = disadvantageTagList;
+        this.writerNickname = writerNickname;
         this.isWriter = isWriter;
     }
 
@@ -86,6 +90,7 @@ public class ReviewListItemResponseDto {
         this.advantageTagList = review.getAdvantageTagList();
         this.disadvantage = review.getDisadvantage();
         this.disadvantageTagList = review.getDisadvantageTagList();
+        this.writerNickname = review.getWriter().getNickname();
         this.isWriter = isWriter;
     }
 }
