@@ -10,8 +10,11 @@
 import axios from "axios";
 import router from "@/router/index";
 import { useAuthStore } from "@/stores/authStore";
+
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api", // 백엔드 API의 기본 URL 설정
+  baseURL: apiUrl, // 백엔드 API의 기본 URL 설정
   timeout: 5000, // 요청 타임아웃 설정
   headers: {
     "Content-Type": "application/json",

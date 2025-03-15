@@ -124,7 +124,10 @@ interface SearchResult {
 const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
 
 // 위도와 경도를 저장할 상태 변수
-const selectedLocation = ref<{ latitude: string | null; longitude: string | null }>({
+const selectedLocation = ref<{
+  latitude: string | null;
+  longitude: string | null;
+}>({
   latitude: null,
   longitude: null,
 });

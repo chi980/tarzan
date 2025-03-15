@@ -7,6 +7,7 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "types": ["vite/client"],
 
     /* Bundler mode */
     "moduleResolution": "node",
@@ -35,5 +36,10 @@
     "src/**/*.js",
     "kakao.maps.d.ts"
   ],
+
+  "exclude": [
+    "node_modules" // 노드 모듈 제외
+  ],
+
   "references": [{ "path": "./tsconfig.node.json" }]
 }

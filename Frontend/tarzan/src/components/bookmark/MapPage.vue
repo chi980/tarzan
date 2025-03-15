@@ -20,7 +20,7 @@
     <div v-if="popupVisible" class="popup-overlay" @click="closePopup">
       <div class="popup" @click.stop>
         <div class="addr">{{ house_address }}</div>
-        <p>이곳으로 등록할까요?</p>
+        <p>이 주소를 북마크에 추가할까요?</p>
         <div class="button-group">
           <button @click="closePopup" class="cancel-button">취소</button>
           <button @click="addBookmark" class="add-button">추가</button>
@@ -34,7 +34,6 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
-import { watch } from "vue";
 
 let popupTimer: number | null = null;
 let currentMarker: any = null;
@@ -46,6 +45,9 @@ const house_longitude = ref<number | null>(null);
 const house_name = ref("");
 const house_category = ref("");
 const router = useRouter();
+
+const showOverlay = ref(false);
+const searchQuery = ref("");
 
 onMounted(() => {
   loadKakaoMap(mapContainer.value as HTMLElement);

@@ -147,4 +147,21 @@ public class Review extends CommonEntity{
     public List<Tag> getDisadvantageTagList() {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", score=" + score +
+                ", leaseType=" + leaseType +
+                ", rent=" + rent +
+                ", deposit=" + deposit +
+                ", managementFee=" + managementFee +
+                ", residencePeriod=" + residencePeriod +
+                ", floor=" + floor +
+                ", advantage='" + advantage + '\'' +
+                ", disadvantage='" + disadvantage + '\'' +
+                '}';
+    }
 }
