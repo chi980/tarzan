@@ -18,7 +18,12 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 //    @Query(value = "SELECT * FROM review WHERE review_house = :houseId", nativeQuery = true)
 //    Page<Review> findReviewsByHouseId(@Param("houseId") Long houseId, Pageable pageable);
 
-    @Query("SELECT r FROM Review r WHERE r.house.id = :houseId ORDER BY r.createdAt DESC")
+    @Query("""
+    SELECT r FROM Review r 
+    JOIN FETCH r.writer 
+    WHERE r.house.id = :houseId 
+    ORDER BY r.createdAt DESC
+    """)
     Page<Review> findReviewsByHouseId(@Param("houseId") Long houseId, Pageable pageable);
 
 }
