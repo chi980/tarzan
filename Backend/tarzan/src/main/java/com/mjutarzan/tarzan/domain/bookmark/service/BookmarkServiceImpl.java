@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+// @Transactional(readOnly = true)
 public class BookmarkServiceImpl implements BookmarkService{
 
     private final ApiHouseRepository apiHouseRepository;
@@ -132,11 +132,24 @@ public class BookmarkServiceImpl implements BookmarkService{
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
-        Page<BookmarkListItemResponseDto> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
+        Page<Bookmark> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
 
         return BookmarkListResponseDto.builder()
                 .count(bookmarkPages.getTotalElements())
-                .list(bookmarkPages.getContent())
+                .list(bookmarkPages.getContent().stream()
+                        .map(bookmark -> BookmarkListItemResponseDto
+                                .builder()
+                                .id(bookmark.getId())
+                                .houseId(bookmark.getHouse().getId())
+                                .houseName(bookmark.getHouse().getName())
+                                .houseAddress(bookmark.getHouse().getAddress())
+                                .houseCategory(bookmark.getHouse().getCategory())
+//                                이거 고민해보자
+                                .isHouseRegister(bookmark.getUser().getEmail().equals(loginedUser.getEmail()))
+                                .createdAt(bookmark.getCreatedAt())
+                                .build())
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 

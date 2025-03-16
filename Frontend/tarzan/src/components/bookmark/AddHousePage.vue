@@ -57,12 +57,17 @@ import CustomSelectBox from '@/components/common/CustomSelectBox.vue';
 
 // const searchQuery = ref(""); 검색기능 사용시
 
-const house_address = ref('');
-const house_name = ref('');
 const showError = ref(false);  // 오류 메시지 표시 여부
 const route = useRoute();      // useRoute: 현재 URL 정보
 const router = useRouter();    // useRouter: 페이지 이동
 
+const house_address = ref("");
+const house_name = ref("");
+const house_latitude = ref(null);
+const house_longitude = ref(null);
+const house_category = ref("");
+
+const list = ref([]); // ✅ 추가한 집 목록을 저장
 
 // 건물 종류 선택지를 배열로 정의
 const HouseCategoryOptions = [
@@ -78,30 +83,33 @@ const selectedBuildingCategoryIdx = ref(null);
 // 선택된 건물 종류를 처리하는 메서드
 const handleBuildingCategorySelected = (idx: number) => {
   selectedBuildingCategoryIdx.value = idx;
+  house_category.value = HouseCategoryOptions[idx].value;  // house_category 값 업데이트
   console.log('선택된 건물 종류:', HouseCategoryOptions[idx].name);
 };
+
 
 // "직접 추가하기" 버튼 클릭 시
 const handleAddHouseClick = async () => {
   if (!house_name.value) {
     showError.value = true;
-  } else {
-    showError.value = false;
+    return;
+  }
 
-    try {
-      const response = await axiosInstance.post('/v1/bookmark/user', {
-        house_name: house_name.value,
-        house_address: house_address.value,
-        house_category: HouseCategoryOptions[selectedBuildingCategoryIdx.value].name,
-        house_latitude: route.query.house_latitude,
-        house_longitude: route.query.house_longitude,
-      });
+  const newHouse = {
+    house_name: house_name.value,
+    house_address: house_address.value,
+    house_category: house_category.value,
+    house_latitude: route.query.house_latitude,
+    house_longitude: route.query.house_longitude,
+  };
 
-      console.log("응답:", response.data);
-      router.push({name: 'BookMark'});
-    } catch (error) {
-      console.error("저장 실패:", error);
-    }
+  try {
+    const response = await axiosInstance.post("/v1/bookmark/user", newHouse); // 응답을 response 변수에 할당
+    list.value.push(newHouse); // ✅ 새로운 집을 목록에 추가
+    router.push({ name: "BookMark", query: { list: JSON.stringify(list.value) } }); // ✅ BookMark 페이지로 데이터 전달
+    console.log("Response:", response.data);
+  } catch (error) {
+    console.error("저장 실패:", error);
   }
 };
 

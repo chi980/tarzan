@@ -34,6 +34,23 @@ import MoverTap from "@/components/bookmark/MoverTap.vue";
 import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
 
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const list = ref([]);
+
+watch(
+  () => route.query.list,
+  (newHouses) => {
+    console.log("북마크한 집 목록: ", newHouses);
+    if (newHouses) {
+      list.value = JSON.parse(newHouses as string);
+    }
+  },
+  { immediate: true }
+);
+
 // 탭 데이터 배열 초기화
 const tabs: Tab[] = [
   { name: "집 선택", component: HouseTap },
