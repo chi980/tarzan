@@ -38,7 +38,8 @@ const routes = [
         component: () => import("@/components/bookmark/AddHousePage.vue"),
       },
       {
-        path: "check/cost",
+        path: ":bookmarkIdx",
+        name: 'CheckCostPage',
         component: () => import("@/components/bookmark/CheckCostPage.vue"),
       },
       {
