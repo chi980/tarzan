@@ -14,7 +14,7 @@
           <textarea class="input-content" type="text" placeholder="내용를 입력해주세요." v-model="reviewStore.reviewData.review_advantage" />
 
           <TagButtonGroup 
-            v-model:selectedButtons="reviewStore.reviewData.review_advantage_tag"
+            v-model:selectedButtons="reviewStore.reviewData.review_advantage_tags"
             :buttons="advantageButtons"
             :multiple="true">
             <template v-slot:default="{ button }">
@@ -36,7 +36,7 @@
           <h2 class="input-title">단점 (50자 이상)</h2>
           <textarea class="input-content" type="text" placeholder="내용를 입력해주세요." v-model="reviewStore.reviewData.review_disadvantage" />
           <TagButtonGroup 
-            v-model:selectedButtons="reviewStore.reviewData.review_disadvantage_tag"
+            v-model:selectedButtons="reviewStore.reviewData.review_disadvantage_tags"
             :buttons="disadvantageButtons"
             :multiple="true">
             <template v-slot:default="{ button }">
@@ -74,40 +74,40 @@ const reviewStore = useReviewStore();
 
 // 장점 리스트
 const advantageButtons = ref([
-  { label: '❌ 없음', value: '1' },
-  { label: '🐛 벌레', value: '22' },
-  { label: '🧹 건물 관리', value: '2' },
-  { label: '🚘 주차', value: '3' },
-  { label: '🔇 방음', value: '4' },
-  { label: '🚨 치안', value: '5' },
-  { label: '👮🏻 경비실', value: '6' },
-  { label: '🌳 산책로', value: '7' },
-  { label: '🪟 환기', value: '8' },
-  { label: '🤫 조용한 동네', value: '9' },
+  { label: '❌ 없음', value: 'NONE' },
+  { label: '🐛 벌레', value: 'BUG' },
+  { label: '🧹 건물 관리', value: 'BUILDING_MANAGEMENT' },
+  { label: '🚘 주차', value: 'PARKING' },
+  { label: '🔇 방음', value: 'SOUND_PROOF' },
+  { label: '🚨 치안', value: 'SECURITY' },
+  { label: '👮🏻 경비실', value: 'SECURITY_GUARD' },
+  { label: '🌳 산책로', value: 'TRAIL' },
+  { label: '🪟 환기', value: 'VENTILATION' },
+  { label: '🤫 조용한 동네', value: 'QUITE' },
   { label: '🥶 단열', value: 'CLEAN' },
-  { label: '🐶 반려동물 키우기', value: '10' },
-  { label: '🛗 엘레베이터', value: '11' },
-  { label: '🦠 곰팡이', value: '12' },
-  { label: '👟 평지', value: '13' },
+  { label: '🐶 반려동물 키우기', value: 'PREVENT_HEAT' },
+  { label: '🛗 엘레베이터', value: 'ELEVATOR' },
+  { label: '🦠 곰팡이', value: 'MOLD' },
+  { label: '👟 평지', value: 'FLAT' },
 ]);
 
 // 단점 리스트
 const disadvantageButtons = ref([
-  { label: '❌ 없음', value: '1' },
-  { label: '🐛 벌레', value: '22' },
-  { label: '🧹 건물 관리', value: '2' },
-  { label: '🚘 주차', value: '3' },
-  { label: '🔇 방음', value: '4' },
-  { label: '🚨 치안', value: '5' },
-  { label: '👮🏻 경비실', value: '6' },
-  { label: '🌳 산책로', value: '7' },
-  { label: '🪟 환기', value: '8' },
-  { label: '🤫 조용한 동네', value: '9' },
+  {  label: '❌ 없음', value: 'NONE' },
+  { label: '🐛 벌레', value: 'BUG' },
+  { label: '🧹 건물 관리', value: 'BUILDING_MANAGEMENT' },
+  { label: '🚘 주차', value: 'PARKING' },
+  { label: '🔇 방음', value: 'SOUND_PROOF' },
+  { label: '🚨 치안', value: 'SECURITY' },
+  { label: '👮🏻 경비실', value: 'SECURITY_GUARD' },
+  { label: '🌳 산책로', value: 'TRAIL' },
+  { label: '🪟 환기', value: 'VENTILATION' },
+  { label: '🤫 조용한 동네', value: 'QUITE' },
   { label: '🥶 단열', value: 'CLEAN' },
-  { label: '🐶 반려동물 키우기', value: '10' },
-  { label: '🛗 엘레베이터', value: '11' },
-  { label: '🦠 곰팡이', value: '12' },
-  { label: '👟 평지', value: '13' },
+  { label: '🐶 반려동물 키우기', value: 'PREVENT_HEAT' },
+  { label: '🛗 엘레베이터', value: 'ELEVATOR' },
+  { label: '🦠 곰팡이', value: 'MOLD' },
+  { label: '👟 평지', value: 'FLAT' },
 ]);
 
 // 선택된 태그
@@ -123,10 +123,7 @@ const submitReview = async () => {
   } catch (error) {
     alert("리뷰 등록에 실패했습니다.");
   }
-};
-
-const goToNextPage = () => {
-  router.push({ name: 'Review' });
+  console.log("🚀 CreateReview2:", reviewStore.reviewData);
 };
 </script>
 

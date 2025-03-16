@@ -6,7 +6,7 @@
       <img src="@/assets/icons/Filter/writer-icon.png" alt="기본 이미지" class="writer-img" v-else> -->
       <img :src="review.review_img_url || defaultImage" alt="후기 이미지" class="review-image" />
       <div class="writer-info">
-        <span class="username">{{ review.username }}</span>
+        <span class="username">{{ review.review_writer_nickname }}</span>
         <span class="residence-period">{{ review.review_residence_period }}</span>
         <StarRating v-model="rating"  :readonly="true" />
       </div>
