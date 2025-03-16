@@ -3,7 +3,6 @@ import { axiosInstance } from "@/plugins/axiosPlugin";
 // 리뷰 생성 API 호출 함수
 export const createReview = async (reviewData) => {
   try {
-    // 숫자 데이터를 API 요청 형식에 맞게 변환
     const formattedData = {
       // buildIdx: reviewData.buildIdx || 1, // 기본값 1
       buildIdx: 1, // 기본값 1
@@ -19,10 +18,8 @@ export const createReview = async (reviewData) => {
       review_disadvantage: reviewData.review_disadvantage,
       review_disadvantage_tag: reviewData.review_disadvantage_tag || []
     };
-    console.log("📢 전송 데이터:", reviewData); // 디버깅 로그 추가
+    console.log("📢 전송 데이터:", reviewData); 
 
-
-    // API 요청 (axiosInstance 사용)
     const response = await axiosInstance.post("/v1/reviews", formattedData);
     
     // 성공 시 응답 반환
