@@ -30,8 +30,7 @@ public abstract class House extends CommonEntity {
     @Column(name = "house_name", nullable = false)
     private String name;
 
-    @Lob
-    @Column(name = "house_address", nullable = false)
+    @Column(name = "house_address", nullable = false, columnDefinition = "TEXT")
     private String address;
 
     @Column(columnDefinition = "geometry(Point,4326)", name = "house_location", nullable = false)
