@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 @Getter
@@ -62,5 +62,5 @@ public class UpdateBookmarkRequestDto {
     private HouseDirection direction;
 
     @JsonProperty("bookmark_checklist")
-    private Map<Long, Boolean> checklist = new HashMap<>();
+    private Map<Long, Boolean> checklist = Collections.emptyMap();
 }
