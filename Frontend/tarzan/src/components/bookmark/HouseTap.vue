@@ -49,10 +49,10 @@ const list = ref([]);
 
 const fetchRecentHouses = async () => {
   const queryParams = {
-    size: "3",
-    page: "1",
-    sortBy: "최신순",
-    status: "CHECK_PENDING"
+    size: 3,
+    page: 1,
+    sortBy: '최신순',
+    status: 'CHECK_PENDING'
   };
 
   try {
