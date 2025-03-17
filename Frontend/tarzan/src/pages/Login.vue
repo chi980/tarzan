@@ -44,6 +44,7 @@ const clickGoogleBtn = () => {
 };
 
 import { useAuthStore } from "@/stores/authStore";
+import axiosPlugin, { axiosInstance } from "@/plugins/axiosPlugin";
 const authStore = useAuthStore();
 const clickBtn = () => {
   alert(`${authStore.print}`);
@@ -53,6 +54,12 @@ const clickLogOutBtn = () => {
   authStore.clearAuth();
   // 로그아웃 후 로그인 페이지로 리다이렉트
   alert("로그아웃 완료");
+};
+
+const checkBack = async () => {
+  const response = await axiosInstance.get("/check");
+  alert({ ...response });
+  console.log(response.status);
 };
 </script>
 
