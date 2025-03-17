@@ -21,6 +21,13 @@ public class MainController {
         return "ok";
     }
 
+
+    @GetMapping("/api/check")
+    @ResponseBody
+    public String checkApi(){
+        return "ok";
+    }
+
     @GetMapping("/api/data/house")
     @ResponseBody
     public String storeHouseList(){
