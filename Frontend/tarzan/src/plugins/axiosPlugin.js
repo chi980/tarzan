@@ -31,7 +31,7 @@ axiosInstance.interceptors.request.use(
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
     if (refreshToken) {
-      config.headers["x-refresh-token"] = refreshToken;
+      config.headers["X-refresh-token"] = refreshToken;
     }
 
     return config;

@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService{
         }
 
         loginedUser.updateUser(requestDto, jobLocation);
-        String refreshToken = jwtService.createRefreshToken();
+        String refreshToken = jwtService.generateRefreshToken();
         loginedUser.updateRefreshToken(refreshToken);
         userRepository.saveAndFlush(loginedUser);
         return RegisterUserResponseDto.builder()

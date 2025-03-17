@@ -11,7 +11,7 @@ jwt:
     header: Authorization
   refresh:
     expiration: 1209600000  # 2주
-    header: Authorization-refresh
+    header: X-Refresh-Token
 
 
 
