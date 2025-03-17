@@ -33,8 +33,9 @@ public class UserDto implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.getPassword();
+        return null;
     }
+
 
     @Override
     public String getUsername() {
@@ -64,7 +65,7 @@ public class UserDto implements UserDetails {
     public static UserDto getInstance(User user, String password){
         return UserDto.builder()
                 .email(user.getEmail())
-                .password(password)
+                .password(null)
                 .role(user.getRole())
                 .imageUrl(user.getImageUrl())
                 .nickname(user.getNickname())

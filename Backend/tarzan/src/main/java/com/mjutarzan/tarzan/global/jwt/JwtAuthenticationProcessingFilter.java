@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -63,24 +62,20 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("doFilterInternal in JwtAuthenticationProcessingFilter: {}", request.getRequestURI());
 
         boolean skipFilter = NO_CHECK_URLS.stream().anyMatch(request.getRequestURI()::startsWith);
-
         if (skipFilter) {
-            filterChain.doFilter(request, response); // 필터를 통과시킴
+            filterChain.doFilter(request, response);
             return;
         }
 
-        // -> RefreshToken이 없거나 유효하지 않다면(DB에 저장된 RefreshToken과 다르다면) null을 반환
-        // 사용자의 요청 헤더에 RefreshToken이 있는 경우는, AccessToken이 만료되어 요청한 경우밖에 없다.
-        // 따라서, 위의 경우를 제외하면 추출한 refreshToken은 모두 null
+        // RefreshToken이 없거나 유효하지 않다면(DB에 저장된 RefreshToken과 다르다면) null을 반환
+        log.info("refresh token is valid? {}", jwtService.isTokenValid(jwtService.extractRefreshToken(request).get(), true));
         String refreshToken = jwtService.extractRefreshToken(request)
                 .filter(token -> jwtService.isTokenValid(token, true))
                 .orElse(null);
 
-        // 리프레시 토큰이 요청 헤더에 존재했다면, 사용자가 AccessToken이 만료되어서
-        // RefreshToken까지 보낸 것이므로 리프레시 토큰이 DB의 리프레시 토큰과 일치하는지 판단 후,
+        // 보낸 만료되지않은 리프레시 토큰이 DB의 리프레시 토큰과 일치하는지 판단 후,
         // 일치한다면 AccessToken을 재발급해준다.
         if (refreshToken != null) {
             checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
@@ -105,12 +100,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      *  그 후 JwtService.sendAccessTokenAndRefreshToken()으로 응답 헤더에 보내기
      */
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
+        log.info("refresh token is valid. reissue access token");
         userRepository.findByRefreshToken(refreshToken)
                 .ifPresent(user -> {
-                    String reIssuedRefreshToken = reIssueRefreshToken(user);
+                    String reissuedRefreshToken = reissueRefreshToken(user);
                     jwtService.sendAccessAndRefreshToken(response, jwtService.generateAccessToken(user.getEmail()),
-                            reIssuedRefreshToken);
+                            reissuedRefreshToken);
                 });
+
     }
 
     /**
@@ -118,11 +115,11 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      * jwtService.generateRefreshToken()으로 리프레시 토큰 재발급 후
      * DB에 재발급한 리프레시 토큰 업데이트 후 Flush
      */
-    private String reIssueRefreshToken(User user) {
-        String reIssuedRefreshToken = jwtService.generateRefreshToken();
-        user.updateRefreshToken(reIssuedRefreshToken);
+    private String reissueRefreshToken(User user) {
+        String reissuedRefreshToken = jwtService.generateRefreshToken();
+        user.updateRefreshToken(reissuedRefreshToken);
         userRepository.saveAndFlush(user);
-        return reIssuedRefreshToken;
+        return reissuedRefreshToken;
     }
 
     /**
@@ -135,7 +132,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      */
     public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
                                                   FilterChain filterChain) throws ServletException, IOException {
-        log.info("checkAccessTokenAndAuthentication() 호출");
 
         boolean isAccessTokenValid = jwtService.extractAccessToken(request)
                 .filter(token -> jwtService.isTokenValid(token, false))
@@ -143,6 +139,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
         if (!isAccessTokenValid) {
             // 403 상태 코드와 함께 JSON 응답을 작성
+            log.info("refresh token is invalid. and access token is invalid. login again");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -152,11 +149,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             out.flush();
             return; // 응답을 보낸 후, 더 이상 다음 필터로 진행하지 않도록 반환
         }
+
+        log.info("refresh token is valid. access token also is valid");
         jwtService.extractAccessToken(request)
                 .filter(token -> jwtService.isTokenValid(token, false))
                 .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
                         .ifPresent(email -> userRepository.findByEmail(email)
                                 .ifPresent(this::saveAuthentication)));
+
         // AccessToken이 유효한 경우, 다음 필터로 진행
         filterChain.doFilter(request, response);
     }
@@ -182,19 +182,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             password = PasswordUtil.generateRandomPassword();
         }
 
-        UserDetails userDetailsUser = org.springframework.security.core.userdetails.User.builder()
-                .username(myUser.getEmail())
-                .password(password)
-                .roles(myUser.getRole().name())
-                .build();
-//
-//        log.info("user details: {}", userDetailsUser.getUsername());
-//        Authentication authentication =
-//                new UsernamePasswordAuthenticationToken(userDetailsUser, null,
-//                        authoritiesMapper.mapAuthorities(userDetailsUser.getAuthorities()));
-
+        // UserDto를 SecurityContext에 저장
         UserDto userDto = UserDto.getInstance(myUser, password);
-        log.info("user dto: {}", userDto);
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(userDto, null,
                         authoritiesMapper.mapAuthorities(userDto.getAuthorities()));
