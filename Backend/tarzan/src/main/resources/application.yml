@@ -5,6 +5,8 @@ spring:
   profiles:
     active: dev
 
+  jackson:
+    time-zone: "Asia/Seoul"  # 원하는 시간대 설정 (여기서는 서울)
 #jwt:
 #  access:
 #    expiration: 3600000  # 1시간

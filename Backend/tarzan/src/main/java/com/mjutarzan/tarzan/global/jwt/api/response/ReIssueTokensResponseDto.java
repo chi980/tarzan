@@ -5,14 +5,14 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-public class RefreshTokensResponseDto {
+public class ReIssueTokensResponseDto {
     @JsonProperty("access_token")
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
 
     @Builder
-    public RefreshTokensResponseDto(String accessToken, String refreshToken){
+    public ReIssueTokensResponseDto(String accessToken, String refreshToken){
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

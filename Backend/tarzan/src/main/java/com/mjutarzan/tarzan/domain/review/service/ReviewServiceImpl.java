@@ -10,7 +10,7 @@ import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
 import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,7 +36,7 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository reviewRepository;
 
     @Override
-    public ReviewListResponseDto getReviews(ReviewListRequestDto requestDto, UserDto loginedUserDto) {
+    public ReviewListResponseDto getReviews(ReviewListRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
         Page<Review> reviewPages = reviewRepository.findReviewsByHouseId(requestDto.getHouseIdx(), pageable);
@@ -54,14 +54,14 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewListItemResponseDto getReview(Long reviewId, UserDto loginedUserDto) {
+    public ReviewListItemResponseDto getReview(Long reviewId, CustomUserDetails loginedUserDto) {
         Review review = reviewRepository.findById(reviewId).orElseThrow(()->new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
         return new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail()));
     }
     
 
     @Override
-    public void createReview(ReviewRequestDto requestDto, UserDto loginedUserDto) {
+    public void createReview(ReviewRequestDto requestDto, CustomUserDetails loginedUserDto) {
         House house = houseRepository.findById(requestDto.getHouseId()).orElseThrow();
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
         reviewRepository.save(Review.builder()
@@ -82,7 +82,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public void updateReview(Long reviewId, UpdateReviewRequestDto requestDto, UserDto loginedUserDto) {
+    public void updateReview(Long reviewId, UpdateReviewRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 
@@ -95,7 +95,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public void deleteReview(Long reviewId, UserDto loginedUserDto) {
+    public void deleteReview(Long reviewId, CustomUserDetails loginedUserDto) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(()->new EntityNotFoundException("리뷰를 찾을 수 없습니다."));
 

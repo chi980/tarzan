@@ -11,7 +11,7 @@ import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
 import com.mjutarzan.tarzan.domain.board.repository.CommentRepository;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import jakarta.transaction.Transactional;
@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService{
     private final UserRepository userRepository;
 
     @Override
-    public void createComment(CommentRequestDto requestDto, UserDto loginedUserDto) {
+    public void createComment(CommentRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Board board = boardRepository.findById(requestDto.getBoardIdx()).orElseThrow();
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
 
@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void updateComment(Long commentIdx, UpdateCommentRequestDto requestDto, UserDto loginedUserDto) {
+    public void updateComment(Long commentIdx, UpdateCommentRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Comment comment = commentRepository.findById(commentIdx).orElseThrow();
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
@@ -61,7 +61,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public void deleteComment(Long commentIdx, UserDto loginedUserDto) {
+    public void deleteComment(Long commentIdx, CustomUserDetails loginedUserDto) {
         Comment comment = commentRepository.findById(commentIdx).orElseThrow();
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
@@ -73,7 +73,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public CommentListResponseDto getComments(CommentListRequestDto requestDto, UserDto loginedUserDto) {
+    public CommentListResponseDto getComments(CommentListRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
         Page<Comment> commentPage = commentRepository.findByBoard_Id(requestDto.getBoardIdx(), pageable);
@@ -92,7 +92,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
-    public CommentListResponseDto getComments(UserCommentRequestDto requestDto, UserDto loginedUserDto) {
+    public CommentListResponseDto getComments(UserCommentRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 

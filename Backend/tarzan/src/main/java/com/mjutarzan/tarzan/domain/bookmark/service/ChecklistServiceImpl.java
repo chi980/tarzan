@@ -6,7 +6,7 @@ import com.mjutarzan.tarzan.domain.bookmark.entity.ChecklistItem;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.ChecklistType;
 import com.mjutarzan.tarzan.domain.bookmark.repository.ChecklistItemRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ChecklistServiceImpl implements ChecklistService{
     private final ChecklistItemRepository checklistItemRepository;
 
     @Override
-    public Map<String, ChecklistResponseDto> getChecklist(ChecklistType checklistType, UserDto loginedUserDto) {
+    public Map<String, ChecklistResponseDto> getChecklist(ChecklistType checklistType, CustomUserDetails loginedUserDto) {
 
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
@@ -85,7 +85,7 @@ public class ChecklistServiceImpl implements ChecklistService{
     }
 
     @Override
-    public void createChecklist(ChecklistType checklistType, ChecklistRequestDto requestDto, UserDto loginedUserDto) {
+    public void createChecklist(ChecklistType checklistType, ChecklistRequestDto requestDto, CustomUserDetails loginedUserDto) {
 
         if(requestDto.getCount() != requestDto.getValueList().size()){
             throw new IllegalArgumentException("리스트간 개수가 다릅니다.");

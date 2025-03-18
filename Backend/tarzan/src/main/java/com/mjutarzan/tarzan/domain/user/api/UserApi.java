@@ -10,7 +10,7 @@ import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.RegisterUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.service.UserService;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class UserApi {
     private final CommentService commentService;
 
     @GetMapping("/user")
-    public ResponseEntity<?> getUser( @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getUser( @AuthenticationPrincipal CustomUserDetails userDto){
         UserResponseDto userResponseDto = userService.getUser(userDto);
         return ResponseEntity.ok().body(
                 BaseResponseDto.builder()
@@ -45,7 +45,7 @@ public class UserApi {
     }
 
     @PostMapping("/user/check")
-    public ResponseEntity<?> checkUnique(@RequestBody(required = true) String nickname, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> checkUnique(@RequestBody(required = true) String nickname, @AuthenticationPrincipal CustomUserDetails userDto){
         if (nickname == null || nickname.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
                             .success(false)
@@ -69,7 +69,7 @@ public class UserApi {
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserRequestDto registerUserRequestDto, BindingResult bindingResult , @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterUserRequestDto registerUserRequestDto, BindingResult bindingResult , @AuthenticationPrincipal CustomUserDetails userDto){
         log.info("{}", "registerUser 진입");
         log.info("{}", registerUserRequestDto.toString());
         if (bindingResult.hasErrors()) {
@@ -88,7 +88,7 @@ public class UserApi {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequestDto updateUserRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequestDto updateUserRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         userService.updateUser(updateUserRequestDto, userDto);
 
@@ -99,7 +99,7 @@ public class UserApi {
     }
 
     @GetMapping("/user/board")
-    public ResponseEntity<?> getUserBoards(UserBoardRequestDto userBoardRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getUserBoards(UserBoardRequestDto userBoardRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
         BoardListResponseDto result = boardService.getBoards(userBoardRequestDto, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
@@ -110,7 +110,7 @@ public class UserApi {
     }
 
     @GetMapping("/user/comments")
-    public ResponseEntity<?> getUserComments(UserCommentRequestDto userCommentRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getUserComments(UserCommentRequestDto userCommentRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
         CommentListResponseDto result = commentService.getComments(userCommentRequestDto, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()

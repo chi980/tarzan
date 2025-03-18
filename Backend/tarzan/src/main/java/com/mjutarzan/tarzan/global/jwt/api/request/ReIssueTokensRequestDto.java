@@ -10,7 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshTokensRequestDto {
+public class ReIssueTokensRequestDto {
+
+    private String email;
+
     @JsonProperty("refresh_token")
     private String refreshToken;
 }

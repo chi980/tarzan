@@ -5,7 +5,7 @@ import com.mjutarzan.tarzan.domain.board.api.request.CommentRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.UpdateCommentRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.response.CommentListResponseDto;
 import com.mjutarzan.tarzan.domain.board.service.CommentService;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class CommentApi {
     private final CommentService commentService;
 
     @GetMapping("/comments")
-    public ResponseEntity<Object> getComments(@ModelAttribute CommentListRequestDto commentListRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> getComments(@ModelAttribute CommentListRequestDto commentListRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
         CommentListResponseDto result = commentService.getComments(commentListRequestDto, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
@@ -35,7 +35,7 @@ public class CommentApi {
     }
 
     @PostMapping("/comments")
-    public ResponseEntity<Object> createComment(@RequestBody @Valid CommentRequestDto commentRequestDto, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto) {
+    public ResponseEntity<Object> createComment(@RequestBody @Valid CommentRequestDto commentRequestDto, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDto) {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
@@ -53,7 +53,7 @@ public class CommentApi {
     }
 
     @PutMapping("/comments/{commentIdx}")
-    public ResponseEntity<Object> updateComment(@PathVariable Long commentIdx, @RequestBody @Valid UpdateCommentRequestDto updateCommentRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> updateComment(@PathVariable Long commentIdx, @RequestBody @Valid UpdateCommentRequestDto updateCommentRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         commentService.updateComment(commentIdx, updateCommentRequestDto, userDto);
 
@@ -65,7 +65,7 @@ public class CommentApi {
     }
 
     @DeleteMapping("/comments/{commentIdx}")
-    public ResponseEntity<Object> deleteComment(@PathVariable Long commentIdx, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> deleteComment(@PathVariable Long commentIdx, @AuthenticationPrincipal CustomUserDetails userDto){
 
         commentService.deleteComment(commentIdx, userDto);
 

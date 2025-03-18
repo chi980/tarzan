@@ -1,7 +1,6 @@
-package com.mjutarzan.tarzan.domain.user.model.dto;
+package com.mjutarzan.tarzan.domain.user.entity;
 
 
-import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import lombok.Builder;
@@ -15,9 +14,9 @@ import java.util.Collection;
 @Getter
 @Builder
 @ToString(of = {"email", "role", "nickname","gu"})
-public class UserDto implements UserDetails {
-    private String email;
-    private String password;
+public class CustomUserDetails implements UserDetails {
+    private String email; // 사용자 이름
+    private String password; // 비밀번호
     private Role role;
     private String imageUrl;
     private String nickname;
@@ -42,30 +41,34 @@ public class UserDto implements UserDetails {
         return this.getEmail();
     }
 
+    // 계정 만료 여부
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    // 계정 잠김 여부
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    // 비밀번호 만료 여부
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    // 계정 활성화 여부
     @Override
     public boolean isEnabled() {
         return true;
     }
 
-    public static UserDto getInstance(User user, String password){
-        return UserDto.builder()
+    public static CustomUserDetails getInstance(User user, String password){
+        return CustomUserDetails.builder()
                 .email(user.getEmail())
-                .password(null)
+                .password(password)
                 .role(user.getRole())
                 .imageUrl(user.getImageUrl())
                 .nickname(user.getNickname())

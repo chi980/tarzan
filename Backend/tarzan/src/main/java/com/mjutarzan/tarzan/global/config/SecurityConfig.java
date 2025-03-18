@@ -3,8 +3,9 @@ package com.mjutarzan.tarzan.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
-import com.mjutarzan.tarzan.global.jwt.JwtAuthenticationProcessingFilter;
-import com.mjutarzan.tarzan.global.jwt.service.JwtService;
+import com.mjutarzan.tarzan.domain.user.service.CustomUserDetailsService;
+import com.mjutarzan.tarzan.global.jwt.JwtAuthenticationFilter;
+import com.mjutarzan.tarzan.global.jwt.JwtTokenProvider;
 import com.mjutarzan.tarzan.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
 import com.mjutarzan.tarzan.global.login.handler.LoginFailureHandler;
 import com.mjutarzan.tarzan.global.login.handler.LoginSuccessHandler;
@@ -44,7 +45,8 @@ public class SecurityConfig {
     private String frontBaseUrl;
 
     private final LoginService loginService;
-    private final JwtService jwtService;
+    private final JwtTokenProvider jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
@@ -58,10 +60,10 @@ public class SecurityConfig {
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // ⭐️⭐️⭐️
 
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
-                .authorizeHttpRequests(authz -> authz
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/error").permitAll()
 
-                        .requestMatchers("/sign-up", "/api/test/**", "/api/data/**", "/api/fraud/**", "/api/v1/building/**", "/api/v1/house/**", "/api/v1/reviews/**").permitAll()
+                        .requestMatchers("/sign-up", "/api/auth/**","/api/test/**", "/api/data/**", "/api/fraud/**", "/api/v1/building/**", "/api/v1/house/**", "/api/v1/reviews/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -139,8 +141,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthenticationProcessingFilter jwtAuthenticationProcessingFilter() {
-        JwtAuthenticationProcessingFilter jwtAuthenticationFilter = new JwtAuthenticationProcessingFilter(jwtService, userRepository);
+    public JwtAuthenticationFilter jwtAuthenticationProcessingFilter() {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtService, customUserDetailsService);
         return jwtAuthenticationFilter;
     }
 
