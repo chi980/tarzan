@@ -1,62 +1,94 @@
-// src/plugins/axiosPlugin.js
-
-// import axiosInstance from "@/axios/axiosInstance";
-
-// export default {
-//   install: (app) => {
-//     app.config.globalProperties.$axios = axiosInstance;
-//   },
-// };
 import axios from "axios";
 import router from "@/router/index";
 import { useAuthStore } from "@/stores/authStore";
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
 const axiosInstance = axios.create({
-  baseURL: apiUrl, // 백엔드 API의 기본 URL 설정
+  baseURL: import.meta.env.VITE_API_BASE_URL, // 백엔드 API의 기본 URL 설정
+  withCredentials: true, // HttpOnly 쿠키 자동 포함
   timeout: 5000, // 요청 타임아웃 설정
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// 요청 인터셉터 설정
+// ✅ 요청 인터셉터 설정
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-
+    const authStore = useAuthStore();
+    const accessToken = authStore.getAccessToken;
+    console.log(`accessToken: ${accessToken}`);
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
-    if (refreshToken) {
-      config.headers["X-refresh-token"] = refreshToken;
-    }
-
     return config;
   },
   (error) => {
+    console.error("accessHeader가 없습니다.");
     return Promise.reject(error);
   }
 );
 
+// ✅ 응답 인터셉터 설정 (401 처리 + 토큰 자동 갱신)
 axiosInstance.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    const authStore = useAuthStore();
-
-    // 401 오류 처리
+  (error) => {
+    console.log("error발생!");
     if (error.response && error.response.status === 401) {
-      // Refresh token이 없는 경우 로그인 페이지로 리다이렉트
-      router.push("/login");
-      return Promise.reject(error);
+      return refreshTokenAndRetry(error);
     }
-
     return Promise.reject(error);
   }
 );
+
+function refreshTokenAndRetry(error) {
+  const authStore = useAuthStore();
+  const axiosNewInstance = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL, // 기본 URL 설정
+    withCredentials: true,
+    timeout: 5000,
+  });
+
+  return new Promise((resolve, reject) => {
+    if (!authStore.getEmail) {
+      reject(new Error("email이 존재하지 않습니다."));
+      return;
+    }
+
+    axiosNewInstance
+      .post("/auth/refresh", {
+        email: authStore.getEmail,
+      })
+      .then((res) => {
+        console.log("access token을 새로 발급받았씁니다.");
+        const accessToken = res.data.data.access_token;
+        authStore.setAccessToken(accessToken);
+
+        // 기존 요청의 config에서 Authorization 헤더를 업데이트
+        error.config.headers["Authorization"] = `Bearer ${accessToken}`;
+
+        // 실패한 요청을 재시도
+        resolve(axios(error.config)); // 실패한 요청을 재시도
+      })
+      .catch((err) => {
+        if (authStore.getEmail) console.error("발급받지 못했씁니다");
+        alert("발급받지 못해서 재로그인합니다.");
+
+        axiosNewInstance
+          .post("/auth/logout", {
+            email: authStore.getEmail,
+          })
+          .then(() => {
+            authStore.logout();
+            router.push({ path: "/login" });
+            reject(err); // 에러 처리
+          })
+          .catch((logoutErr) => {
+            reject(logoutErr); // 로그아웃 오류 처리
+          });
+      });
+  });
+}
+
 export default {
   install: (app) => {
     // 전역 프로퍼티에 axios 인스턴스를 추가

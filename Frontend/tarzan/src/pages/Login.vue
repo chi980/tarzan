@@ -44,22 +44,24 @@ const clickGoogleBtn = () => {
 };
 
 import { useAuthStore } from "@/stores/authStore";
-import axiosPlugin, { axiosInstance } from "@/plugins/axiosPlugin";
-const authStore = useAuthStore();
 const clickBtn = () => {
-  alert(`${authStore.print}`);
+  const authStore = useAuthStore();
+  console.log(authStore.getUser);
 };
 
-const clickLogOutBtn = () => {
-  authStore.clearAuth();
-  // 로그아웃 후 로그인 페이지로 리다이렉트
-  alert("로그아웃 완료");
-};
-
+const clickLogOutBtn = () => {};
+import { axiosInstance } from "@/plugins/axiosPlugin";
 const checkBack = async () => {
-  const response = await axiosInstance.get("/check");
-  alert({ ...response });
-  console.log(response.status);
+  alert("확인");
+
+  try {
+    const response = await axiosInstance.get("/check");
+
+    console.log("API 호출 성공:", response);
+  } catch (error) {
+    // alert("API 호출 실패: " + error);
+    console.log(error);
+  }
 };
 </script>
 
