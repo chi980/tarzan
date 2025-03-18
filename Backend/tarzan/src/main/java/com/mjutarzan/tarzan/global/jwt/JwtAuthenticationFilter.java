@@ -58,16 +58,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 유효한 토큰에서 이메일을 추출
                 log.info("유효한 토큰에서 이메일을 추출");
 
-                Optional<String> emailOpt = jwtTokenProvider.getEmail(tokenOpt.get());
-
-                if(emailOpt.isPresent()){
-                    Optional<CustomUserDetails> customUserDetails = customUserDetailsService.loadUserByEmail(emailOpt.get());
-                    if(customUserDetails.isPresent()){
-                        this.saveAuthentication(customUserDetails.get());
-                    }else{
-                        handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "USER not found");  // 사용자 미발견 시 에러 응답
-                        return;
-                    }
+                String email = jwtTokenProvider.getEmail(tokenOpt.get());
+                log.info("email: {}", email);
+                Optional<CustomUserDetails> customUserDetails = customUserDetailsService.loadUserByEmail(email);
+                if(customUserDetails.isPresent()){
+                    log.info("customUserDetails가 있습니다.");
+                    this.saveAuthentication(customUserDetails.get());
+                }else{
+                    handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "USER not found");  // 사용자 미발견 시 에러 응답
+                    return;
                 }
 
             } else {

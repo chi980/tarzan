@@ -14,10 +14,11 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://127.0.0.1:5173")  // 허용할 프론트엔드 도메인
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")  // 허용할 HTTP 메소드
-                        .allowedHeaders("*")  // 허용할 헤더
-                        .allowCredentials(true);  // 인증 정보 허용 (옵션)
+                        .allowedOrigins("http://localhost:5173", "https://tazan.site")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowCredentials(true) // ✅ 쿠키 전송 허용
+                        .allowedHeaders("*")
+                        .exposedHeaders("Set-Cookie", "Authorization"); // ✅ 쿠키, 토큰 등 헤더 노출
             }
         };
     }

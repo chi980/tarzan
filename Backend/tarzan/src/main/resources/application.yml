@@ -7,19 +7,12 @@ spring:
 
   jackson:
     time-zone: "Asia/Seoul"  # 원하는 시간대 설정 (여기서는 서울)
-#jwt:
-#  access:
-#    expiration: 3600000  # 1시간
-#    header: Authorization
-#  refresh:
-#    expiration: 1209600000  # 2주
-#    header: X-Refresh-Token
 jwt:
   access:
-    expiration: 30000  # 30초 (30,000ms)
+    expiration: 3600000  # 30초 (30,000ms)
     header: Authorization
   refresh:
-    expiration: 60000  # 1분 (60,000ms)
+    expiration: 1209600000  # 2주
     header: X-refresh-token
 
 

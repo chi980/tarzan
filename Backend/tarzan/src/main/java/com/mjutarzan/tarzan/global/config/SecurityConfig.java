@@ -22,6 +22,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -59,27 +60,31 @@ public class SecurityConfig {
 //                .httpBasic(HttpBasicConfigurer::disable)
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // ⭐️⭐️⭐️
 
-                .csrf(csrf -> csrf.disable()) // CSRF 비활성화
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않음
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/error").permitAll()
 
                         .requestMatchers("/sign-up", "/api/auth/**","/api/test/**", "/api/data/**", "/api/fraud/**", "/api/v1/building/**", "/api/v1/house/**", "/api/v1/reviews/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
+                .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 비활성화
+                .httpBasic(AbstractHttpConfigurer::disable) // Http Basic 인증 비활성화
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler) // OAuth2 로그인 성공 핸들러
                         .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패 핸들러
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)) // OAuth2 사용자 정보 처리
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않음
                 );
+
 //                .headers(headers -> headers
 //                        .frameOptions().disable() // H2 콘솔 접근을 허용하기 위해 헤더 설정 변경
 //                );
 
         // JWT 필터와 커스텀 필터 설정
-        http.addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http
 //        http.addFilterBefore(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
 
         return http.build();

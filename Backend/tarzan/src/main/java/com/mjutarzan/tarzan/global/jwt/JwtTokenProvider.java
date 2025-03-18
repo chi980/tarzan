@@ -81,7 +81,7 @@ public class JwtTokenProvider {
     public Cookie generateRefreshTokenCookie(String refreshToken) {
         Cookie refreshTokenCookie = new Cookie(REFRESH_HEADER, refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);  // HTTPS에서만 전송
+        refreshTokenCookie.setSecure(false);  // HTTPS에서만 전송 -> true로 바꿀것
         refreshTokenCookie.setPath("/api/auth/refresh");  // `/api/auth/refresh` 경로에서만 쿠키 접근 가능
         refreshTokenCookie.setMaxAge(REFRESH_EXPIRATION);
         return refreshTokenCookie;
@@ -90,12 +90,12 @@ public class JwtTokenProvider {
     /**
      * Jwt에서 사용자명(이메일) 추출
      */
-    public Optional<String> getEmail(String accessToken) {
-        return Optional.ofNullable(JWT.require(Algorithm.HMAC512(SECRET_KEY))
+    public String getEmail(String accessToken) {
+        return JWT.require(Algorithm.HMAC512(SECRET_KEY))
                 .build()
                 .verify(accessToken)
-                .getClaim(EMAIL_CLAIM)
-                .asString());
+                .getSubject()
+                .toString();
 
     }
 
@@ -104,7 +104,6 @@ public class JwtTokenProvider {
      */
 
     public boolean validateToken(String token) {
-        System.out.println("token = " + token);
         try {
             JWT.require(Algorithm.HMAC512(SECRET_KEY)).build().verify(token);
             return true;
@@ -133,6 +132,7 @@ public class JwtTokenProvider {
      *  헤더에서 토큰 추출
      */
     public Optional<String> resolveToken(HttpServletRequest request) {
+        log.info("resolve 하기전 token: {}", request.getHeader(ACCESS_HEADER));
         return Optional.ofNullable(request.getHeader(ACCESS_HEADER))
                 .filter(token -> token.startsWith(BEARER))
                 .map(refreshToken -> refreshToken.replace(BEARER, ""));

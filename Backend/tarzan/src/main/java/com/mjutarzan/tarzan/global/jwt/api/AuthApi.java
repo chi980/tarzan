@@ -32,7 +32,7 @@ public class AuthApi {
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())  // ✅ 쿠키 설정
                 .body(BaseResponseDto.builder()
                     .success(true)
-                    .data(null)
+                    .data(response)
                     .build()
                 );
     }
