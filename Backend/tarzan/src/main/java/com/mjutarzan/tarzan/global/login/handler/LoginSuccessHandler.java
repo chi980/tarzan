@@ -2,7 +2,7 @@ package com.mjutarzan.tarzan.global.login.handler;
 
 
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
-import com.mjutarzan.tarzan.global.jwt.JwtService;
+import com.mjutarzan.tarzan.global.jwt.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

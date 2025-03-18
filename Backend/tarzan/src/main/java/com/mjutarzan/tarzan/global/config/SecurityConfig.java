@@ -4,7 +4,7 @@ package com.mjutarzan.tarzan.global.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.jwt.JwtAuthenticationProcessingFilter;
-import com.mjutarzan.tarzan.global.jwt.JwtService;
+import com.mjutarzan.tarzan.global.jwt.service.JwtService;
 import com.mjutarzan.tarzan.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
 import com.mjutarzan.tarzan.global.login.handler.LoginFailureHandler;
 import com.mjutarzan.tarzan.global.login.handler.LoginSuccessHandler;

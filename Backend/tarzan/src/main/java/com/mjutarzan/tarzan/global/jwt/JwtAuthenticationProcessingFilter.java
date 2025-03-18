@@ -4,6 +4,7 @@ package com.mjutarzan.tarzan.global.jwt;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
+import com.mjutarzan.tarzan.global.jwt.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,7 +53,8 @@ import java.util.Set;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private static final Set<String> NO_CHECK_URLS = Set.of("/login",
-        "/oauth2/authorization", "/api/test", "/api/data",
+        "/oauth2/authorization", "/api/auth",
+            "/api/test", "/api/data",
         "/api/fraud", "/api/v1/building", "/api/v1/house", "/api/v1/reviews");
 
     private final JwtService jwtService;
@@ -63,6 +65,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("현재 url: {}", request.getRequestURI());
+
         boolean skipFilter = NO_CHECK_URLS.stream().anyMatch(request.getRequestURI()::startsWith);
         if (skipFilter) {
             filterChain.doFilter(request, response);
@@ -70,10 +74,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         }
 
         // RefreshToken이 없거나 유효하지 않다면(DB에 저장된 RefreshToken과 다르다면) null을 반환
-        log.info("refresh token is valid? {}", jwtService.isTokenValid(jwtService.extractRefreshToken(request).get(), true));
+
         String refreshToken = jwtService.extractRefreshToken(request)
                 .filter(token -> jwtService.isTokenValid(token, true))
                 .orElse(null);
+
+        log.info("refresh token: {}", refreshToken);
+        log.info("refresh token is valid? {}",refreshToken!=null);
 
         // 보낸 만료되지않은 리프레시 토큰이 DB의 리프레시 토큰과 일치하는지 판단 후,
         // 일치한다면 AccessToken을 재발급해준다.

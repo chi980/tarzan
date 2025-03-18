@@ -1,4 +1,4 @@
-package com.mjutarzan.tarzan.global.jwt;
+package com.mjutarzan.tarzan.global.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -98,13 +98,9 @@ public class JwtService {
 
     /**
      * 헤더에서 RefreshToken 추출
-     * 토큰 형식 : Bearer XXX에서 Bearer를 제외하고 순수 토큰만 가져오기 위해서
-     * 헤더를 가져온 후 "Bearer"를 삭제(""로 replace)
      */
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(REFRESH_HEADER))
-                .filter(refreshToken -> refreshToken.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
+        return Optional.ofNullable(request.getHeader(REFRESH_HEADER));
     }
 
     /**
@@ -153,6 +149,7 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, Boolean isRefresh) {
+        log.info("refresh token인가요?? {}", isRefresh);
         try {
             JWT.require(Algorithm.HMAC512(!isRefresh?SECRET_KEY:REFRESH_SECRET_KEY)).build().verify(token);
             return true;
@@ -161,4 +158,6 @@ public class JwtService {
             return false;
         }
     }
+
+
 }

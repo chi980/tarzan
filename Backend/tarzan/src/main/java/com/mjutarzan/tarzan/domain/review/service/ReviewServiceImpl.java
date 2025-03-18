@@ -43,7 +43,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         List<ReviewListItemResponseDto> list = reviewPages.stream()
                 .map(review -> {
-                    return new ReviewListItemResponseDto(review, loginedUserDto!=null?review.getWriter().getEmail().equals(loginedUserDto.getEmail()):false);
+                    return new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail()));
                 })
                 .collect(Collectors.toList());
 
