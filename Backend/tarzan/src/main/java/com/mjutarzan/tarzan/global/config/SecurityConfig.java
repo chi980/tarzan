@@ -82,8 +82,6 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 //        http.addFilterBefore(jwtAuthenticationProcessingFilter(), LogoutFilter.class);
 
-
-        // customOAuth2UserService ->
         return http.build();
     }
 

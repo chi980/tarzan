@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,7 @@ public class JwtTokenProvider {
     private Long ACCESS_EXPIRATION ;
 
     @Value("${jwt.refresh.expiration}")
-    private Long REFRESH_EXPIRATION ;
+    private Integer REFRESH_EXPIRATION ;
 
     @Value("${jwt.access.header}")
     private String ACCESS_HEADER;
@@ -75,6 +76,18 @@ public class JwtTokenProvider {
     }
 
     /**
+     * @return
+     */
+    public Cookie generateRefreshTokenCookie(String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie(REFRESH_HEADER, refreshToken);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);  // HTTPS에서만 전송
+        refreshTokenCookie.setPath("/api/auth/refresh");  // `/api/auth/refresh` 경로에서만 쿠키 접근 가능
+        refreshTokenCookie.setMaxAge(REFRESH_EXPIRATION);
+        return refreshTokenCookie;
+    }
+
+    /**
      * Jwt에서 사용자명(이메일) 추출
      */
     public Optional<String> getEmail(String accessToken) {
@@ -91,10 +104,12 @@ public class JwtTokenProvider {
      */
 
     public boolean validateToken(String token) {
+        System.out.println("token = " + token);
         try {
             JWT.require(Algorithm.HMAC512(SECRET_KEY)).build().verify(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
+            log.error(e.getMessage());
             return false;
         }
     }

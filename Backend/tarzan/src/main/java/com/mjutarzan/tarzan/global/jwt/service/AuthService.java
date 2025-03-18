@@ -5,6 +5,7 @@ import com.mjutarzan.tarzan.global.jwt.JwtTokenProvider;
 import com.mjutarzan.tarzan.global.jwt.api.request.LogoutRequestDto;
 import com.mjutarzan.tarzan.global.jwt.api.request.ReIssueTokensRequestDto;
 import com.mjutarzan.tarzan.global.jwt.api.response.ReIssueTokensResponseDto;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    public ReIssueTokensResponseDto reissueTokens(ReIssueTokensRequestDto requestDto) {
+
+    public ReIssueTokensResponseDto reissueAccessToken(ReIssueTokensRequestDto requestDto, String refreshToken) {
         String email = requestDto.getEmail();
-        String refreshToken = requestDto.getRefreshToken();
 
         // Refresh Token 검증
         if (!jwtTokenProvider.validateRefreshToken(email, refreshToken)) {
@@ -27,14 +28,10 @@ public class AuthService {
         }
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(email);
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(email);
 
-        jwtTokenProvider.removeRefreshToken(email);
-        jwtTokenProvider.saveRefreshToken(email, newRefreshToken);
 
         return ReIssueTokensResponseDto.builder()
                 .accessToken(newAccessToken)
-                .refreshToken(refreshToken)
                 .build();
 
     }
@@ -42,5 +39,16 @@ public class AuthService {
     public void logout(LogoutRequestDto requestDto) {
         String email = requestDto.getEmail();
         jwtTokenProvider.removeRefreshToken(email);
+    }
+
+    public Cookie reissueRefreshToken(ReIssueTokensRequestDto requestDto) {
+        String email = requestDto.getEmail();
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(email);
+        jwtTokenProvider.removeRefreshToken(email);
+        jwtTokenProvider.saveRefreshToken(email, newRefreshToken);
+
+        Cookie refreshTokenCookie = jwtTokenProvider.generateRefreshTokenCookie(newRefreshToken);
+
+        return refreshTokenCookie;
     }
 }

@@ -8,12 +8,9 @@ import lombok.*;
 public class ReIssueTokensResponseDto {
     @JsonProperty("access_token")
     private String accessToken;
-    @JsonProperty("refresh_token")
-    private String refreshToken;
 
     @Builder
-    public ReIssueTokensResponseDto(String accessToken, String refreshToken){
+    public ReIssueTokensResponseDto(String accessToken){
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
     }
 }

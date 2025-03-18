@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -25,20 +27,63 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
 
+
+    private static final Set<String> NO_CHECK_URLS = Set.of("/login",
+            "/oauth2/authorization", "/api/auth",
+            "/api/test", "/api/data",
+            "/api/fraud", "/api/v1/building", "/api/v1/house", "/api/v1/reviews");
+
+
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         log.info("현재 url: {}", request.getRequestURI());
+        boolean skipFilter = NO_CHECK_URLS.stream().anyMatch(request.getRequestURI()::startsWith);
+        if (skipFilter) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        jwtTokenProvider.resolveToken(request)
-                .filter(jwtTokenProvider::validateToken)  // validateToken이 true일 경우만 진행
-                .ifPresent(token -> jwtTokenProvider.getEmail(token)  // 유효한 토큰에서 이메일을 추출
-                        .ifPresent(email -> customUserDetailsService.loadUserByEmail(email)
-                                .ifPresent(this::saveAuthentication)));  // 이메일로 사용자 인증
+        try {
+            // JWT 토큰을 요청에서 추출
+            log.info("JWT 토큰을 요청에서 추출");
+
+            Optional<String> tokenOpt = jwtTokenProvider.resolveToken(request);
+
+            // 토큰이 존재하고 유효한지 확인
+            log.info("// 토큰이 존재하고 유효한지 확인");
+
+            if (tokenOpt.isPresent() && jwtTokenProvider.validateToken(tokenOpt.get())) {
+                // 유효한 토큰에서 이메일을 추출
+                log.info("유효한 토큰에서 이메일을 추출");
+
+                Optional<String> emailOpt = jwtTokenProvider.getEmail(tokenOpt.get());
+
+                if(emailOpt.isPresent()){
+                    Optional<CustomUserDetails> customUserDetails = customUserDetailsService.loadUserByEmail(emailOpt.get());
+                    if(customUserDetails.isPresent()){
+                        this.saveAuthentication(customUserDetails.get());
+                    }else{
+                        handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "USER not found");  // 사용자 미발견 시 에러 응답
+                        return;
+                    }
+                }
+
+            } else {
+                handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");  // 토큰 유효하지 않거나 없음
+                return;
+            }
+        } catch (Exception e) {
+            handleErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "재로그인이 필요합니다.");
+            return;
+        }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void handleErrorResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
+        response.sendError(statusCode, message);  // 에러 응답 처리
     }
 
     private void saveAuthentication(CustomUserDetails customUserDetails) {
