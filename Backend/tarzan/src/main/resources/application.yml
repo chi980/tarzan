@@ -5,13 +5,20 @@ spring:
   profiles:
     active: dev
 
+#jwt:
+#  access:
+#    expiration: 3600000  # 1시간
+#    header: Authorization
+#  refresh:
+#    expiration: 1209600000  # 2주
+#    header: X-Refresh-Token
 jwt:
   access:
-    expiration: 3600000  # 1시간
+    expiration: 30000  # 30초 (30,000ms)
     header: Authorization
   refresh:
-    expiration: 1209600000  # 2주
-    header: X-Refresh-Token
+    expiration: 60000  # 1분 (60,000ms)
+    header: X-refresh-token
 
 
 

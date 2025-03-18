@@ -8,7 +8,7 @@ import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.service.LocationService;
-import com.mjutarzan.tarzan.global.jwt.JwtService;
+import com.mjutarzan.tarzan.global.jwt.service.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

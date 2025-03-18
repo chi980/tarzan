@@ -2,7 +2,7 @@ package com.mjutarzan.tarzan.global.oauth2.handler;
 
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
-import com.mjutarzan.tarzan.global.jwt.JwtService;
+import com.mjutarzan.tarzan.global.jwt.service.JwtService;
 import com.mjutarzan.tarzan.global.oauth2.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
