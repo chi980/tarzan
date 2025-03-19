@@ -63,7 +63,6 @@ function refreshTokenAndRetry(error) {
         const accessToken = res.data.data.access_token;
         authStore.setAccessToken(accessToken);
 
-        // 기존 요청의 config에서 Authorization 헤더를 업데이트
         error.config.headers["Authorization"] = `Bearer ${accessToken}`;
 
         // 실패한 요청을 재시도
