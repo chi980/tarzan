@@ -2,18 +2,19 @@ package com.mjutarzan.tarzan.global.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -42,6 +43,12 @@ public class JwtTokenProvider {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String EMAIL_CLAIM = "email";
     private static final String BEARER = "Bearer ";
+
+    private static final String REFRESH_PREFIX = "refresh:"; // Redis 키 prefix
+
+    private final StringRedisTemplate redisTemplate; // Redis 연동
+
+
 
     private final UserRepository userRepository;
 
@@ -81,7 +88,7 @@ public class JwtTokenProvider {
     public Cookie generateRefreshTokenCookie(String refreshToken) {
         Cookie refreshTokenCookie = new Cookie(REFRESH_HEADER, refreshToken);
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false);  // HTTPS에서만 전송 -> true로 바꿀것
+        refreshTokenCookie.setSecure(true);  // HTTPS에서만 전송 -> true로 바꿀것
         refreshTokenCookie.setPath("/api/auth/refresh");  // `/api/auth/refresh` 경로에서만 쿠키 접근 가능
         refreshTokenCookie.setMaxAge(REFRESH_EXPIRATION);
         return refreshTokenCookie;
@@ -118,13 +125,15 @@ public class JwtTokenProvider {
      */
 
     public boolean validateRefreshToken(String email, String token) {
-        try {
-            JWT.require(Algorithm.HMAC512(REFRESH_SECRET_KEY)).build().verify(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
-//        return refreshTokenStore.containsKey(username) && refreshTokenStore.get(username).equals(refreshToken);
+//        try {
+//            JWT.require(Algorithm.HMAC512(REFRESH_SECRET_KEY)).build().verify(token);
+//            return true;
+//        } catch (JwtException | IllegalArgumentException e) {
+//            return false;
+//        }
+        String key = REFRESH_PREFIX + email;
+        String storedToken = redisTemplate.opsForValue().get(key);
+        return storedToken != null && storedToken.equals(token);
     }
 
 
@@ -163,7 +172,9 @@ public class JwtTokenProvider {
     }
 
     public void saveRefreshToken(String email, String refreshToken) {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        user.updateRefreshToken(refreshToken);
+//        User user = userRepository.findByEmail(email).orElseThrow();
+//        user.updateRefreshToken(refreshToken);
+        String key = REFRESH_PREFIX + email;
+        redisTemplate.opsForValue().set(key, refreshToken, REFRESH_EXPIRATION, TimeUnit.SECONDS);
     }
 }
