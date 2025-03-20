@@ -18,6 +18,8 @@ public class MainController {
     @GetMapping("/api/test")
     @ResponseBody
     public String testApi(){
+
+
         return "ok";
     }
 

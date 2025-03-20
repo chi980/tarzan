@@ -3,18 +3,17 @@ package com.mjutarzan.tarzan.global.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
+import com.mjutarzan.tarzan.global.redis.RedisService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -46,9 +45,7 @@ public class JwtTokenProvider {
 
     private static final String REFRESH_PREFIX = "refresh:"; // Redis 키 prefix
 
-    private final StringRedisTemplate redisTemplate; // Redis 연동
-
-
+    private final RedisService redisService;
 
     private final UserRepository userRepository;
 
@@ -132,7 +129,7 @@ public class JwtTokenProvider {
 //            return false;
 //        }
         String key = REFRESH_PREFIX + email;
-        String storedToken = redisTemplate.opsForValue().get(key);
+        String storedToken = redisService.getData(key);
         return storedToken != null && storedToken.equals(token);
     }
 
@@ -148,15 +145,28 @@ public class JwtTokenProvider {
     }
 
     // Refresh Token 삭제 (로그아웃 시)
-    public void removeRefreshToken(String email) {
+//    public void removeRefreshToken(String email) {
 //        refreshTokenStore.remove(username);
-        userRepository.findByEmail(email)
-                .ifPresentOrElse(
-                        user -> user.updateRefreshToken(null),
-                        () -> {
-                            // 이메일로 유저가 없으면 로깅 혹은 예외 처리
-                            log.error("No user found with email: {}", email);
-                        });
+//        userRepository.findByEmail(email)
+//                .ifPresentOrElse(
+//                        user -> user.updateRefreshToken(null),
+//                        () -> {
+//                            // 이메일로 유저가 없으면 로깅 혹은 예외 처리
+//                            log.error("No user found with email: {}", email);
+//                        });
+//    }
+
+    public void removeRefreshToken(String email) {
+        String key = REFRESH_PREFIX + email;
+
+        // Redis에서 삭제
+        Boolean deleted = redisService.deleteData(key);
+
+        if (Boolean.TRUE.equals(deleted)) {
+            log.info("Refresh token deleted from Redis for email: {}", email);
+        } else {
+            log.warn("No refresh token found in Redis for email: {}", email);
+        }
     }
 
 
@@ -175,6 +185,6 @@ public class JwtTokenProvider {
 //        User user = userRepository.findByEmail(email).orElseThrow();
 //        user.updateRefreshToken(refreshToken);
         String key = REFRESH_PREFIX + email;
-        redisTemplate.opsForValue().set(key, refreshToken, REFRESH_EXPIRATION, TimeUnit.SECONDS);
+        redisService.saveData(key, refreshToken, REFRESH_EXPIRATION);
     }
 }

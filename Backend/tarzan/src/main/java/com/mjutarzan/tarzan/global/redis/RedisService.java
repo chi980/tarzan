@@ -1,21 +1,35 @@
 package com.mjutarzan.tarzan.global.redis;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
-@Transactional
 public class RedisService {
-    private final StringRedisTemplate redisTemplate;
 
-    public void setValue(String key, String value) {
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    // 데이터 저장
+    public void saveData(String key, String value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public String getValue(String key) {
-        return redisTemplate.opsForValue().get(key);
+    public void saveData(String key, String value, Integer expiration) {
+        redisTemplate.opsForValue().set(key, value, expiration, TimeUnit.SECONDS);
     }
+
+    // 데이터 조회
+    public String getData(String key) {
+        return (String) redisTemplate.opsForValue().get(key);
+    }
+
+    // 데이터 삭제
+    public Boolean deleteData(String key) {
+        return redisTemplate.delete(key);
+    }
+
+
 }
