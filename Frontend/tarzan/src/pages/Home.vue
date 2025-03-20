@@ -22,7 +22,7 @@
         </div>
         <div class="tag-button-container">
           <TagButtonGroup
-            v-model:selectedButtons="selectedButton"
+            v-model:selectedButton="selectedButton"
             :buttons="tagOptions"
             :multiple="false"
           />
@@ -67,7 +67,6 @@ import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
@@ -82,7 +81,8 @@ const tagOptions = ref([
   { label: '기타', value: 'ETC' },
 ]);
 
-const selectedButton = ref([]);
+const selectedButton = ref('ALL'); // 배열이 아니라 문자열로 명시
+
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
@@ -184,8 +184,6 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
     loading.value = false;
   }
 }
-
-
 
 function onButtonClicked(type) {
   if (loading.value) return;
@@ -374,7 +372,7 @@ const showInitialMarkers = (data: Array<any>): void => {
   transform: translateX(-50%);
   width: 90%;
   padding: 0px;
-  z-index: 4; /* Ensure input-icon-wrap is above overlay */
+  z-index: 3; /* Ensure input-icon-wrap is above overlay */
   box-sizing: border-box;
   cursor: pointer;
 }
@@ -413,10 +411,11 @@ input {
   pointer-events: auto;
 }
 .tag-button-container {
-  margin-top: 25px;
-  z-index: 2;
+  position: absolute;
+  top: 35px;  // 검색창 바로 아래에 위치
   width: 100%;
-  padding: 10px 8px; // 위아래로 여백 추가
+  z-index: 3;  // 지도보다 높게 설정
+  pointer-events: auto;
 }
 .overlay {
   position: absolute;
