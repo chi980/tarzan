@@ -14,7 +14,12 @@
       </div>
       <p class="thin-line"></p>
       <div class="house-list">
-        <HouseItem v-for="house in list" :key="house.bookmark_id" :house="house" />
+        <HouseItem 
+          v-for="(house, index) in list" 
+          :key="house?.bookmark_id || index" 
+          :house="house"
+          @navigate="navigateToCheckCostPage"
+        />
         <NonContent v-if="list.length === 0" :value="'북마크한 집이 존재하지 않습니다.'" />
       </div>
     </div>
@@ -45,24 +50,53 @@ function navigateToMap() {
   router.push("/bookmark/map");
 }
 
+const navigateToCheckCostPage = (house) => {
+  if (!house || !house.bookmarkIdx) {
+    console.error("house 또는 bookmarkIdx가 없습니다.");
+    return;
+  }
+
+  const bookmarkIdx = house.bookmarkIdx;
+  router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+};
+
+
 const list = ref([]);
 
 const fetchRecentHouses = async () => {
-  const queryParams = {
-    size: 3,
-    page: 1,
-    sortBy: '최신순',
-    status: 'CHECK_PENDING'
-  };
-
   try {
-    const response = await axiosInstance.get(
-      `/v1/bookmark`,
-      { params: queryParams }  // 쿼리 파라미터로 전달
-    );
+    const response = await axiosInstance.get(`/v1/bookmark`, {
+      params: {
+        size: 3,
+        page: 0,
+        sortBy: "최신순",
+        status: "CHECK_PENDING"
+      }
+    });
 
     if (response.data.success) {
-      list.value = response.data.data.list;
+      // 데이터를 변환하여 필요한 필드만 저장, bookmark_id를 bookmarkIdx로 변경
+      list.value = response.data.data.list
+        .map(item => ({
+          bookmarkIdx: item.bookmark_id,  // bookmark_id를 bookmarkIdx로 변경
+          house_name: item.bookmark_house_name || "이름 없음",
+          house_address: item.bookmark_house_address,
+          house_category: item.bookmark_house_category || "카테고리 없음",
+          house_latitude: item.bookmark_house_latitude,
+          house_longitude: item.bookmark_house_longitude,
+          created_at: item.bookmark_created_at  // created_at도 같이 저장
+        }))
+        .filter(house => house.bookmarkIdx !== undefined);  // bookmarkIdx가 undefined인 항목은 제거
+
+
+      // created_at을 기준으로 내림차순 정렬 (날짜 형식이 잘못된 경우 parse 처리를 추가할 수 있음)
+      list.value = list.value.sort((a, b) => {
+        // 날짜 형식이 "2025.03.16 10:00:00" 형태인 경우 "2025-03-16T10:00:00"으로 변환
+        const dateA = new Date(a.created_at.replace(/\./g, "-").replace(" ", "T"));
+        const dateB = new Date(b.created_at.replace(/\./g, "-").replace(" ", "T"));
+        return dateB - dateA;  // 내림차순 정렬
+      });
+
     } else {
       console.error("Failed to fetch data:", response.data.message);
     }

@@ -10,18 +10,26 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { defineProps, defineEmits } from 'vue';
 
-export default {
-  props: {
-    house: Object,  // 부모 컴포넌트로부터 house라는 객체를 props로 받음
-  },
-  methods: {
-    handleClick() {
-      this.$emit('click');
-    },
-  },
+const props = defineProps({
+  house: Object, // House object passed from parent
+});
+
+const emit = defineEmits(['navigate']);
+
+const handleClick = () => {
+  const house = props.house; // Get the house object from props
+  if (house && house.bookmarkIdx) {
+    // navigateToCheckCostPage 호출 등
+    emit('navigate', house); // Emit the 'navigate' event with the house object
+  } else {
+    console.error("bookmarkIdx가 없습니다.");
+  }
 };
+
+
 </script>
 
 <style scoped lang="scss">
