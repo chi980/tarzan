@@ -7,20 +7,20 @@ import com.mjutarzan.tarzan.domain.board.api.request.UpdateBoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardDetailResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 
 public interface BoardService {
-    void createBoard(BoardRequestDto jwtTokenUtil, UserDto loginedUserDto);
+    void createBoard(BoardRequestDto jwtTokenUtil, CustomUserDetails loginedUserDto);
 
-    void deleteBoard(Long boardIdx, UserDto userDto);
+    void deleteBoard(Long boardIdx, CustomUserDetails userDto);
 
-    BoardListResponseDto getBoards(BoardListRequestDto boardListRequestDto, UserDto loginedUserDto);
+    BoardListResponseDto getBoards(BoardListRequestDto boardListRequestDto, CustomUserDetails loginedUserDto);
 
-    BoardListResponseDto getBoards(UserBoardRequestDto userBoardRequestDto, UserDto userDto);
+    BoardListResponseDto getBoards(UserBoardRequestDto userBoardRequestDto, CustomUserDetails userDto);
 
-    BoardListResponseDto searchBoard(BoardSearchRequestDto boardSearchRequestDto, UserDto userDto);
+    BoardListResponseDto searchBoard(BoardSearchRequestDto boardSearchRequestDto, CustomUserDetails userDto);
 
-    void updateBoard(Long boardIdx, UpdateBoardRequestDto updateBoardRequestDto, UserDto userDto);
+    void updateBoard(Long boardIdx, UpdateBoardRequestDto updateBoardRequestDto, CustomUserDetails userDto);
 
-    BoardDetailResponseDto getBoard(Long boardIdx, UserDto userDto);
+    BoardDetailResponseDto getBoard(Long boardIdx, CustomUserDetails userDto);
 }

@@ -1,9 +1,10 @@
 package com.mjutarzan.tarzan.global.advice;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
+import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
 import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
-import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +15,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException ex) {
+        // 401 Unauthorized 응답 반환
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                BaseResponseDto.builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Object> handleUnauthorizedException(TokenExpiredException ex) {
         // 401 Unauthorized 응답 반환
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 BaseResponseDto.builder()

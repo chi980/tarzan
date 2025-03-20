@@ -5,10 +5,10 @@ import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.RegisterUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.service.LocationService;
-import com.mjutarzan.tarzan.global.jwt.service.JwtService;
+import com.mjutarzan.tarzan.global.jwt.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final LocationService locationService;
-    private final JwtService jwtService;
+    private final JwtTokenProvider jwtService;
 
     @Override
     public boolean isNicknameExists(String nickname) {
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public RegisterUserResponseDto registerUser(RegisterUserRequestDto requestDto, UserDto loginedUserDto) {
+    public RegisterUserResponseDto registerUser(RegisterUserRequestDto requestDto, CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         Point jobLocation = null;
         if(requestDto.getLatitude() != null && requestDto.getLongitude() != null){
@@ -39,17 +39,14 @@ public class UserServiceImpl implements UserService{
         }
 
         loginedUser.updateUser(requestDto, jobLocation);
-        String refreshToken = jwtService.generateRefreshToken();
-        loginedUser.updateRefreshToken(refreshToken);
         userRepository.saveAndFlush(loginedUser);
         return RegisterUserResponseDto.builder()
-                .refreshToken(refreshToken)
                 .userRole(loginedUser.getRole())
                 .build();
     }
 
     @Override
-    public void updateUser(UpdateUserRequestDto requestDto, UserDto loginedUserDto) {
+    public void updateUser(UpdateUserRequestDto requestDto, CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
         Point jobLocation = null;
@@ -61,7 +58,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserResponseDto getUser(UserDto loginedUserDto) {
+    public UserResponseDto getUser(CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         return loginedUser.getInstance();
     }

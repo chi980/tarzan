@@ -5,7 +5,7 @@ import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseD
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.CompareBookmarkResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.service.BookmarkService;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class BookmarkApi {
     private final BookmarkService bookmarkService;
 
     @PostMapping("/bookmark")
-    public ResponseEntity<?> createBookmarkWithApiHouse(@RequestBody BookmarkWithApiHouseRequestDto bookmarkRequestDto, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> createBookmarkWithApiHouse(@RequestBody BookmarkWithApiHouseRequestDto bookmarkRequestDto, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDto){
 
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
@@ -43,7 +43,7 @@ public class BookmarkApi {
     }
 
     @PostMapping("/bookmark/user")
-    public ResponseEntity<?> createBookmarkWithUserHouse(@RequestBody BookmarkWithUserHouseRequestDto bookmarkRequestDto, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> createBookmarkWithUserHouse(@RequestBody BookmarkWithUserHouseRequestDto bookmarkRequestDto, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDto){
 
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
@@ -62,7 +62,7 @@ public class BookmarkApi {
     }
 
     @GetMapping("/bookmark")
-    public ResponseEntity<?> getBookmarks(BookmarkListRequestDto bookmarkListRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getBookmarks(BookmarkListRequestDto bookmarkListRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         BookmarkListResponseDto result = bookmarkService.getBookmarks(bookmarkListRequestDto, userDto);
 
@@ -75,7 +75,7 @@ public class BookmarkApi {
     }
 
     @GetMapping("/bookmark/{bookmarkIdx}")
-    public ResponseEntity<?> getBookmark(@PathVariable Long bookmarkIdx, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getBookmark(@PathVariable Long bookmarkIdx, @AuthenticationPrincipal CustomUserDetails userDto){
 
         BookmarkDetailResponseDto result = bookmarkService.getBookmark(bookmarkIdx, userDto);
 
@@ -88,7 +88,7 @@ public class BookmarkApi {
     }
 
     @PutMapping("/bookmark/{bookmarkIdx}")
-    public ResponseEntity<?> updateBookmark(@PathVariable Long bookmarkIdx, @RequestBody @Valid UpdateBookmarkRequestDto updateBookmarkRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> updateBookmark(@PathVariable Long bookmarkIdx, @RequestBody @Valid UpdateBookmarkRequestDto updateBookmarkRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         bookmarkService.updateBookmark(bookmarkIdx, updateBookmarkRequestDto, userDto);
 
@@ -100,7 +100,7 @@ public class BookmarkApi {
     }
 
     @DeleteMapping("/bookmark/{bookmarkIdx}")
-    public ResponseEntity<?> deleteBookmark(@PathVariable Long bookmarkIdx, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> deleteBookmark(@PathVariable Long bookmarkIdx, @AuthenticationPrincipal CustomUserDetails userDto){
 
         bookmarkService.deleteBookmark(bookmarkIdx, userDto);
 
@@ -131,7 +131,7 @@ public class BookmarkApi {
 //
 //각 항목별 가중치와 기준을 설정한 후, 이를 합산하여 최종 점수를 매기는 방식이 효율적일 수 있습니다.
     @GetMapping("/bookmark/compare")
-    public ResponseEntity<?> compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         CompareBookmarkResponseDto result = bookmarkService.compareBookmarks(compareBookmarksRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()

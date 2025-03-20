@@ -12,7 +12,7 @@ import com.mjutarzan.tarzan.domain.board.model.vo.BoardTag;
 import com.mjutarzan.tarzan.domain.board.repository.BoardRepository;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
 import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
@@ -38,7 +38,7 @@ public class BoardServiceImpl implements BoardService {
     private final UserRepository userRepository;
 
     @Override
-    public void createBoard(BoardRequestDto boardDto, UserDto loginedUserDto) {
+    public void createBoard(BoardRequestDto boardDto, CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
         boardRepository.save(Board.builder()
                 .title(boardDto.getTitle())
@@ -50,7 +50,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void deleteBoard(Long boardIdx, UserDto loginedUserDto) {
+    public void deleteBoard(Long boardIdx, CustomUserDetails loginedUserDto) {
         Board board = boardRepository.findById(boardIdx)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 
@@ -63,7 +63,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardListResponseDto getBoards(BoardListRequestDto requestDto, UserDto loginedUserDto) {
+    public BoardListResponseDto getBoards(BoardListRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
         if (requestDto.getGu() != null) {
@@ -92,7 +92,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardListResponseDto getBoards(UserBoardRequestDto requestDto, UserDto loginedUserDto) {
+    public BoardListResponseDto getBoards(UserBoardRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
 
@@ -110,7 +110,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardListResponseDto searchBoard(BoardSearchRequestDto requestDto, UserDto loginedUserDto) {
+    public BoardListResponseDto searchBoard(BoardSearchRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
 
         Page<Board> boardPages = boardRepository.findByTitleContaining(requestDto.getSearch(), pageable);
@@ -129,7 +129,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void updateBoard(Long boardIdx, UpdateBoardRequestDto requestDto, UserDto loginedUserDto) {
+    public void updateBoard(Long boardIdx, UpdateBoardRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Board board = boardRepository.findById(boardIdx)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 
@@ -144,7 +144,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardDetailResponseDto getBoard(Long boardIdx, UserDto loginedUserDto) {
+    public BoardDetailResponseDto getBoard(Long boardIdx, CustomUserDetails loginedUserDto) {
         Board board = boardRepository.findById(boardIdx)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾을 수 없습니다."));
 

@@ -5,10 +5,9 @@ import com.mjutarzan.tarzan.domain.board.api.request.BoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.BoardSearchRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.UpdateBoardRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardDetailResponseDto;
-import com.mjutarzan.tarzan.domain.board.api.response.BoardListItemResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.service.BoardService;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class BoardApi {
     private final BoardService boardService;
 
     @GetMapping("/board")
-    public ResponseEntity<Object> getBoards(BoardListRequestDto boardListRequestDto,  @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> getBoards(BoardListRequestDto boardListRequestDto,  @AuthenticationPrincipal CustomUserDetails userDto){
         BoardListResponseDto result = boardService.getBoards(boardListRequestDto, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
@@ -37,7 +36,7 @@ public class BoardApi {
                 .build());
     }
     @GetMapping("/board/search")
-    public ResponseEntity<Object> searchBoards(BoardSearchRequestDto boardSearchRequestDto,  @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> searchBoards(BoardSearchRequestDto boardSearchRequestDto,  @AuthenticationPrincipal CustomUserDetails userDto){
         BoardListResponseDto result = boardService.searchBoard(boardSearchRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
@@ -46,7 +45,7 @@ public class BoardApi {
                 .build());
     }
     @GetMapping("/board/{boardIdx}")
-    public ResponseEntity<Object> getBoard(@PathVariable Long boardIdx, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> getBoard(@PathVariable Long boardIdx, @AuthenticationPrincipal CustomUserDetails userDto){
         BoardDetailResponseDto result = boardService.getBoard(boardIdx, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
@@ -56,7 +55,7 @@ public class BoardApi {
                 .build());
     }
     @PostMapping("/board")
-    public ResponseEntity<Object> createBoard(@RequestBody @Valid BoardRequestDto boardRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto) {
+    public ResponseEntity<Object> createBoard(@RequestBody @Valid BoardRequestDto boardRequestDTO, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDto) {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
@@ -74,7 +73,7 @@ public class BoardApi {
     }
 
     @PutMapping("/board/{boardIdx}")
-    public ResponseEntity<Object> updateBoard(@PathVariable Long boardIdx, @RequestBody @Valid UpdateBoardRequestDto updateBoardRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> updateBoard(@PathVariable Long boardIdx, @RequestBody @Valid UpdateBoardRequestDto updateBoardRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         boardService.updateBoard(boardIdx, updateBoardRequestDto,userDto);
 
@@ -86,7 +85,7 @@ public class BoardApi {
     }
 
     @DeleteMapping("/board/{boardIdx}")
-    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIdx, @AuthenticationPrincipal UserDto userDto) {
+    public ResponseEntity<Object> deleteBoard(@PathVariable Long boardIdx, @AuthenticationPrincipal CustomUserDetails userDto) {
         // 게시글 삭제 로직, 소유자가 일치하지 않으면 예외가 발생
             boardService.deleteBoard(boardIdx, userDto);
         // 삭제 성공 시 200 OK 반환

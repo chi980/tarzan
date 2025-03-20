@@ -46,7 +46,6 @@ dependencies {
 	// redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-
 	// opencsv
 	implementation 'com.opencsv:opencsv:5.5.2'
 	// batch

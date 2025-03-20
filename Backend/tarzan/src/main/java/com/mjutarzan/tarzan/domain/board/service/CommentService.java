@@ -5,16 +5,16 @@ import com.mjutarzan.tarzan.domain.board.api.request.CommentRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.UpdateCommentRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.response.CommentListResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 
 public interface CommentService {
-    void createComment(CommentRequestDto commentRequestDto, UserDto userDto);
+    void createComment(CommentRequestDto commentRequestDto, CustomUserDetails userDto);
 
-    void updateComment(Long commentIdx, UpdateCommentRequestDto updateCommentRequestDto, UserDto userDto);
+    void updateComment(Long commentIdx, UpdateCommentRequestDto updateCommentRequestDto, CustomUserDetails userDto);
 
-    void deleteComment(Long commentIdx, UserDto userDto);
+    void deleteComment(Long commentIdx, CustomUserDetails userDto);
 
-    CommentListResponseDto getComments(CommentListRequestDto commentListRequestDto, UserDto userDto);
+    CommentListResponseDto getComments(CommentListRequestDto commentListRequestDto, CustomUserDetails userDto);
 
-    CommentListResponseDto getComments(UserCommentRequestDto userCommentRequestDto, UserDto userDto);
+    CommentListResponseDto getComments(UserCommentRequestDto userCommentRequestDto, CustomUserDetails userDto);
 }
