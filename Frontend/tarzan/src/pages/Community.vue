@@ -167,40 +167,6 @@ watch([sortBy, selectedButton, selectedDistrict], () => {
   fetchPosts();
 });
 
-
-// // API: 게시글 검색
-// const searchPosts = async (query) => {  
-//   const queryParams = new URLSearchParams({
-//     size: 10,
-//     page: page,
-//     sortBy: sortBy.value,
-//     tag: selectedButton.value,
-//     gu: selectedDistrict.value,
-//     search: query,
-//   }).toString();
-
-//   try {
-//     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
-
-//     if (response.data.success) {
-//       console.log("검색 결과 가져오기 성공!");
-//       return response.data.data.list;
-//       posts.value = response.data.data.list;
-//       posts.value.forEach((post, index) => {
-//       console.log(`게시글 ${index + 1}:`, post);
-//       });
-//     } else {
-//       console.error("검색 API 실패:", response.data.message);
-//       return [];
-//     }
-//   } catch (error) {
-//     console.error("검색 API 요청 중 오류 발생:", error);
-//     return [];
-//   }
-// };
-
-// onMounted(fetchPosts);
-
 // 글쓰기 페이지로 이동
 const goToPostCreate = () => {
   router.push({ name: "PostCreate" });
