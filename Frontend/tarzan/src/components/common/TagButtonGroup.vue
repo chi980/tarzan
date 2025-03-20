@@ -1,27 +1,15 @@
-<!-- <template>
-  <div class="tag-button-container">
-    <button 
-      v-for="button in buttons" 
-      :key="button.value"
-      class="tag-button"
-      :class="{ active: selectedButton === button.value }"
-      @click="selectButton(button.value)">
-      <slot :button="button">{{ button.label }}</slot>
-    </button>
-  </div>
-</template>
+<!-- TagButtonGroup 사용법:
+ 
+ Props 설명:
+ - buttons: 버튼으로 표시할 데이터를 배열로 전달
+   예: [{ label: '표시할 이름', value: '고유값' }, ...]
+ 
+ - multiple: 다중선택(true), 단일선택(false)을 지정하는 옵션
+ 
+ v-model 설명:
+ - 다중 선택일 때는 `selectedButtons` (배열)를 연결
+ - 단일 선택일 경우 v-model:selectedButton 으로 연결 -->
 
-<script setup>
-const props = defineProps({ 
-  selectedButton: String,
-  buttons: Array
-});
-const emit = defineEmits(['update:selectedButton']);
-
-const selectButton = (value) => {
-  emit('update:selectedButton', value);
-};
-</script> -->
 <template>
   <div class="tag-button-container">
     <button 
@@ -69,6 +57,10 @@ const toggleSelection = (value) => {
   flex-wrap: nowrap;
   overflow-x: auto;
   gap: 5px;
+    /* 스크롤바 숨기기 */
+    &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .tag-button {

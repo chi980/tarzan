@@ -21,9 +21,10 @@
           </div>
         </div>
         <div class="tag-button-container">
-          <TagButtonGroupHome
-            :selectedType="selectedType"
-            @button-clicked="onButtonClicked"
+          <TagButtonGroup
+            v-model:selectedButtons="selectedButton"
+            :buttons="tagOptions"
+            :multiple="false"
           />
         </div>
         <BuildingInfo
@@ -56,6 +57,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -66,9 +68,21 @@ import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
+const tagOptions = ref([
+  { label: '전체', value: 'ALL' },
+  { label: '교통', value: 'TRANSPORT' },
+  { label: '맛집', value: 'TASTE' },
+  { label: '생활팁', value: 'LIFE' },
+  { label: '질문', value: 'QUESTION' },
+  { label: '모임', value: 'MEETING' },
+  { label: '기타', value: 'ETC' },
+]);
+
+const selectedButton = ref([]);
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
@@ -317,14 +331,14 @@ const showInitialMarkers = (data: Array<any>): void => {
 
 <style lang="scss" scoped>
 .topbar {
-  z-index: 3;
+  z-index: 2;
 }
 .search-house-bar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 3; /* Higher than TopBar and overlay */
+  z-index: 2; /* Higher than TopBar and overlay */
 }
 .building-info {
   position: absolute;
@@ -332,7 +346,7 @@ const showInitialMarkers = (data: Array<any>): void => {
   z-index: 2;
 }
 .bottom-bar {
-  z-index: 3;
+  z-index: 2;
   height: 60px; /* Adjust according to the actual height */
   position: relative;
   bottom: 0;
@@ -399,20 +413,10 @@ input {
   pointer-events: auto;
 }
 .tag-button-container {
-  display: flex;
-  position: relative;
   margin-top: 25px;
   z-index: 2;
   width: 100%;
-  height: 22%;
-  overflow-x: auto;
-  /* 스크롤바 숨기기 */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-:deep(.tag-button-container) {
-  overflow-x: auto;
+  padding: 10px 8px; // 위아래로 여백 추가
 }
 .overlay {
   position: absolute;
