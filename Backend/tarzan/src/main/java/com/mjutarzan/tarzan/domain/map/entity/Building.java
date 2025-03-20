@@ -21,8 +21,7 @@ public abstract class Building{
     @Column(name = "building_name", nullable = true)
     private String name;
 
-    @Lob
-    @Column(name = "building_address", nullable = true)
+    @Column(name = "building_address", nullable = true, columnDefinition = "TEXT")
     private String address;
 
     @Column(name="building_category", nullable = true)

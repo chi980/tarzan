@@ -5,33 +5,29 @@
     </div>
     <div class="center-container left-top-container">
       <div class="tag-wrapper">
-        <h2 class="tag-title">주방 및 세탁실</h2>
+        <h2 class="tag-title">주방 및 세탁실 옵션</h2>
         <div class="tag-content">
           <Tag
             v-for="(item, index) in checkItemsInKitchen"
             :key="index"
             :checkItem="item"
-            @update:checkItem="
-              updateCheckItem(checkItemsInKitchen, index, $event)
-            "
+            @update:checkItem="updateCheckItem(checkItemsInKitchen, index, $event)"
           />
         </div>
       </div>
       <div class="tag-wrapper">
-        <h2 class="tag-title">거실</h2>
+        <h2 class="tag-title">거실 옵션</h2>
         <div class="tag-content">
           <Tag
             v-for="(item, index) in checkItemsInLivingRoom"
             :key="index"
             :checkItem="item"
-            @update:checkItem="
-              updateCheckItem(checkItemsInLivingRoom, index, $event)
-            "
+            @update:checkItem="updateCheckItem(checkItemsInLivingRoom, index, $event)"
           />
         </div>
       </div>
       <div class="tag-wrapper">
-        <h2 class="tag-title">방</h2>
+        <h2 class="tag-title">방 옵션</h2>
         <div class="tag-content">
           <Tag
             v-for="(item, index) in checkItemsInRoom"
@@ -42,15 +38,13 @@
         </div>
       </div>
       <div class="tag-wrapper">
-        <h2 class="tag-title">화장실</h2>
+        <h2 class="tag-title">화장실 옵션</h2>
         <div class="tag-content">
           <Tag
             v-for="(item, index) in checkItemsInBathRoom"
             :key="index"
             :checkItem="item"
-            @update:checkItem="
-              updateCheckItem(checkItemsInBathRoom, index, $event)
-            "
+            @update:checkItem="updateCheckItem(checkItemsInBathRoom, index, $event)"
           />
         </div>
       </div>
@@ -67,7 +61,7 @@
       </div>
     </div>
     <div class="bottom-button-wrapper">
-      <div>
+      <div @click="handleNextClick">
         <p>다음으로</p>
       </div>
     </div>
@@ -75,10 +69,67 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { Check } from "@/data/check";
+import { useRoute, useRouter } from "vue-router";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
 import Tag from "@/components/common/Tag.vue";
 import TopBarBack from "../common/TopBarBack.vue";
+
+const route = useRoute();
+const router = useRouter();
+
+const bookmarkIdx = ref<number | null>(null);
+
+watchEffect(() => {
+  if (route.params.bookmarkIdx) {
+    bookmarkIdx.value = Number(route.params.bookmarkIdx);
+    console.log("bookmarkIdx from route:", bookmarkIdx.value); // bookmarkIdx 값 확인
+  }
+});
+
+// ✅ '다음으로' 버튼 클릭 시 실행되는 함수
+const handleNextClick = async () => {
+  try {
+    await updateCheckOptions();
+    router.push({ name: "CheckCheckListPage" });
+  } catch (error) {
+    console.error("Error updating check options:", error);
+  }
+};
+
+// ✅ 체크된 옵션을 서버에 저장하는 PUT 요청 함수
+const updateCheckOptions = async () => {
+  console.log("bookmarkIdx:", bookmarkIdx.value, typeof bookmarkIdx.value);
+
+  // 🔹 bookmarkIdx 유효성 검사
+  if (!bookmarkIdx.value || isNaN(bookmarkIdx.value)) {
+    console.error("Invalid bookmarkIdx:", bookmarkIdx.value);
+    return;
+  }
+
+  const updatedCheckItems = {
+    kitchen: checkItemsInKitchen.value,
+    livingRoom: checkItemsInLivingRoom.value,
+    room: checkItemsInRoom.value,
+    bathRoom: checkItemsInBathRoom.value,
+    etc: checkItemsInEtc.value,
+  };
+
+  console.log("PUT 요청 데이터:", JSON.stringify(updatedCheckItems, null, 2)); // 데이터 확인
+
+  try {
+    const response = await axiosInstance.put(
+      `/v1/bookmark/${bookmarkIdx.value}`,
+      updatedCheckItems
+    );
+    console.log("Successfully updated:", response.data);
+  } catch (error) {
+    console.error("Error updating check options:", error);
+    throw error;
+  }
+};
 
 const checkItemsInKitchen = ref<Check[]>([
   { idx: 0, name: "식탁", value: false },
@@ -104,6 +155,7 @@ const checkItemsInBathRoom = ref<Check[]>([
   { idx: 0, name: "샤워부스", value: false },
   { idx: 1, name: "비데", value: false },
 ]);
+
 const checkItemsInEtc = ref<Check[]>([
   { idx: 0, name: "경비원/사설경비", value: false },
   { idx: 1, name: "CCTV", value: false },
@@ -122,6 +174,8 @@ const updateCheckItem = (array: Check[], index: number, updatedItem: Check) => {
   console.log(array[index]);
 };
 </script>
+
+
 <style lang="scss" scoped>
 // 공통
 .top-bar-back {

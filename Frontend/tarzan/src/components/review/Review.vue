@@ -103,18 +103,18 @@ const fetchReviews = async () => {
   }).toString();
 
   try {
-    const response = await axiosInstance.get(`/v1/reviews?${queryParams}`); // Axios 인스턴스를 사용하여 GET 요청
+    const response = await axiosInstance.get(`/v1/reviews?${queryParams}`); 
 
     if (response.data.success) {
-      reviews.value = response.data.data.list; // 응답에서 게시글 목록을 가져옴
+      reviews.value = response.data.data.list; 
       console.log(reviews.value);
     } else {
       console.error('Failed:', response.data.message);
-      alert(`Error: ${response.data.message}`); // 사용자에게 오류 메시지 표시
+      alert(`Error: ${response.data.message}`); 
     }
   } catch (error) {
     console.error('Error fetching posts:', error);
-    alert('후기를 불러오는 데 실패했습니다.'); // 사용자에게 알림
+    alert('후기를 불러오는 데 실패했습니다.');
   }
 };
 

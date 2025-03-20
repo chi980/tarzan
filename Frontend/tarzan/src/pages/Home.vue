@@ -21,9 +21,10 @@
           </div>
         </div>
         <div class="tag-button-container">
-          <TagButtonGroupHome
-            :selectedType="selectedType"
-            @button-clicked="onButtonClicked"
+          <TagButtonGroup
+            v-model:selectedButton="selectedButton"
+            :buttons="tagOptions"
+            :multiple="false"
           />
         </div>
         <BuildingInfo
@@ -56,6 +57,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -65,9 +67,21 @@ import { ref, onMounted } from "vue";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import TagButtonGroupHome from "@/components/common/TagButtonGroupHome.vue";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
+
+const tagOptions = ref([
+  { label: '전체', value: 'ALL' },
+  { label: '교통', value: 'TRANSPORT' },
+  { label: '맛집', value: 'TASTE' },
+  { label: '생활팁', value: 'LIFE' },
+  { label: '질문', value: 'QUESTION' },
+  { label: '모임', value: 'MEETING' },
+  { label: '기타', value: 'ETC' },
+]);
+
+const selectedButton = ref('ALL'); // 배열이 아니라 문자열로 명시
 
 
 const buildings = ref([]);
@@ -170,8 +184,6 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
     loading.value = false;
   }
 }
-
-
 
 function onButtonClicked(type) {
   if (loading.value) return;
@@ -317,14 +329,14 @@ const showInitialMarkers = (data: Array<any>): void => {
 
 <style lang="scss" scoped>
 .topbar {
-  z-index: 3;
+  z-index: 2;
 }
 .search-house-bar {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 3; /* Higher than TopBar and overlay */
+  z-index: 2; /* Higher than TopBar and overlay */
 }
 .building-info {
   position: absolute;
@@ -332,7 +344,7 @@ const showInitialMarkers = (data: Array<any>): void => {
   z-index: 2;
 }
 .bottom-bar {
-  z-index: 3;
+  z-index: 2;
   height: 60px; /* Adjust according to the actual height */
   position: relative;
   bottom: 0;
@@ -360,7 +372,7 @@ const showInitialMarkers = (data: Array<any>): void => {
   transform: translateX(-50%);
   width: 90%;
   padding: 0px;
-  z-index: 4; /* Ensure input-icon-wrap is above overlay */
+  z-index: 3; /* Ensure input-icon-wrap is above overlay */
   box-sizing: border-box;
   cursor: pointer;
 }
@@ -399,20 +411,11 @@ input {
   pointer-events: auto;
 }
 .tag-button-container {
-  display: flex;
-  position: relative;
-  margin-top: 25px;
-  z-index: 2;
+  position: absolute;
+  top: 35px;  // 검색창 바로 아래에 위치
   width: 100%;
-  height: 22%;
-  overflow-x: auto;
-  /* 스크롤바 숨기기 */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-:deep(.tag-button-container) {
-  overflow-x: auto;
+  z-index: 3;  // 지도보다 높게 설정
+  pointer-events: auto;
 }
 .overlay {
   position: absolute;

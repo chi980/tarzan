@@ -63,7 +63,9 @@ public class ReviewServiceImpl implements ReviewService{
     @Override
     public void createReview(ReviewRequestDto requestDto, CustomUserDetails loginedUserDto) {
         House house = houseRepository.findById(requestDto.getHouseId()).orElseThrow();
+        log.info("house id: {}", house.getId());
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+        log.info("logined user: {}", loginedUser.getId());
         reviewRepository.save(Review.builder()
                 .score(requestDto.getScore())
                 .leaseType(requestDto.getLeaseType())

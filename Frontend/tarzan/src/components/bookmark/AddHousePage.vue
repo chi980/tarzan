@@ -19,12 +19,12 @@
               placeholder="건물명을 입력해주세요"
             />
           </div>
-          <div v-if="!house_name && showError" class="input-description error-message">
-            <p>
-              <i class="bi bi-info-circle"> </i>
-              건물 명은 필수 정보입니다.
-            </p>
-          </div>
+        <div v-if="!house_name || !house_name.trim() || showError" class="input-description error-message">
+          <p>
+            <i class="bi bi-info-circle"></i>
+            건물 명은 필수 정보입니다.
+          </p>
+        </div>
         </div>
         <div class="input-group">
           <h2 class="input-title">주소</h2>
@@ -57,12 +57,17 @@ import CustomSelectBox from '@/components/common/CustomSelectBox.vue';
 
 // const searchQuery = ref(""); 검색기능 사용시
 
-const house_address = ref('');
-const house_name = ref('');
 const showError = ref(false);  // 오류 메시지 표시 여부
 const route = useRoute();      // useRoute: 현재 URL 정보
 const router = useRouter();    // useRouter: 페이지 이동
 
+const house_address = ref("");
+const house_name = ref("");
+const house_latitude = ref(null);
+const house_longitude = ref(null);
+const house_category = ref("");
+
+const list = ref([]); // ✅ 추가한 집 목록을 저장
 
 // 건물 종류 선택지를 배열로 정의
 const HouseCategoryOptions = [
@@ -78,32 +83,40 @@ const selectedBuildingCategoryIdx = ref(null);
 // 선택된 건물 종류를 처리하는 메서드
 const handleBuildingCategorySelected = (idx: number) => {
   selectedBuildingCategoryIdx.value = idx;
+  house_category.value = HouseCategoryOptions[idx].value;  // house_category 값 업데이트
   console.log('선택된 건물 종류:', HouseCategoryOptions[idx].name);
 };
 
+
 // "직접 추가하기" 버튼 클릭 시
 const handleAddHouseClick = async () => {
-  if (!house_name.value) {
+  if (!house_name.value || !house_name.value.trim()) {  // 🚨 빈 값과 공백 체크
     showError.value = true;
-  } else {
-    showError.value = false;
+    return;
+  }
 
-    try {
-      const response = await axiosInstance.post('/v1/bookmark/user', {
-        house_name: house_name.value,
-        house_address: house_address.value,
-        house_category: HouseCategoryOptions[selectedBuildingCategoryIdx.value].name,
-        house_latitude: route.query.house_latitude,
-        house_longitude: route.query.house_longitude,
-      });
+  showError.value = false;  // 정상 입력 시 에러 메시지 숨김
 
-      console.log("응답:", response.data);
-      router.push({name: 'BookMark'});
-    } catch (error) {
-      console.error("저장 실패:", error);
-    }
+  const newHouse = {
+    house_name: house_name.value.trim(),
+    house_address: house_address.value,
+    house_category: house_category.value,
+    house_latitude: route.query.house_latitude,
+    house_longitude: route.query.house_longitude,
+  };
+
+  try {
+    const response = await axiosInstance.post("/v1/bookmark/user", newHouse);
+    list.value.push(newHouse);
+    router.push({ name: "BookMark", query: { list: JSON.stringify(list.value) } });
+    console.log("Response:", response.data);
+  } catch (error) {
+    console.error("저장 실패:", error);
   }
 };
+
+
+
 
 
 onMounted(() => {
