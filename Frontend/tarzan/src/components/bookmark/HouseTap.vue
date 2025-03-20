@@ -68,7 +68,7 @@ const fetchRecentHouses = async () => {
     const response = await axiosInstance.get(`/v1/bookmark`, {
       params: {
         size: 3,
-        page: 1,
+        page: 0,
         sortBy: "최신순",
         status: "CHECK_PENDING"
       }
@@ -96,9 +96,6 @@ const fetchRecentHouses = async () => {
         const dateB = new Date(b.created_at.replace(/\./g, "-").replace(" ", "T"));
         return dateB - dateA;  // 내림차순 정렬
       });
-
-      console.log("변환된 House data in HouseTap:", list.value);
-      console.log("House data in HouseTap (JSON):", JSON.stringify(list.value, null, 2)); // JSON 형태로 보기 좋게 출력
 
     } else {
       console.error("Failed to fetch data:", response.data.message);

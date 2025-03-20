@@ -131,28 +131,16 @@ const goToAddHousePage = () => {
   });
 };
 
-// 📌 북마크 추가 (주소 + 위도·경도 함께 전달)
-async function addBookmark() {
+// 📌 북마크 추가 (DB 저장 없이 페이지 이동만 수행)
+function addBookmark() {
   if (house_latitude.value === null || house_longitude.value === null) {
     console.error("Latitude or Longitude is null");
     return;
   }
 
-  try {
-    const response = await axiosInstance.post('/v1/bookmark/user', {
-      house_address: house_address.value,
-      house_latitude: house_latitude.value,
-      house_longitude: house_longitude.value,
-      house_name: house_name.value,
-      house_category: house_category.value,
-    });
-    console.log("Response:", response.data);
-    
-    goToAddHousePage(); 
-  } catch (error) {
-    console.error("API 호출 중 오류 발생:", error);
-  }
+  goToAddHousePage(); // 주소 및 좌표 정보를 AddHousePage로 전달
 }
+
 
 </script>
 
