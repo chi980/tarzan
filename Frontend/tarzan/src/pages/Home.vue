@@ -325,6 +325,60 @@ const showInitialMarkers = (data: Array<any>): void => {
   }
 };
 
+
+
+
+
+// 여기부터 예린 작성
+
+// API: 게시글 데이터 불러오기
+// 빌딩 데이터 타입 정의
+interface Building {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+// API 응답 타입 정의
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    list: Building[];
+  };
+}
+
+const fetchBuilding = async (): Promise<void> => {
+  const queryParams = new URLSearchParams({
+    type: "HOSPITAL",
+    latitude: "126.976015",
+    longitude: "37.562912",
+    radius: "1000",
+  }).toString();
+
+  try {
+    const response = await axiosInstance.get<ApiResponse>(`/v1/building?${queryParams}`);
+
+    if (response.data.success && response.data.data) {
+      buildings.value = response.data.data.list;
+      console.log("타입별 빌딩 가져오기 성공!");
+      console.log(response.data.data.list);
+    } else {
+      console.error("API 실패:", response.data.message || "알 수 없는 오류");
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
+    } else {
+      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
+    }
+  }
+};
+onMounted(fetchBuilding);
+
+
 </script>
 
 <style lang="scss" scoped>
