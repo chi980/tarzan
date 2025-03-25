@@ -20,7 +20,6 @@ public class Comment  extends CommonEntity{
     @Column(name = "comment_id")
     private Long id;
 
-    @Lob
     @Column(name = "comment_content", columnDefinition = "TEXT") // 또는 CLOB
     private String content;
 

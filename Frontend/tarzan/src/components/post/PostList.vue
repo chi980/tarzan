@@ -36,7 +36,7 @@ export default {
   .post-list-container {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    // overflow-y: auto;
     gap: 16px;
   }
 </style>

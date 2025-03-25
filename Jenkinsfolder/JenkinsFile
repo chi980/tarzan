@@ -11,6 +11,8 @@ pipeline {
         
         BACK_CONTAINER_NAME = "tarzan-back-container"
         BACK_IMAGE_NAME = "tarzan-back-image"
+
+        SPRING_PROFILES_ACTIVE = 'prod' // dev 프로파일을 활성화
     }
 
     stages {
@@ -25,9 +27,14 @@ pipeline {
                 script {
                     dir('Backend') {
                         dir('tarzan') {
-                            sh 'chmod +x gradlew'
-                            sh './gradlew clean build'
-                            sh 'ls -al ./build'
+                            dir('src/main/resources'){
+                                withCredentials([file(credentialsId: 'TARZAN_BACKEND_CREDENTIALS', variable: 'SECRET_FILE')]) {
+                                    sh 'cp $SECRET_FILE application-prod.yml'
+                                }   
+                            }
+                                sh 'chmod +x gradlew'
+                                sh './gradlew clean build'
+                                sh 'ls -al ./build'
                         }
                     }
                 }
@@ -68,7 +75,6 @@ pipeline {
         stage('Dockerize') {
             steps {
                 script {
-                    // Docker 이미지 빌드
                     dir('Frontend') {
                         dir('tarzan'){
                             sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
@@ -77,10 +83,12 @@ pipeline {
 
                     dir('Backend') {
                         dir('tarzan') {
-                            // Docker build는 이 시점에 jar 파일이 생성된 후에 실행되어야 함
-                            sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
-                            sh "docker images"
-                            sh 'echo "images build 성공!"'
+                            withCredentials([file(credentialsId: 'TARZAN_BACKEND_CREDENTIALS', variable: 'SECRET_FILE')]) {
+                                sh 'ls'
+                                sh 'cp $SECRET_FILE src/main/resources/application-prod.yml'
+                                sh "docker build -t ${BACK_IMAGE_NAME} -f Dockerfile ."
+                                sh "docker images"
+                            }   
                         }
                     }
                 }

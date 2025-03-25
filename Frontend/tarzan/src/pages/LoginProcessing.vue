@@ -3,43 +3,46 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { useAuthStore } from "@/stores/authStore";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/authStore"; // authStore import
+import { Role } from "@/data/userRole"; // Role enum import
 
-const authStore = useAuthStore();
 const router = useRouter();
 
 onMounted(() => {
-  // 현재 URL에서 쿼리 파라미터 추출
-  const urlParams = new URLSearchParams(window.location.search);
-  const accessToken = urlParams.get("access_token");
-  const refreshToken = urlParams.get("refresh_token");
-
-  const role = urlParams.get("role");
-  const gu = urlParams.get("gu");
-  const nickname = urlParams.get("nickname");
-
-  if (accessToken && refreshToken) {
-    // Pinia 스토어에 토큰 저장
-    authStore.setTokens(accessToken, refreshToken);
-    authStore.setUserInfo(role, gu, nickname);
-    alert(
-      `accessToken=${accessToken}, refreshToken=${refreshToken}, role=${role}, gu=${gu}, nickname=${nickname}`
+  try {
+    // 현재 URL에서 쿼리 파라미터 추출
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get("access_token");
+    const user = Object.fromEntries(
+      [...urlParams].filter(([key]) => key !== "access_token")
     );
-    alert(accessToken == refreshToken);
-    // 이후 메인 페이지로 리다이렉트
-    router.push("/"); // Vue Router를 사용할 때는 router.push 사용
-  } else if (accessToken) {
+
+    console.log(accessToken);
+    console.log(user);
+    // 필수 값 체크
+    if (!accessToken || !user.role) throw new Error("응답이 올바르지 않음");
+
+    const role = user.role;
+
+    // 로그인 성공 시 데이터 저장
+    const authStore = useAuthStore();
     authStore.setAccessToken(accessToken);
-    authStore.setRole(role);
-    alert(`첫 로그인, accessToken=${accessToken}, role=${role}`);
-    router.push("/signup");
-  } else {
-    // 토큰이 없을 경우 로그인 실패 처리
-    console.error("Authentication failed. No tokens found.");
-    alert("Authentication failed. No tokens found.");
-    router.push("/login");
+    authStore.setUser(user);
+
+    // 역할에 따른 페이지 이동
+    if (role === Role.USER) {
+      router.push({ name: "Home" });
+    } else if (role === Role.GUEST) {
+      router.push({ name: "SignUp" });
+    } else {
+      throw new Error("역할값이 유효하지 않음");
+    }
+  } catch (error) {
+    console.error("로그인 중 오류 발생: ", error);
+    alert(error.message || "로그인 실패!");
+    router.push({ name: "Login" });
   }
 });
 </script>

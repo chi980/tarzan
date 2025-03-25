@@ -26,7 +26,7 @@ public class FraudServiceImpl implements FraudService{
     // 부동산 중개업 url, key from vworld
     @Value("${api.vworld.real-estate.url}")
     private String vworldRealEstateUrl;
-    @Value("${api.vworld.real-estate.develop.key}")
+    @Value("${api.vworld.real-estate.key}")
     private String vworldRealEstateKey;
 
     // 서울시 부동산 시세

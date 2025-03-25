@@ -30,8 +30,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("CustomOAuth2UserService.loadUser() 실행 - OAuth2 로그인 요청 진입");
-
         /**
          * DefaultOAuth2UserService 객체를 생성하여, loadUser(userRequest)를 통해 DefaultOAuth2User 객체를 생성 후 반환
          * DefaultOAuth2UserService의 loadUser()는 소셜 로그인 API의 사용자 정보 제공 URI로 요청을 보내서
@@ -40,7 +38,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
          */
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
-        log.info("OAuth2User: {}", oAuth2User);
+
         /**
          * userRequest에서 registrationId 추출 후 registrationId으로 SocialType 저장
          * http://localhost:8080/oauth2/authorization/kakao에서 kakao가 registrationId
@@ -56,7 +54,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes extractAttributes = OAuthAttributes.of(socialType, userNameAttributeName, attributes);
 
         User createdUser = getUser(extractAttributes, socialType); // getUser() 메소드로 User 객체 생성 후 반환
-        log.info("{}", createdUser);
         // DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
         return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority(createdUser.getRole().getKey())),
@@ -84,10 +81,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
      * 만약 찾은 회원이 있다면, 그대로 반환하고 없다면 saveUser()를 호출하여 회원을 저장한다.
      */
     private User getUser(OAuthAttributes attributes, SocialType socialType) {
-        log.info("getUser입니당!");
-        log.info( attributes.getOauth2UserInfo().getId());
-        log.info(socialType+"");
-
         User findUser = userRepository.findBySocialTypeAndSocialId(socialType,
                 attributes.getOauth2UserInfo().getId()).orElse(null);
 

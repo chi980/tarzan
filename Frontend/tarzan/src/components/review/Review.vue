@@ -4,13 +4,12 @@
     <div class="center-container">
       
       <div class="rating-contaier">
-        <StarRating />
+        <StarRating v-model="rating" />
         <div class="number">
           <span id="average">4.0</span>
           <span id="count">(45)</span>
         </div>
         <div class="tag">
-          <!-- <TagButtonGroup /> -->
           <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="buttons">
             <template v-slot:default="{ button }">
               <span>{{ button.label }}</span>
@@ -47,6 +46,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
 import PhotoUpload from "./PhotoUpload.vue";
@@ -54,9 +54,7 @@ import Divider from "../common/Divider.vue";
 import ReviewItem from "./ReviewItem.vue";
 import StarRating from "./StarRating.vue";
 import TagButtonGroup from "../common/TagButtonGroup.vue";
-import { axiosInstance } from "@/plugins/axiosPlugin";
 
-// Reactive state
 // 태그 버튼
 const buttons = ref([
   { label: '전체', value: 'ALL' },
@@ -67,60 +65,62 @@ const buttons = ref([
   { label: '모임', value: 'MEETING' },
   { label: '기타', value: 'ETC' },
 ]);
+const selectedButton = ref('ALL');
+const sortOptions = ref(['최신순', '오래된순', '평점순']);
 
-const reviews = ref([
-  {
-    username: "abc0813",
-    period: "2024년도 거주/고층",
-    pros: "용자 없는 건물임. 역이나 버스정류장에 가까워서 교통에 편함",
-    cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
-  },
-  {
-    username: "abc0813",
-    period: "2024년도 거주/고층",
-    pros: "용자 없는 건물임. 역이나 버스정류장에 가까워서 교통에 편함",
-    cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
-  },
-  {
-    username: "abc0813",
-    period: "2024년도 거주/고층",
-    pros: "용자 없는 건물임. 역이나 버스정류장에 가까워서 교통에 편함",
-    cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
-  },
-]);
+const rating = ref(3); // 초기 별점 값
 
-const posts = ref([]); // 게시글 목록
+const reviews = ref([]); // 게시글 목록
+// const reviews = ref([
+//   {
+//     username: "abc0813",
+//     period: "2024년도 거주/고층",
+//     pros: "용자 없는 건물임. 역이나 버스정류장에 가까워서 교통에 편함",
+//     cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
+//   },
+//   {
+//     username: "abc0813",
+//     period: "2024년도 거주/고층",
+//     pros: "용자 없는 건물임. 역이나 버스정류장에 가까워서 교통에 편함",
+//     cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
+//   },
+//   {
+//     username: "abc0813",
+//     period: "2024년도 거주/고층",
+//     pros: "용자 없는 건물임. 역이나 버스정류장에 가까워서 교통에 편함",
+//     cons: "여름 천장 누수가 발생하고 집주인한테 따져물었다가 엄청 꼼꼼한가보다 천장에 있는 누수도 발견하고 …",
+//   },
+// ]);
 
-// fetchPosts 메서드
-const fetchPosts = async () => {
+
+// API : 리뷰 목록 호출
+const fetchReviews = async () => {
   const queryParams = new URLSearchParams({
     houseIdx: 1,
     size: 3,
-    page: 4,
+    page: 0,
     sortBy: "최신순",
   }).toString();
 
   try {
-    const response = await axiosInstance.get(`/v1/reviews?${queryParams}`); // Axios 인스턴스를 사용하여 GET 요청
+    const response = await axiosInstance.get(`/v1/reviews?${queryParams}`); 
 
     if (response.data.success) {
-      posts.value = response.data.data.list; // 응답에서 게시글 목록을 가져옴
-      console.log('성공!!!!!!!!!!!!!!!!!!!!!!!!!');
-      console.log(response.data.data);
-      alert(`성공?`);
+      reviews.value = response.data.data.list; 
+      console.log(reviews.value);
     } else {
       console.error('Failed:', response.data.message);
-      alert(`Error: ${response.data.message}`); // 사용자에게 오류 메시지 표시
+      alert(`Error: ${response.data.message}`); 
     }
   } catch (error) {
     console.error('Error fetching posts:', error);
-    alert('후기를 불러오는 데 실패했습니다.'); // 사용자에게 알림
+    alert('후기를 불러오는 데 실패했습니다.');
   }
 };
 
 // 컴포넌트가 생성될 때 데이터를 불러옴
 onMounted(() => {
-  fetchPosts();
+  fetchReviews();
 });
 </script>
 

@@ -4,7 +4,7 @@ import com.mjutarzan.tarzan.domain.bookmark.api.request.ChecklistRequestDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.ChecklistResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.ChecklistType;
 import com.mjutarzan.tarzan.domain.bookmark.service.ChecklistService;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class ChecklistApi {
     private final ChecklistService checklistService;
 
     @GetMapping("/checklist/mover")
-    public ResponseEntity<?> getMoverChecklist(@AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getMoverChecklist(@AuthenticationPrincipal CustomUserDetails userDto){
         Map<String, ChecklistResponseDto> result =  checklistService.getChecklist(ChecklistType.MOVER, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
@@ -32,7 +32,7 @@ public class ChecklistApi {
                 .build());
     }
     @PostMapping("/checklist/mover")
-    public ResponseEntity<?> createMoverChecklist(@RequestBody ChecklistRequestDto checklistRequestDto,@AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> createMoverChecklist(@RequestBody ChecklistRequestDto checklistRequestDto,@AuthenticationPrincipal CustomUserDetails userDto){
 
         checklistService.createChecklist(ChecklistType.MOVER, checklistRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
@@ -41,7 +41,7 @@ public class ChecklistApi {
                 .build());
     }
     @GetMapping("/checklist/item")
-    public ResponseEntity<?> getItemChecklist(@AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> getItemChecklist(@AuthenticationPrincipal CustomUserDetails userDto){
         Map<String, ChecklistResponseDto> result =  checklistService.getChecklist(ChecklistType.ITEM, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
@@ -51,7 +51,7 @@ public class ChecklistApi {
     }
 
     @PostMapping("/checklist/item")
-    public ResponseEntity<?> createItemChecklist(@RequestBody ChecklistRequestDto checklistRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<?> createItemChecklist(@RequestBody ChecklistRequestDto checklistRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         checklistService.createChecklist(ChecklistType.ITEM, checklistRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()

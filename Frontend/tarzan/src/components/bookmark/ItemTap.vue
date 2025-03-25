@@ -42,7 +42,8 @@
 <script setup lang="ts">
 import { CheckList } from "@/data/check";
 import { axiosInstance } from "@/plugins/axiosPlugin";
-
+import { onMounted } from "vue";
+import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
 import {
   homeAppliances,
   fabrics,
@@ -51,8 +52,8 @@ import {
   kitchenUtensils,
   householdGoods,
 } from "@/data/bookmark/itemTab";
-import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
 
+// 메인 아코디언 열고 닫기
 const toggleAccordion = (contents: { value: CheckList[] }) => {
   contents.value.forEach((controlledCheckList: CheckList) => {
     controlledCheckList.canSee = false;
@@ -60,6 +61,7 @@ const toggleAccordion = (contents: { value: CheckList[] }) => {
   });
 };
 
+// 서브 아코디언 열고 닫기
 const toggleSubAccordion = (contents: CheckList[], idx: number) => {
   const controlledCheckList = contents.find((item) => item.idx === idx); // contents.values 대신 contents 사용
   if (controlledCheckList) {
@@ -105,40 +107,127 @@ const toggleSubAccordionHouseholdGoods = (idx: number) => {
   toggleSubAccordion(householdGoods.value, idx);
 };
 
-// import { ref, onMounted } from 'vue';
-// const comments = ref([]);
+const fetchCheckItemList = async () => {
+  try {
+    const response = await axiosInstance.get(`/v1/checklist/item`);
 
-// // API: 사용자의 댓글 데이터 불러오기
-// const fetchUserComments = async () => {
-//   const queryParams = new URLSearchParams({
-//     size: 5,
-//     page: 0,
-//     sortBy: '최신순',
-//   }).toString();
+    if (response.data?.success && response.data?.data) {
+      console.log("아이템 체크리스트 가져오기 성공!");
+      const data = response.data.data;
+      console.log(data);
 
-//   try {
-//     const response = await axiosInstance.get(`/v1/user/comments?${queryParams}`);
+      // 🏠 "이사 전 필수품" (before_move) -> homeAppliances[0].contents에 삽입
+      homeAppliances.value[0].contents =
+        data.home_appliances_before_move.id_list.map(
+          (id: number, index: number) => ({
+            idx: id,
+            name: data.home_appliances_before_move.name_list[index],
+            value: data.home_appliances_before_move.value_list[index],
+          })
+        );
+      // 🏠 "이사 후 사도 되는 물품" (after_move) -> homeAppliances[1].contents에 삽입
+      homeAppliances.value[1].contents =
+        data.home_appliances_after_move.id_list.map(
+          (id: number, index: number) => ({
+            idx: id,
+            name: data.home_appliances_after_move.name_list[index],
+            value: data.home_appliances_after_move.value_list[index],
+          })
+        );
 
-//     if (response.data.success) {
-//       console.log("사용자 댓글 목록 가져오기 성공!");
-//       comments.value = response.data.data.list;
-//     } else {
-//       console.error("API 실패:", response.data.message);
+      // 🛋 가구ㆍ패브릭 (fabrics)
+      fabrics.value[0].contents = data.furniture_fabric_before_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.furniture_fabric_before_move.name_list[index],
+          value: data.furniture_fabric_before_move.value_list[index],
+        })
+      );
+      fabrics.value[1].contents = data.furniture_fabric_after_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.furniture_fabric_after_move.name_list[index],
+          value: data.furniture_fabric_after_move.value_list[index],
+        })
+      );
 
-//     }
-//   } catch (error) {
-//     console.error("댓글 데이터 요청 중 오류 발생:", error);
-//   }
-// };
+      // 🚿 욕실 용품 (bathroomSupplies)
+      bathroomSupplies.value[0].contents =
+        data.bathroom_before_move.id_list.map((id: number, index: number) => ({
+          idx: id,
+          name: data.bathroom_before_move.name_list[index],
+          value: data.bathroom_before_move.value_list[index],
+        }));
+      bathroomSupplies.value[1].contents = data.bathroom_after_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.bathroom_after_move.name_list[index],
+          value: data.bathroom_after_move.value_list[index],
+        })
+      );
 
-// onMounted(async () => {
-//   await fetchUserComments();
-// });
+      // 🍽 주방 용품 (kitchenUtensils)
+      kitchenUtensils.value[0].contents = data.kitchen_before_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.kitchen_before_move.name_list[index],
+          value: data.kitchen_before_move.value_list[index],
+        })
+      );
+      kitchenUtensils.value[1].contents = data.kitchen_after_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.kitchen_after_move.name_list[index],
+          value: data.kitchen_after_move.value_list[index],
+        })
+      );
+
+      // 🍲 필수 식재료 (ingredients)
+      ingredients.value[0].contents = data.food_before_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.food_before_move.name_list[index],
+          value: data.food_before_move.value_list[index],
+        })
+      );
+      ingredients.value[1].contents = data.food_after_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.food_after_move.name_list[index],
+          value: data.food_after_move.value_list[index],
+        })
+      );
+
+      // 🏠 생활 용품 (householdGoods)
+      householdGoods.value[0].contents = data.household_before_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.household_before_move.name_list[index],
+          value: data.household_before_move.value_list[index],
+        })
+      );
+      householdGoods.value[1].contents = data.household_after_move.id_list.map(
+        (id: number, index: number) => ({
+          idx: id,
+          name: data.household_after_move.name_list[index],
+          value: data.household_after_move.value_list[index],
+        })
+      );
+    } else {
+      console.error("아이템리스트 데이터 없음", response.data?.message);
+    }
+  } catch (error) {
+    console.error("API 요청 오류: ", error);
+  }
+};
+
+onMounted(() => {
+  fetchCheckItemList();
+});
 </script>
 
 <style lang="scss" scoped>
 // 공통
-
 .tab-content {
   margin-top: 0;
 }

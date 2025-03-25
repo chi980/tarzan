@@ -2,35 +2,43 @@
   <div class="review-item">
 
     <div class="writer-container">
-      <img src="@/assets/icons/Filter/writer-icon.png" alt="writer-img">
+      <!-- <img :src="review.review_img_url" alt="후기 이미지" class="writer-img" v-if="review.review_img_url">
+      <img src="@/assets/icons/Filter/writer-icon.png" alt="기본 이미지" class="writer-img" v-else> -->
+      <img :src="review.review_img_url || defaultImage" alt="후기 이미지" class="review-image" />
       <div class="writer-info">
-        <span class="username">{{ review.username }}</span>
-        <span class="residence-period">{{ review.period }}</span>
+        <span class="username">{{ review.review_writer_nickname }}</span>
+        <span class="residence-period">{{ review.review_residence_period }}</span>
+        <StarRating v-model="rating"  :readonly="true" />
       </div>
     </div>
 
     <div class="review-content-container">
       <div class="review-content">
         <h4>장점</h4>
-        <p>{{ review.pros }}</p>
+        <p>{{ review.review_advantage }}</p>
       </div>
       <div class="review-content">
         <h4>단점</h4>
-        <p>{{ review.cons }}</p>
+        <p>{{ review.review_disadvantage }}</p>
       </div>
     </div>
 
   </div>
 </template>
-<script>
-export default {
-  props: {
-    review: {
-      type: Object,
-      required: true
-    }
+<script setup>
+import { ref, defineProps } from "vue";
+import defaultImage from "@/assets/icons/Filter/writer-icon.png";
+import StarRating from "./StarRating.vue";
+
+const pros = defineProps({
+  review: {
+    type : Object,
+    require : true
   }
-}
+});
+
+const rating = ref(3); // 초기 별점 값
+
 </script>
 <style lang="scss" scoped>
   .review-item {

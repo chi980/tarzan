@@ -22,43 +22,45 @@
       </div>
     </div>
 
-    <button @click="clickBtn">토큰 확인</button>
+    <button @click="clickBtn">상태 확인</button>
     <button @click="clickLogOutBtn">로그아웃</button>
     <button @click="checkBack">확인하기</button>
   </div>
 </template>
 
 <script setup>
-import { useAuthStore } from "@/stores/authStore";
-
 import logoImage from "@/assets/tarzan_logo.png";
 import kakaoImage from "@/assets/icons/kakao_login_logo.png";
 import googleImage from "@/assets/icons/google_login_logo.png";
 import loginDescImage from "@/assets/login_desc.png";
 
-const authStore = useAuthStore();
-
 const clickKakaoBtn = () => {
-  location.href = "http://localhost:8080/oauth2/authorization/kakao";
+  const kakaoLoginUrl = import.meta.env.VITE_API_KAKAO_URL;
+  location.href = kakaoLoginUrl;
 };
 const clickGoogleBtn = () => {
-  location.href = "http://localhost:8080/oauth2/authorization/google";
+  const googleLoginUrl = import.meta.env.VITE_API_GOOGLE_URL;
+  location.href = googleLoginUrl;
 };
 
-const clickLogOutBtn = () => {
-  authStore.clearAuth();
-  // 로그아웃 후 로그인 페이지로 리다이렉트
-  alert("로그아웃 완료");
+import { useAuthStore } from "@/stores/authStore";
+const clickBtn = () => {
+  const authStore = useAuthStore();
+  console.log(authStore.getUser);
 };
 
-import { getCurrentInstance } from "vue";
-const { proxy } = getCurrentInstance();
+const clickLogOutBtn = () => {};
+import { axiosInstance } from "@/plugins/axiosPlugin";
 const checkBack = async () => {
+  alert("확인");
+
   try {
-    const response = await proxy.$axios.get("/test"); // axiosInstance를 사용하여 API 호출
-    console.log(response.data);
-  } catch (err) {
-    console.error(err);
+    const response = await axiosInstance.get("/check");
+
+    console.log("API 호출 성공:", response);
+  } catch (error) {
+    // alert("API 호출 실패: " + error);
+    console.log(error);
   }
 };
 </script>
@@ -104,7 +106,7 @@ const checkBack = async () => {
   right: 0;
 }
 
-#recommended-login-group:hover #recommended-login-desc {
+#recommended-login-desc {
   animation: shake 0.8s infinite alternate ease-in-out;
 }
 

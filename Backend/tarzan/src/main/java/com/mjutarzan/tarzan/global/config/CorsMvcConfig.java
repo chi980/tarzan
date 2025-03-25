@@ -9,9 +9,11 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-
         corsRegistry.addMapping("/**")
-                .exposedHeaders("Set-Cookie")
-                .allowedOrigins("http://localhost:8080");
+                .allowedOrigins("http://localhost:5173", "https://tazan.site")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowCredentials(true) // ✅ 쿠키 전송 허용
+                .allowedHeaders("*")
+                .exposedHeaders("Set-Cookie", "Authorization"); // ✅ 쿠키, 토큰 등 헤더 노출
     }
 }

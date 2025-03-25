@@ -6,7 +6,7 @@ import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
 import com.mjutarzan.tarzan.domain.review.service.ReviewService;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +24,8 @@ public class ReviewApi {
 
     private final ReviewService reviewService;
     @GetMapping("/reviews")
-    public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto, @AuthenticationPrincipal UserDto userDto){
-//    public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto){
+    public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
         ReviewListResponseDto result = reviewService.getReviews(reviewListRequestDto, userDto);
-//        log.info("/api/v1/reviews");
-//        ReviewListResponseDto result = reviewService.getReviews(reviewListRequestDto, null);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")
@@ -37,7 +34,7 @@ public class ReviewApi {
     }
 
     @GetMapping("/reviews/{reviewIdx}")
-    public ResponseEntity<Object> getReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> getReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal CustomUserDetails userDto){
 
         ReviewListItemResponseDto result = reviewService.getReview(reviewIdx, userDto);
 
@@ -48,7 +45,7 @@ public class ReviewApi {
     }
 
     @PostMapping("/reviews")
-    public ResponseEntity<Object> createReview(@RequestBody @Valid ReviewRequestDto reviewRequestDto, BindingResult bindingResult, @AuthenticationPrincipal UserDto userDto) {
+    public ResponseEntity<Object> createReview(@RequestBody @Valid ReviewRequestDto reviewRequestDto, BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails userDto) {
         if (bindingResult.hasErrors()) {
             // 유효성 검사 오류 처리
             return ResponseEntity.badRequest().body(BaseResponseDto.builder()
@@ -66,7 +63,7 @@ public class ReviewApi {
     }
 
     @PutMapping("/reviews/{reviewIdx}")
-    public ResponseEntity<Object> updateReview(@PathVariable Long reviewIdx, @RequestBody @Valid UpdateReviewRequestDto updateReviewRequestDto, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> updateReview(@PathVariable Long reviewIdx, @RequestBody @Valid UpdateReviewRequestDto updateReviewRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
 
         reviewService.updateReview(reviewIdx, updateReviewRequestDto, userDto);
 
@@ -77,7 +74,7 @@ public class ReviewApi {
     }
 
     @DeleteMapping("/reviews/{reviewIdx}")
-    public ResponseEntity<Object> deleteReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal UserDto userDto){
+    public ResponseEntity<Object> deleteReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal CustomUserDetails userDto){
 
         reviewService.deleteReview(reviewIdx, userDto);
 

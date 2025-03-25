@@ -51,11 +51,9 @@ public class Review extends CommonEntity{
     @Column(name = "review_floor")
     private Integer floor;
 
-    @Lob
     @Column(name = "review_advantage", columnDefinition = "TEXT") // 또는 CLOB
     private String advantage;
 
-    @Lob
     @Column(name = "review_disadvantage", columnDefinition = "TEXT") // 또는 CLOB
     private String disadvantage;
 
@@ -148,5 +146,22 @@ public class Review extends CommonEntity{
 
     public List<Tag> getDisadvantageTagList() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", score=" + score +
+                ", leaseType=" + leaseType +
+                ", rent=" + rent +
+                ", deposit=" + deposit +
+                ", managementFee=" + managementFee +
+                ", residencePeriod=" + residencePeriod +
+                ", floor=" + floor +
+                ", advantage='" + advantage + '\'' +
+                ", disadvantage='" + disadvantage + '\'' +
+                '}';
     }
 }

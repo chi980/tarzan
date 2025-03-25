@@ -22,7 +22,7 @@ import com.mjutarzan.tarzan.domain.map.entity.shopping.Shopping;
 import com.mjutarzan.tarzan.domain.map.entity.transportation.Transportation;
 import com.mjutarzan.tarzan.domain.map.repository.BuildingRepository;
 import com.mjutarzan.tarzan.domain.user.entity.User;
-import com.mjutarzan.tarzan.domain.user.model.dto.UserDto;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+// @Transactional(readOnly = true)
 public class BookmarkServiceImpl implements BookmarkService{
 
     private final ApiHouseRepository apiHouseRepository;
@@ -61,7 +61,7 @@ public class BookmarkServiceImpl implements BookmarkService{
 
 
     @Override
-    public void createBookmarkWithApiHouse(BookmarkWithApiHouseRequestDto requestDto, UserDto loginedUserDto) {
+    public void createBookmarkWithApiHouse(BookmarkWithApiHouseRequestDto requestDto, CustomUserDetails loginedUserDto) {
         ApiHouse apiHouse = apiHouseRepository.findById(requestDto.getHouseId()).orElseThrow();
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
@@ -79,7 +79,7 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public void createBookmarkWithUserHouse(BookmarkWithUserHouseRequestDto requestDto, UserDto loginedUserDto) {
+    public void createBookmarkWithUserHouse(BookmarkWithUserHouseRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Double latitude = requestDto.getHouseLatitude();
         Double longitude = requestDto.getHouseLongitude();
         Point location = locationService.createPoint(latitude, longitude);
@@ -128,20 +128,33 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public BookmarkListResponseDto getBookmarks(BookmarkListRequestDto requestDto, UserDto loginedUserDto) {
+    public BookmarkListResponseDto getBookmarks(BookmarkListRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
-        Page<BookmarkListItemResponseDto> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
+        Page<Bookmark> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
 
         return BookmarkListResponseDto.builder()
                 .count(bookmarkPages.getTotalElements())
-                .list(bookmarkPages.getContent())
+                .list(bookmarkPages.getContent().stream()
+                        .map(bookmark -> BookmarkListItemResponseDto
+                                .builder()
+                                .id(bookmark.getId())
+                                .houseId(bookmark.getHouse().getId())
+                                .houseName(bookmark.getHouse().getName())
+                                .houseAddress(bookmark.getHouse().getAddress())
+                                .houseCategory(bookmark.getHouse().getCategory())
+//                                이거 고민해보자
+                                .isHouseRegister(bookmark.getUser().getEmail().equals(loginedUser.getEmail()))
+                                .createdAt(bookmark.getCreatedAt())
+                                .build())
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 
     @Override
-    public BookmarkDetailResponseDto getBookmark(Long bookmarkIdx, UserDto loginedUserDto) {
+    public BookmarkDetailResponseDto getBookmark(Long bookmarkIdx, CustomUserDetails loginedUserDto) {
         Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
@@ -208,7 +221,7 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto requestDto, UserDto loginedUserDto) {
+    public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto requestDto, CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
@@ -224,7 +237,7 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public void deleteBookmark(Long bookmarkIdx, UserDto loginedUserDto) {
+    public void deleteBookmark(Long bookmarkIdx, CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
@@ -241,7 +254,7 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public CompareBookmarkResponseDto compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, UserDto loginedUserDto) {
+    public CompareBookmarkResponseDto compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, CustomUserDetails loginedUserDto) {
         if(compareBookmarksRequestDto.getIdList().size() <= 1 || compareBookmarksRequestDto.getIdList().size()>3){
             throw new IllegalArgumentException("2개 이상 3개 이하의 집들만 비교할 수 있습니다.");
         }
