@@ -26,23 +26,23 @@ class TarzanApplicationTests {
 	@Autowired
 	private UserRepository userRepository;
 
-	@Autowired
-	private ItemRepository itemRepository;
-
-	@Autowired
-	private BookRepository bookRepository;
-
-	@Autowired
-	private AlbumRepository albumRepository;
-
-	@Autowired
-	private ClassicRepository classicRepository;
-
-	@Autowired
-	private RockRepository rockRepository;
-
-	@Autowired
-	private BoardService boardService;
+//	@Autowired
+//	private ItemRepository itemRepository;
+//
+//	@Autowired
+//	private BookRepository bookRepository;
+//
+//	@Autowired
+//	private AlbumRepository albumRepository;
+//
+//	@Autowired
+//	private ClassicRepository classicRepository;
+//
+//	@Autowired
+//	private RockRepository rockRepository;
+//
+//	@Autowired
+//	private BoardService boardService;
 
 	@Autowired
 	private CommentRepository commentRepository;
