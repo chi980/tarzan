@@ -110,7 +110,7 @@ const checkBack = async () => {
   @include custom-none-select-basic;
   height: 180px;
   width: 180px;
-  margin-bottom: 60px;
+  margin-bottom: 70px;
 }
 
 .custom-button-group {
