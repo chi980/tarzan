@@ -8,7 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CivicCenterRepository extends JpaRepository<CivicCenter, Long> {
+    @Query("SELECT c FROM CivicCenter c " +
+            "WHERE function('ST_DWithin', c.location, function('ST_SetSRID', function('ST_MakePoint', :longitude, :latitude), 4326), :radius) = true")
+    List<CivicCenter> findAllWithinRadius(@Param("longitude") double longitude,
+                                          @Param("latitude") double latitude,
+                                          @Param("radius") double radius);
 
-    @Query(value = "SELECT * FROM building b WHERE ST_DWithin(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :radius) = true AND b.building_type = 'civic_center'", nativeQuery = true)
-    List<CivicCenter> findAllWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("radius") double radius);
+//    @Query(value = "SELECT * FROM building b WHERE ST_DWithin(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :radius) = true AND b.building_type = 'civic_center'", nativeQuery = true)
+//    List<CivicCenter> findAllWithinRadius(@Param("longitude") double longitude, @Param("latitude") double latitude, @Param("radius") double radius);
 }
