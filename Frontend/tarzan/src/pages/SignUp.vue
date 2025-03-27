@@ -79,52 +79,42 @@
           <input
             type="text"
             placeholder="주소를 입력해주세요"
-            v-model="searchQuery"
-            @input="searchAddress"
+            readonly
+            v-model="address"
+            @click="openAddressSearch"
           />
         </div>
-
-        <!-- 검색 결과 표시 -->
-        <!-- <ul v-if="searchResults.length" class="search-results">
-          <li
-            v-for="(result, index) in searchResults.slice(0, 10)"
-            :key="index"
-            @click="selectAddress(result)"
-            class="search-result-item"
-          >
-            <span class="place-name">{{ result.place_name }}</span
-            ><br />
-            <span class="address-name">{{
-              result.road_address_name || result.address_name
-            }}</span>
-          </li>
-        </ul> -->
       </div>
-
     </form>
+
+    <!-- 주소 검색 팝업 -->
+    <AddressSearch
+      v-if="isAddressSearchOpen"
+      @close="closeAddressSearch" />
+    
     <div style="width: 100%;position: absolute; bottom: 16px;display: flex; flex-direction: row;">
       <div class="button-default" @click="submitForm">제출하기</div>
     </div>
+    
   </div>
 </template>
 
 <script setup lang="ts">
 /**library load */
 import { ref } from "vue";
-import { getCurrentInstance } from "vue";
-import axios from "axios";
 import { debounce } from "lodash"; // lodash 라이브러리 사용
 
 /**data, componenet, env load */
-import { Option } from "@/data/options";
-import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
-import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 import { useAuthStore } from "@/stores/authStore";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
-const instance = getCurrentInstance();
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import AddressSearch from "@/components/common/AddressSearch.vue";
+
+import { Option } from "@/data/options";
+import { seoulSiGunGu } from "@/data/seoulsigungu.js";
+
 const authStore = useAuthStore();
-const KAKAO_API_KEY = "7975d213af9c016408b981c2fe60f335"; // 여기에 본인의 카카오 REST API 키를 입력하세요.
 
 /** form value */
 const nickname = ref<string | null>(null);
@@ -210,46 +200,20 @@ const selectOption = (options: Option[] | undefined, idx: number) => {
 
 /** address */
 const address = ref<string | null>(null);
-
-// 주소 검색 함수
-const searchAddress = async () => {
-  if (!searchQuery.value) {
-    searchResults.value = [];
-    return;
-  }
-
-  try {
-    // 키워드 검색 API 호출
-    const response = await axios.get(
-      "https://dapi.kakao.com/v2/local/search/keyword.json",
-      {
-        params: { query: searchQuery.value },
-        headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
-      }
-    );
-    searchResults.value = response.data.documents; // 검색 결과 저장
-  } catch (error) {
-    console.error("주소 검색 중 오류 발생: ", error);
-    searchResults.value = [];
-  }
+const isAddressSearchOpen = ref<boolean>(false);
+const openAddressSearch = () => {
+  isAddressSearchOpen.value = true;
 };
-
-// 주소 선택 함수
-const selectAddress = (selectedPlace: SearchResult) => {
-  searchQuery.value = `${selectedPlace.place_name} - ${
-    selectedPlace.road_address_name || selectedPlace.address_name
-  }`;
-  searchResults.value = []; // 검색 결과 목록 초기화
-
-  // 위도와 경도 저장
-  selectedLocation.value.latitude = selectedPlace.y; // 위도
-  selectedLocation.value.longitude = selectedPlace.x; // 경도
+const closeAddressSearch = (selectedAddress: string) => {
+  address.value = selectedAddress;
+  isAddressSearchOpen.value = false;
 };
 
 
-
+/** submit form */
 const submitForm = async () => {
   try {
+    /** data 가져오기 */
     const user_nickname = nickname.value == null ? "d" : nickname.value;
     const gu =
       seoulDistrictOptions[
@@ -257,19 +221,27 @@ const submitForm = async () => {
           ? 0
           : selectedSeoulSiGunGuIdx.value
       ].value;
-
       const selectedPetIdx = petOptions.value.findIndex(
         (option) => option.isSelected
       );
+      const selectedCarIdx = carOptions.value.findIndex(
+        (option) => option.isSelected
+      );
 
+      /** data valid한지 확인 */
+      if(nicknameValid.value == false){
+        alert("닉네임 중복을 확인해주세요");
+        return;
+      }
+
+      if(gu == null){
+        alert("사는 곳을 선택해주세요");
+        return;
+      }
       if(selectedPetIdx == -1){
         alert("반려동물 유무를 선택해주세요");
         return;
       }
-
-      const selectedCarIdx = carOptions.value.findIndex(
-        (option) => option.isSelected
-      );
 
       if(selectedCarIdx == -1){
         alert("자차 유무를 선택해주세요");
@@ -288,46 +260,17 @@ const submitForm = async () => {
       user_latitude: 37.5665,
       user_longitude: 126.978,
     };
-    console.log(formData);
-    if (instance && instance.proxy) {
-      const response = await (instance.proxy.$axios as any).post(
-        "/v1/user",
-        formData
-      );
-      // const response = await proxy.$axios.post("/v1/user", formData);
+
+    const response = await axiosInstance.post("/v1/user", formData).then((response) => {
       console.log(response.data);
-      const refreshToken = response.data.refresh_token;
-      const role = response.data.user_role;
-      authStore.registerUser(refreshToken, role, gu, user_nickname);
-    } else {
-      throw new Error("proxy 객체가 없습니다");
-    }
+    });
+    const role = response.data.user_role;
+    authStore.setRole(role);
   } catch (error) {
-    console.error("Error submitting form:", error);
+    console.error("회원가입 중 오류 발생", error);
   }
 };
 
-
-// 검색어와 결과를 저장할 상태 변수
-const searchQuery = ref(""); // 사용자가 입력한 검색어
-interface SearchResult {
-  place_name: string;
-  road_address_name?: string;
-  address_name?: string;
-  x: string; // 경도
-  y: string; // 위도
-}
-
-const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
-
-// 위도와 경도를 저장할 상태 변수
-const selectedLocation = ref<{
-  latitude: string | null;
-  longitude: string | null;
-}>({
-  latitude: null,
-  longitude: null,
-});
 </script>
 
 <style lang="scss" scoped>
@@ -344,18 +287,6 @@ const selectedLocation = ref<{
   width: 82px;
   margin: 0 auto;
   position: relative;
-}
-#user-default-img {
-  width: 82px;
-  height: 82px;
-}
-#user-img-input {
-  width: 32px;
-  height: 32px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
 }
 
 .option-group{
@@ -442,45 +373,10 @@ const selectedLocation = ref<{
 
 // scoped
 .sub-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: $padding-default;
-}
-
-.search-results {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 200px; /* 최대 높이 지정 (5개의 항목) */
-  overflow-y: auto; /* 스크롤 가능하게 설정 */
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-}
-
-.search-result-item {
-  padding: 10px 15px; /* 검색 결과 항목의 패딩 */
-  cursor: pointer;
-  border-bottom: 1px solid #f1f1f1; /* 항목 간의 구분선 */
-}
-
-.search-result-item:hover {
-  background-color: #f8f8f8; /* 항목을 hover했을 때 배경색 변경 */
-}
-
-.place-name {
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.address-name {
-  font-size: 12px;
-  color: #9f9f9f;
-  width: 100%;
-  text-align: left;
-  padding: 0 15px 5px; /* 좌우 여백 추가 */
 }
 
 .button-default{

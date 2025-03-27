@@ -14,6 +14,11 @@ export const useAuthStore = defineStore("auth", {
       this.accessToken = token;
       localStorage.setItem("accessToken", token); // 로컬 스토리지에 저장
     },
+    setRole(role) {
+      this.role = role;
+      localStorage.setItem("role", role
+      ); // 로컬 스토리지에 저장
+    },
     setUser(user) {
       this.user = user;
       localStorage.setItem("user", JSON.stringify(user)); // 로컬 스토리지에 저장

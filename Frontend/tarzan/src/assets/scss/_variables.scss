@@ -47,6 +47,7 @@ $text-color-default: #2e2e2e;
 $text-color-light: #878787;
 
 /* input color */
+$input-color-white: white;
 $input-color: #f2f2f2;
 $input-placeholder-color: #848484;
 $input-text-color: $text-color-default;
@@ -114,6 +115,7 @@ $height-bottom-bar: 68px;
 // $height-bottom-bar: 90px;
 
 /* z-indexs */
+$z-index-modal: 1001;
 $z-index-dropdown: 1000;
 $z-index-dropdown-exterior: 999;
 // bottom-bar < top-bar여야 dropdown이 제대로 수행된다. -> 만약 같거나 크면 exterior보다 bottom-bar가 위에 위치

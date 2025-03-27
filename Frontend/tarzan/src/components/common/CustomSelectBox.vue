@@ -70,11 +70,10 @@ const props = defineProps({
   parentStyle: {
     type: Object as () => SelectStyle,
     default: () => ({
-      backgroundColor: `$input-color`,
+      backgroundColor: `$input-color-white`,
       fontWeight: 400,
       justifyContent: `space-between`,
-      border: 'none !important',
-      
+      border: '$border-color-input',
     }),
   },
 });
