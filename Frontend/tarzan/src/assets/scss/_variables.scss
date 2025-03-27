@@ -40,12 +40,14 @@ $warning-color: #ff0000;
 /* sns color */
 $kakao-color: #f8ce46;
 $google-color: #f2f2f2;
+$naver-color: #1ec800;
 
 /* text color */
 $text-color-default: #2e2e2e;
 $text-color-light: #878787;
 
 /* input color */
+$input-color-white: white;
 $input-color: #f2f2f2;
 $input-placeholder-color: #848484;
 $input-text-color: $text-color-default;
@@ -60,6 +62,7 @@ $button-color-light: $button-color-unactive;
 /* border color */
 $border-color-active: $primary-color-default;
 $border-color-unactive: $secondary-color-75;
+$border-color-input: #e7e7e7;
 
 /* small button background color */
 $small-button-background-color-active: $primary-color-light;
@@ -112,6 +115,7 @@ $height-bottom-bar: 68px;
 // $height-bottom-bar: 90px;
 
 /* z-indexs */
+$z-index-modal: 1001;
 $z-index-dropdown: 1000;
 $z-index-dropdown-exterior: 999;
 // bottom-bar < top-bar여야 dropdown이 제대로 수행된다. -> 만약 같거나 크면 exterior보다 bottom-bar가 위에 위치

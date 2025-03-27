@@ -1,5 +1,8 @@
 <template>
   <div class="sub-container">
+    <p id="logo_desc_text">정글같은 서울 도심 속 터전 찾기</p>
+    <p id="logo_text">TARZAN</p>
+
     <img :src="logoImage" alt="Logo" id="logo" />
 
     <div class="custom-button-group">
@@ -20,18 +23,26 @@
           <p class="button-item-content">구글로 계속하기</p>
         </div>
       </div>
+
+      <div class="custom-button-item">
+        <div class="custom-button-naver" @click="clickNaverBtn">
+          <img :src="naverImage" alt="naverLogo" class="button-item-image" />
+          <p class="button-item-content">네이버로 계속하기</p>
+        </div>"
+      </div>
     </div>
 
-    <button @click="clickBtn">상태 확인</button>
+    <!-- <button @click="clickBtn">상태 확인</button>
     <button @click="clickLogOutBtn">로그아웃</button>
-    <button @click="checkBack">확인하기</button>
+    <button @click="checkBack">확인하기</button> -->
   </div>
 </template>
 
 <script setup>
-import logoImage from "@/assets/tarzan_logo.png";
+import logoImage from "@/assets/etc/map.png";
 import kakaoImage from "@/assets/icons/kakao_login_logo.png";
 import googleImage from "@/assets/icons/google_login_logo.png";
+import naverImage from "@/assets/icons/naver_login_logo.png";
 import loginDescImage from "@/assets/login_desc.png";
 
 const clickKakaoBtn = () => {
@@ -42,6 +53,9 @@ const clickGoogleBtn = () => {
   const googleLoginUrl = import.meta.env.VITE_API_GOOGLE_URL;
   location.href = googleLoginUrl;
 };
+
+// const clickNaverBtn = () => {
+//   const naverLoginUrl = import.meta.env.VITE_API_NAVER_URL;
 
 import { useAuthStore } from "@/stores/authStore";
 const clickBtn = () => {
@@ -78,14 +92,29 @@ const checkBack = async () => {
   }
 }
 // logo
+#logo_desc_text{
+  font-family: "Ownglyph_ParkDaHyun", sans-serif;
+  font-size: 13px;
+  color: #848484;
+  margin-bottom: 10px;
+}
+
+#logo_text{
+  font-family: "Ownglyph_ParkDaHyun", sans-serif;
+  font-size: 48px;
+  color: #000000;
+  margin-bottom: 30px;
+}
+
 #logo {
   @include custom-none-select-basic;
-  height: 254px;
-  width: 254px;
-  margin-bottom: calc($margin-default * 3) px;
+  height: 180px;
+  width: 180px;
+  margin-bottom: 70px;
 }
 
 .custom-button-group {
+  
   display: flex;
   padding: 0;
   width: 100%;
@@ -125,5 +154,9 @@ const checkBack = async () => {
   @include custom-button-style($bg-color: $google-color, $height: 56px);
 }
 
+.custom-button-naver {
+  color: white;
+  @include custom-button-style($bg-color: $naver-color, $height: 56px, $font-color: white);
+}
 /**https://w-world.tistory.com/232 참고해보자 */
 </style>

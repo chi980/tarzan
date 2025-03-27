@@ -71,8 +71,8 @@ public class DataInitializer {
         log.info("data 초기화 끝");
     }
 
-    private void initializeData(boolean isDatLoad, String dataName, String filePath, DataProcessor processor) {
-        if(!isDatLoad) return;
+    private void initializeData(boolean isDataLoad, String dataName, String filePath, DataProcessor processor) {
+        if(!isDataLoad) return;
         try {
             log.info("{} 초기화 중...", dataName);
             processor.process(filePath);

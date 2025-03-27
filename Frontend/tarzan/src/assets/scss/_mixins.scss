@@ -61,11 +61,13 @@
 @mixin custom-input-style {
   @include custom-padding-x;
   font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  color: $text-color-default;
   height: 48px;
   appearance: none;
-  border: none;
+  border: 1px solid #e7e7e7;
   outline: none;
-  background-color: $input-color;
+  background-color: white;
   border-radius: 13px;
 }
 
@@ -149,22 +151,49 @@
 }
 
 @mixin custom-scrollbar-style {
-  /* 스크롤바 전체 영역 */
-  ::-webkit-scrollbar {
+  // /* 스크롤바 전체 영역 */
+  // ::-webkit-scrollbar {
+  //   width: 4px; /* 세로축 스크롤바 폭 너비 */
+  //   height: 100%; /* 가로축 스크롤바 폭 너비 */
+  // }
+  // ::-webkit-scrollbar-button {
+  //   display: none;
+  // }
+  // /* 스크롤바 막대 제외 부분 */
+  // ::-webkit-scrollbar-track {
+  //   background: none;
+  //   margin: 8px;
+  // }
+  // /* 스크롤바 막대 */
+  // ::-webkit-scrollbar-thumb {
+  //   border-radius: $border-radius-default;
+  //   background: #d9d9d9;
+  // }
+
+    /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
     width: 4px; /* 세로축 스크롤바 폭 너비 */
     height: 100%; /* 가로축 스크롤바 폭 너비 */
   }
-  ::-webkit-scrollbar-button {
+  &::-webkit-scrollbar-button {
     display: none;
   }
   /* 스크롤바 막대 제외 부분 */
-  ::-webkit-scrollbar-track {
-    background: none;
-    margin: 8px;
+  &::-webkit-scrollbar-track {
+    background: transparent;
   }
   /* 스크롤바 막대 */
-  ::-webkit-scrollbar-thumb {
-    border-radius: $border-radius-default;
-    background: #d9d9d9;
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
   }
+}
+
+@mixin custom-modal{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: $z-index-modal;
+
+  background-color: white;
 }
