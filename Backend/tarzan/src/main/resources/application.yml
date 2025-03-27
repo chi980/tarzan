@@ -29,7 +29,7 @@ tarzan:
     convenience-store: false
     gym: false
     hospital: false
-    house: true
+    house: false
     mart: false
     medical-clinic: false
     park: false

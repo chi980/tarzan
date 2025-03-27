@@ -1,23 +1,9 @@
 <template>
   <div class="sub-container">
-    <!-- <DropDown :options="userImgInputOptions">
-      <template #default="{ toggleDropdown }">
-        <div class="custom-container" @click="toggleDropdown">
-          <div id="custom-buttom-img">
-            <img :src="userDefaultSrc" alt="user-img" id="user-default-img" />
-            <img
-              :src="userInputSrc"
-              alt="user-img-input-button"
-              id="user-img-input"
-            />
-          </div>
-        </div>
-      </template>
-    </DropDown> -->
     <form class="input-form" @submit.prevent="submitForm">
       <!-- 닉네임 입력 -->
       <div class="input-group">
-        <h2 class="input-title">닉네임</h2>
+        <h2 class="input-title">닉네임<span class="input-title-mandatory">*</span></h2>
         <div class="input-content-wrapper">
           <div class="input-content">
             <input
@@ -25,7 +11,6 @@
               placeholder="닉네임을 입력해주세요"
               v-model="nickname"
             />
-            <div id="check-duplicate-btn"><div>중복확인</div></div>
           </div>
           <div class="input-description">
             <p>
@@ -42,7 +27,7 @@
 
       <!-- 사는 곳 선택 -->
       <div class="input-group">
-        <h2 class="input-title">사는 곳</h2>
+        <h2 class="input-title">사는 곳<span class="input-title-mandatory">*</span></h2>  
         <div class="select-content">
           <CustomSelectBox
             :options="seoulDistrictOptions"
@@ -53,24 +38,26 @@
 
       <!-- 반려동물 유무 선택 -->
       <div class="input-group">
-        <h2 class="input-title">반려동물 유무</h2>
-        <div class="select-content">
-          <CustomSelectBox
-            :options="petOptions"
-            @update:selected="handlePetSelectedIdx"
-          />
+        <h2 class="input-title">반려동물 유무<span class="input-title-mandatory">*</span></h2>
+        <div class="option-group">
+          <div class="option-group-item"
+           v-for="(petOption, index) in petOptions" 
+           :key="petOption.idx" 
+           :class="{ active: petOption.isSelected }"
+      @click="selectOption(petOptions, index)">{{petOption.name}}</div>
         </div>
       </div>
 
       <!-- 자차 유무 선택 -->
       <div class="input-group">
-        <h2 class="input-title">자차 유무</h2>
-        <div class="select-content">
-          <CustomSelectBox
-            :options="carOptions"
-            @update:selected="handleCarSelectedIdx"
-          />
-        </div>
+        <h2 class="input-title">자차 유무<span class="input-title-mandatory">*</span></h2>
+        <div class="option-group">
+          <div class="option-group-item"
+           v-for="(carOption, index) in carOptions" 
+           :key="carOption.idx" 
+           :class="{ active: carOption.isSelected }"
+      @click="selectOption(carOptions, index)">{{carOption.name}}</div>
+      </div>
       </div>
 
       <!-- 학교/직장 주소 입력 -->
@@ -186,14 +173,16 @@ const selectAddress = (selectedPlace: SearchResult) => {
 
 const seoulDistrictOptions: Option[] = seoulSiGunGu;
 
-const petOptions: Option[] = [
-  { idx: 1, name: "반려동물 없음", value: false },
-  { idx: 2, name: "반려동물 있음", value: true },
-];
-const carOptions: Option[] = [
-  { idx: 1, name: "차 없음", value: false },
-  { idx: 2, name: "차 있음", value: true },
-];
+const petOptions = ref<Option[]>([
+  { idx: 1, name: "반려동물 없음", value: false, isSelected: false },
+  { idx: 2, name: "반려동물 있음", value: true, isSelected: false },
+]);
+
+const carOptions = ref<Option[]>([
+  { idx: 1, name: "차 없음", value: false, isSelected: false },
+  { idx: 2, name: "차 있음", value: true, isSelected: false },
+]);
+
 
 const nickname = ref<string | null>(null);
 
@@ -203,17 +192,26 @@ const handleSeoulDistrictSelectedIdx = (idx: number) => {
   console.log("Selected idx:", selectedSeoulSiGunGuIdx.value);
 };
 
-const selectedPetIdx = ref<number | null>(null);
-const handlePetSelectedIdx = (idx: number) => {
-  selectedPetIdx.value = idx;
-  console.log("Selected idx:", selectedPetIdx.value);
+const selectOption = (options: Option[] | undefined, idx: number) => {
+  if (!options || !Array.isArray(options)) {
+    console.error("options가 배열이 아닙니다:", options);
+    return;
+  }
+
+  options.forEach((option) => {
+    option.isSelected = false;
+  });
+
+  if (idx >= 0 && idx < options.length) {
+    options[idx].isSelected = true;
+  options.forEach((option) => {
+    console.log(option.name, option.isSelected);
+  });
+  } else {
+    console.warn("잘못된 인덱스:", idx);
+  }
 };
 
-const selectedCarIdx = ref<number | null>(null);
-const handleCarSelectedIdx = (idx: number) => {
-  selectedCarIdx.value = idx;
-  console.log("Selected idx:", selectedCarIdx.value);
-};
 
 const address = ref<string | null>(null);
 
@@ -293,22 +291,32 @@ const submitForm = async () => {
   bottom: 0;
 }
 
-#check-duplicate-btn {
-  @include custom-none-select-basic;
-  @include custom-text($font-size: 14px);
-  width: 72px;
-  height: 40px;
-
+.option-group{
   display: flex;
-  justify-content: center;
-  align-items: center;
+  gap: $margin-small;
+  .option-group-item{
+    @include custom-text($font-size: 14px, $font-color: $text-color-light);
+    flex: 1;
+    height: 48px;
+    cursor: pointer;
+    border: 1px solid $border-color-input;
+    border-radius: 13px;
 
-  margin-left: $margin-small;
 
-  background-color: $primary-color-75;
-  color: $primary-color-default;
-  border-radius: 14px;
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+
+    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 전환 효과 추가 */
+
+&.active {
+  background-color: $primary-color-light  ;/* active일 때 배경색 변경 */
+  color: $primary-color-default;  /* active일 때 글자색 변경 */
+  border: 1px solid $primary-color-default; /* active일 때 테두리 색 변경 */
 }
+  }
+}
+
 .input-form {
   width: 100%;
   display: flex;
@@ -321,8 +329,12 @@ const submitForm = async () => {
     gap: 12px;
 
     .input-title {
-      @include custom-text-bold($font-size: 18px);
+      @include custom-text($font-size: 14px);
       text-align: left;
+
+      .input-title-mandatory {
+        color: red;
+      }
     }
 
     .input-content-wrapper {
