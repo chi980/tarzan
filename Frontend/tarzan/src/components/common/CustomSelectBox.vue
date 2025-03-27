@@ -73,6 +73,8 @@ const props = defineProps({
       backgroundColor: `$input-color`,
       fontWeight: 400,
       justifyContent: `space-between`,
+      border: 'none !important',
+      
     }),
   },
 });

@@ -10,9 +10,19 @@
               type="text"
               placeholder="닉네임을 입력해주세요"
               v-model="nickname"
+              @input="handleInput"
+              required
+
+      :style="{
+        border: nicknameValid === false ? '1px solid red' : '1px solid #e7e7e7',
+      }"
             />
           </div>
           <div class="input-description">
+
+            <p v-if="isChecking">✔ 닉네임 확인 중...</p>
+            <p v-if="nicknameValid === true" >✅ 사용 가능한 닉네임입니다!</p>
+            <p v-if="nicknameValid === false" style="color:red">❌ 사용 불가능한 닉네임입니다.</p>
             <p>
               <i class="bi bi-info-circle"> </i>
               닉네임은 영문, 숫자로 이루어져야 합니다.
@@ -31,6 +41,8 @@
         <div class="select-content">
           <CustomSelectBox
             :options="seoulDistrictOptions"
+            :parentStyle="{ backgroundColor: 'white',       fontWeight: 400,
+      justifyContent: `space-between`, border: '1px solid #e7e7e7',}"
             @update:selected="handleSeoulDistrictSelectedIdx"
           />
         </div>
@@ -56,7 +68,7 @@
            v-for="(carOption, index) in carOptions" 
            :key="carOption.idx" 
            :class="{ active: carOption.isSelected }"
-      @click="selectOption(carOptions, index)">{{carOption.name}}</div>
+          @click="selectOption(carOptions, index)">{{carOption.name}}</div>
       </div>
       </div>
 
@@ -73,7 +85,7 @@
         </div>
 
         <!-- 검색 결과 표시 -->
-        <ul v-if="searchResults.length" class="search-results">
+        <!-- <ul v-if="searchResults.length" class="search-results">
           <li
             v-for="(result, index) in searchResults.slice(0, 10)"
             :key="index"
@@ -86,46 +98,118 @@
               result.road_address_name || result.address_name
             }}</span>
           </li>
-        </ul>
+        </ul> -->
       </div>
-      <button type="submit">제출</button>
+
     </form>
+    <div style="width: 100%;position: absolute; bottom: 16px;display: flex; flex-direction: row;">
+      <div class="button-default" @click="submitForm">제출하기</div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+/**library load */
 import { ref } from "vue";
-// import userImage from "@/assets/signup_user_default_img.png";
-// import userInputImage from "@/assets/signup_user_img_input.png";
-
-// 검색어와 결과를 저장할 상태 변수
-const searchQuery = ref(""); // 사용자가 입력한 검색어
-interface SearchResult {
-  place_name: string;
-  road_address_name?: string;
-  address_name?: string;
-  x: string; // 경도
-  y: string; // 위도
-}
-
-const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
-
-// 위도와 경도를 저장할 상태 변수
-const selectedLocation = ref<{
-  latitude: string | null;
-  longitude: string | null;
-}>({
-  latitude: null,
-  longitude: null,
-});
-
-import { Option } from "@/data/options";
-// import DropDown from "@/components/common/DropDown.vue";
-import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
-
-import { seoulSiGunGu } from "@/data/seoulsigungu.js";
+import { getCurrentInstance } from "vue";
 import axios from "axios";
+import { debounce } from "lodash"; // lodash 라이브러리 사용
+
+/**data, componenet, env load */
+import { Option } from "@/data/options";
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import { seoulSiGunGu } from "@/data/seoulsigungu.js";
+import { useAuthStore } from "@/stores/authStore";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
+const instance = getCurrentInstance();
+const authStore = useAuthStore();
 const KAKAO_API_KEY = "7975d213af9c016408b981c2fe60f335"; // 여기에 본인의 카카오 REST API 키를 입력하세요.
+
+/** form value */
+const nickname = ref<string | null>(null);
+const seoulDistrictOptions: Option[] = seoulSiGunGu;
+const petOptions = ref<Option[]>([
+  { idx: 1, name: "반려동물 없음", value: false, isSelected: false },
+  { idx: 2, name: "반려동물 있음", value: true, isSelected: false },
+]);
+const carOptions = ref<Option[]>([
+  { idx: 1, name: "차 없음", value: false, isSelected: false },
+  { idx: 2, name: "차 있음", value: true, isSelected: false },
+]);
+
+/* nickname */
+const isChecking = ref(false);
+const nicknameValid = ref<boolean | null>(null);
+const checkNicknameUnique = async (nickname: string) => {
+  if (!nickname.trim()) {
+    nicknameValid.value = null;
+    return;
+  }
+
+  isChecking.value = true;
+  try {
+      const response = await axiosInstance.post(`/v1/user/check`, {
+      nickname,
+    });
+    if (response.status === 200) {
+      nicknameValid.value = true;
+  }
+  } catch (error) {
+    if (error.response && error.response.status === 409) {
+      nicknameValid.value = false;
+    }else{
+      console.error("닉네임 중복 체크 실패", error);
+      nicknameValid.value = null;
+
+    }
+  } finally {
+    isChecking.value = false;
+  }
+};
+
+const handleInput = debounce(() => {
+  // 영문과 숫자만 허용
+  const nicknamePattern = /^[a-zA-Z0-9]+$/;
+  if (!nicknamePattern.test(nickname.value)) {
+    nicknameValid.value = false;
+    return;
+  }
+
+  if (nickname.value.trim().length >= 6) {
+    checkNicknameUnique(nickname.value);
+  } else {
+    nicknameValid.value = null; // 닉네임 길이가 짧으면 체크하지 않음
+  }
+}, 500);
+
+/** sigungu select */
+const selectedSeoulSiGunGuIdx = ref<number | null>(null);
+const handleSeoulDistrictSelectedIdx = (idx: number) => {
+  selectedSeoulSiGunGuIdx.value = idx;
+  console.log("Selected idx:", selectedSeoulSiGunGuIdx.value);
+};
+
+/** petOption, carOption check */
+const selectOption = (options: Option[] | undefined, idx: number) => {
+  if (!options || !Array.isArray(options)) {
+    console.error("options가 배열이 아닙니다:", options);
+    return;
+  }
+
+  options.forEach((option) => {
+    option.isSelected = false;
+  });
+
+  if (idx >= 0 && idx < options.length) {
+    options[idx].isSelected = true;
+  } else {
+    console.warn("잘못된 인덱스:", idx);
+  }
+};
+
+/** address */
+const address = ref<string | null>(null);
 
 // 주소 검색 함수
 const searchAddress = async () => {
@@ -162,63 +246,7 @@ const selectAddress = (selectedPlace: SearchResult) => {
   selectedLocation.value.longitude = selectedPlace.x; // 경도
 };
 
-// 반응형 변수 정의
-// const userDefaultSrc = ref(userImage);
-// const userInputSrc = ref(userInputImage);
 
-// const userImgInputOptions: Option[] = [
-// { idx: 1, name: "갤러리 보기", value: "galary" },
-// { idx: 2, name: "사진 촬영", value: "picture" },
-// ];
-
-const seoulDistrictOptions: Option[] = seoulSiGunGu;
-
-const petOptions = ref<Option[]>([
-  { idx: 1, name: "반려동물 없음", value: false, isSelected: false },
-  { idx: 2, name: "반려동물 있음", value: true, isSelected: false },
-]);
-
-const carOptions = ref<Option[]>([
-  { idx: 1, name: "차 없음", value: false, isSelected: false },
-  { idx: 2, name: "차 있음", value: true, isSelected: false },
-]);
-
-
-const nickname = ref<string | null>(null);
-
-const selectedSeoulSiGunGuIdx = ref<number | null>(null);
-const handleSeoulDistrictSelectedIdx = (idx: number) => {
-  selectedSeoulSiGunGuIdx.value = idx;
-  console.log("Selected idx:", selectedSeoulSiGunGuIdx.value);
-};
-
-const selectOption = (options: Option[] | undefined, idx: number) => {
-  if (!options || !Array.isArray(options)) {
-    console.error("options가 배열이 아닙니다:", options);
-    return;
-  }
-
-  options.forEach((option) => {
-    option.isSelected = false;
-  });
-
-  if (idx >= 0 && idx < options.length) {
-    options[idx].isSelected = true;
-  options.forEach((option) => {
-    console.log(option.name, option.isSelected);
-  });
-  } else {
-    console.warn("잘못된 인덱스:", idx);
-  }
-};
-
-
-const address = ref<string | null>(null);
-
-import { getCurrentInstance } from "vue";
-const instance = getCurrentInstance();
-import { useAuthStore } from "@/stores/authStore";
-const authStore = useAuthStore();
 
 const submitForm = async () => {
   try {
@@ -229,16 +257,33 @@ const submitForm = async () => {
           ? 0
           : selectedSeoulSiGunGuIdx.value
       ].value;
+
+      const selectedPetIdx = petOptions.value.findIndex(
+        (option) => option.isSelected
+      );
+
+      if(selectedPetIdx == -1){
+        alert("반려동물 유무를 선택해주세요");
+        return;
+      }
+
+      const selectedCarIdx = carOptions.value.findIndex(
+        (option) => option.isSelected
+      );
+
+      if(selectedCarIdx == -1){
+        alert("자차 유무를 선택해주세요");
+        return;
+      }
+
     const formData = {
       user_image_url: "https://example.com/image.jpg",
       user_nickname,
       user_gu: gu,
       user_have_animal:
-        petOptions[selectedPetIdx.value == null ? 0 : selectedPetIdx.value]
-          .value,
+        petOptions[selectedPetIdx].value,
       user_have_car:
-        carOptions[selectedCarIdx.value == null ? 0 : selectedCarIdx.value]
-          .value,
+        carOptions[selectedCarIdx].value,
       user_job_address: address.value == null ? "d" : address.value,
       user_latitude: 37.5665,
       user_longitude: 126.978,
@@ -261,6 +306,28 @@ const submitForm = async () => {
     console.error("Error submitting form:", error);
   }
 };
+
+
+// 검색어와 결과를 저장할 상태 변수
+const searchQuery = ref(""); // 사용자가 입력한 검색어
+interface SearchResult {
+  place_name: string;
+  road_address_name?: string;
+  address_name?: string;
+  x: string; // 경도
+  y: string; // 위도
+}
+
+const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
+
+// 위도와 경도를 저장할 상태 변수
+const selectedLocation = ref<{
+  latitude: string | null;
+  longitude: string | null;
+}>({
+  latitude: null,
+  longitude: null,
+});
 </script>
 
 <style lang="scss" scoped>
@@ -414,5 +481,11 @@ const submitForm = async () => {
   width: 100%;
   text-align: left;
   padding: 0 15px 5px; /* 좌우 여백 추가 */
+}
+
+.button-default{
+  @include custom-button-style($bg-color: $secondary-color-default,$font-color: white);
+  @include custom-margin-x;
+  width: 100%;
 }
 </style>
