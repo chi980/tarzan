@@ -2,8 +2,9 @@
 /** load */
 import { ref, defineEmits } from 'vue';
 
-import {Building }from "@/data/Building";
 import TopBarBack from "@/components/common/TopBarBack.vue";
+import AddressSearchResult from './AddressSearchResult.vue';
+import {Building }from "@/data/Building";
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY; // 여기에 본인의 카카오 REST API 키를 입력하세요.
 
@@ -81,16 +82,19 @@ const selectAddress = (selectedPlace: SearchResult) => {
             <h1>주소 검색</h1>
         </div>
         <div class="modal-content">
-            <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" />
+            <!-- <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" />
             <div v-if="searchResults.length > 0">
                 <ul>
                     <li v-for="result in searchResults" :key="result.place_name" @click="selectAddress(result)">
                         {{ result.place_name }} - {{ result.road_address_name || result.address_name }}
                     </li>
                 </ul>
-            </div>
-        </div>
+            </div> -->
 
+
+    <input v-model="searchQuery" type="text" placeholder="검색할 주소명을 입력해주세요" class="search-input"/>
+<AddressSearchResult></AddressSearchResult>
+        </div>
     </div>
 
     <div class="button-wrapper">
@@ -114,6 +118,7 @@ const selectAddress = (selectedPlace: SearchResult) => {
     .modal-content{
 
 @include custom-padding-x($padding-default);
+@include custom-padding-y($padding-big);
 
 display: flex;
 flex-direction: column;
@@ -121,13 +126,18 @@ flex-direction: column;
 height: 100%;;
 overflow-y: auto; /* 세로 스크롤을 추가 */
 @include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
+
+    
 }
 }
 .modal-container{
     @include custom-modal;
 }
 
-
+.search-input{
+    @include custom-input-style;
+    // @include custom-shadow-style;
+}
 
 .button-wrapper{
     width: 100%;position: absolute; bottom: $padding-default;display: flex; flex-direction: row;
