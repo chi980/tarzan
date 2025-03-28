@@ -32,12 +32,10 @@ const handleClick = () => {
 
 <style scoped lang="scss">
 .house-item-container {
+  @include custom-padding-y($padding-small);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  // @include custom-margin-x;
-  // @include custom-margin-y($margin-size: 12px);
-  // margin: 5px 0 20px 0;
   gap: 8px;
   background-color: aqua;
 }
