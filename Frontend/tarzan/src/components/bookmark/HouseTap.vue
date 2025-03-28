@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 /**  */
-import { ref, onMounted } from "vue";
+import { ref, onMounted, defineProps } from "vue";
 
 /** component load */
 import houseAddImg from "@/assets/icons/Plus/Pluse.png";
@@ -54,15 +54,17 @@ list.value = [
     house_name: "집 이름 1",
     house_address: "주소 1",
     house_category: "카테고리 1",
+    hoconstuse_review_score: 4.5,
     house_latitude: 37.5665,
     house_longitude: 126.978,
     created_at: "2025.03.16 10:00:00",
   },
   {
-    bookmarkIdx: 2,
+    bookmarkdx: 2,
     house_name: "집 이름 2",
     house_address: "주소 2",
     house_category: "카테고리 2",
+    house_review_score: 4.5,
     house_latitude: 37.5665,
     house_longitude: 126.978,
     created_at: "2025.03.16 10:00:00",
