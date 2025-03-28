@@ -13,7 +13,7 @@
 
 <script>
 // import TagButton from "@/components/common/TagButton.vue";
-import { ref, defineProps, defineEmits } from "vue";
+import { watch, ref, defineProps, defineEmits } from "vue";
 
 export default {
   props: {
@@ -46,8 +46,9 @@ export default {
   },
   methods: {
     handleClick(value) {
-      this.selectedButton = value;
-      this.$emit("update:selectedType", value); // v-model을 위한 이벤트 발생
+        console.log("✅ [TagButtonGroupHome] 클릭한 버튼 값:", value); // 클릭한 버튼 값 확인
+        this.selectedButton = value;
+        this.$emit("update:selectedType", value); // Home.vue로 값 전달
     },
   },
 };
