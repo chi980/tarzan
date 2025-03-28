@@ -71,6 +71,7 @@ const toggleSelection = (value) => {
   font-weight: 600;
   white-space: nowrap;
   padding: 13px 14px;
+  @include custom-text;
   cursor: pointer;
   &:focus {
     outline: none;
