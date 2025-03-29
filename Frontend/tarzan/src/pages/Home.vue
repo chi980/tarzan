@@ -428,34 +428,35 @@ onMounted(fetchBuilding);
   overflow: visible;
 }
 .searchbar {
+  @include custom-padding-x;
   display: flex;
+  width: 100%;
+
   position: absolute;
   top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  padding: 0px;
+
   z-index: 3; /* Ensure input-icon-wrap is above overlay */
   box-sizing: border-box;
   cursor: pointer;
-}
-.input-icon-wrap {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 48px;
-  border-radius: 13px;
-  background-color: white;
-  padding-right: $padding-default;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  position: relative; /* Ensures it's positioned correctly */
-  z-index: 5; /* Higher than overlay */
-}
-.icon-search {
-  width: 16px;
-  height: 16px;
-  @include custom-margin-x;
-  color: $input-placeholder-color;
+
+  .input-icon-wrap {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    border-radius: 13px;
+    background-color: white;
+    padding-right: $padding-default;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* Ensures it's positioned correctly */
+    z-index: 5; /* Higher than overlay */
+  }
+  .icon-search {
+    width: 16px;
+    height: 16px;
+    @include custom-margin-x;
+    color: $input-placeholder-color;
+  }
 }
 input {
   width: 100%;
