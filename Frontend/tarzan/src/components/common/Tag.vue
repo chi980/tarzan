@@ -2,8 +2,7 @@
   <div
     class="tag-wrapper"
     :class="{ checked: checkItem.value }"
-    @click="toggleCheck"
-  >
+    @click="toggleCheck">
     <p>{{ checkItem.name }}</p>
   </div>
 </template>

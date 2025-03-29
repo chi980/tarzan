@@ -1,37 +1,29 @@
 <template>
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
-    <SearchHouseBar
-      class="search-house-bar"
-      v-if="showOverlay"
-    ></SearchHouseBar>
     <div class="center-container">
       <div ref="mapContainer" class="map-container">
         <div class="searchbar" @click="showOverlay = true">
           <div class="input-icon-wrap">
             <font-awesome-icon
               :icon="['fas', 'magnifying-glass']"
-              class="icon-search"
-            />
+              class="icon-search" />
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="찾고 싶은 집주소를 입력해주세요."
-            />
+              placeholder="찾고 싶은 집주소를 입력해주세요." />
           </div>
         </div>
-        <div class="tag-button-container">
+        <div class="tag-button-container-wrapper">
           <TagButtonGroup
             v-model:selectedButton="selectedButton"
             :buttons="tagOptions"
-            :multiple="false"
-          />
+            :multiple="false" />
         </div>
         <BuildingInfo
           :building="selectedBuilding"
           v-if="selectedBuilding"
-          class="building-info"
-        />
+          class="building-info" />
       </div>
       <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
       <div>
@@ -42,11 +34,17 @@
     </div>
     <div><BottomBar class="bottom-bar"></BottomBar></div>
 
+    <!-- overlays -->
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
-          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
-          <input v-model="searchQuery" type="text" placeholder="찾고 싶은 집주소를 입력해주세요." />
+          <font-awesome-icon
+            :icon="['fas', 'magnifying-glass']"
+            class="icon-search" />
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="찾고 싶은 집주소를 입력해주세요." />
           <!--<input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />-->
         </div>
       </div>
@@ -58,6 +56,9 @@
       </div>
     </div>
 
+    <SearchHouseBar
+      class="search-house-bar"
+      v-if="showOverlay"></SearchHouseBar>
   </div>
 </template>
 
@@ -72,26 +73,23 @@ import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
 const tagOptions = ref([
-  { label: '전체', value: 'ALL' },
-  { label: '교통', value: 'TRANSPORT' },
-  { label: '맛집', value: 'TASTE' },
-  { label: '생활팁', value: 'LIFE' },
-  { label: '질문', value: 'QUESTION' },
-  { label: '모임', value: 'MEETING' },
-  { label: '기타', value: 'ETC' },
+  { label: "전체", value: "ALL" },
+  { label: "교통", value: "TRANSPORT" },
+  { label: "맛집", value: "TASTE" },
+  { label: "생활팁", value: "LIFE" },
+  { label: "질문", value: "QUESTION" },
+  { label: "모임", value: "MEETING" },
+  { label: "기타", value: "ETC" },
 ]);
 
-const selectedButton = ref('ALL'); // 배열이 아니라 문자열로 명시
-
+const selectedButton = ref("ALL"); // 배열이 아니라 문자열로 명시
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
 const loading = ref(false);
 
 // const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
-const selectedType = ref('');
-
-
+const selectedType = ref("");
 
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
@@ -100,9 +98,13 @@ const searchQuery = ref(""); // 검색어 상태
 // const buildings = ref([]); // 검색 결과 데이터
 // const totalCount = ref(0); // 총 검색 결과 수
 
-
 // 빌딩 데이터 요청
-async function fetchBuildings(type: string, latitude: number, longitude: number, radius: number) {
+async function fetchBuildings(
+  type: string,
+  latitude: number,
+  longitude: number,
+  radius: number
+) {
   if (loading.value) return; // 이미 요청 중이라면 무시
 
   if (!type) {
@@ -126,14 +128,14 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
         params: requestData,
       });
     }
-/*
+    /*
     // API 요청 +타임아웃 설정 추가
     const response = await axiosInstance.get(endpoint, {
       params: requestData,
       timeout: 5000, // 5초로 타임아웃 설정
     });
 */
-    
+
     console.log("Response received from backend:", response.data);
 
     // 응답 데이터 유효성 검사 및 처리
@@ -145,15 +147,22 @@ async function fetchBuildings(type: string, latitude: number, longitude: number,
 
       // 마커 표시
       addMarkers(buildings.value);
-/*
+      /*
     if (response.status === 200 && response.data.success) {
     buildings.value = response.data.data;
     showInitialMarkers(buildings.value); // 마커 초기화
 */
     } else {
-      console.error("Backend returned an error:", responseData?.message || "Unknown error");
+      console.error(
+        "Backend returned an error:",
+        responseData?.message || "Unknown error"
+      );
       buildings.value = [];
-      alert(`Error: ${responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."}`);
+      alert(
+        `Error: ${
+          responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."
+        }`
+      );
     }
   } catch (error: any) {
     // 요청 실패 처리
@@ -239,9 +248,16 @@ function loadKakaoMap(container) {
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      mapInstance = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.566535, 126.9779692), level: 5 });
-      clusterer = new window.kakao.maps.MarkerClusterer({ map: mapInstance, averageCenter: true, minLevel: 3 });
-      fetchBuildings(null, 37.566535, 126.9779692, 150); 
+      mapInstance = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+        level: 5,
+      });
+      clusterer = new window.kakao.maps.MarkerClusterer({
+        map: mapInstance,
+        averageCenter: true,
+        minLevel: 3,
+      });
+      fetchBuildings(null, 37.566535, 126.9779692, 150);
       mapInstance = new window.kakao.maps.Map(container, {
         center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
         level: 4,
@@ -275,7 +291,7 @@ const addMarkers = (data: Array<any>): void => {
     });
 
     // 마커 클릭 시, 해당 건물 정보 설정
-    window.kakao.maps.event.addListener(marker, 'click', () => {
+    window.kakao.maps.event.addListener(marker, "click", () => {
       if (item.radarData) {
         // radarData가 있을 경우, 선택된 건물 정보 설정
         selectedBuilding.value = {
@@ -299,7 +315,6 @@ const addMarkers = (data: Array<any>): void => {
   clusterer.addMarkers(markers);
 };
 
-
 const filterDataByBounds = (data: Array<any>): Array<any> => {
   // @ts-ignore: Ignoring the error for getBounds method
   const bounds = mapInstance.getBounds();
@@ -314,8 +329,6 @@ const filterDataByBounds = (data: Array<any>): Array<any> => {
   return filteredData;
 };
 
-
-
 const showInitialMarkers = (data: Array<any>): void => {
   // Specify the type here
   if (!isMarkersInitialized) {
@@ -324,10 +337,6 @@ const showInitialMarkers = (data: Array<any>): void => {
     isMarkersInitialized = true;
   }
 };
-
-
-
-
 
 // 여기부터 예린 작성
 
@@ -359,7 +368,9 @@ const fetchBuilding = async (): Promise<void> => {
   }).toString();
 
   try {
-    const response = await axiosInstance.get<ApiResponse>(`/v1/building?${queryParams}`);
+    const response = await axiosInstance.get<ApiResponse>(
+      `/v1/building?${queryParams}`
+    );
 
     if (response.data.success && response.data.data) {
       buildings.value = response.data.data.list;
@@ -377,8 +388,6 @@ const fetchBuilding = async (): Promise<void> => {
   }
 };
 onMounted(fetchBuilding);
-
-
 </script>
 
 <style lang="scss" scoped>
@@ -458,18 +467,33 @@ input {
 }
 .map-container {
   display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   position: relative;
   z-index: 1;
   pointer-events: auto;
 }
-.tag-button-container {
+.tag-button-container-wrapper {
   position: absolute;
-  top: 35px;  // 검색창 바로 아래에 위치
+  top: 70px; // 검색창 바로 아래에 위치
   width: 100%;
-  z-index: 3;  // 지도보다 높게 설정
+  z-index: 3; // 지도보다 높게 설정
   pointer-events: auto;
+  overflow-x: auto;
+
+  -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
+
+  // 웹킷 브라우저에서 스크롤바 숨기기
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
+  scrollbar-width: none; // 파이어폭스
+  -ms-overflow-style: none; // IE, Edge
 }
 .overlay {
   position: absolute;
@@ -494,5 +518,11 @@ input {
 .searchbar input,
 .icon-search {
   pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
+}
+
+/** scoped */
+
+.tag-button-container {
+  @include custom-padding-x;
 }
 </style>
