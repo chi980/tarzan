@@ -5,13 +5,8 @@
       <div ref="mapContainer" class="map-container">
         <div class="searchbar" @click="showOverlay = true">
           <div class="input-icon-wrap">
-            <font-awesome-icon
-              :icon="['fas', 'magnifying-glass']"
-              class="icon-search" />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="찾고 싶은 집주소를 입력해주세요." />
+            <img :src="searchIconImg" alt="search icon" class="icon-search" />
+            <p>찾고 싶은 주소를 입력해주세요.</p>
           </div>
         </div>
         <div class="tag-button-container-wrapper">
@@ -65,6 +60,7 @@
 <script lang="ts" setup>
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { ref, onMounted } from "vue";
+import searchIconImg from "@/assets/icons/Magnifier.png";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
@@ -428,43 +424,39 @@ onMounted(fetchBuilding);
   overflow: visible;
 }
 .searchbar {
-  @include custom-padding-x;
   display: flex;
-  width: 100%;
-
   position: absolute;
   top: 10px;
-
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  padding: 0px;
   z-index: 3; /* Ensure input-icon-wrap is above overlay */
   box-sizing: border-box;
   cursor: pointer;
+}
+.input-icon-wrap {
+  @include custom-padding-x;
+  display: flex;
+  gap: $padding-default;
+  align-items: center;
+  width: 100%;
+  height: 48px;
+  border-radius: 13px;
+  background-color: white;
+  padding-right: $padding-default;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 5; /* Higher than overlay */
+  cursor: pointer;
 
-  .input-icon-wrap {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 48px;
-    border-radius: 13px;
-    background-color: white;
-    padding-right: $padding-default;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative; /* Ensures it's positioned correctly */
-    z-index: 5; /* Higher than overlay */
-  }
   .icon-search {
-    width: 16px;
-    height: 16px;
-    @include custom-margin-x;
+    @include custom-icon-style;
     color: $input-placeholder-color;
   }
-}
-input {
-  width: 100%;
-  appearance: none;
-  border: none;
-  outline: none;
-  background: transparent;
-  @include custom-text;
+
+  p {
+    @include custom-text($font-size: 12px, $font-color: $text-color-light);
+  }
 }
 .map-container {
   display: flex;
