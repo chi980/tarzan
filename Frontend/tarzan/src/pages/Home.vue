@@ -455,7 +455,7 @@ onMounted(fetchBuilding);
   }
 
   p {
-    @include custom-text($font-size: 12px, $font-color: $text-color-light);
+    @include custom-text($font-size: 14px, $font-color: $text-color-light);
   }
 }
 .map-container {
