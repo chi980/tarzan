@@ -2,7 +2,7 @@
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
     <div class="center-container">
-      <div ref="mapContainer" class="map-container">
+      <div class="top-overlay-wrapper">
         <div class="searchbar" @click="openAddressSearch">
           <div class="input-icon-wrap">
             <img :src="searchIconImg" alt="search icon" class="icon-search" />
@@ -15,15 +15,21 @@
             :buttons="tagOptions"
             :multiple="false" />
         </div>
-        <BuildingInfo
-          :building="selectedBuilding"
-          v-if="selectedBuilding"
-          class="building-info" />
       </div>
-
-      <div><BottomBar class="bottom-bar"></BottomBar></div>
+      <div class="bottom-overlay-wrapper">
+        <div class="info-refresh-button" @click="showInfoOverlay">
+          <img :src="refreshIconImg" alt="refresh icon" />
+          <p>새로 불러오기</p>
+        </div>
+        <div class="info-content">
+          <div class="info-content-indicator"></div>
+          정보 오버레이입니다.
+        </div>
+      </div>
+      <div ref="mapContainer" class="map-container"></div>
     </div>
 
+    <div><BottomBar class="bottom-bar"></BottomBar></div>
     <!-- 주소 검색 팝업 -->
     <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
   </div>
@@ -34,7 +40,10 @@ import { ref, onMounted, watch } from "vue";
 
 /** data, componenet load */
 import { axiosInstance } from "@/plugins/axiosPlugin";
+
 import searchIconImg from "@/assets/icons/Magnifier.png";
+import refreshIconImg from "@/assets/icons/Retry-refresh.png";
+
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
@@ -82,10 +91,11 @@ watch(selectedButton, (newValue) => {
   } else {
     // 아래는 37.566535, 126.9779692 좌표를 기준으로 1000m 반경의 빌딩 데이터 요청
     // 다른 버튼 클릭 시
-    const latitude = 37.566535;
-    const longitude = 126.9779692;
+    const latitude = 37.566535; // 예시 위도
+    const longitude = 126.9779692; // 예시 경도
+    console.log("현재 지도 중심 좌표:", latitude, longitude);
     const radius = 1000; // 단위: 미터
-    fetchBuilding(newValue, latitude, longitude, radius);
+    // fetchBuilding(newValue, latitude, longitude, radius);
   }
 });
 
@@ -112,7 +122,7 @@ interface ApiResponse {
     list: Building[];
   };
 }
-const fetchBuilding = async (
+const fetchBuildings = async (
   type: string,
   latitude: number,
   longitude: number,
@@ -147,10 +157,6 @@ const fetchBuilding = async (
       buildings.value = response.data.data.list;
       console.log("타입별 빌딩 가져오기 성공!");
       console.log(response.data.data.length);
-
-      // 마커 초기화 및 표시
-      showInitialMarkers(buildings.value);
-      addMarkers(buildings.value);
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
@@ -195,6 +201,9 @@ const fetchBuilding = async (
   }
 };
 
+/** building, house info overlay */
+const showInfoOverlay = () => {};
+
 /** kakao map functions */
 const mapContainer = ref<HTMLElement | null>(null);
 let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
@@ -207,8 +216,6 @@ onMounted(() => {
 
 function loadKakaoMap(container) {
   if (!container) return;
-
-  // 카카오 맵 스크립트 로드
   const script = document.createElement("script");
   script.src =
     "https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer";
@@ -216,62 +223,29 @@ function loadKakaoMap(container) {
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      // Geolocation API로 현 위치 가져오기
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const curLatitude = position.coords.latitude;
-            const curLongitude = position.coords.longitude;
-
-            // 지도 인스턴스 생성 및 현 위치로 지도 중심 설정
-            mapInstance = new window.kakao.maps.Map(container, {
-              center: new window.kakao.maps.LatLng(curLatitude, curLongitude),
-              level: 5,
-            });
-
-            // 마커 클러스터러 설정
-            clusterer = new window.kakao.maps.MarkerClusterer({
-              map: mapInstance,
-              averageCenter: true,
-              minLevel: 3,
-            });
-          },
-          (error) => {
-            console.error("Geolocation Error: ", error);
-            // 사용자가 위치 정보 제공을 거부한 경우, 기본 위치로 지도 설정
-            mapInstance = new window.kakao.maps.Map(container, {
-              center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-              level: 5,
-            });
-            clusterer = new window.kakao.maps.MarkerClusterer({
-              map: mapInstance,
-              averageCenter: true,
-              minLevel: 3,
-            });
-          }
-        );
-      } else {
-        console.error("Geolocation is not supported by this browser.");
-        // Geolocation을 지원하지 않는 경우 기본 위치로 설정
-        mapInstance = new window.kakao.maps.Map(container, {
-          center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-          level: 5,
-        });
-        clusterer = new window.kakao.maps.MarkerClusterer({
-          map: mapInstance,
-          averageCenter: true,
-          minLevel: 3,
-        });
-      }
+      mapInstance = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+        level: 5,
+      });
+      clusterer = new window.kakao.maps.MarkerClusterer({
+        map: mapInstance,
+        averageCenter: true,
+        minLevel: 3,
+      });
+      fetchBuildings(null, 37.566535, 126.9779692, 150);
+      mapInstance = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+        level: 4,
+      });
+      clusterer = new window.kakao.maps.MarkerClusterer({
+        map: mapInstance,
+        averageCenter: true,
+        minLevel: 3,
+      });
+      fetchBuildings(null, 37.566535, 126.9779692, 150);
     });
   };
 }
-
-// 현재 위치로 지도 중심 변경
-const setCenter = (latitude, longitude) => {
-  const center = new window.kakao.maps.LatLng(latitude, longitude);
-  mapInstance.setCenter(center); // 지도 중심 설정
-};
 
 const clearMarkers = (): void => {
   clusterer.clear(); // 클러스터러에서 마커 제거
@@ -357,86 +331,131 @@ const showInitialMarkers = (data: Array<any>): void => {
 }
 
 /** scoped */
-
-/** search bar style */
-.searchbar {
-  display: flex;
+.top-overlay-wrapper {
+  @include custom-padding-y;
   position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  padding: 0px;
-  z-index: 3; /* Ensure input-icon-wrap is above overlay */
-  box-sizing: border-box;
-  cursor: pointer;
-  .input-icon-wrap {
-    @include custom-padding-x;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: fit-content;
+
+  display: flex;
+  flex-direction: column;
+  gap: $padding-small;
+
+  /** search bar style */
+  .searchbar {
+    @include custom-margin-x;
     display: flex;
-    gap: $padding-default;
+    cursor: pointer;
+    .input-icon-wrap {
+      @include custom-padding-x;
+      display: flex;
+      gap: $padding-default;
+      align-items: center;
+      width: 100%;
+      height: 48px;
+      border-radius: 13px;
+      background-color: white;
+      padding-right: $padding-default;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 5; /* Higher than overlay */
+      cursor: pointer;
+
+      .icon-search {
+        @include custom-icon-style;
+        color: $input-placeholder-color;
+      }
+
+      p {
+        @include custom-text($font-size: 14px, $font-color: $text-color-light);
+      }
+    }
+  }
+
+  /** tag button group style */
+  .tag-button-container-wrapper {
+    @include custom-padding-x;
+    pointer-events: auto;
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
+
+    // 웹킷 브라우저에서 스크롤바 숨기기
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
+    // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
+    scrollbar-width: none; // 파이어폭스
+    -ms-overflow-style: none; // IE, Edge
+  }
+  z-index: 10; /* Ensure this is below the search bar */
+}
+/** kakao map style */
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: aqua;
+}
+
+.bottom-overlay-wrapper {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+
+  /** refresh button */
+  .info-refresh-button {
+    width: fit-content;
+    display: flex;
     align-items: center;
-    width: 100%;
-    height: 48px;
-    border-radius: 13px;
+    gap: 6px;
+    padding: 12px;
+    margin-bottom: $margin-small;
     background-color: white;
-    padding-right: $padding-default;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    z-index: 5; /* Higher than overlay */
+    border-radius: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     cursor: pointer;
 
-    .icon-search {
-      @include custom-icon-style;
+    img {
+      @include custom-icon-style(12px);
       color: $input-placeholder-color;
     }
 
     p {
-      @include custom-text($font-size: 14px, $font-color: $text-color-light);
+      @include custom-text($font-size: 12px);
     }
   }
-}
 
-/** tag button group style */
-.tag-button-container-wrapper {
-  position: absolute;
-  top: 70px; // 검색창 바로 아래에 위치
-  width: 100%;
-  z-index: 3; // 지도보다 높게 설정
-  pointer-events: auto;
-  overflow-x: auto;
+  .info-content {
+    padding-top: 8px;
+    padding-bottom: $padding-default;
+    display: flex;
+    flex-direction: column;
+    gap: $padding-default;
+    align-items: center;
+    justify-content: center;
+    padding-left: 20;
+    background-color: aqua;
+    width: 100%;
 
-  -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
-
-  // 웹킷 브라우저에서 스크롤바 숨기기
-  &::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
+    .info-content-indicator {
+      width: 134px;
+      height: 4px;
+      border-radius: 100px;
+      background-color: #242424;
+    }
   }
-
-  // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
-  scrollbar-width: none; // 파이어폭스
-  -ms-overflow-style: none; // IE, Edge
-}
-
-/** kakao map style */
-.map-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  z-index: 1;
-  pointer-events: auto;
-}
-
-/** building oerlay style */
-.building-info {
-  position: absolute;
-  bottom: -660px;
-  z-index: 2;
-}
-
-.tag-button-container {
-  @include custom-padding-x;
 }
 </style>
