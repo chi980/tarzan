@@ -1,38 +1,27 @@
 <template>
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
-    <SearchHouseBar
-      class="search-house-bar"
-      v-if="showOverlay"
-    ></SearchHouseBar>
     <div class="center-container">
       <div ref="mapContainer" class="map-container">
         <div class="searchbar" @click="showOverlay = true">
           <div class="input-icon-wrap">
-            <font-awesome-icon
-              :icon="['fas', 'magnifying-glass']"
-              class="icon-search"
-            />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="찾고 싶은 집주소를 입력해주세요."
-            />
+            <img :src="searchIconImg" alt="search icon" class="icon-search" />
+            <p>찾고 싶은 주소를 입력해주세요.</p>
           </div>
         </div>
-        <div class="tag-button-container">
+        <div class="tag-button-container-wrapper">
           <TagButtonGroup
             v-model:selectedButton="selectedButton"
             :buttons="tagOptions"
-            :multiple="false"
-          />
+            :multiple="false" />
         </div>
         <BuildingInfo
           :building="selectedBuilding"
           v-if="selectedBuilding"
-          class="building-info"
-        />
+          class="building-info" />
       </div>
+      <div><BottomBar class="bottom-bar"></BottomBar></div>
+
       <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
       <div>
         <div v-for="building in buildings" :key="building.name">
@@ -40,13 +29,17 @@
         </div>
       </div>
     </div>
-    <div><BottomBar class="bottom-bar"></BottomBar></div>
-
+    <!-- overlays -->
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
         <div class="input-icon-wrap">
-          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
-          <input v-model="searchQuery" type="text" placeholder="찾고 싶은 집주소를 입력해주세요." />
+          <font-awesome-icon
+            :icon="['fas', 'magnifying-glass']"
+            class="icon-search" />
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="찾고 싶은 집주소를 입력해주세요." />
           <!--<input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />-->
         </div>
       </div>
@@ -58,12 +51,16 @@
       </div>
     </div>
 
+    <SearchHouseBar
+      class="search-house-bar"
+      v-if="showOverlay"></SearchHouseBar>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { axiosInstance } from "@/plugins/axiosPlugin";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
+import searchIconImg from "@/assets/icons/Magnifier.png";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
@@ -72,155 +69,200 @@ import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
 const tagOptions = ref([
-  { label: '전체', value: 'ALL' },
-  { label: '교통', value: 'TRANSPORT' },
-  { label: '맛집', value: 'TASTE' },
-  { label: '생활팁', value: 'LIFE' },
-  { label: '질문', value: 'QUESTION' },
-  { label: '모임', value: 'MEETING' },
-  { label: '기타', value: 'ETC' },
+  { label: "매물", value: "HOUSE" },
+
+  { label: "주민센터", value: "CIVIC_CENTER" },
+  { label: "체육관", value: "GYM" },
+  { label: "공원", value: "PARK" },
+  { label: "병원", value: "HOSPITAL" },
+  { label: "약국", value: "PHARMACY" },
+  { label: "응급의료시설", value: "MEDICAL_CLINIC" },
+  { label: "CCTV", value: "CCTV" },
+  { label: "경찰서", value: "POLICE" },
+  { label: "편의점", value: "CONVENIENCE_STORE" },
+  { label: "마트", value: "MART" },
+  { label: "지하철 출구", value: "SUBWAY" },
+  { label: "버스 정류장", value: "BUS" },
+  { label: "따릉이", value: "BICYCLE" },
 ]);
-
-const selectedButton = ref('ALL'); // 배열이 아니라 문자열로 명시
-
+const selectedButton = ref(null); // 배열이 아니라 문자열로 명시
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
-const loading = ref(false);
-
-// const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
-const selectedType = ref('');
-
-
 
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
-// const page = ref(0); // 페이지 번호
-// const size = ref(10); // 한 페이지에 보여줄 개수
-// const buildings = ref([]); // 검색 결과 데이터
-// const totalCount = ref(0); // 총 검색 결과 수
 
+/** tag button 값이 바뀔 때 데이터 요청 */
+watch(selectedButton, (newValue) => {
+  console.log("선택된 값 변경됨:", newValue);
+  if (newValue == null) return;
+
+  if (newValue === "HOUSE") {
+    // 매물 버튼 클릭 시
+    console.log("매물 버튼 클릭됨");
+  } else {
+    // 아래는 37.566535, 126.9779692 좌표를 기준으로 1000m 반경의 빌딩 데이터 요청
+    // 다른 버튼 클릭 시
+    const latitude = 37.566535;
+    const longitude = 126.9779692;
+    const radius = 1000; // 단위: 미터
+    fetchBuilding(newValue, latitude, longitude, radius);
+  }
+});
 
 // 빌딩 데이터 요청
-async function fetchBuildings(type: string, latitude: number, longitude: number, radius: number) {
-  if (loading.value) return; // 이미 요청 중이라면 무시
+// async function fetchBuildings(
+//   type: string,
+//   latitude: number,
+//   longitude: number,
+//   radius: number
+// ) {
+//   if (loading.value) return; // 이미 요청 중이라면 무시
 
-  if (!type) {
-    console.warn("Type is not selected."); // 타입 누락 경고
-    return;
-  }
+//   if (!type) {
+//     console.warn("Type is not selected."); // 타입 누락 경고
+//     return;
+//   }
 
-  loading.value = true; // 로딩 상태 활성화
+//   loading.value = true; // 로딩 상태 활성화
 
-  const requestData = { type, latitude, longitude, radius };
-  console.log("Sending request with data:", requestData);
+//   const requestData = { type, latitude, longitude, radius };
+//   console.log("Sending request with data:", requestData);
+
+//   try {
+//     // '매물' 버튼이 선택된 경우
+//     let response;
+//     if (type === "HOUSE") {
+//       response = await axiosInstance.get("/v1/houses", { params: requestData });
+//     } else {
+//       // 다른 버튼이 선택된 경우
+//       response = await axiosInstance.get("/v1/building", {
+//         params: requestData,
+//       });
+//     }
+//     /*
+//     // API 요청 +타임아웃 설정 추가
+//     const response = await axiosInstance.get(endpoint, {
+//       params: requestData,
+//       timeout: 5000, // 5초로 타임아웃 설정
+//     });
+// */
+
+//     console.log("Response received from backend:", response.data);
+
+//     // 응답 데이터 유효성 검사 및 처리
+//     const responseData = response.data;
+//     if (responseData?.success && responseData.message === "완료되었습니다.") {
+//       buildings.value = responseData.data || [];
+//       showInitialMarkers(buildings.value); // 마커 초기화
+//       console.log("Buildings fetched successfully:", buildings.value);
+
+//       // 마커 표시
+//       addMarkers(buildings.value);
+//       /*
+//     if (response.status === 200 && response.data.success) {
+//     buildings.value = response.data.data;
+//     showInitialMarkers(buildings.value); // 마커 초기화
+// */
+//     } else {
+//       console.error(
+//         "Backend returned an error:",
+//         responseData?.message || "Unknown error"
+//       );
+//       buildings.value = [];
+//       alert(
+//         `Error: ${
+//           responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."
+//         }`
+//       );
+//     }
+//   } catch (error: any) {
+//     // 요청 실패 처리
+//     console.error("Request failed:", error.message);
+
+//     // 에러 응답 정보 확인
+//     if (error.response) {
+//       console.error("Response data:", error.response.data);
+//       console.error("Response status:", error.response.status);
+
+//       const status = error.response.status;
+//       if (status === 500) {
+//         alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+//       } else if (status === 400) {
+//         alert("잘못된 요청입니다. 입력값을 확인해주세요.");
+//       } else {
+//         alert(`요청 실패: ${status} - ${error.response.statusText}`);
+//       }
+//     } else if (error.code === "ECONNABORTED") {
+//       alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
+//     } else {
+//       alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
+//     }
+
+//     buildings.value = [];
+//   } finally {
+//     // 로딩 상태 해제
+//     loading.value = false;
+//   }
+// }
+
+// 여기부터 예린 작성
+
+// API: 게시글 데이터 불러오기
+// 빌딩 데이터 타입 정의
+interface Building {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+// API 응답 타입 정의
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    list: Building[];
+  };
+}
+
+const fetchBuilding = async (
+  type,
+  latitude,
+  longitude,
+  radius
+): Promise<void> => {
+  const queryParams = new URLSearchParams({
+    type,
+    latitude,
+    longitude,
+    radius,
+  }).toString();
 
   try {
-    // '매물' 버튼이 선택된 경우
-    let response;
-    if (type === "HOUSE") {
-      response = await axiosInstance.get("/v1/houses", { params: requestData });
+    const response = await axiosInstance.get<ApiResponse>(
+      `/v1/building?${queryParams}`
+    );
+
+    if (response.data.success && response.data.data) {
+      buildings.value = response.data.data.list;
+      console.log("타입별 빌딩 가져오기 성공!");
+      console.log(response.data.data.length);
     } else {
-      // 다른 버튼이 선택된 경우
-      response = await axiosInstance.get("/v1/building", {
-        params: requestData,
-      });
+      console.error("API 실패:", response.data.message || "알 수 없는 오류");
     }
-/*
-    // API 요청 +타임아웃 설정 추가
-    const response = await axiosInstance.get(endpoint, {
-      params: requestData,
-      timeout: 5000, // 5초로 타임아웃 설정
-    });
-*/
-    
-    console.log("Response received from backend:", response.data);
-
-    // 응답 데이터 유효성 검사 및 처리
-    const responseData = response.data;
-    if (responseData?.success && responseData.message === "완료되었습니다.") {
-      buildings.value = responseData.data || [];
-      showInitialMarkers(buildings.value); // 마커 초기화
-      console.log("Buildings fetched successfully:", buildings.value);
-
-      // 마커 표시
-      addMarkers(buildings.value);
-/*
-    if (response.status === 200 && response.data.success) {
-    buildings.value = response.data.data;
-    showInitialMarkers(buildings.value); // 마커 초기화
-*/
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
     } else {
-      console.error("Backend returned an error:", responseData?.message || "Unknown error");
-      buildings.value = [];
-      alert(`Error: ${responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."}`);
+      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
     }
-  } catch (error: any) {
-    // 요청 실패 처리
-    console.error("Request failed:", error.message);
-
-    // 에러 응답 정보 확인
-    if (error.response) {
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-
-      const status = error.response.status;
-      if (status === 500) {
-        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } else if (status === 400) {
-        alert("잘못된 요청입니다. 입력값을 확인해주세요.");
-      } else {
-        alert(`요청 실패: ${status} - ${error.response.statusText}`);
-      }
-    } else if (error.code === "ECONNABORTED") {
-      alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
-    } else {
-      alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
-    }
-
-    buildings.value = [];
-  } finally {
-    // 로딩 상태 해제
-    loading.value = false;
   }
-}
+};
 
-function onButtonClicked(type) {
-  if (loading.value) return;
-  selectedType.value = type;
-
-  const latitude = 37.566535;
-  const longitude = 126.9779692;
-  const radius = 50; // 단위: 미터
-
-  fetchBuildings(type, latitude, longitude, radius);
-}
-
-declare global {
-  interface Window {
-    kakao: {
-      maps: {
-        load: (callback: () => void) => void;
-        Map: new (container: HTMLElement, options: any) => any;
-        LatLng: new (latitude: number, longitude: number) => any;
-        Marker: new (options: { position: any }) => any;
-        MarkerClusterer: new (options: {
-          map: any;
-          averageCenter: boolean;
-          minLevel: number;
-        }) => any;
-        event: {
-          addListener: (
-            marker: any,
-            event: string,
-            callback: (e: any) => void
-          ) => void;
-        };
-      };
-    };
-  }
-}
-
+/** kakao map functions */
 const mapContainer = ref<HTMLElement | null>(null);
 let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
 let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
@@ -239,9 +281,16 @@ function loadKakaoMap(container) {
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      mapInstance = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.566535, 126.9779692), level: 5 });
-      clusterer = new window.kakao.maps.MarkerClusterer({ map: mapInstance, averageCenter: true, minLevel: 3 });
-      fetchBuildings(null, 37.566535, 126.9779692, 150); 
+      mapInstance = new window.kakao.maps.Map(container, {
+        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
+        level: 5,
+      });
+      clusterer = new window.kakao.maps.MarkerClusterer({
+        map: mapInstance,
+        averageCenter: true,
+        minLevel: 3,
+      });
+      fetchBuildings(null, 37.566535, 126.9779692, 150);
       mapInstance = new window.kakao.maps.Map(container, {
         center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
         level: 4,
@@ -275,7 +324,7 @@ const addMarkers = (data: Array<any>): void => {
     });
 
     // 마커 클릭 시, 해당 건물 정보 설정
-    window.kakao.maps.event.addListener(marker, 'click', () => {
+    window.kakao.maps.event.addListener(marker, "click", () => {
       if (item.radarData) {
         // radarData가 있을 경우, 선택된 건물 정보 설정
         selectedBuilding.value = {
@@ -299,7 +348,6 @@ const addMarkers = (data: Array<any>): void => {
   clusterer.addMarkers(markers);
 };
 
-
 const filterDataByBounds = (data: Array<any>): Array<any> => {
   // @ts-ignore: Ignoring the error for getBounds method
   const bounds = mapInstance.getBounds();
@@ -314,8 +362,6 @@ const filterDataByBounds = (data: Array<any>): Array<any> => {
   return filteredData;
 };
 
-
-
 const showInitialMarkers = (data: Array<any>): void => {
   // Specify the type here
   if (!isMarkersInitialized) {
@@ -324,61 +370,6 @@ const showInitialMarkers = (data: Array<any>): void => {
     isMarkersInitialized = true;
   }
 };
-
-
-
-
-
-// 여기부터 예린 작성
-
-// API: 게시글 데이터 불러오기
-// 빌딩 데이터 타입 정의
-interface Building {
-  id: number;
-  name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-}
-
-// API 응답 타입 정의
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  data?: {
-    list: Building[];
-  };
-}
-
-const fetchBuilding = async (): Promise<void> => {
-  const queryParams = new URLSearchParams({
-    type: "HOSPITAL",
-    latitude: "126.976015",
-    longitude: "37.562912",
-    radius: "1000",
-  }).toString();
-
-  try {
-    const response = await axiosInstance.get<ApiResponse>(`/v1/building?${queryParams}`);
-
-    if (response.data.success && response.data.data) {
-      buildings.value = response.data.data.list;
-      console.log("타입별 빌딩 가져오기 성공!");
-      console.log(response.data.data.list);
-    } else {
-      console.error("API 실패:", response.data.message || "알 수 없는 오류");
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
-    } else {
-      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
-    }
-  }
-};
-onMounted(fetchBuilding);
-
-
 </script>
 
 <style lang="scss" scoped>
@@ -397,13 +388,7 @@ onMounted(fetchBuilding);
   bottom: -660px;
   z-index: 2;
 }
-.bottom-bar {
-  z-index: 2;
-  height: 60px; /* Adjust according to the actual height */
-  position: relative;
-  bottom: 0;
-  width: 100%;
-}
+
 .sub-container {
   display: flex;
   flex-direction: column;
@@ -431,7 +416,9 @@ onMounted(fetchBuilding);
   cursor: pointer;
 }
 .input-icon-wrap {
+  @include custom-padding-x;
   display: flex;
+  gap: $padding-default;
   align-items: center;
   width: 100%;
   height: 48px;
@@ -439,37 +426,47 @@ onMounted(fetchBuilding);
   background-color: white;
   padding-right: $padding-default;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  position: relative; /* Ensures it's positioned correctly */
   z-index: 5; /* Higher than overlay */
-}
-.icon-search {
-  width: 16px;
-  height: 16px;
-  @include custom-margin-x;
-  color: $input-placeholder-color;
-}
-input {
-  width: 100%;
-  appearance: none;
-  border: none;
-  outline: none;
-  background: transparent;
-  @include custom-text;
+  cursor: pointer;
+
+  .icon-search {
+    @include custom-icon-style;
+    color: $input-placeholder-color;
+  }
+
+  p {
+    @include custom-text($font-size: 14px, $font-color: $text-color-light);
+  }
 }
 .map-container {
   display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   position: relative;
   z-index: 1;
   pointer-events: auto;
 }
-.tag-button-container {
+.tag-button-container-wrapper {
   position: absolute;
-  top: 35px;  // 검색창 바로 아래에 위치
+  top: 70px; // 검색창 바로 아래에 위치
   width: 100%;
-  z-index: 3;  // 지도보다 높게 설정
+  z-index: 3; // 지도보다 높게 설정
   pointer-events: auto;
+  overflow-x: auto;
+
+  -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
+
+  // 웹킷 브라우저에서 스크롤바 숨기기
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
+  scrollbar-width: none; // 파이어폭스
+  -ms-overflow-style: none; // IE, Edge
 }
 .overlay {
   position: absolute;
@@ -494,5 +491,11 @@ input {
 .searchbar input,
 .icon-search {
   pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
+}
+
+/** scoped */
+
+.tag-button-container {
+  @include custom-padding-x;
 }
 </style>
