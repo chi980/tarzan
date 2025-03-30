@@ -4,8 +4,7 @@
       v-for="item in items"
       :key="item.idx"
       class="bar-item"
-      @click="navigateTo(item.url)"
-    >
+      @click="navigateTo(item.url)">
       <img :src="item.icon" alt="Icon" />
       <span>{{ item.title }}</span>
     </div>
@@ -72,7 +71,6 @@ function navigateTo(url: string) {
   align-items: center;
   margin-right: 10px;
   border-radius: calc($border-radius-default/2);
-  background-color: inherit;
 }
 .bar-item:last-child {
   margin-right: 0;

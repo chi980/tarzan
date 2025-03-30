@@ -1,6 +1,8 @@
 <script setup lang="ts">
 /** load */
 import { ref, defineEmits } from "vue";
+/** data, component load */
+import searchIconImg from "@/assets/icons/Magnifier.png";
 
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import AddressSearchResult from "./AddressSearchResult.vue";
@@ -97,14 +99,16 @@ const selectAddress = (selectedPlace: SearchResult) => {
                     </li>
                 </ul>
             </div> -->
-
-        <input
-          v-model="searchQuery"
-          type="text"
-          inputmode="text"
-          enterkeyhint="enter"
-          placeholder="검색할 주소명을 입력해주세요"
-          class="search-input" />
+        <div class="search-container">
+          <img :src="searchIconImg" alt="검색 아이콘" />
+          <input
+            v-model="searchQuery"
+            type="text"
+            inputmode="text"
+            enterkeyhint="enter"
+            placeholder="찾고 싶은 주소를 입력해주세요."
+            class="search-input" />
+        </div>
         <AddressSearchResult></AddressSearchResult>
       </div>
     </div>
@@ -143,9 +147,29 @@ const selectAddress = (selectedPlace: SearchResult) => {
   @include custom-modal;
 }
 
+.search-container {
+  @include custom-padding-x($padding-default);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $padding-default;
+
+  border: 1px solid $border-color-input;
+  border-radius: 13px;
+  background-color: white;
+
+  img {
+    @include custom-icon-style;
+  }
+}
 .search-input {
-  @include custom-input-style;
-  // @include custom-shadow-style;
+  flex: 1;
+  font-family: "Pretendard", sans-serif;
+  font-size: 14px;
+  color: $text-color-default;
+  border: none;
+  height: 48px;
+  background-color: white;
 }
 
 .button-wrapper {

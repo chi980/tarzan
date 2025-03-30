@@ -117,10 +117,12 @@
 }
 
 @mixin custom-bar-style($height: inherit, $z-index) {
+  @include custom-padding-x;
   height: $height;
   z-index: $z-index;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   background-color: white;
 }
 
@@ -170,7 +172,7 @@
   //   background: #d9d9d9;
   // }
 
-    /* 스크롤바 전체 영역 */
+  /* 스크롤바 전체 영역 */
   &::-webkit-scrollbar {
     width: 4px; /* 세로축 스크롤바 폭 너비 */
     height: 100%; /* 가로축 스크롤바 폭 너비 */
@@ -189,7 +191,7 @@
   }
 }
 
-@mixin custom-modal{
+@mixin custom-modal {
   position: absolute;
   width: 100%;
   height: 100%;
