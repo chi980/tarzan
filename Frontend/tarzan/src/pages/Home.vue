@@ -59,7 +59,7 @@
 
 <script lang="ts" setup>
 import { axiosInstance } from "@/plugins/axiosPlugin";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import searchIconImg from "@/assets/icons/Magnifier.png";
 import TopBar from "@/components/common/TopBar.vue";
 import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
@@ -69,163 +69,200 @@ import BuildingInfo from "@/components/home/BuildingInfo.vue";
 import BuildingList from "@/components/home/BuildingList.vue";
 
 const tagOptions = ref([
-  { label: "전체", value: "ALL" },
-  { label: "교통", value: "TRANSPORT" },
-  { label: "맛집", value: "TASTE" },
-  { label: "생활팁", value: "LIFE" },
-  { label: "질문", value: "QUESTION" },
-  { label: "모임", value: "MEETING" },
-  { label: "기타", value: "ETC" },
-]);
+  { label: "매물", value: "HOUSE" },
 
-const selectedButton = ref("ALL"); // 배열이 아니라 문자열로 명시
+  { label: "주민센터", value: "CIVIC_CENTER" },
+  { label: "체육관", value: "GYM" },
+  { label: "공원", value: "PARK" },
+  { label: "병원", value: "HOSPITAL" },
+  { label: "약국", value: "PHARMACY" },
+  { label: "응급의료시설", value: "MEDICAL_CLINIC" },
+  { label: "CCTV", value: "CCTV" },
+  { label: "경찰서", value: "POLICE" },
+  { label: "편의점", value: "CONVENIENCE_STORE" },
+  { label: "마트", value: "MART" },
+  { label: "지하철 출구", value: "SUBWAY" },
+  { label: "버스 정류장", value: "BUS" },
+  { label: "따릉이", value: "BICYCLE" },
+]);
+const selectedButton = ref(null); // 배열이 아니라 문자열로 명시
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
 const loading = ref(false);
 
-// const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
-const selectedType = ref("");
-
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
-// const page = ref(0); // 페이지 번호
-// const size = ref(10); // 한 페이지에 보여줄 개수
-// const buildings = ref([]); // 검색 결과 데이터
-// const totalCount = ref(0); // 총 검색 결과 수
+
+/** tag button 값이 바뀔 때 데이터 요청 */
+watch(selectedButton, (newValue) => {
+  console.log("선택된 값 변경됨:", newValue);
+  if (newValue == null) return;
+
+  if (newValue === "HOUSE") {
+    // 매물 버튼 클릭 시
+    onButtonClicked("HOUSE");
+  } else {
+    // 다른 버튼 클릭 시
+    const latitude = 37.566535;
+    const longitude = 126.9779692;
+    const radius = 1000; // 단위: 미터
+    fetchBuilding(newValue, latitude, longitude, radius);
+  }
+});
 
 // 빌딩 데이터 요청
-async function fetchBuildings(
-  type: string,
-  latitude: number,
-  longitude: number,
-  radius: number
-) {
-  if (loading.value) return; // 이미 요청 중이라면 무시
+// async function fetchBuildings(
+//   type: string,
+//   latitude: number,
+//   longitude: number,
+//   radius: number
+// ) {
+//   if (loading.value) return; // 이미 요청 중이라면 무시
 
-  if (!type) {
-    console.warn("Type is not selected."); // 타입 누락 경고
-    return;
-  }
+//   if (!type) {
+//     console.warn("Type is not selected."); // 타입 누락 경고
+//     return;
+//   }
 
-  loading.value = true; // 로딩 상태 활성화
+//   loading.value = true; // 로딩 상태 활성화
 
-  const requestData = { type, latitude, longitude, radius };
-  console.log("Sending request with data:", requestData);
+//   const requestData = { type, latitude, longitude, radius };
+//   console.log("Sending request with data:", requestData);
+
+//   try {
+//     // '매물' 버튼이 선택된 경우
+//     let response;
+//     if (type === "HOUSE") {
+//       response = await axiosInstance.get("/v1/houses", { params: requestData });
+//     } else {
+//       // 다른 버튼이 선택된 경우
+//       response = await axiosInstance.get("/v1/building", {
+//         params: requestData,
+//       });
+//     }
+//     /*
+//     // API 요청 +타임아웃 설정 추가
+//     const response = await axiosInstance.get(endpoint, {
+//       params: requestData,
+//       timeout: 5000, // 5초로 타임아웃 설정
+//     });
+// */
+
+//     console.log("Response received from backend:", response.data);
+
+//     // 응답 데이터 유효성 검사 및 처리
+//     const responseData = response.data;
+//     if (responseData?.success && responseData.message === "완료되었습니다.") {
+//       buildings.value = responseData.data || [];
+//       showInitialMarkers(buildings.value); // 마커 초기화
+//       console.log("Buildings fetched successfully:", buildings.value);
+
+//       // 마커 표시
+//       addMarkers(buildings.value);
+//       /*
+//     if (response.status === 200 && response.data.success) {
+//     buildings.value = response.data.data;
+//     showInitialMarkers(buildings.value); // 마커 초기화
+// */
+//     } else {
+//       console.error(
+//         "Backend returned an error:",
+//         responseData?.message || "Unknown error"
+//       );
+//       buildings.value = [];
+//       alert(
+//         `Error: ${
+//           responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."
+//         }`
+//       );
+//     }
+//   } catch (error: any) {
+//     // 요청 실패 처리
+//     console.error("Request failed:", error.message);
+
+//     // 에러 응답 정보 확인
+//     if (error.response) {
+//       console.error("Response data:", error.response.data);
+//       console.error("Response status:", error.response.status);
+
+//       const status = error.response.status;
+//       if (status === 500) {
+//         alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+//       } else if (status === 400) {
+//         alert("잘못된 요청입니다. 입력값을 확인해주세요.");
+//       } else {
+//         alert(`요청 실패: ${status} - ${error.response.statusText}`);
+//       }
+//     } else if (error.code === "ECONNABORTED") {
+//       alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
+//     } else {
+//       alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
+//     }
+
+//     buildings.value = [];
+//   } finally {
+//     // 로딩 상태 해제
+//     loading.value = false;
+//   }
+// }
+
+// 여기부터 예린 작성
+
+// API: 게시글 데이터 불러오기
+// 빌딩 데이터 타입 정의
+interface Building {
+  id: number;
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+// API 응답 타입 정의
+interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    list: Building[];
+  };
+}
+
+const fetchBuilding = async (
+  type,
+  latitude,
+  longitude,
+  radius
+): Promise<void> => {
+  const queryParams = new URLSearchParams({
+    type,
+    latitude,
+    longitude,
+    radius,
+  }).toString();
 
   try {
-    // '매물' 버튼이 선택된 경우
-    let response;
-    if (type === "HOUSE") {
-      response = await axiosInstance.get("/v1/houses", { params: requestData });
+    const response = await axiosInstance.get<ApiResponse>(
+      `/v1/building?${queryParams}`
+    );
+
+    if (response.data.success && response.data.data) {
+      buildings.value = response.data.data.list;
+      console.log("타입별 빌딩 가져오기 성공!");
+      console.log(response.data.data.length);
     } else {
-      // 다른 버튼이 선택된 경우
-      response = await axiosInstance.get("/v1/building", {
-        params: requestData,
-      });
+      console.error("API 실패:", response.data.message || "알 수 없는 오류");
     }
-    /*
-    // API 요청 +타임아웃 설정 추가
-    const response = await axiosInstance.get(endpoint, {
-      params: requestData,
-      timeout: 5000, // 5초로 타임아웃 설정
-    });
-*/
-
-    console.log("Response received from backend:", response.data);
-
-    // 응답 데이터 유효성 검사 및 처리
-    const responseData = response.data;
-    if (responseData?.success && responseData.message === "완료되었습니다.") {
-      buildings.value = responseData.data || [];
-      showInitialMarkers(buildings.value); // 마커 초기화
-      console.log("Buildings fetched successfully:", buildings.value);
-
-      // 마커 표시
-      addMarkers(buildings.value);
-      /*
-    if (response.status === 200 && response.data.success) {
-    buildings.value = response.data.data;
-    showInitialMarkers(buildings.value); // 마커 초기화
-*/
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
     } else {
-      console.error(
-        "Backend returned an error:",
-        responseData?.message || "Unknown error"
-      );
-      buildings.value = [];
-      alert(
-        `Error: ${
-          responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."
-        }`
-      );
+      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
     }
-  } catch (error: any) {
-    // 요청 실패 처리
-    console.error("Request failed:", error.message);
-
-    // 에러 응답 정보 확인
-    if (error.response) {
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-
-      const status = error.response.status;
-      if (status === 500) {
-        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } else if (status === 400) {
-        alert("잘못된 요청입니다. 입력값을 확인해주세요.");
-      } else {
-        alert(`요청 실패: ${status} - ${error.response.statusText}`);
-      }
-    } else if (error.code === "ECONNABORTED") {
-      alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
-    } else {
-      alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
-    }
-
-    buildings.value = [];
-  } finally {
-    // 로딩 상태 해제
-    loading.value = false;
   }
-}
+};
 
-function onButtonClicked(type) {
-  if (loading.value) return;
-  selectedType.value = type;
-
-  const latitude = 37.566535;
-  const longitude = 126.9779692;
-  const radius = 50; // 단위: 미터
-
-  fetchBuildings(type, latitude, longitude, radius);
-}
-
-declare global {
-  interface Window {
-    kakao: {
-      maps: {
-        load: (callback: () => void) => void;
-        Map: new (container: HTMLElement, options: any) => any;
-        LatLng: new (latitude: number, longitude: number) => any;
-        Marker: new (options: { position: any }) => any;
-        MarkerClusterer: new (options: {
-          map: any;
-          averageCenter: boolean;
-          minLevel: number;
-        }) => any;
-        event: {
-          addListener: (
-            marker: any,
-            event: string,
-            callback: (e: any) => void
-          ) => void;
-        };
-      };
-    };
-  }
-}
-
+/** kakao map functions */
 const mapContainer = ref<HTMLElement | null>(null);
 let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
 let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
@@ -333,57 +370,6 @@ const showInitialMarkers = (data: Array<any>): void => {
     isMarkersInitialized = true;
   }
 };
-
-// 여기부터 예린 작성
-
-// API: 게시글 데이터 불러오기
-// 빌딩 데이터 타입 정의
-interface Building {
-  id: number;
-  name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-}
-
-// API 응답 타입 정의
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  data?: {
-    list: Building[];
-  };
-}
-
-const fetchBuilding = async (): Promise<void> => {
-  const queryParams = new URLSearchParams({
-    type: "HOSPITAL",
-    latitude: "126.976015",
-    longitude: "37.562912",
-    radius: "1000",
-  }).toString();
-
-  try {
-    const response = await axiosInstance.get<ApiResponse>(
-      `/v1/building?${queryParams}`
-    );
-
-    if (response.data.success && response.data.data) {
-      buildings.value = response.data.data.list;
-      console.log("타입별 빌딩 가져오기 성공!");
-      console.log(response.data.data.list);
-    } else {
-      console.error("API 실패:", response.data.message || "알 수 없는 오류");
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
-    } else {
-      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
-    }
-  }
-};
-onMounted(fetchBuilding);
 </script>
 
 <style lang="scss" scoped>
