@@ -402,13 +402,7 @@ onMounted(fetchBuilding);
   bottom: -660px;
   z-index: 2;
 }
-.bottom-bar {
-  z-index: 2;
-  height: 60px; /* Adjust according to the actual height */
-  position: relative;
-  bottom: 0;
-  width: 100%;
-}
+
 .sub-container {
   display: flex;
   flex-direction: column;
