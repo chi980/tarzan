@@ -20,6 +20,8 @@
           v-if="selectedBuilding"
           class="building-info" />
       </div>
+      <div><BottomBar class="bottom-bar"></BottomBar></div>
+
       <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
       <div>
         <div v-for="building in buildings" :key="building.name">
@@ -27,8 +29,6 @@
         </div>
       </div>
     </div>
-    <div><BottomBar class="bottom-bar"></BottomBar></div>
-
     <!-- overlays -->
     <div v-if="showOverlay" class="overlay">
       <div class="searchbar" @click="showOverlay = true">
@@ -89,7 +89,6 @@ const selectedButton = ref(null); // 배열이 아니라 문자열로 명시
 
 const buildings = ref([]);
 const selectedBuilding = ref(null);
-const loading = ref(false);
 
 const showOverlay = ref(false);
 const searchQuery = ref(""); // 검색어 상태
@@ -101,8 +100,9 @@ watch(selectedButton, (newValue) => {
 
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
-    onButtonClicked("HOUSE");
+    console.log("매물 버튼 클릭됨");
   } else {
+    // 아래는 37.566535, 126.9779692 좌표를 기준으로 1000m 반경의 빌딩 데이터 요청
     // 다른 버튼 클릭 시
     const latitude = 37.566535;
     const longitude = 126.9779692;
