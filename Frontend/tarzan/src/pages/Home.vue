@@ -2,8 +2,8 @@
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
     <div class="center-container">
-      <div ref="mapContainer" class="map-container">
-        <div class="searchbar" @click="showOverlay = true">
+      <div class="top-overlay-wrapper">
+        <div class="searchbar" @click="openAddressSearch">
           <div class="input-icon-wrap">
             <img :src="searchIconImg" alt="search icon" class="icon-search" />
             <p>찾고 싶은 주소를 입력해주세요.</p>
@@ -15,59 +15,52 @@
             :buttons="tagOptions"
             :multiple="false" />
         </div>
-        <BuildingInfo
-          :building="selectedBuilding"
-          v-if="selectedBuilding"
-          class="building-info" />
       </div>
-      <div><BottomBar class="bottom-bar"></BottomBar></div>
-
-      <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
-      <div>
-        <div v-for="building in buildings" :key="building.name">
-          <p>{{ building.name }} - {{ building.address }}</p>
+      <div class="bottom-overlay-wrapper">
+        <div class="info-refresh-button" @click="showInfoOverlay">
+          <img :src="refreshIconImg" alt="refresh icon" />
+          <p>새로 불러오기</p>
+        </div>
+        <div class="info-content">
+          <div class="info-content-indicator"></div>
+          정보 오버레이입니다.
         </div>
       </div>
-    </div>
-    <!-- overlays -->
-    <div v-if="showOverlay" class="overlay">
-      <div class="searchbar" @click="showOverlay = true">
-        <div class="input-icon-wrap">
-          <font-awesome-icon
-            :icon="['fas', 'magnifying-glass']"
-            class="icon-search" />
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="찾고 싶은 집주소를 입력해주세요." />
-          <!--<input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />-->
-        </div>
-      </div>
-      <div class="overlay-content">
-        <div class="overlay-body">
-          <BuildingList :buildings="buildings" />
-          <!--<button v-if="!isLastPage" @click="loadMore">더보기</button>-->
-        </div>
-      </div>
+      <div ref="mapContainer" class="map-container"></div>
     </div>
 
-    <SearchHouseBar
-      class="search-house-bar"
-      v-if="showOverlay"></SearchHouseBar>
+    <div><BottomBar class="bottom-bar"></BottomBar></div>
+    <!-- 주소 검색 팝업 -->
+    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { axiosInstance } from "@/plugins/axiosPlugin";
 import { ref, onMounted, watch } from "vue";
+
+/** data, componenet load */
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
 import searchIconImg from "@/assets/icons/Magnifier.png";
+import refreshIconImg from "@/assets/icons/Retry-refresh.png";
+
 import TopBar from "@/components/common/TopBar.vue";
-import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
+import AddressSearch from "@/components/common/AddressSearch.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
-import BuildingList from "@/components/home/BuildingList.vue";
 
+/** search bar */
+const address = ref<string | null>(null);
+const isAddressSearchOpen = ref<boolean>(false);
+const openAddressSearch = () => {
+  isAddressSearchOpen.value = true;
+};
+const closeAddressSearch = (selectedAddress: string) => {
+  address.value = selectedAddress;
+  isAddressSearchOpen.value = false;
+};
+/** tag button */
 const tagOptions = ref([
   { label: "매물", value: "HOUSE" },
 
@@ -87,12 +80,6 @@ const tagOptions = ref([
 ]);
 const selectedButton = ref(null); // 배열이 아니라 문자열로 명시
 
-const buildings = ref([]);
-const selectedBuilding = ref(null);
-
-const showOverlay = ref(false);
-const searchQuery = ref(""); // 검색어 상태
-
 /** tag button 값이 바뀔 때 데이터 요청 */
 watch(selectedButton, (newValue) => {
   console.log("선택된 값 변경됨:", newValue);
@@ -104,112 +91,20 @@ watch(selectedButton, (newValue) => {
   } else {
     // 아래는 37.566535, 126.9779692 좌표를 기준으로 1000m 반경의 빌딩 데이터 요청
     // 다른 버튼 클릭 시
-    const latitude = 37.566535;
-    const longitude = 126.9779692;
+    const latitude = 37.566535; // 예시 위도
+    const longitude = 126.9779692; // 예시 경도
+    console.log("현재 지도 중심 좌표:", latitude, longitude);
     const radius = 1000; // 단위: 미터
-    fetchBuilding(newValue, latitude, longitude, radius);
+    // fetchBuilding(newValue, latitude, longitude, radius);
   }
 });
 
-// 빌딩 데이터 요청
-// async function fetchBuildings(
-//   type: string,
-//   latitude: number,
-//   longitude: number,
-//   radius: number
-// ) {
-//   if (loading.value) return; // 이미 요청 중이라면 무시
+/** map 관련 */
 
-//   if (!type) {
-//     console.warn("Type is not selected."); // 타입 누락 경고
-//     return;
-//   }
+const loading = ref(false); // 로딩 상태를 나타내는 변수
+const buildings = ref([]);
+const selectedBuilding = ref(null);
 
-//   loading.value = true; // 로딩 상태 활성화
-
-//   const requestData = { type, latitude, longitude, radius };
-//   console.log("Sending request with data:", requestData);
-
-//   try {
-//     // '매물' 버튼이 선택된 경우
-//     let response;
-//     if (type === "HOUSE") {
-//       response = await axiosInstance.get("/v1/houses", { params: requestData });
-//     } else {
-//       // 다른 버튼이 선택된 경우
-//       response = await axiosInstance.get("/v1/building", {
-//         params: requestData,
-//       });
-//     }
-//     /*
-//     // API 요청 +타임아웃 설정 추가
-//     const response = await axiosInstance.get(endpoint, {
-//       params: requestData,
-//       timeout: 5000, // 5초로 타임아웃 설정
-//     });
-// */
-
-//     console.log("Response received from backend:", response.data);
-
-//     // 응답 데이터 유효성 검사 및 처리
-//     const responseData = response.data;
-//     if (responseData?.success && responseData.message === "완료되었습니다.") {
-//       buildings.value = responseData.data || [];
-//       showInitialMarkers(buildings.value); // 마커 초기화
-//       console.log("Buildings fetched successfully:", buildings.value);
-
-//       // 마커 표시
-//       addMarkers(buildings.value);
-//       /*
-//     if (response.status === 200 && response.data.success) {
-//     buildings.value = response.data.data;
-//     showInitialMarkers(buildings.value); // 마커 초기화
-// */
-//     } else {
-//       console.error(
-//         "Backend returned an error:",
-//         responseData?.message || "Unknown error"
-//       );
-//       buildings.value = [];
-//       alert(
-//         `Error: ${
-//           responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."
-//         }`
-//       );
-//     }
-//   } catch (error: any) {
-//     // 요청 실패 처리
-//     console.error("Request failed:", error.message);
-
-//     // 에러 응답 정보 확인
-//     if (error.response) {
-//       console.error("Response data:", error.response.data);
-//       console.error("Response status:", error.response.status);
-
-//       const status = error.response.status;
-//       if (status === 500) {
-//         alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-//       } else if (status === 400) {
-//         alert("잘못된 요청입니다. 입력값을 확인해주세요.");
-//       } else {
-//         alert(`요청 실패: ${status} - ${error.response.statusText}`);
-//       }
-//     } else if (error.code === "ECONNABORTED") {
-//       alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
-//     } else {
-//       alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
-//     }
-
-//     buildings.value = [];
-//   } finally {
-//     // 로딩 상태 해제
-//     loading.value = false;
-//   }
-// }
-
-// 여기부터 예린 작성
-
-// API: 게시글 데이터 불러오기
 // 빌딩 데이터 타입 정의
 interface Building {
   id: number;
@@ -227,21 +122,33 @@ interface ApiResponse {
     list: Building[];
   };
 }
-
-const fetchBuilding = async (
-  type,
-  latitude,
-  longitude,
-  radius
+const fetchBuildings = async (
+  type: string,
+  latitude: number,
+  longitude: number,
+  radius: number
 ): Promise<void> => {
+  if (loading.value) return; // 이미 요청 중이라면 무시
+
+  if (!type) {
+    console.warn("Type is not selected."); // 타입 누락 경고
+    return;
+  }
+
+  console.log("현재 위치: ", latitude, longitude);
+
+  loading.value = true; // 로딩 상태 활성화
+
+  // query parameters 생성
   const queryParams = new URLSearchParams({
     type,
-    latitude,
-    longitude,
-    radius,
+    latitude: latitude.toString(),
+    longitude: longitude.toString(),
+    radius: radius.toString(),
   }).toString();
 
   try {
+    // API 요청
     const response = await axiosInstance.get<ApiResponse>(
       `/v1/building?${queryParams}`
     );
@@ -252,15 +159,50 @@ const fetchBuilding = async (
       console.log(response.data.data.length);
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
+      buildings.value = [];
+      alert(
+        `Error: ${
+          response.data.message || "데이터를 가져오는 중 문제가 발생했습니다."
+        }`
+      );
     }
   } catch (error: unknown) {
+    // 요청 실패 처리
     if (error instanceof Error) {
       console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
     } else {
       console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
     }
+
+    // 특정 오류 처리 (500, Illegal Argument)
+    if (error instanceof AxiosError && error.response) {
+      const status = error.response.status;
+
+      if (status === 500) {
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } else if (
+        status === 400 &&
+        error.response.data.message.includes("Illegal Argument")
+      ) {
+        alert("잘못된 입력 값이 포함되었습니다. 입력 값을 다시 확인해주세요.");
+      } else {
+        alert(`요청 실패: ${status} - ${error.response.statusText}`);
+      }
+    } else if (error instanceof Error && error.code === "ECONNABORTED") {
+      alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
+    } else {
+      alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
+    }
+
+    buildings.value = [];
+  } finally {
+    // 로딩 상태 해제
+    loading.value = false;
   }
 };
+
+/** building, house info overlay */
+const showInfoOverlay = () => {};
 
 /** kakao map functions */
 const mapContainer = ref<HTMLElement | null>(null);
@@ -373,22 +315,6 @@ const showInitialMarkers = (data: Array<any>): void => {
 </script>
 
 <style lang="scss" scoped>
-.topbar {
-  z-index: 2;
-}
-.search-house-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2; /* Higher than TopBar and overlay */
-}
-.building-info {
-  position: absolute;
-  bottom: -660px;
-  z-index: 2;
-}
-
 .sub-container {
   display: flex;
   flex-direction: column;
@@ -403,99 +329,133 @@ const showInitialMarkers = (data: Array<any>): void => {
   flex-direction: column;
   overflow: visible;
 }
-.searchbar {
-  display: flex;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  padding: 0px;
-  z-index: 3; /* Ensure input-icon-wrap is above overlay */
-  box-sizing: border-box;
-  cursor: pointer;
-}
-.input-icon-wrap {
-  @include custom-padding-x;
-  display: flex;
-  gap: $padding-default;
-  align-items: center;
-  width: 100%;
-  height: 48px;
-  border-radius: 13px;
-  background-color: white;
-  padding-right: $padding-default;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  z-index: 5; /* Higher than overlay */
-  cursor: pointer;
-
-  .icon-search {
-    @include custom-icon-style;
-    color: $input-placeholder-color;
-  }
-
-  p {
-    @include custom-text($font-size: 14px, $font-color: $text-color-light);
-  }
-}
-.map-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  z-index: 1;
-  pointer-events: auto;
-}
-.tag-button-container-wrapper {
-  position: absolute;
-  top: 70px; // 검색창 바로 아래에 위치
-  width: 100%;
-  z-index: 3; // 지도보다 높게 설정
-  pointer-events: auto;
-  overflow-x: auto;
-
-  -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
-
-  // 웹킷 브라우저에서 스크롤바 숨기기
-  &::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-    display: none;
-  }
-
-  // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
-  scrollbar-width: none; // 파이어폭스
-  -ms-overflow-style: none; // IE, Edge
-}
-.overlay {
-  position: absolute;
-  top: 60px; /* Position below input-icon-wrap */
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  display: flex;
-  align-items: flex-start;
-  z-index: 1;
-}
-.overlay-content {
-  background: white;
-  padding: 5px;
-  border-radius: 5px;
-  width: 100%;
-  z-index: 1;
-}
-
-/* 필요 시 특정 요소만 상호작용 가능하게 설정 */
-.searchbar input,
-.icon-search {
-  pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
-}
 
 /** scoped */
+.top-overlay-wrapper {
+  @include custom-padding-y;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: fit-content;
 
-.tag-button-container {
-  @include custom-padding-x;
+  display: flex;
+  flex-direction: column;
+  gap: $padding-small;
+
+  /** search bar style */
+  .searchbar {
+    @include custom-margin-x;
+    display: flex;
+    cursor: pointer;
+    .input-icon-wrap {
+      @include custom-padding-x;
+      display: flex;
+      gap: $padding-default;
+      align-items: center;
+      width: 100%;
+      height: 48px;
+      border-radius: 13px;
+      background-color: white;
+      padding-right: $padding-default;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      z-index: 5; /* Higher than overlay */
+      cursor: pointer;
+
+      .icon-search {
+        @include custom-icon-style;
+        color: $input-placeholder-color;
+      }
+
+      p {
+        @include custom-text($font-size: 14px, $font-color: $text-color-light);
+      }
+    }
+  }
+
+  /** tag button group style */
+  .tag-button-container-wrapper {
+    @include custom-padding-x;
+    pointer-events: auto;
+    overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
+
+    // 웹킷 브라우저에서 스크롤바 숨기기
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
+    // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
+    scrollbar-width: none; // 파이어폭스
+    -ms-overflow-style: none; // IE, Edge
+  }
+  z-index: 10; /* Ensure this is below the search bar */
+}
+/** kakao map style */
+.map-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: aqua;
+}
+
+.bottom-overlay-wrapper {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+
+  /** refresh button */
+  .info-refresh-button {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px;
+    margin-bottom: $margin-small;
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+
+    img {
+      @include custom-icon-style(12px);
+      color: $input-placeholder-color;
+    }
+
+    p {
+      @include custom-text($font-size: 12px);
+    }
+  }
+
+  .info-content {
+    padding-top: 8px;
+    padding-bottom: $padding-default;
+    display: flex;
+    flex-direction: column;
+    gap: $padding-default;
+    align-items: center;
+    justify-content: center;
+    padding-left: 20;
+    background-color: aqua;
+    width: 100%;
+
+    .info-content-indicator {
+      width: 134px;
+      height: 4px;
+      border-radius: 100px;
+      background-color: #242424;
+    }
+  }
 }
 </style>
