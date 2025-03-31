@@ -1,5 +1,5 @@
 <template>
-  <div class="bar bottom-bar">
+  <div class="bottom-bar">
     <div
       v-for="item in items"
       :key="item.idx"
@@ -56,7 +56,6 @@ function navigateTo(url: string) {
     $z-index: $z-index-bottom-bar
   );
   @include custom-none-select-basic;
-  background-color: inherit;
 }
 .bar-item > img {
   @include custom-icon-style;
