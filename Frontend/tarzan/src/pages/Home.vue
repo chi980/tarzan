@@ -168,6 +168,8 @@ const fetchBuildings = async (
       buildings.value = response.data.data.list;
       console.log("타입별 빌딩 가져오기 성공!");
       console.log(response.data.data.length);
+
+      addMarkers(buildings.value); // 마커 추가
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
