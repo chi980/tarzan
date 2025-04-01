@@ -21,22 +21,33 @@
           <img :src="refreshIconImg" alt="refresh icon" />
           <p>새로 불러오기</p>
         </div>
-        <div class="info-content">
-          <div class="info-content-indicator"></div>
-          정보 오버레이입니다.
+
+        <div class="info-content-wrapper">
+          <div class="info-content-indicator" @mousedown="startDrag"></div>
+          <div
+            class="info-content"
+            ref="infoContent"
+            :style="{
+              height: contentHeight + 'px',
+            }">
+            <p>바보야</p>
+            <p>바보야</p>
+          </div>
         </div>
       </div>
       <div ref="mapContainer" class="map-container"></div>
     </div>
 
-    <div><BottomBar class="bottom-bar"></BottomBar></div>
+    <div style="background-color: white">
+      <BottomBar class="bottom-bar"></BottomBar>
+    </div>
     <!-- 주소 검색 팝업 -->
     <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 
 /** data, componenet load */
 import { axiosInstance } from "@/plugins/axiosPlugin";
@@ -203,6 +214,61 @@ const fetchBuildings = async (
 
 /** building, house info overlay */
 const showInfoOverlay = () => {};
+
+const minHeight = 0; // 최소 높이
+const maxHeight = ref(445); // 최대 높이 (기본값 445)
+const contentHeight = ref("auto"); // 초기값은 auto
+const startY = ref(0);
+const startHeight = ref(0);
+// const isDraggable = ref(false);
+const infoContent = ref(null);
+
+const updateInitialHeight = () => {
+  if (infoContent.value) {
+    const actualHeight = infoContent.value.scrollHeight;
+    // isDraggable.value = actualHeight > 66; // 드래그 가능 여부 확인
+    maxHeight.value = actualHeight > 445 ? 445 : actualHeight; // 최대 높이 설정
+    contentHeight.value = actualHeight > 445 ? 125 : actualHeight; // 초기 높이 설정
+  }
+};
+
+onMounted(async () => {
+  await nextTick();
+  updateInitialHeight();
+});
+
+const startDrag = (event) => {
+  // if (!isDraggable.value) return;
+  console.log("드래그 시작");
+  console.log();
+
+  startY.value = event.clientY;
+  startHeight.value =
+    contentHeight.value === "auto"
+      ? infoContent.value.scrollHeight
+      : contentHeight.value;
+
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("mouseup", endDrag);
+};
+
+const onDrag = (event) => {
+  const deltaY = startY.value - event.clientY;
+  contentHeight.value = Math.min(
+    maxHeight.value,
+    Math.max(minHeight, startHeight.value + deltaY)
+  );
+};
+
+const endDrag = () => {
+  document.removeEventListener("mousemove", onDrag);
+  document.removeEventListener("mouseup", endDrag);
+};
+
+onUnmounted(() => {
+  document.removeEventListener("mousemove", onDrag);
+  document.removeEventListener("mouseup", endDrag);
+});
 
 /** kakao map functions */
 const mapContainer = ref<HTMLElement | null>(null);
@@ -401,7 +467,6 @@ const showInitialMarkers = (data: Array<any>): void => {
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: aqua;
 }
 
 .bottom-overlay-wrapper {
@@ -438,23 +503,38 @@ const showInitialMarkers = (data: Array<any>): void => {
     }
   }
 
-  .info-content {
-    padding-top: 8px;
-    padding-bottom: $padding-default;
+  .info-content-wrapper {
+    @include custom-text;
+    padding-top: 11px;
     display: flex;
     flex-direction: column;
-    gap: $padding-default;
+    gap: 11px;
     align-items: center;
-    justify-content: center;
+    justify-content: start;
     padding-left: 20;
-    background-color: aqua;
+    background-color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     width: 100%;
+    height: fit-content;
+
+    overflow: hidden;
+    transition: height 0.3s ease-out;
 
     .info-content-indicator {
       width: 134px;
       height: 4px;
       border-radius: 100px;
-      background-color: #242424;
+      background-color: #e8e8e8;
+
+      cursor: grab;
+    }
+
+    .info-content {
+      width: 100%;
+      // flex: 1;
+      background-color: aqua;
+      overflow-y: auto;
     }
   }
 }
