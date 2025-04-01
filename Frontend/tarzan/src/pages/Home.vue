@@ -286,15 +286,15 @@ const onDrag = (event) => {
 const endDrag = () => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
-  document.addEventListener("touchmove", onDrag);
-  document.addEventListener("touchend", endDrag);
+  document.removeEventListener("touchmove", onDrag);
+  document.removeEventListener("touchend", endDrag);
 };
 
 onUnmounted(() => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
-  document.addEventListener("touchmove", onDrag);
-  document.addEventListener("touchend", endDrag);
+  document.removeEventListener("touchmove", onDrag);
+  document.removeEventListener("touchend", endDrag);
 });
 
 /** kakao map functions */
