@@ -23,15 +23,34 @@
         </div>
 
         <div class="info-content-wrapper">
-          <div class="info-content-indicator" @mousedown="startDrag"></div>
+          <div
+            class="info-content-indicator"
+            @mousedown="startDrag"
+            @touchstart="startDrag"></div>
           <div
             class="info-content"
             ref="infoContent"
             :style="{
               height: contentHeight + 'px',
             }">
-            <p>바보야</p>
-            <p>바보야</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
           </div>
         </div>
       </div>
@@ -252,6 +271,8 @@ const startDrag = (event) => {
 
   document.addEventListener("mousemove", onDrag);
   document.addEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
 };
 
 const onDrag = (event) => {
@@ -265,11 +286,15 @@ const onDrag = (event) => {
 const endDrag = () => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
 };
 
 onUnmounted(() => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
 });
 
 /** kakao map functions */
