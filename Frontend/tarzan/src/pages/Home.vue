@@ -21,12 +21,16 @@
           <img :src="refreshIconImg" alt="refresh icon" />
           <p>새로 불러오기</p>
         </div>
-        <div
-          class="info-content-wrapper"
-          :class="{ animating: isAnimating }"
-          :style="{ height: contentHeight + 'px' }">
+
+        <div class="info-content-wrapper">
           <div class="info-content-indicator" @mousedown="startDrag"></div>
-          <div class="info-content">
+          <div
+            class="info-content"
+            ref="infoContent"
+            :style="{
+              height: contentHeight + 'px',
+            }">
+            <p>바보야</p>
             <p>바보야</p>
           </div>
         </div>
@@ -43,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 
 /** data, componenet load */
 import { axiosInstance } from "@/plugins/axiosPlugin";
@@ -211,19 +215,38 @@ const fetchBuildings = async (
 /** building, house info overlay */
 const showInfoOverlay = () => {};
 
-const contentHeight = ref(100); // info-content 초기 높이
-const minHeight = 100; // 최소 높이
-const maxHeight = 400; // 최대 높이
+const minHeight = 0; // 최소 높이
+const maxHeight = ref(445); // 최대 높이 (기본값 445)
+const contentHeight = ref("auto"); // 초기값은 auto
 const startY = ref(0);
 const startHeight = ref(0);
-const isAnimating = ref(false);
-const dragDirection = ref(null); // 'up' 또는 'down'
+// const isDraggable = ref(false);
+const infoContent = ref(null);
+
+const updateInitialHeight = () => {
+  if (infoContent.value) {
+    const actualHeight = infoContent.value.scrollHeight;
+    // isDraggable.value = actualHeight > 66; // 드래그 가능 여부 확인
+    maxHeight.value = actualHeight > 445 ? 445 : actualHeight; // 최대 높이 설정
+    contentHeight.value = actualHeight > 445 ? 125 : actualHeight; // 초기 높이 설정
+  }
+};
+
+onMounted(async () => {
+  await nextTick();
+  updateInitialHeight();
+});
 
 const startDrag = (event) => {
-  isAnimating.value = false; // 드래그 중 애니메이션 제거
-  startY.value = event.clientY; // 마우스 클릭 Y 좌표 저장
-  startHeight.value = contentHeight.value; // 현재 높이 저장
-  dragDirection.value = null; // 방향 초기화
+  // if (!isDraggable.value) return;
+  console.log("드래그 시작");
+  console.log();
+
+  startY.value = event.clientY;
+  startHeight.value =
+    contentHeight.value === "auto"
+      ? infoContent.value.scrollHeight
+      : contentHeight.value;
 
   document.addEventListener("mousemove", onDrag);
   document.addEventListener("mouseup", endDrag);
@@ -231,39 +254,22 @@ const startDrag = (event) => {
 
 const onDrag = (event) => {
   const deltaY = startY.value - event.clientY;
-
-  // 드래그 방향 감지
-  if (deltaY > 10) {
-    dragDirection.value = "up"; // 위로 드래그
-  } else if (deltaY < -10) {
-    dragDirection.value = "down"; // 아래로 드래그
-  }
-
   contentHeight.value = Math.min(
-    maxHeight,
+    maxHeight.value,
     Math.max(minHeight, startHeight.value + deltaY)
   );
 };
 
 const endDrag = () => {
-  isAnimating.value = true; // 애니메이션 활성화
-
-  // 드래그 방향에 따라 최종 높이 설정
-  if (dragDirection.value === "up") {
-    contentHeight.value = maxHeight; // 위로 올리면 최대 높이
-  } else {
-    contentHeight.value = minHeight; // 아래로 내리면 최소 높이
-  }
-
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
 };
 
-// 언마운트 시 이벤트 제거
 onUnmounted(() => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
 });
+
 /** kakao map functions */
 const mapContainer = ref<HTMLElement | null>(null);
 let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
@@ -461,7 +467,6 @@ const showInitialMarkers = (data: Array<any>): void => {
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: aqua;
 }
 
 .bottom-overlay-wrapper {
@@ -499,26 +504,37 @@ const showInitialMarkers = (data: Array<any>): void => {
   }
 
   .info-content-wrapper {
-    padding-top: 8px;
-    padding-bottom: $padding-default;
+    @include custom-text;
+    padding-top: 11px;
     display: flex;
     flex-direction: column;
-    gap: $padding-default;
+    gap: 11px;
     align-items: center;
     justify-content: start;
     padding-left: 20;
-    background-color: aqua;
+    background-color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     width: 100%;
+    height: fit-content;
 
-    &.animating {
-      transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    }
+    overflow: hidden;
+    transition: height 0.3s ease-out;
 
     .info-content-indicator {
       width: 134px;
       height: 4px;
       border-radius: 100px;
-      background-color: #242424;
+      background-color: #e8e8e8;
+
+      cursor: grab;
+    }
+
+    .info-content {
+      width: 100%;
+      // flex: 1;
+      background-color: aqua;
+      overflow-y: auto;
     }
   }
 }
