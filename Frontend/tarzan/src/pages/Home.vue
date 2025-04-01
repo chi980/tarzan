@@ -1,6 +1,7 @@
 <template>
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
+    
     <SearchHouseBar
       class="search-house-bar"
       v-if="showOverlay"

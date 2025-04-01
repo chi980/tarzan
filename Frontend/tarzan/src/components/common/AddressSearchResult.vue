@@ -1,21 +1,37 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-
+import { defineProps } from 'vue';
+const props = defineProps({ addresses: Array });
 import locationMarkImg from "@/assets/icons/location_mark.png"
 </script>
 
+
 <template>
-            <div class="location-wrapper">
+  <div v-for="(address, index) in addresses" :key="index" class="location-wrapper">
+    <div class="location-degree">
+      <img :src="locationMarkImg" alt="이미지">
+      <p class="distance">{{ address.distance }}</p>
+    </div>
+    <div class="location-address-wrapper">
+      <p class="location-address-name">{{ address.place_name }}</p>
+      <p class="location-address">{{ address.address_name }}</p>
+    </div>
+  </div>
+
+
+<!--            <div class="location-wrapper">
                 <div class="location-degree">
                     <img :src="locationMarkImg" alt="이미지">
-                    <p>300m</p>
+                    <p class="distance">300m</p>
                 </div>
                 <div class="location-address-wrapper">
                     <p class="location-address-name">나의 원룸<span>고시원, 고시텔</span></p>
                     <p class="location-address">서울 중구 서소문로 11231(봉래동)</p>
                 </div>
             </div>
+-->
 </template>
+
 
 <style scoped lang="scss">
 

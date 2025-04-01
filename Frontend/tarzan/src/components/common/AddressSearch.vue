@@ -1,106 +1,119 @@
 <script setup lang="ts">
-/** load */
-import { ref, defineEmits } from 'vue';
-
-import TopBarBack from "@/components/common/TopBarBack.vue";
+import { ref, onMounted, defineEmits, watch } from 'vue';
+import axios from 'axios';
 import AddressSearchResult from './AddressSearchResult.vue';
-import {Building }from "@/data/Building";
+import { debounce } from 'lodash'; // lodash의 debounce 사용
 
-const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY; // 여기에 본인의 카카오 REST API 키를 입력하세요.
-
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
 const emit = defineEmits(['close']);
 
-/** emits */
-const closeModal = () => {
-  emit('close'); // 부모 컴포넌트에 모달 닫기 이벤트 전달
-};
+const searchQuery = ref("");
+const searchResults = ref([]);
+const userLocation = ref({ latitude: null, longitude: null });
 
-// 검색어와 결과를 저장할 상태 변수
-const searchQuery = ref(""); // 사용자가 입력한 검색어
-interface SearchResult {
-  place_name: string;
-  road_address_name?: string;
-  address_name?: string;
-  x: string; // 경도
-  y: string; // 위도
-}
-
-const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
-
-// 위도와 경도를 저장할 상태 변수
-const selectedLocation = ref<{
-  latitude: string | null;
-  longitude: string | null;
-}>({
-  latitude: null,
-  longitude: null,
-});
-
-
-// 주소 검색 함수
-const searchAddress = async () => {
-  if (!searchQuery.value) {
-    searchResults.value = [];
+const getCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
     return;
   }
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      userLocation.value = { latitude: coords.latitude, longitude: coords.longitude };
+    },
+    (error) => console.error("위치 정보를 가져오는 데 실패했습니다.", error)
+  );
+};
+
+const toRad = (value: number) => (value * Math.PI) / 180;
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371; // 지구의 반지름 (단위: km)
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const distanceInMeters = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; // 거리 (단위: 미터)
+
+  // 1000m 이상이면 km 단위로 변환
+  return distanceInMeters >= 1000
+    ? `${(distanceInMeters / 1000).toFixed(1)}km`
+    : `${distanceInMeters.toFixed(0)}m`;
+};
+
+const searchAddress = async () => {
+  if (!searchQuery.value.trim()) return;
+  searchResults.value = []; // 이전 검색 결과 지우기
 
   try {
-    // 키워드 검색 API 호출
-    const response = await axios.get(
+    const { data } = await axios.get(
       "https://dapi.kakao.com/v2/local/search/keyword.json",
       {
-        params: { query: searchQuery.value },
+        params: { query: searchQuery.value.trim() },
         headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
       }
     );
-    searchResults.value = response.data.documents; // 검색 결과 저장
+    
+    searchResults.value = data.documents.map(({ place_name, road_address_name, address_name, x, y }) => ({
+      place_name,
+      address_name: road_address_name || address_name,
+      x,
+      y,
+      distance: userLocation.value.latitude && userLocation.value.longitude
+        ? calculateDistance(userLocation.value.latitude, userLocation.value.longitude, parseFloat(y), parseFloat(x))
+        : '거리 계산 불가'
+    }));
   } catch (error) {
-    console.error("주소 검색 중 오류 발생: ", error);
+    console.error("주소 검색 중 오류 발생:", error);
     searchResults.value = [];
   }
 };
 
-// 주소 선택 함수
-const selectAddress = (selectedPlace: SearchResult) => {
-  searchQuery.value = `${selectedPlace.place_name} - ${
-    selectedPlace.road_address_name || selectedPlace.address_name
-  }`;
-  searchResults.value = []; // 검색 결과 목록 초기화
+// 디바운스 적용
+const debouncedSearch = debounce(searchAddress, 500);
 
-  // 위도와 경도 저장
-  selectedLocation.value.latitude = selectedPlace.y; // 위도
-  selectedLocation.value.longitude = selectedPlace.x; // 경도
+const selectAddress = (address: any) => {
+  console.log("선택된 주소:", address);
+  emit('close');  // 주소를 선택한 후 모달을 닫기
 };
 
+onMounted(getCurrentLocation);
+
+// 검색어가 변경될 때마다 디바운스된 검색 함수 호출
+watch(searchQuery, debouncedSearch);
 </script>
 
 <template>
-<div class="modal-container" @click.self="closeModal">
+  <div class="modal-container" @click.self="closeModal">
     <div class="modal-wrapper">
         <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;"> 
             <div style="width: 64px;height: 64px;background-color: black;" @click="closeModal"><-</div>
             <h1>주소 검색</h1>
         </div>
-        <div class="modal-content">
-            <!-- <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" />
-            <div v-if="searchResults.length > 0">
-                <ul>
-                    <li v-for="result in searchResults" :key="result.place_name" @click="selectAddress(result)">
-                        {{ result.place_name }} - {{ result.road_address_name || result.address_name }}
-                    </li>
-                </ul>
-            </div> -->
 
+      <div class="search-container">
+        <input
+          v-model="searchQuery"
+          @keyup.enter="searchAddress"
+          type="text"
+          placeholder="검색할 주소명을 입력해주세요"
+          class="search-input"
+          aria-label="주소 검색"
+        />
+      </div>
 
-    <input v-model="searchQuery" type="text" placeholder="검색할 주소명을 입력해주세요" class="search-input"/>
-<AddressSearchResult></AddressSearchResult>
-        </div>
+      <div class="modal-content">
+        <AddressSearchResult
+          :addresses="searchResults"
+          @selectAddress="selectAddress"
+        />
+      </div>
     </div>
 
     <div class="button-wrapper">
-        <button class="button-default" @click="closeModal">검색</button>
+      <button class="button-default" @click="searchAddress">검색</button>
     </div>
-</div>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -116,19 +129,16 @@ const selectAddress = (selectedPlace: SearchResult) => {
     }
 
     .modal-content{
+        @include custom-padding-x($padding-default);
+        @include custom-padding-y($padding-big);
 
-@include custom-padding-x($padding-default);
-@include custom-padding-y($padding-big);
+        display: flex;
+        flex-direction: column;
 
-display: flex;
-flex-direction: column;
-
-height: 100%;;
-overflow-y: auto; /* 세로 스크롤을 추가 */
-@include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
-
-    
-}
+        height: 100%;
+        overflow-y: auto; /* 세로 스크롤을 추가 */
+        @include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
+    }
 }
 .modal-container{
     @include custom-modal;
@@ -136,15 +146,33 @@ overflow-y: auto; /* 세로 스크롤을 추가 */
 
 .search-input{
     @include custom-input-style;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 100%;
     // @include custom-shadow-style;
 }
 
+.search-container {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: white;
+  //width: clac(100% -20px);
+  // margin: 0 auto;
+  padding: 20px 55px 0 20px;
+}
+
 .button-wrapper{
-    width: 100%;position: absolute; bottom: $padding-default;display: flex; flex-direction: row;
+    width: 100%;
+    position: absolute;
+    bottom: $padding-default;
+    display: flex;
+    flex-direction: row;
 }
 
 .button-default{
-  @include custom-button-style($bg-color: $secondary-color-default,$font-color: white);
+  @include custom-button-style($bg-color: $secondary-color-default, $font-color: white);
   @include custom-margin-x;
 }
 </style>
