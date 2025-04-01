@@ -23,15 +23,34 @@
         </div>
 
         <div class="info-content-wrapper">
-          <div class="info-content-indicator" @mousedown="startDrag"></div>
+          <div
+            class="info-content-indicator"
+            @mousedown="startDrag"
+            @touchstart="startDrag"></div>
           <div
             class="info-content"
             ref="infoContent"
             :style="{
               height: contentHeight + 'px',
             }">
-            <p>바보야</p>
-            <p>바보야</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
+            <p>tarzan</p>
           </div>
         </div>
       </div>
@@ -168,6 +187,8 @@ const fetchBuildings = async (
       buildings.value = response.data.data.list;
       console.log("타입별 빌딩 가져오기 성공!");
       console.log(response.data.data.length);
+
+      addMarkers(buildings.value); // 마커 추가
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
@@ -250,6 +271,8 @@ const startDrag = (event) => {
 
   document.addEventListener("mousemove", onDrag);
   document.addEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
 };
 
 const onDrag = (event) => {
@@ -263,11 +286,15 @@ const onDrag = (event) => {
 const endDrag = () => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
 };
 
 onUnmounted(() => {
   document.removeEventListener("mousemove", onDrag);
   document.removeEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
 });
 
 /** kakao map functions */
