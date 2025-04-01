@@ -26,7 +26,7 @@
           <div
             class="info-content-indicator"
             @mousedown="startDrag"
-            @touchstart="startDrag"></div>
+            @touchstart="startDragHandler"></div>
           <div
             class="info-content"
             ref="infoContent"
@@ -273,6 +273,11 @@ const startDrag = (event) => {
   document.addEventListener("mouseup", endDrag);
   document.addEventListener("touchmove", onDrag);
   document.addEventListener("touchend", endDrag);
+};
+
+const startDragHandler = (event) => {
+  event.preventDefault(); // 기본 이벤트 방지
+  startDrag(event);
 };
 
 const onDrag = (event) => {
