@@ -4,8 +4,7 @@
       <CustomSelectBox
         :options="seoulDistrictOptions"
         :parentStyle="topBarStyle"
-        @update:selected="handleDistrictSelect"
-      />
+        @update:selected="handleDistrictSelect" />
     </div>
   </div>
 </template>
@@ -51,8 +50,10 @@ const emit = defineEmits<{
 }>();
 
 const handleDistrictSelect = (idx: number) => {
-  const selectedOption = seoulDistrictOptions.find(option => option.idx === idx + 1);
-  selectedDistrict.value = selectedOption?.value || null; 
+  const selectedOption = seoulDistrictOptions.find(
+    (option) => option.idx === idx + 1
+  );
+  selectedDistrict.value = selectedOption?.value || null;
   // console.log(`선택된 옵션의 인덱스: ${idx}`);
   console.log(`탑바: ${selectedDistrict.value}`);
   emit("update:selected", selectedDistrict.value);
@@ -63,7 +64,6 @@ const topBarStyle: SelectStyle = {
   fontWeight: 700,
   justifyContent: "center",
 };
-
 </script>
 <style lang="scss" scoped>
 .top-bar {
@@ -73,7 +73,7 @@ const topBarStyle: SelectStyle = {
     $z-index: $z-index-top-bar
   );
   @include custom-none-select-basic;
-
+  background-color: white;
   justify-content: center;
   align-items: center;
 }

@@ -1,499 +1,186 @@
-<template>
-  <div class="sub-container">
-    <TopBar class="topbar"></TopBar>
+<script setup lang="ts">
+import { ref, onMounted, defineEmits, watch } from 'vue';
+import axios from 'axios';
+import AddressSearchResult from './AddressSearchResult.vue';
+import { debounce } from 'lodash'; // lodash의 debounce 사용
+
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+const emit = defineEmits(['close', 'selectAddress']); 
+
+const searchQuery = ref("");
+const searchResults = ref([]);
+const userLocation = ref({ latitude: null, longitude: null });
+
+const getCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      userLocation.value = { latitude: coords.latitude, longitude: coords.longitude };
+    },
+    (error) => console.error("위치 정보를 가져오는 데 실패했습니다.", error)
+  );
+};
+
+const toRad = (value: number) => (value * Math.PI) / 180;
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  const R = 6371; // 지구의 반지름 (단위: km)
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const distanceInMeters = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; // 거리 (단위: 미터)
+
+  // 1000m 이상이면 km 단위로 변환
+  return distanceInMeters >= 1000
+    ? `${(distanceInMeters / 1000).toFixed(1)}km`
+    : `${distanceInMeters.toFixed(0)}m`;
+};
+
+const searchAddress = async () => {
+  if (!searchQuery.value.trim()) return;
+  searchResults.value = []; // 이전 검색 결과 지우기
+
+  try {
+    const { data } = await axios.get(
+      "https://dapi.kakao.com/v2/local/search/keyword.json",
+      {
+        params: { query: searchQuery.value.trim() },
+        headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
+      }
+    );
     
-    <SearchHouseBar
-      class="search-house-bar"
-      v-if="showOverlay"
-    ></SearchHouseBar>
-    <div class="center-container">
-      <div ref="mapContainer" class="map-container">
-        <div class="searchbar" @click="showOverlay = true">
-          <div class="input-icon-wrap">
-            <font-awesome-icon
-              :icon="['fas', 'magnifying-glass']"
-              class="icon-search"
-            />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="찾고 싶은 집주소를 입력해주세요."
-            />
-          </div>
+    searchResults.value = data.documents.map(({ place_name, road_address_name, address_name, x, y }) => ({
+      place_name,
+      address_name: road_address_name || address_name,
+      x,
+      y,
+      distance: userLocation.value.latitude && userLocation.value.longitude
+        ? calculateDistance(userLocation.value.latitude, userLocation.value.longitude, parseFloat(y), parseFloat(x))
+        : '거리 계산 불가'
+    }));
+  } catch (error) {
+    console.error("주소 검색 중 오류 발생:", error);
+    searchResults.value = [];
+  }
+};
+
+// 디바운스 적용
+const debouncedSearch = debounce(searchAddress, 500);
+
+// 주소 선택 시 부모 컴포넌트로 주소 전달
+const selectAddress = (selectedAddress) => {
+  if (selectedAddress) {
+    emit('close', selectedAddress);  // 'close' 이벤트로 selectedAddress 전달
+  } else {
+    console.error('선택된 주소가 없습니다');
+  }
+};
+
+const closeModal = () => {
+  emit('close');  // 부모에게 'close' 이벤트 전달
+};
+
+onMounted(getCurrentLocation);
+
+// 검색어가 변경될 때마다 디바운스된 검색 함수 호출
+watch(searchQuery, debouncedSearch);
+</script>
+
+<template>
+  <div class="modal-container" @click.self="closeModal">
+    <div class="modal-wrapper">
+        <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;"> 
+            <div style="width: 64px;height: 64px;background-color: black;" @click="closeModal"><-</div>
+            <h1>주소 검색</h1>
         </div>
-        <div class="tag-button-container">
-          <TagButtonGroup
-            v-model:selectedButton="selectedButton"
-            :buttons="tagOptions"
-            :multiple="false"
-          />
-        </div>
-        <BuildingInfo
-          :building="selectedBuilding"
-          v-if="selectedBuilding"
-          class="building-info"
+
+      <div class="search-container">
+        <input
+          v-model="searchQuery"
+          @keyup.enter="searchAddress"
+          type="text"
+          placeholder="검색할 주소명을 입력해주세요"
+          class="search-input"
+          aria-label="주소 검색"
         />
       </div>
-      <!-- 백엔드에서 가져온 빌딩 데이터 출력 -->
-      <div>
-        <div v-for="building in buildings" :key="building.name">
-          <p>{{ building.name }} - {{ building.address }}</p>
-        </div>
-      </div>
-    </div>
-    <div><BottomBar class="bottom-bar"></BottomBar></div>
 
-    <div v-if="showOverlay" class="overlay">
-      <div class="searchbar" @click="showOverlay = true">
-        <div class="input-icon-wrap">
-          <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
-          <input v-model="searchQuery" type="text" placeholder="찾고 싶은 집주소를 입력해주세요." />
-          <!--<input v-model="searchQuery" type="text" @keyup.enter="fetchHouses" placeholder="찾고 싶은 집주소를 입력해주세요." />-->
-        </div>
-      </div>
-      <div class="overlay-content">
-        <div class="overlay-body">
-          <BuildingList :buildings="buildings" />
-          <!--<button v-if="!isLastPage" @click="loadMore">더보기</button>-->
-        </div>
+      <div class="modal-content">
+        <AddressSearchResult
+          :addresses="searchResults"
+          @selectAddress="selectAddress"
+        />
       </div>
     </div>
 
+    <div class="button-wrapper">
+      <button class="button-default" @click="searchAddress">검색</button>
+    </div>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { axiosInstance } from "@/plugins/axiosPlugin";
-import { ref, onMounted } from "vue";
-import TopBar from "@/components/common/TopBar.vue";
-import SearchHouseBar from "@/components/home/SearchHouseBar.vue";
-import BottomBar from "@/components/common/BottomBar.vue";
-import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
-import BuildingInfo from "@/components/home/BuildingInfo.vue";
-import BuildingList from "@/components/home/BuildingList.vue";
+<style scoped lang="scss">
+.modal-wrapper{
+    display: flex;
+    flex-direction: column;
 
-const tagOptions = ref([
-  { label: '전체', value: 'ALL' },
-  { label: '교통', value: 'TRANSPORT' },
-  { label: '맛집', value: 'TASTE' },
-  { label: '생활팁', value: 'LIFE' },
-  { label: '질문', value: 'QUESTION' },
-  { label: '모임', value: 'MEETING' },
-  { label: '기타', value: 'ETC' },
-]);
+    height: 100%;
 
-const selectedButton = ref('ALL'); // 배열이 아니라 문자열로 명시
-
-
-const buildings = ref([]);
-const selectedBuilding = ref(null);
-const loading = ref(false);
-
-// const selectedType = ref('CIVIC_CENTER'); // 기본값 설정
-const selectedType = ref('');
-
-
-
-const showOverlay = ref(false);
-const searchQuery = ref(""); // 검색어 상태
-// const page = ref(0); // 페이지 번호
-// const size = ref(10); // 한 페이지에 보여줄 개수
-// const buildings = ref([]); // 검색 결과 데이터
-// const totalCount = ref(0); // 총 검색 결과 수
-
-
-// 빌딩 데이터 요청
-async function fetchBuildings(type: string, latitude: number, longitude: number, radius: number) {
-  if (loading.value) return; // 이미 요청 중이라면 무시
-
-  if (!type) {
-    console.warn("Type is not selected."); // 타입 누락 경고
-    return;
-  }
-
-  loading.value = true; // 로딩 상태 활성화
-
-  const requestData = { type, latitude, longitude, radius };
-  console.log("Sending request with data:", requestData);
-
-  try {
-    // '매물' 버튼이 선택된 경우
-    let response;
-    if (type === "HOUSE") {
-      response = await axiosInstance.get("/v1/houses", { params: requestData });
-    } else {
-      // 다른 버튼이 선택된 경우
-      response = await axiosInstance.get("/v1/building", {
-        params: requestData,
-      });
-    }
-/*
-    // API 요청 +타임아웃 설정 추가
-    const response = await axiosInstance.get(endpoint, {
-      params: requestData,
-      timeout: 5000, // 5초로 타임아웃 설정
-    });
-*/
-    
-    console.log("Response received from backend:", response.data);
-
-    // 응답 데이터 유효성 검사 및 처리
-    const responseData = response.data;
-    if (responseData?.success && responseData.message === "완료되었습니다.") {
-      buildings.value = responseData.data || [];
-      showInitialMarkers(buildings.value); // 마커 초기화
-      console.log("Buildings fetched successfully:", buildings.value);
-
-      // 마커 표시
-      addMarkers(buildings.value);
-/*
-    if (response.status === 200 && response.data.success) {
-    buildings.value = response.data.data;
-    showInitialMarkers(buildings.value); // 마커 초기화
-*/
-    } else {
-      console.error("Backend returned an error:", responseData?.message || "Unknown error");
-      buildings.value = [];
-      alert(`Error: ${responseData?.message || "데이터를 가져오는 중 문제가 발생했습니다."}`);
-    }
-  } catch (error: any) {
-    // 요청 실패 처리
-    console.error("Request failed:", error.message);
-
-    // 에러 응답 정보 확인
-    if (error.response) {
-      console.error("Response data:", error.response.data);
-      console.error("Response status:", error.response.status);
-
-      const status = error.response.status;
-      if (status === 500) {
-        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } else if (status === 400) {
-        alert("잘못된 요청입니다. 입력값을 확인해주세요.");
-      } else {
-        alert(`요청 실패: ${status} - ${error.response.statusText}`);
-      }
-    } else if (error.code === "ECONNABORTED") {
-      alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
-    } else {
-      alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
+    .modal-title{
+        height: $height-top-bar;
+        background-color: aqua;
     }
 
-    buildings.value = [];
-  } finally {
-    // 로딩 상태 해제
-    loading.value = false;
-  }
-}
+    .modal-content{
+        @include custom-padding-x($padding-default);
+        @include custom-padding-y($padding-big);
 
-function onButtonClicked(type) {
-  if (loading.value) return;
-  selectedType.value = type;
+        display: flex;
+        flex-direction: column;
 
-  const latitude = 37.566535;
-  const longitude = 126.9779692;
-  const radius = 50; // 단위: 미터
-
-  fetchBuildings(type, latitude, longitude, radius);
-}
-
-declare global {
-  interface Window {
-    kakao: {
-      maps: {
-        load: (callback: () => void) => void;
-        Map: new (container: HTMLElement, options: any) => any;
-        LatLng: new (latitude: number, longitude: number) => any;
-        Marker: new (options: { position: any }) => any;
-        MarkerClusterer: new (options: {
-          map: any;
-          averageCenter: boolean;
-          minLevel: number;
-        }) => any;
-        event: {
-          addListener: (
-            marker: any,
-            event: string,
-            callback: (e: any) => void
-          ) => void;
-        };
-      };
-    };
-  }
-}
-
-const mapContainer = ref<HTMLElement | null>(null);
-let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
-let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
-let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
-
-onMounted(() => {
-  loadKakaoMap(mapContainer.value);
-});
-
-function loadKakaoMap(container) {
-  if (!container) return;
-  const script = document.createElement("script");
-  script.src =
-    "https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer";
-  document.head.appendChild(script);
-
-  script.onload = () => {
-    window.kakao.maps.load(() => {
-      mapInstance = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.566535, 126.9779692), level: 5 });
-      clusterer = new window.kakao.maps.MarkerClusterer({ map: mapInstance, averageCenter: true, minLevel: 3 });
-      fetchBuildings(null, 37.566535, 126.9779692, 150); 
-      mapInstance = new window.kakao.maps.Map(container, {
-        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-        level: 4,
-      });
-      clusterer = new window.kakao.maps.MarkerClusterer({
-        map: mapInstance,
-        averageCenter: true,
-        minLevel: 3,
-      });
-      fetchBuildings(null, 37.566535, 126.9779692, 150);
-    });
-  };
-}
-
-const clearMarkers = (): void => {
-  clusterer.clear(); // 클러스터러에서 마커 제거
-};
-
-const addMarkers = (data: Array<any>): void => {
-  // Specify the type here
-  clearMarkers();
-
-  const markers = data.map((item: any) => {
-    // Specify the type here
-    const markerPosition = new window.kakao.maps.LatLng(
-      item.latitude,
-      item.longitude
-    );
-    const marker = new window.kakao.maps.Marker({
-      position: markerPosition,
-    });
-
-    // 마커 클릭 시, 해당 건물 정보 설정
-    window.kakao.maps.event.addListener(marker, 'click', () => {
-      if (item.radarData) {
-        // radarData가 있을 경우, 선택된 건물 정보 설정
-        selectedBuilding.value = {
-          ...item,
-          radarData: item.radarData,
-        };
-
-        // 추가적인 UI 업데이트 필요 (예: BuildingInfo 컴포넌트에 표시)
-        console.log("Selected building:", selectedBuilding.value);
-      } else {
-        // radarData가 없을 경우, 사용자에게 알림 (UI로 알리는 것이 좋음)
-        console.error("Radar data is missing for this building:", item.name);
-        alert(`No radar data available for ${item.name}`);
-      }
-    });
-
-    return marker;
-  });
-
-  // 클러스터에 마커 추가
-  clusterer.addMarkers(markers);
-};
-
-
-const filterDataByBounds = (data: Array<any>): Array<any> => {
-  // @ts-ignore: Ignoring the error for getBounds method
-  const bounds = mapInstance.getBounds();
-  const filteredData = data.filter((item: any) => {
-    // Specify the type here
-    const position = new window.kakao.maps.LatLng(
-      item.latitude,
-      item.longitude
-    );
-    return bounds.contain(position);
-  });
-  return filteredData;
-};
-
-
-
-const showInitialMarkers = (data: Array<any>): void => {
-  // Specify the type here
-  if (!isMarkersInitialized) {
-    const visibleData = filterDataByBounds(data);
-    addMarkers(visibleData);
-    isMarkersInitialized = true;
-  }
-};
-
-
-
-
-
-// 여기부터 예린 작성
-
-// API: 게시글 데이터 불러오기
-// 빌딩 데이터 타입 정의
-interface Building {
-  id: number;
-  name: string;
-  address: string;
-  latitude: number;
-  longitude: number;
-}
-
-// API 응답 타입 정의
-interface ApiResponse {
-  success: boolean;
-  message?: string;
-  data?: {
-    list: Building[];
-  };
-}
-
-const fetchBuilding = async (): Promise<void> => {
-  const queryParams = new URLSearchParams({
-    type: "HOSPITAL",
-    latitude: "126.976015",
-    longitude: "37.562912",
-    radius: "1000",
-  }).toString();
-
-  try {
-    const response = await axiosInstance.get<ApiResponse>(`/v1/building?${queryParams}`);
-
-    if (response.data.success && response.data.data) {
-      buildings.value = response.data.data.list;
-      console.log("타입별 빌딩 가져오기 성공!");
-      console.log(response.data.data.list);
-    } else {
-      console.error("API 실패:", response.data.message || "알 수 없는 오류");
+        height: 100%;
+        overflow-y: auto; /* 세로 스크롤을 추가 */
+        @include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
     }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
-    } else {
-      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
-    }
-  }
-};
-onMounted(fetchBuilding);
-
-
-</script>
-
-<style lang="scss" scoped>
-.topbar {
-  z-index: 2;
 }
-.search-house-bar {
-  position: absolute;
+.modal-container{
+    @include custom-modal;
+}
+
+.search-input{
+    @include custom-input-style;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    // @include custom-shadow-style;
+}
+
+.search-container {
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 2; /* Higher than TopBar and overlay */
-}
-.building-info {
-  position: absolute;
-  bottom: -660px;
-  z-index: 2;
-}
-.bottom-bar {
-  z-index: 2;
-  height: 60px; /* Adjust according to the actual height */
-  position: relative;
-  bottom: 0;
-  width: 100%;
-}
-.sub-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  justify-content: space-between;
-}
-.center-container {
-  position: relative;
-  flex-grow: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: visible;
-}
-.searchbar {
-  display: flex;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  padding: 0px;
-  z-index: 3; /* Ensure input-icon-wrap is above overlay */
-  box-sizing: border-box;
-  cursor: pointer;
-}
-.input-icon-wrap {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 48px;
-  border-radius: 13px;
-  background-color: white;
-  padding-right: $padding-default;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  position: relative; /* Ensures it's positioned correctly */
-  z-index: 5; /* Higher than overlay */
-}
-.icon-search {
-  width: 16px;
-  height: 16px;
-  @include custom-margin-x;
-  color: $input-placeholder-color;
-}
-input {
-  width: 100%;
-  appearance: none;
-  border: none;
-  outline: none;
-  background: transparent;
-  @include custom-text;
-}
-.map-container {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  position: relative;
   z-index: 1;
-  pointer-events: auto;
-}
-.tag-button-container {
-  position: absolute;
-  top: 35px;  // 검색창 바로 아래에 위치
-  width: 100%;
-  z-index: 3;  // 지도보다 높게 설정
-  pointer-events: auto;
-}
-.overlay {
-  position: absolute;
-  top: 60px; /* Position below input-icon-wrap */
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  display: flex;
-  align-items: flex-start;
-  z-index: 1;
-}
-.overlay-content {
   background: white;
-  padding: 5px;
-  border-radius: 5px;
-  width: 100%;
-  z-index: 1;
+  //width: clac(100% -20px);
+  // margin: 0 auto;
+  padding: 20px 55px 0 20px;
 }
 
-/* 필요 시 특정 요소만 상호작용 가능하게 설정 */
-.searchbar input,
-.icon-search {
-  pointer-events: auto; /* 검색 입력 필드 및 아이콘은 상호작용 가능하게 설정 */
+.button-wrapper{
+    width: 100%;
+    position: absolute;
+    bottom: $padding-default;
+    display: flex;
+    flex-direction: row;
+}
+
+.button-default{
+  @include custom-button-style($bg-color: $secondary-color-default, $font-color: white);
+  @include custom-margin-x;
 }
 </style>

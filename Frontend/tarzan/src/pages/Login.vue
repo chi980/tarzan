@@ -14,8 +14,7 @@
         <img
           :src="loginDescImage"
           alt="loginDesc"
-          id="recommended-login-desc"
-        />
+          id="recommended-login-desc" />
       </div>
       <div class="custom-button-item">
         <div class="custom-button-google" @click="clickGoogleBtn">
@@ -28,7 +27,8 @@
         <div class="custom-button-naver" @click="clickNaverBtn">
           <img :src="naverImage" alt="naverLogo" class="button-item-image" />
           <p class="button-item-content">네이버로 계속하기</p>
-        </div>"
+        </div>
+        "
       </div>
     </div>
 
@@ -92,14 +92,14 @@ const checkBack = async () => {
   }
 }
 // logo
-#logo_desc_text{
+#logo_desc_text {
   font-family: "Ownglyph_ParkDaHyun", sans-serif;
   font-size: 13px;
   color: #848484;
   margin-bottom: 10px;
 }
 
-#logo_text{
+#logo_text {
   font-family: "Ownglyph_ParkDaHyun", sans-serif;
   font-size: 48px;
   color: #000000;
@@ -110,11 +110,10 @@ const checkBack = async () => {
   @include custom-none-select-basic;
   height: 180px;
   width: 180px;
-  margin-bottom: 70px;
+  margin-bottom: 40px;
 }
 
 .custom-button-group {
-  
   display: flex;
   padding: 0;
   width: 100%;
@@ -156,7 +155,11 @@ const checkBack = async () => {
 
 .custom-button-naver {
   color: white;
-  @include custom-button-style($bg-color: $naver-color, $height: 56px, $font-color: white);
+  @include custom-button-style(
+    $bg-color: $naver-color,
+    $height: 56px,
+    $font-color: white
+  );
 }
 /**https://w-world.tistory.com/232 참고해보자 */
 </style>

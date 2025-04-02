@@ -5,7 +5,7 @@ import AddressSearchResult from './AddressSearchResult.vue';
 import { debounce } from 'lodash'; // lodash의 debounce 사용
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'selectAddress']); 
 
 const searchQuery = ref("");
 const searchResults = ref([]);
@@ -72,9 +72,17 @@ const searchAddress = async () => {
 // 디바운스 적용
 const debouncedSearch = debounce(searchAddress, 500);
 
-const selectAddress = (address: any) => {
-  console.log("선택된 주소:", address);
-  emit('close');  // 주소를 선택한 후 모달을 닫기
+// 주소 선택 시 부모 컴포넌트로 주소 전달
+const selectAddress = (selectedAddress) => {
+  if (selectedAddress) {
+    emit('close', selectedAddress);  // 'close' 이벤트로 selectedAddress 전달
+  } else {
+    console.error('선택된 주소가 없습니다');
+  }
+};
+
+const closeModal = () => {
+  emit('close');  // 부모에게 'close' 이벤트 전달
 };
 
 onMounted(getCurrentLocation);
