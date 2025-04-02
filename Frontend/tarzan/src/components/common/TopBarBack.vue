@@ -4,28 +4,32 @@
       id="back-button"
       src="@/assets/icons/Filter/back-icon.png"
       alt="back-button"
-      @click="goBack"
+      @click="onBackClick"
     />
     <div class="title">{{ title }}</div>
     <slot></slot>
   </div>
 </template>
 
-<script>
-export default {
-  name: "Topbar",
-  props: {
-    title: {
-      type: String,
-      required: true,
-    },
+<script setup>
+import { defineProps, defineEmits } from 'vue';
+
+const emit = defineEmits(['back']);
+
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
   },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-  },
-};
+});
+
+function onBackClick() {
+  emit('back');
+}
+
+// function goBack() {
+//   router.go(-1);
+// }
 </script>
 
 <style lang="scss" scoped>
