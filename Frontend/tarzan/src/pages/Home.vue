@@ -31,26 +31,9 @@
             class="info-content"
             ref="infoContent"
             :style="{
-              height: contentHeight + 'px',
+              height: contentHeight,
             }">
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
-            <p>tarzan</p>
+            <p>{{ buildingContent }}</p>
           </div>
         </div>
       </div>
@@ -79,6 +62,7 @@ import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import AddressSearch from "@/components/common/AddressSearch.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
+import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
 const address = ref<string | null>(null);
@@ -115,17 +99,17 @@ watch(selectedButton, (newValue) => {
   console.log("선택된 값 변경됨:", newValue);
   if (newValue == null) return;
 
+  const center = mapInstance.getCenter();
+  const latitude = center.getLat(); // 예시 위도
+  const longitude = center.getLng(); // 예시 경도
+  console.log("현재 지도 중심 좌표:", latitude, longitude);
+  const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
+  console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
+
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
-    console.log("매물 버튼 클릭됨");
   } else {
-    // 아래는 37.566535, 126.9779692 좌표를 기준으로 1000m 반경의 빌딩 데이터 요청
-    // 다른 버튼 클릭 시
-    const latitude = 37.566535; // 예시 위도
-    const longitude = 126.9779692; // 예시 경도
-    console.log("현재 지도 중심 좌표:", latitude, longitude);
-    const radius = 1000; // 단위: 미터
-    // fetchBuilding(newValue, latitude, longitude, radius);
+    fetchBuildings(newValue, latitude, longitude, radius);
   }
 });
 
@@ -184,11 +168,11 @@ const fetchBuildings = async (
     );
 
     if (response.data.success && response.data.data) {
-      buildings.value = response.data.data.list;
+      buildings.value = response.data.data;
       console.log("타입별 빌딩 가져오기 성공!");
       console.log(response.data.data.length);
 
-      addMarkers(buildings.value); // 마커 추가
+      addMarkers(mapInstance, buildings.value); // 마커 추가
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
@@ -200,11 +184,11 @@ const fetchBuildings = async (
     }
   } catch (error: unknown) {
     // 요청 실패 처리
-    if (error instanceof Error) {
-      console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
-    } else {
-      console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
-    }
+    // if (error instanceof Error) {
+    //   console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
+    // } else {
+    //   console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
+    // }
 
     // 특정 오류 처리 (500, Illegal Argument)
     if (error instanceof AxiosError && error.response) {
@@ -236,9 +220,12 @@ const fetchBuildings = async (
 /** building, house info overlay */
 const showInfoOverlay = () => {};
 
+const buildingContent = ref("");
+
 const minHeight = 0; // 최소 높이
 const maxHeight = ref(445); // 최대 높이 (기본값 445)
-const contentHeight = ref("auto"); // 초기값은 auto
+// const contentHeight = ref("auto"); // 초기값은 auto
+const contentHeight = ref(0); // 초기값은 auto
 const startY = ref(0);
 const startHeight = ref(0);
 // const isDraggable = ref(false);
@@ -303,112 +290,64 @@ onUnmounted(() => {
 });
 
 /** kakao map functions */
-const mapContainer = ref<HTMLElement | null>(null);
-let mapInstance: kakao.maps.Map; // Kakao Map의 타입으로 변경
-let clusterer: kakao.maps.MarkerClusterer; // Kakao Clusterer의 타입으로 변경
-let isMarkersInitialized = false; // 마커가 이미 초기화되었는지 확인하는 변수
+const mapContainer = ref<HTMLDivElement | null>(null); // 지도를 표시할 div
+let mapInstance: any = null;
 
+// `onMounted`에서 카카오 맵 초기화
 onMounted(() => {
   loadKakaoMap(mapContainer.value);
 });
 
-function loadKakaoMap(container) {
-  if (!container) return;
+const loadKakaoMap = (container) => {
   const script = document.createElement("script");
-  script.src =
-    "https://dapi.kakao.com/v2/maps/sdk.js?appkey=6fffd0278e1410b6884d13552414ecf2&autoload=false&libraries=clusterer";
+  script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${
+    import.meta.env.VITE_KAKAO_MAP_KEY
+  }&autoload=false`;
   document.head.appendChild(script);
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      mapInstance = new window.kakao.maps.Map(container, {
-        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-        level: 5,
-      });
-      clusterer = new window.kakao.maps.MarkerClusterer({
-        map: mapInstance,
-        averageCenter: true,
-        minLevel: 3,
-      });
-      fetchBuildings(null, 37.566535, 126.9779692, 150);
-      mapInstance = new window.kakao.maps.Map(container, {
-        center: new window.kakao.maps.LatLng(37.566535, 126.9779692),
-        level: 4,
-      });
-      clusterer = new window.kakao.maps.MarkerClusterer({
-        map: mapInstance,
-        averageCenter: true,
-        minLevel: 3,
-      });
-      fetchBuildings(null, 37.566535, 126.9779692, 150);
+      const options = {
+        center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
+        level: 3, // 지도 확대 레벨
+        maxLevel: 5, // 지도 축소 제한 레벨
+      };
+
+      mapInstance = new window.kakao.maps.Map(container, options); // 지도 생성
     });
   };
-}
-
-const clearMarkers = (): void => {
-  clusterer.clear(); // 클러스터러에서 마커 제거
 };
 
-const addMarkers = (data: Array<any>): void => {
-  // Specify the type here
-  clearMarkers();
-
-  const markers = data.map((item: any) => {
-    // Specify the type here
-    const markerPosition = new window.kakao.maps.LatLng(
-      item.latitude,
-      item.longitude
-    );
-    const marker = new window.kakao.maps.Marker({
-      position: markerPosition,
-    });
-
-    // 마커 클릭 시, 해당 건물 정보 설정
-    window.kakao.maps.event.addListener(marker, "click", () => {
-      if (item.radarData) {
-        // radarData가 있을 경우, 선택된 건물 정보 설정
-        selectedBuilding.value = {
-          ...item,
-          radarData: item.radarData,
-        };
-
-        // 추가적인 UI 업데이트 필요 (예: BuildingInfo 컴포넌트에 표시)
-        console.log("Selected building:", selectedBuilding.value);
-      } else {
-        // radarData가 없을 경우, 사용자에게 알림 (UI로 알리는 것이 좋음)
-        console.error("Radar data is missing for this building:", item.name);
-        alert(`No radar data available for ${item.name}`);
-      }
-    });
-
-    return marker;
-  });
-
-  // 클러스터에 마커 추가
-  clusterer.addMarkers(markers);
-};
-
-const filterDataByBounds = (data: Array<any>): Array<any> => {
-  // @ts-ignore: Ignoring the error for getBounds method
-  const bounds = mapInstance.getBounds();
-  const filteredData = data.filter((item: any) => {
-    // Specify the type here
-    const position = new window.kakao.maps.LatLng(
-      item.latitude,
-      item.longitude
-    );
-    return bounds.contain(position);
-  });
-  return filteredData;
-};
-
-const showInitialMarkers = (data: Array<any>): void => {
-  // Specify the type here
-  if (!isMarkersInitialized) {
-    const visibleData = filterDataByBounds(data);
-    addMarkers(visibleData);
-    isMarkersInitialized = true;
+// 버튼 클릭 시 마커 추가
+const addMarkers = (mapInstance, buildings) => {
+  if (!mapInstance) {
+    console.error("지도 객체가 아직 초기화되지 않았습니다.");
+    return;
   }
+  console.log("순회합니다.");
+  console.log(buildings);
+  // buildings 배열을 순회하며 마커 추가
+  buildings.forEach((building) => {
+    console.log(building);
+    const markerPosition = new window.kakao.maps.LatLng(
+      33.450696253381196,
+      126.57066123419618
+    ); // 마커의 위치
+    console.log(markerPosition);
+    // 마커 객체 생성
+    const marker = new window.kakao.maps.Marker({
+      position: markerPosition, // 마커 위치
+      map: mapInstance, // 마커를 표시할 지도
+    });
+    console.log(marker);
+    console.log("마커 객체 생성 완료");
+    // 마커 클릭 시 이벤트 추가 (선택 사항)
+    window.kakao.maps.event.addListener(marker, "click", () => {
+      console.log("marker click");
+      buildingContent.value = building;
+      contentHeight = "fit-content";
+    });
+  });
 };
 </script>
 

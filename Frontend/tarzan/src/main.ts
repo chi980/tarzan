@@ -16,5 +16,7 @@ const app = createApp(App);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(router);
 app.use(createPinia()); // createPinia를 호출하여 Pinia를 초기화합니다.
-app.use(axiosInstance);
+// app.use(axiosInstance);
+
+app.config.globalProperties.$axios = axiosInstance;
 app.mount("#app");
