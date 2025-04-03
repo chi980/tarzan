@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <TopBarBack title="공인중개사 확인" />
+    <TopBarBack title="공인중개사 확인" @back="goSomewhere" />
     <div class="center-container">
       <form class="input-form">
         <!-- 컴포넌트 화 하기 -->
@@ -76,11 +76,13 @@
 
 <script setup lang="ts">
 import { ref, Ref } from "vue";
-
+import { useRouter } from 'vue-router';
 import { Option } from "@/data/options";
 // import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import TopBarBack from "../common/TopBarBack.vue";
+
+const router = useRouter();
 
 const seoulDistrictOptions: Option[] = [
   { idx: 0, name: "서울시 종로구", value: "JONGNO" },
@@ -118,6 +120,10 @@ const searchOption: Option[] = [
 ];
 
 const resultCnt: Ref<number> = ref(0);
+
+function goSomewhere() {
+  router.push({ name: 'Home' }); // 또는 router.go(-1) 도 가능
+}
 </script>
 
 <style lang="scss" scoped>

@@ -17,10 +17,10 @@
 
       <div class="tag-button-container">
 
-        <TagButtonGroup v-model:selectedButton="selectedButton" :buttons="tagOptions" :multiple="false">
-          <template v-slot:default="{ button }">
-            <span>{{ button.label }}</span>
-          </template>
+        <TagButtonGroup 
+          v-model:selectedButton="selectedButton" 
+          :buttons="tagOptions" 
+          :multiple="false">
         </TagButtonGroup>
       </div>
 
@@ -188,7 +188,9 @@ const goToPostCreate = () => {
   }
 
   .tag-button-container {
-    margin: 8px;
+    width: 100%;
+    padding: 8px;
+    background-color: yellowgreen;
   }
 
   .result-bar-container {
