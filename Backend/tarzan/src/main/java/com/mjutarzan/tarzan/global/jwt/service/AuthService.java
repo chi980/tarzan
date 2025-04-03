@@ -8,6 +8,7 @@ import com.mjutarzan.tarzan.global.jwt.api.response.ReIssueTokensResponseDto;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,7 @@ public class AuthService {
         jwtTokenProvider.removeRefreshToken(email);
     }
 
-    public Cookie reissueAccessToken(String refreshToken){
+    public ResponseCookie reissueAccessToken(String refreshToken){
         String email = jwtTokenProvider.getEmailFromRefreshToken(refreshToken);
 
         // Refresh Token 검증
@@ -50,19 +51,19 @@ public class AuthService {
         }
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(email);
-        Cookie newAccessTokenCookie = jwtTokenProvider.generateAccessTokenCookie(newAccessToken);
+        ResponseCookie newAccessTokenCookie = jwtTokenProvider.generateAccessResponseCookie(newAccessToken);
 
         return newAccessTokenCookie;
     }
 
-    public Cookie reissueRefreshToken(String refreshToken) {
+    public ResponseCookie reissueRefreshToken(String refreshToken) {
         String email = jwtTokenProvider.getEmailFromRefreshToken(refreshToken);
 
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(email);
         jwtTokenProvider.removeRefreshToken(email);
         jwtTokenProvider.saveRefreshToken(email, newRefreshToken);
 
-        Cookie refreshTokenCookie = jwtTokenProvider.generateRefreshTokenCookie(newRefreshToken);
+        ResponseCookie refreshTokenCookie = jwtTokenProvider.generateRefreshResponseCookie(newRefreshToken);
 
         return refreshTokenCookie;
     }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ public class TokenApi {
     @PostMapping("/refresh")
     public ResponseEntity<?> reissueTokens(@CookieValue(value = REFRESH_TOKEN_SUBJECT, required = true) String refreshToken) {
 
-        Cookie accessTokenCookie = authService.reissueAccessToken(refreshToken);
-        Cookie refreshTokenCookie = authService.reissueRefreshToken(refreshToken);
+        ResponseCookie accessTokenCookie = authService.reissueAccessToken(refreshToken);
+        ResponseCookie refreshTokenCookie = authService.reissueRefreshToken(refreshToken);
 
         log.info("access token cooke: {}", accessTokenCookie.toString());
         log.info("refresh token cooke: {}", refreshTokenCookie.toString());

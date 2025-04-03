@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
@@ -102,6 +103,25 @@ public class JwtTokenProvider {
         cookie.setSecure(cookieSecure);
         cookie.setPath(cookiePath);
         cookie.setMaxAge(cookieAge);
+        return cookie;
+    }
+
+    public ResponseCookie generateAccessResponseCookie(String accessToken){
+        return generateResponseCookie(accessToken, ACCESS_TOKEN_SUBJECT, "/", ACCESS_EXPIRATION);
+    }
+
+    public ResponseCookie generateRefreshResponseCookie(String refreshToken){
+        return generateResponseCookie(refreshToken, REFRESH_TOKEN_SUBJECT, "/api/auth/refresh", REFRESH_EXPIRATION);
+
+    }
+
+    private ResponseCookie generateResponseCookie(String cookieValue, String cookieName, String cookiePath, Integer cookieAge){
+        ResponseCookie cookie = ResponseCookie.from(cookieName, cookieValue)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path(cookiePath)
+                .maxAge(cookieAge) // 1시간
+                .build();
         return cookie;
     }
 
