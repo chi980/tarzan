@@ -96,7 +96,7 @@ public class JwtTokenProvider {
         return generateCookie(refreshToken, REFRESH_TOKEN_SUBJECT, "/api/auth/refresh", REFRESH_EXPIRATION);
     }
 
-    public Cookie generateCookie(String cookieValue, String cookieName, String cookiePath, Integer cookieAge){
+    private Cookie generateCookie(String cookieValue, String cookieName, String cookiePath, Integer cookieAge){
         Cookie cookie = new Cookie(cookieName, cookieValue);
         cookie.setHttpOnly(true);
         cookie.setSecure(cookieSecure);
@@ -108,13 +108,21 @@ public class JwtTokenProvider {
     /**
      * Jwt에서 사용자명(이메일) 추출
      */
-    public String getEmail(String accessToken) {
-        return JWT.require(Algorithm.HMAC512(SECRET_KEY))
+    private String getEmail(String token, String key) {
+        return JWT.require(Algorithm.HMAC512(key))
                 .build()
-                .verify(accessToken)
+                .verify(token)
                 .getSubject()
                 .toString();
 
+    }
+
+    public String getEmailFromAccessToken(String accessToken){
+        return this.getEmail(accessToken, SECRET_KEY);
+    }
+
+    public String getEmailFromRefreshToken(String refreshToken){
+        return this.getEmail(refreshToken, REFRESH_SECRET_KEY);
     }
 
     /**

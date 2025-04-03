@@ -25,17 +25,15 @@ public class TokenApi {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = REFRESH_TOKEN_SUBJECT, required = false) String refreshToken) {
-        log.info("email: {}", requestDto.getEmail());
-        log.info("refresh token: {}", refreshToken);
 
-        ReIssueTokensResponseDto response = authService.reissueAccessToken(requestDto, refreshToken);
-        Cookie refreshTokenCookie = authService.reissueRefreshToken(requestDto);
+        Cookie accessTokenCookie = authService.reissueAccessToken(refreshToken);
+        Cookie refreshTokenCookie = authService.reissueRefreshToken(refreshToken);
 
         return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())  // ✅ 쿠키 설정
                 .body(BaseResponseDto.builder()
                     .success(true)
-                    .data(response)
                     .build()
                 );
     }
@@ -52,16 +50,5 @@ public class TokenApi {
                 .message("완료되었습니다.")
                 .build());
     }
-/*    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/auth/refresh")
-                .maxAge(0)
-                .build();
 
-        response.addHeader("Set-Cookie", deleteCookie.toString());
-        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
-    }*/
 }

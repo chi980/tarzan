@@ -41,8 +41,23 @@ public class AuthService {
         jwtTokenProvider.removeRefreshToken(email);
     }
 
-    public Cookie reissueRefreshToken(ReIssueTokensRequestDto requestDto) {
-        String email = requestDto.getEmail();
+    public Cookie reissueAccessToken(String refreshToken){
+        String email = jwtTokenProvider.getEmailFromRefreshToken(refreshToken);
+
+        // Refresh Token 검증
+        if (!jwtTokenProvider.validateRefreshToken(email, refreshToken)) {
+            throw new UnauthorizedException("Invalid Refresh Token");
+        }
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(email);
+        Cookie newAccessTokenCookie = jwtTokenProvider.generateAccessTokenCookie(newAccessToken);
+
+        return newAccessTokenCookie;
+    }
+
+    public Cookie reissueRefreshToken(String refreshToken) {
+        String email = jwtTokenProvider.getEmailFromRefreshToken(refreshToken);
+
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(email);
         jwtTokenProvider.removeRefreshToken(email);
         jwtTokenProvider.saveRefreshToken(email, newRefreshToken);

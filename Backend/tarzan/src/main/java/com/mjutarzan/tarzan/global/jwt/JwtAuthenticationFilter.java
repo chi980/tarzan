@@ -28,7 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
 
-    private static final Set<String> NO_CHECK_URLS = Set.of("/login",
+    private static final Set<String> NO_CHECK_URLS = Set.of(
+            "/favicon.ico",
+            "/login",
             "/oauth2/authorization", "/api/auth",
             "/api/test", "/api/data",
             "/api/fraud", "/api/v1/building", "/api/v1/house", "/api/v1/reviews");

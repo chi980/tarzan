@@ -47,11 +47,11 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
 
             String redirectUrl = "/";
             // GUEST 여부에 따라 추가 정보 전달
-            if (oAuth2User.getRole() != Role.GUEST) {
+            if (oAuth2User.getRole() == Role.GUEST) {
                 redirectUrl = "/signup";
             }
 
-            response.sendRedirect(redirectUrl);
+            response.sendRedirect(frontBaseUrl + redirectUrl);
 
         } catch (Exception e) {
             log.error("onAuthenticationSuccess: 로그인 실패!", e);
