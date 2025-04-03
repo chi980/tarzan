@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -45,13 +47,16 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
             log.info("refreshToken: {}", refreshToken);
             log.info("accessToken is Exipred at {}", jwtTokenProvider.getExpirationDateFromToken(refreshToken, true));
 
-            String redirectUrl = "/";
-            // GUEST 여부에 따라 추가 정보 전달
-            if (oAuth2User.getRole() == Role.GUEST) {
-                redirectUrl = "/signup";
-            }
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontBaseUrl)
+                    .path("/login-processing")
+                    .queryParam("email", oAuth2User.getEmail())
+                    .queryParam("role", oAuth2User.getRole())
+                    .queryParamIfPresent("gu", Optional.ofNullable(oAuth2User.getGu()))
+                    .queryParamIfPresent("nickname", Optional.ofNullable(oAuth2User.getNickname()))
+                    .build()
+                    .toUriString();
 
-            response.sendRedirect(frontBaseUrl + redirectUrl);
+            response.sendRedirect(redirectUrl);
 
         } catch (Exception e) {
             log.error("onAuthenticationSuccess: 로그인 실패!", e);

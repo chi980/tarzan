@@ -3,6 +3,7 @@ package com.mjutarzan.tarzan.domain.user.service;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.RegisterUserResponseDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.response.SimpleUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
@@ -61,6 +62,16 @@ public class UserServiceImpl implements UserService{
     public UserResponseDto getUser(CustomUserDetails loginedUserDto) {
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         return loginedUser.getInstance();
+    }
+
+    @Override
+    public SimpleUserResponseDto getSimpleUser(CustomUserDetails userDto) {
+        return SimpleUserResponseDto.builder()
+                .email(userDto.getEmail())
+                .nickname(userDto.getNickname())
+                .gu(userDto.getGu())
+                .role(userDto.getRole())
+                .build();
     }
 
 }

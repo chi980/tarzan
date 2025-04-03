@@ -9,6 +9,7 @@ import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.RegisterUserResponseDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.response.SimpleUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.service.UserService;
@@ -31,6 +32,18 @@ public class UserApi {
     private final UserService userService;
     private final BoardService boardService;
     private final CommentService commentService;
+
+    @GetMapping("/user/simple")
+    public ResponseEntity<?> getSimpleUser(@AuthenticationPrincipal CustomUserDetails userDto){
+        SimpleUserResponseDto responseDto= userService.getSimpleUser(userDto);
+        return ResponseEntity.ok().body(
+                BaseResponseDto.builder()
+                        .success(true)
+                        .message("완료되었습니다.")
+                        .data(responseDto)
+                        .build()
+        );
+    }
 
     @GetMapping("/user")
     public ResponseEntity<?> getUser( @AuthenticationPrincipal CustomUserDetails userDto){
