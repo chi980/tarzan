@@ -152,17 +152,14 @@ public class JwtTokenProvider {
      *  헤더에서 토큰 추출
      */
     public Optional<String> resolveToken(HttpServletRequest request) {
-        Optional<String> tokenFromCookie = Optional.ofNullable(request.getCookies()).stream().flatMap(Arrays::stream)
+        if (request.getCookies() == null) {
+            return Optional.empty(); // 쿠키가 없으면 Optional.empty() 반환
+        }
+
+        return Arrays.stream(request.getCookies())
                 .filter(cookie -> ACCESS_TOKEN_SUBJECT.equals(cookie.getName()))
                 .map(Cookie::getValue)
                 .findFirst();
-        log.info("cookie에서 가져온 token: {}", tokenFromCookie);
-
-
-        log.info("resolve 하기전 token: {}", request.getHeader(ACCESS_HEADER));
-        return Optional.ofNullable(request.getHeader(ACCESS_HEADER))
-                .filter(token -> token.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
     // Refresh Token 삭제 (로그아웃 시)

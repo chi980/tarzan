@@ -8,6 +8,7 @@ import com.mjutarzan.tarzan.global.jwt.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,10 @@ public class TokenApi {
 
     private final AuthService authService;
 
+    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
+
     @PostMapping("/refresh")
-    public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = "RefreshToken", required = false) String refreshToken) {
+    public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = REFRESH_TOKEN_SUBJECT, required = false) String refreshToken) {
         log.info("email: {}", requestDto.getEmail());
         log.info("refresh token: {}", refreshToken);
 
