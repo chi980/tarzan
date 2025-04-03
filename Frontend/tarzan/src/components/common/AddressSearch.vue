@@ -4,7 +4,7 @@ import axios from 'axios';
 import AddressSearchResult from './AddressSearchResult.vue';
 import { debounce } from 'lodash'; // lodash의 debounce 사용
 
-const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
 const emit = defineEmits(['close', 'selectAddress']); 
 
 const searchQuery = ref("");
@@ -65,8 +65,14 @@ const searchAddress = async () => {
     }));
   } catch (error) {
     console.error("주소 검색 중 오류 발생:", error);
+    if (error.response) {
+      console.error("응답 데이터:", error.response.data);
+      console.error("응답 상태 코드:", error.response.status);
+      console.error("응답 헤더:", error.response.headers);
+    }
     searchResults.value = [];
   }
+
 };
 
 // 디바운스 적용
