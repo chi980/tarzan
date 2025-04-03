@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { defineProps } from 'vue';
-const props = defineProps({ addresses: Array });
+import { ref, defineProps, defineEmits } from 'vue';
 import locationMarkImg from "@/assets/icons/location_mark.png"
+
+const props = defineProps({ addresses: Array });
+const emit = defineEmits(['selectAddress']);
+
+const selectAddress = (address: any) => {
+  emit('selectAddress', address); // 부모 컴포넌트로 선택된 주소 전달
+};
+
+const onClick = (address) => {
+  selectAddress(address);  // 클릭된 address를 selectAddress로 전달
+};
 </script>
 
 
 <template>
-  <div v-for="(address, index) in addresses" :key="index" class="location-wrapper">
+  <div v-for="(address, index) in addresses" :key="index" class="location-wrapper" @click="onClick(address)">
     <div class="location-degree">
       <img :src="locationMarkImg" alt="이미지">
       <p class="distance">{{ address.distance }}</p>
@@ -34,7 +43,6 @@ import locationMarkImg from "@/assets/icons/location_mark.png"
 
 
 <style scoped lang="scss">
-
 .location-wrapper{
     @include custom-text;
     @include custom-padding-y($padding-default);
@@ -49,16 +57,20 @@ import locationMarkImg from "@/assets/icons/location_mark.png"
         img{
             @include custom-icon-style(24px);
         }
-        p{
-            
-  font-family: "Ownglyph_ParkDaHyun", sans-serif;
-  font-size: 12px;
-  color: #969696;
+        p.distance{
+            font-family: "Ownglyph_ParkDaHyun", sans-serif;
+            font-size: 12px;
+            color: #969696;
+            min-width: 50px; /* 일정 너비 설정 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis; /* 너무 긴 텍스트는 '...'으로 표시 */
         }
     }
 
     .location-address-wrapper{
-        flex:1;
+        flex: 1;
         display: flex;
         flex-direction: column;
         gap: $padding-small;
@@ -69,12 +81,10 @@ import locationMarkImg from "@/assets/icons/location_mark.png"
         .location-address-name{
             @include custom-text($font-size: 14px);
             span{
-        @include custom-text($font-size: 12px, $font-color: $text-color-light);
-        padding-left: $padding-small;
+                @include custom-text($font-size: 12px, $font-color: $text-color-light);
+                padding-left: $padding-small;
             }
         }
     }
-
 }
-
 </style>
