@@ -21,7 +21,7 @@ public class TokenApi {
     private final AuthService authService;
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = "X-refresh-token", required = false) String refreshToken) {
+    public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = "RefreshToken", required = false) String refreshToken) {
         log.info("email: {}", requestDto.getEmail());
         log.info("refresh token: {}", refreshToken);
 

@@ -31,25 +31,24 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
             String accessToken = jwtTokenProvider.generateAccessToken(oAuth2User.getEmail());
+            Cookie accessTokenCookie = jwtTokenProvider.generateAccessTokenCookie(accessToken);
             String refreshToken = jwtTokenProvider.generateRefreshToken(oAuth2User.getEmail());
             Cookie refreshTokenCookie = jwtTokenProvider.generateRefreshTokenCookie(refreshToken);
+
+            response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
 
+            log.info("accessTokenCookie: {}", accessTokenCookie);
             log.info("onAuthenticationSuccess: 로그인 성공");
             log.info("accessToken: {}", accessToken);
             log.info("accessToken is Exipred at {}", jwtTokenProvider.getExpirationDateFromToken(accessToken, false));
             log.info("refreshToken: {}", refreshToken);
             log.info("accessToken is Exipred at {}", jwtTokenProvider.getExpirationDateFromToken(refreshToken, true));
 
-            // 프론트엔드로 Access Token만 전달 (Refresh Token은 쿠키에 저장되므로 URL에서 제거)
-            String redirectUrl = frontBaseUrl + "/login-processing" +
-                    "?access_token=" + accessToken +
-                    "&email=" + oAuth2User.getEmail() +
-                    "&role=" + oAuth2User.getRole();
-
+            String redirectUrl = "/";
             // GUEST 여부에 따라 추가 정보 전달
             if (oAuth2User.getRole() != Role.GUEST) {
-                redirectUrl += "&gu=" + oAuth2User.getGu() + "&nickname=" + oAuth2User.getNickname();
+                redirectUrl = "/signup";
             }
 
             response.sendRedirect(redirectUrl);
