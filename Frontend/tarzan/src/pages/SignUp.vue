@@ -106,17 +106,12 @@
     </form>
 
     <!-- 주소 검색 팝업 -->
-    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
-
-    <div
-      style="
-        width: 100%;
-        position: absolute;
-        bottom: 16px;
-        display: flex;
-        flex-direction: row;
-      ">
-      <div class="button-default" @click="submitForm">회원가입하기</div>
+    <AddressSearch
+      v-if="isAddressSearchOpen"
+      @close="setAddress" />
+    
+    <div style="width: 100%;position: absolute; bottom: 16px;display: flex; flex-direction: row;">
+      <div class="button-default" @click="submitForm">제출하기</div>
     </div>
   </div>
 </template>
@@ -229,6 +224,19 @@ const closeAddressSearch = (selectedAddress: string) => {
   address.value = selectedAddress;
   isAddressSearchOpen.value = false;
 };
+
+
+// 부모로부터 전달받은 주소를 저장하는 메소드
+const setAddress = (selectedAddress) => {
+  console.log(selectedAddress);  // selectedAddress가 무엇인지 확인
+  isAddressSearchOpen.value = false;  // 모달 닫기
+  if (selectedAddress && selectedAddress.place_name) {
+    address.value = `${selectedAddress.place_name} - ${selectedAddress.road_address_name || selectedAddress.address_name}`;
+  } else {
+    console.error('선택된 주소에 place_name이 없습니다:', selectedAddress);
+  }
+};
+
 
 /** submit form */
 const submitForm = async () => {
