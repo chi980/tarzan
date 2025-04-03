@@ -4,16 +4,17 @@
 
 <script setup>
 import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/authStore"; // authStore import
 import { Role } from "@/data/userRole"; // Role enum import
 
 const router = useRouter();
-
+const route = useRoute(); // ✅ 현재 경로 정보 가져오기
+const authStore = useAuthStore();
 onMounted(() => {
   try {
-    const { gu, email, nickname, role } = route.query;
-
+    const { gu, email, nickname, role } = route.query || {};
+    alert(route.query);
     if (!email) {
       console.error("로그인 정보가 없습니다.");
       router.replace("/login");
@@ -22,6 +23,7 @@ onMounted(() => {
 
     // 로그인 성공 시 데이터 저장
     authStore.setUser({ email, gu, nickname, role });
+    alert(authStore.getUser);
 
     // 역할에 따른 페이지 이동
     if (role === Role.USER) {

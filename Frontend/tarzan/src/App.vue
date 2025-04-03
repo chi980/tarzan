@@ -29,9 +29,8 @@ export default {
     };
   },
   mounted() {
-    if (this.userStore.userLoaded) return; // ✅ 이미 불러왔다면 실행 X
-
-    this.fetchUserInfo();
+    // if (this.userStore.userLoaded) return; // ✅ 이미 불러왔다면 실행 X
+    // this.fetchUserInfo();
   },
   methods: {
     async fetchUserInfo() {
