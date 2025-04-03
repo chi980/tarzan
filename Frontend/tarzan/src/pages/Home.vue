@@ -217,7 +217,14 @@ const fetchBuildings = async (
 };
 
 /** building, house info overlay */
-const showInfoOverlay = () => {};
+const showInfoOverlay = async () => {
+  try {
+    const response = await axiosInstance.get(`/check`);
+    console.log(response);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
 const buildingContent = ref("");
 

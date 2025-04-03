@@ -12,24 +12,16 @@ const router = useRouter();
 
 onMounted(() => {
   try {
-    // 현재 URL에서 쿼리 파라미터 추출
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get("access_token");
-    const user = Object.fromEntries(
-      [...urlParams].filter(([key]) => key !== "access_token")
-    );
+    const { gu, email, nickname, role } = route.query;
 
-    console.log(accessToken);
-    console.log(user);
-    // 필수 값 체크
-    if (!accessToken || !user.role) throw new Error("응답이 올바르지 않음");
-
-    const role = user.role;
+    if (!email) {
+      console.error("로그인 정보가 없습니다.");
+      router.replace("/login");
+      return;
+    }
 
     // 로그인 성공 시 데이터 저장
-    const authStore = useAuthStore();
-    authStore.setAccessToken(accessToken);
-    authStore.setUser(user);
+    authStore.setUser({ email, gu, nickname, role });
 
     // 역할에 따른 페이지 이동
     if (role === Role.USER) {
@@ -42,7 +34,7 @@ onMounted(() => {
   } catch (error) {
     console.error("로그인 중 오류 발생: ", error);
     alert(error.message || "로그인 실패!");
-    router.push({ name: "Login" });
+    router.replace("/login");
   }
 });
 </script>
