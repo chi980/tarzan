@@ -24,10 +24,14 @@ public class TokenApi {
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = REFRESH_TOKEN_SUBJECT, required = false) String refreshToken) {
+    public ResponseEntity<?> reissueTokens(@CookieValue(value = REFRESH_TOKEN_SUBJECT, required = true) String refreshToken) {
 
         Cookie accessTokenCookie = authService.reissueAccessToken(refreshToken);
         Cookie refreshTokenCookie = authService.reissueRefreshToken(refreshToken);
+
+        log.info("access token cooke: {}", accessTokenCookie.toString());
+        log.info("refresh token cooke: {}", refreshTokenCookie.toString());
+
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())

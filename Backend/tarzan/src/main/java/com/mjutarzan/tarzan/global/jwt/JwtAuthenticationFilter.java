@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 유효한 토큰에서 이메일을 추출
                 log.info("유효한 토큰에서 이메일을 추출");
 
-                String email = jwtTokenProvider.getEmail(tokenOpt.get());
+                String email = jwtTokenProvider.getEmailFromAccessToken(tokenOpt.get());
                 log.info("email: {}", email);
                 Optional<CustomUserDetails> customUserDetails = customUserDetailsService.loadUserByEmail(email);
                 if(customUserDetails.isPresent()){
