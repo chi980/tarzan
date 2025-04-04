@@ -279,13 +279,12 @@ const submitForm = async () => {
       user_longitude: 126.978,
     };
 
-    const response = await axiosInstance
-      .post("/v1/user", formData)
-      .then((response) => {
-        console.log(response.data);
-      });
-    const role = response.data.user_role;
-    authStore.setRole(role);
+    const response = await axiosInstance.post("/v1/user", formData);
+
+    const { email, role } = response.data.data;
+    authStore.setUser({ email, role });
+    alert("회원가입이 완료되었습니다.");
+    router.push({ name: "Home" });
   } catch (error) {
     console.error("회원가입 중 오류 발생", error);
   }
