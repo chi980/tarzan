@@ -102,8 +102,9 @@ watch(searchQuery, debouncedSearch);
   <div class="modal-container" @click.self="closeModal">
     <div class="modal-wrapper">
 
-        <!-- <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;">  -->
-        <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;"> 
+      <!-- 모달 제목 -->
+      <!-- <TopBarBack title="주소 검색" @back="closeModal" /> -->
+        <div class="modal-title"> 
             <TopBarBack title="주소 검색" @back="closeModal" />
         </div>
 
@@ -138,11 +139,6 @@ watch(searchQuery, debouncedSearch);
     flex-direction: column;
 
     height: 100%;
-
-    .modal-title{
-        height: $height-top-bar;
-        background-color: aqua;
-    }
 
     .modal-content{
         @include custom-padding-x($padding-default);
