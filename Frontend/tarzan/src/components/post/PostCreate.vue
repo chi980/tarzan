@@ -1,10 +1,21 @@
 <template>
   <div class="sub-container">
-    <TopBarBack title="글쓰기" />
+    <TopBarBack title="글쓰기" @back="goToBack"/>
     <div class="input-container">
-      <input class="input-item" type="text" placeholder="제목을 입력해주세요" v-model="post.title" />
-      <CustomSelectBox :options="tagOptions" v-model:selected="selectedTag" />
-      <textarea class="input-item" placeholder="내용을 입력해주세요" v-model="post.content" ></textarea>
+      <input 
+        class="input-item" 
+        type="text" 
+        placeholder="제목을 입력해주세요" 
+        v-model="post.title" />
+        <CustomSelectBox 
+          :options="tagOptions" 
+          v-model:selected="selectedTagIndex" 
+        />
+      <textarea 
+        class="input-item" 
+        placeholder="내용을 입력해주세요" 
+        v-model="post.content" >
+      </textarea>
     </div>
 
     <div v-if="message">{{ message }}</div>
@@ -18,50 +29,54 @@
 
 
 <script setup>
-import { ref, computed } from 'vue';
-import CustomSelectBox from '../common/CustomSelectBox.vue';
-import TopBarBack from '../common/TopBarBack.vue';
+import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
 
-import { axiosInstance } from "@/plugins/axiosPlugin";
-import { useRouter } from 'vue-router';
+import CustomSelectBox from '@/components/common/CustomSelectBox.vue';
+import TopBarBack from '../common/TopBarBack.vue';
 
-const router = useRouter();
+// 게시글 제목, 내용, 태그를 저장할 ref 변수
 const post = ref({
   title: '',
   content: '',
 });
-const selectedTag = ref(null); // 선택된 태그 객체
+const selectedTagIndex = ref(null);
 const message = ref('');
 
-// 옵션 변수
-const tagOptions = [
+// 태그 옵션 데이터
+const tagOptions = ref([
   { idx: 1, name: "교통", value: "TRANSPORT" },
   { idx: 2, name: "맛집", value: "TASTE" },
   { idx: 3, name: "생활팁", value: "LIFE" },
   { idx: 4, name: "질문", value: "QUESTION" },
   { idx: 5, name: "모임", value: "MEETING" },
   { idx: 6, name: "기타", value: "ETC" },
-];
+]);
 
-// authStore에서 사용자 정보 가져오기
-// const authStore = useAuthStore();
-// const userGu = computed(() => authStore.gu);
+// 선택된 태그 객체 계산 속성 추가
+const selectedTag = computed(() => {
+  if (selectedTagIndex.value !== null) {
+    return tagOptions.value[selectedTagIndex.value];
+  }
+  return null;
+});
 
-// authStore에서 사용자 정보 가져오기
+// authStore에서 사용자 지역구 정보 가져오기
 const authStore = useAuthStore();
-const selectedDistrict = ref(authStore.getGu); // 초기값 설정
 
-console.log(selectedDistrict);
+const userGu = computed(() => authStore.getGu);
+console.log(userGu);
 
 // API: 게시글 생성
 const submit = async () => {
   try {
     const response = await axiosInstance.post('/v1/board', {
-      board_title: post.value.title,
-      board_content: post.value.content,
-      board_tag: selectedTag.value, // selectedTag에서 선택된 태그값 가져오기
-      board_gu: "JONGNO",
+      board_title: post.value.title,      // 게시글 제목
+      board_content: post.value.content,  // 게시글 내용
+      board_tag: selectedTag.value.value, // 게시글 태그
+      board_gu: userGu.value,             // 사용자 지역구 정보
     });
 
     if (response.data.success) {
@@ -70,15 +85,17 @@ const submit = async () => {
       router.push('/community');
     } else {
       console.error('Failed:', response.data.message);
-      message.value = `Error: ${response.data.message}`; // 사용자에게 오류 메시지 표시
+      message.value = `Error: ${response.data.message}`;
     }
   } catch (error) {
     console.error('Error creating post:', error);
-    message.value = '게시글을 생성하는 데 실패했습니다.' + selectedTag.value; // 사용자에게 알림
+    message.value = '게시글을 생성하는 데 실패했습니다.' + selectedTag.value;
   }
 };
 
-// 뒤로 가기 함수
+const router = useRouter();
+
+// 뒤로가기 버튼 클릭 시 호출되는 함수
 const goToBack = () => {
   router.go(-1);
 };
