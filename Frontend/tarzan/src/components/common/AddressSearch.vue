@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, watch } from 'vue';
-import axios from 'axios';
-import AddressSearchResult from './AddressSearchResult.vue';
-import { debounce } from 'lodash'; // lodash의 debounce 사용
+import { ref, onMounted, defineEmits, watch } from "vue";
+import searchIconImg from "@/assets/icons/Magnifier.png";
+import axios from "axios";
+import AddressSearchResult from "./AddressSearchResult.vue";
+import { debounce } from "lodash"; // lodash의 debounce 사용
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
-const emit = defineEmits(['close', 'selectAddress']); 
+const emit = defineEmits(["close", "selectAddress"]);
 
 const searchQuery = ref("");
 const searchResults = ref([]);
@@ -13,27 +14,38 @@ const userLocation = ref({ latitude: null, longitude: null });
 
 const getCurrentLocation = () => {
   if (!navigator.geolocation) {
-    alert('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+    alert("이 브라우저는 위치 서비스를 지원하지 않습니다.");
     return;
   }
   navigator.geolocation.getCurrentPosition(
     ({ coords }) => {
-      userLocation.value = { latitude: coords.latitude, longitude: coords.longitude };
+      userLocation.value = {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      };
     },
     (error) => console.error("위치 정보를 가져오는 데 실패했습니다.", error)
   );
 };
 
 const toRad = (value: number) => (value * Math.PI) / 180;
-const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+const calculateDistance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) => {
   const R = 6371; // 지구의 반지름 (단위: km)
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const distanceInMeters = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; // 거리 (단위: 미터)
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const distanceInMeters =
+    R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; // 거리 (단위: 미터)
 
   // 1000m 이상이면 km 단위로 변환
   return distanceInMeters >= 1000
@@ -53,16 +65,24 @@ const searchAddress = async () => {
         headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
       }
     );
-    
-    searchResults.value = data.documents.map(({ place_name, road_address_name, address_name, x, y }) => ({
-      place_name,
-      address_name: road_address_name || address_name,
-      x,
-      y,
-      distance: userLocation.value.latitude && userLocation.value.longitude
-        ? calculateDistance(userLocation.value.latitude, userLocation.value.longitude, parseFloat(y), parseFloat(x))
-        : '거리 계산 불가'
-    }));
+
+    searchResults.value = data.documents.map(
+      ({ place_name, road_address_name, address_name, x, y }) => ({
+        place_name,
+        address_name: road_address_name || address_name,
+        x,
+        y,
+        distance:
+          userLocation.value.latitude && userLocation.value.longitude
+            ? calculateDistance(
+                userLocation.value.latitude,
+                userLocation.value.longitude,
+                parseFloat(y),
+                parseFloat(x)
+              )
+            : "거리 계산 불가",
+      })
+    );
   } catch (error) {
     console.error("주소 검색 중 오류 발생:", error);
     if (error.response) {
@@ -72,7 +92,6 @@ const searchAddress = async () => {
     }
     searchResults.value = [];
   }
-
 };
 
 // 디바운스 적용
@@ -81,14 +100,14 @@ const debouncedSearch = debounce(searchAddress, 500);
 // 주소 선택 시 부모 컴포넌트로 주소 전달
 const selectAddress = (selectedAddress) => {
   if (selectedAddress) {
-    emit('close', selectedAddress);  // 'close' 이벤트로 selectedAddress 전달
+    emit("close", selectedAddress); // 'close' 이벤트로 selectedAddress 전달
   } else {
-    console.error('선택된 주소가 없습니다');
+    console.error("선택된 주소가 없습니다");
   }
 };
 
 const closeModal = () => {
-  emit('close');  // 부모에게 'close' 이벤트 전달
+  emit("close"); // 부모에게 'close' 이벤트 전달
 };
 
 onMounted(getCurrentLocation);
@@ -100,93 +119,121 @@ watch(searchQuery, debouncedSearch);
 <template>
   <div class="modal-container" @click.self="closeModal">
     <div class="modal-wrapper">
-        <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;"> 
-            <div style="width: 64px;height: 64px;background-color: black;" @click="closeModal"><-</div>
-            <h1>주소 검색</h1>
+      <div
+        class="modal-title"
+        style="background-color: aqua; display: flex; flex-direction: row">
+        <div
+          style="width: 20px; height: 20px; background-color: black"
+          @click="closeModal">
+          <-
         </div>
+        <h1>주소 검색</h1>
+      </div>
 
       <div class="search-container">
+        <img :src="searchIconImg" alt="search icon" class="icon-search" />
         <input
           v-model="searchQuery"
           @keyup.enter="searchAddress"
           type="text"
           placeholder="검색할 주소명을 입력해주세요"
           class="search-input"
-          aria-label="주소 검색"
-        />
+          aria-label="주소 검색" />
       </div>
 
       <div class="modal-content">
         <AddressSearchResult
           :addresses="searchResults"
-          @selectAddress="selectAddress"
-        />
+          @selectAddress="selectAddress" />
       </div>
-    </div>
 
-    <div class="button-wrapper">
-      <button class="button-default" @click="searchAddress">검색</button>
+      <div class="button-wrapper">
+        <button class="button-default" @click="searchAddress">검색</button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.modal-wrapper{
+.modal-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  height: 100%;
+
+  .modal-title {
+    height: $height-top-bar;
+    background-color: aqua;
+  }
+
+  .modal-content {
     display: flex;
     flex-direction: column;
 
+    background-color: white;
+
     height: 100%;
-
-    .modal-title{
-        height: $height-top-bar;
-        background-color: aqua;
-    }
-
-    .modal-content{
-        @include custom-padding-x($padding-default);
-        @include custom-padding-y($padding-big);
-
-        display: flex;
-        flex-direction: column;
-
-        height: 100%;
-        overflow-y: auto; /* 세로 스크롤을 추가 */
-        @include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
-    }
+    overflow-y: auto; /* 세로 스크롤을 추가 */
+    @include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
+  }
 }
-.modal-container{
-    @include custom-modal;
+.modal-container {
+  @include custom-modal;
 }
 
-.search-input{
-    @include custom-input-style;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    width: 100%;
-    // @include custom-shadow-style;
-}
-
-.search-container {
+.search-input {
+  @include custom-input-style;
   position: sticky;
   top: 0;
   z-index: 1;
-  background: white;
-  //width: clac(100% -20px);
-  // margin: 0 auto;
-  padding: 20px 55px 0 20px;
+  width: 100%;
+  // @include custom-shadow-style;
 }
 
-.button-wrapper{
-    width: 100%;
-    position: absolute;
-    bottom: $padding-default;
-    display: flex;
-    flex-direction: row;
-}
-
-.button-default{
-  @include custom-button-style($bg-color: $secondary-color-default, $font-color: white);
+.search-container {
+  @include custom-margin-y;
   @include custom-margin-x;
+  @include custom-padding-x;
+  background-color: white;
+
+  height: 48ox;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: $padding-default;
+  border-radius: $border-radius-default;
+
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+
+  img {
+    @include custom-icon-style;
+    color: $input-placeholder-color;
+  }
+
+  input[type="text"] {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+}
+
+.button-wrapper {
+  width: 100%;
+  // position: absolute;
+  // bottom: $padding-default;
+  display: flex;
+  flex-direction: row;
+  @include custom-padding-y;
+}
+
+.button-default {
+  @include custom-button-style(
+    $bg-color: $secondary-color-default,
+    $font-color: white
+  );
+  @include custom-margin-x;
+  width: 100%;
 }
 </style>
