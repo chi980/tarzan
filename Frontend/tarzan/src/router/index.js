@@ -39,17 +39,17 @@ const routes = [
       },
       {
         path: ":bookmarkIdx",
-        name: 'CheckCostPage',
+        name: "CheckCostPage",
         component: () => import("@/components/bookmark/CheckCostPage.vue"),
       },
       {
         path: ":bookmarkIdx",
-        name: 'CheckOptionPage',
+        name: "CheckOptionPage",
         component: () => import("@/components/bookmark/CheckOptionPage.vue"),
       },
       {
         path: ":bookmarkIdx",
-        name: 'CheckCheckListPage',
+        name: "CheckCheckListPage",
         component: () => import("@/components/bookmark/CheckCheckListPage.vue"),
       },
       {
@@ -109,10 +109,6 @@ const routes = [
     path: "/login-processing",
     name: "LoginProcessing",
     component: () => import("@/pages/LoginProcessing.vue"),
-    props: (route) => ({
-      accessToken: route.query.accessToken,
-      refreshToken: route.query.refreshToken,
-    }),
   },
   {
     path: "/login-failure",

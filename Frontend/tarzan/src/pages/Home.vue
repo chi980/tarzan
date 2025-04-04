@@ -216,8 +216,18 @@ const fetchBuildings = async (
   }
 };
 
+import { useAuthStore } from "@/stores/authStore";
 /** building, house info overlay */
-const showInfoOverlay = () => {};
+const showInfoOverlay = async () => {
+  try {
+    const authStore = useAuthStore();
+    const response = await axiosInstance.get(`/check`);
+    console.log(response);
+    console.log(authStore.getUser);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
 const buildingContent = ref("");
 

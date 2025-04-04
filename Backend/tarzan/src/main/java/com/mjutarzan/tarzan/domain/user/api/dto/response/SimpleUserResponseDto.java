@@ -1,20 +1,17 @@
 package com.mjutarzan.tarzan.domain.user.api.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.domain.user.model.vo.Role;
+import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter 
+@Getter
 @Setter
 @Builder
-public class RegisterUserResponseDto {
-
-    @JsonProperty("user_email")
+public class SimpleUserResponseDto {
     private String email;
-
-    @JsonProperty("user_role")
+    private String nickname;
     private Role role;
-
+    private SiGunGu gu;
 }
