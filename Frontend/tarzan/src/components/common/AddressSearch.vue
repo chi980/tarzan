@@ -103,7 +103,6 @@ watch(searchQuery, debouncedSearch);
     <div class="modal-wrapper">
 
       <!-- 모달 제목 -->
-      <!-- <TopBarBack title="주소 검색" @back="closeModal" /> -->
         <div class="modal-title"> 
             <TopBarBack title="주소 검색" @back="closeModal" />
         </div>
