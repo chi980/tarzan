@@ -77,6 +77,8 @@ pipeline {
                 script {
                     dir('Frontend') {
                         dir('tarzan'){
+        			        withCredentials([file(credentialsId: 'TARZAN_FRONTEND_CREDENTIALS', variable: 'SECRET_FILE')]) {
+                            sh 'cp $SECRET_FILE .env'
                             sh "docker build -t ${FRONT_IMAGE_NAME} -f Dockerfile ."
                         }
                     }
