@@ -146,10 +146,10 @@ watch(searchQuery, debouncedSearch);
           :addresses="searchResults"
           @selectAddress="selectAddress" />
       </div>
-    </div>
 
-    <div class="button-wrapper">
-      <button class="button-default" @click="searchAddress">검색</button>
+      <div class="button-wrapper">
+        <button class="button-default" @click="searchAddress">검색</button>
+      </div>
     </div>
   </div>
 </template>
@@ -167,11 +167,10 @@ watch(searchQuery, debouncedSearch);
   }
 
   .modal-content {
-    @include custom-padding-x($padding-default);
-    @include custom-padding-y($padding-big);
-
     display: flex;
     flex-direction: column;
+
+    background-color: white;
 
     height: 100%;
     overflow-y: auto; /* 세로 스크롤을 추가 */
@@ -222,8 +221,8 @@ watch(searchQuery, debouncedSearch);
 
 .button-wrapper {
   width: 100%;
-  position: absolute;
-  bottom: $padding-default;
+  // position: absolute;
+  // bottom: $padding-default;
   display: flex;
   flex-direction: row;
 }
