@@ -129,6 +129,7 @@ import { debounce } from "lodash"; // lodash 라이브러리 사용
 /**data, componenet, env load */
 import { useAuthStore } from "@/stores/authStore";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+import { useRouter } from "vue-router";
 
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import AddressSearch from "@/components/common/AddressSearch.vue";
@@ -136,6 +137,7 @@ import AddressSearch from "@/components/common/AddressSearch.vue";
 import { Option } from "@/data/options";
 import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 
+const router = useRouter();
 const authStore = useAuthStore();
 
 /** form value */
@@ -267,25 +269,25 @@ const submitForm = async () => {
       alert("자차 유무를 선택해주세요");
       return;
     }
+    console.log("pet", petOptions.value[selectedPetIdx]);
 
     const formData = {
       user_image_url: "https://example.com/image.jpg",
       user_nickname,
       user_gu: gu,
-      user_have_animal: petOptions[selectedPetIdx].value,
-      user_have_car: carOptions[selectedCarIdx].value,
-      user_job_address: address.value == null ? "d" : address.value,
+      user_have_animal: petOptions.value[selectedPetIdx].value,
+      user_have_car: carOptions.value[selectedCarIdx].value,
+      user_job_address: address.value,
       user_latitude: 37.5665,
       user_longitude: 126.978,
     };
 
-    const response = await axiosInstance
-      .post("/v1/user", formData)
-      .then((response) => {
-        console.log(response.data);
-      });
-    const role = response.data.user_role;
-    authStore.setRole(role);
+    const response = await axiosInstance.post("/v1/user", formData);
+    console.log(response.data.data);
+    const { email, role } = response.data.data;
+    authStore.setUser({ email, role });
+    alert("회원가입이 완료되었습니다.");
+    router.push({ name: "Home" });
   } catch (error) {
     console.error("회원가입 중 오류 발생", error);
   }
