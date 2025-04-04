@@ -123,7 +123,7 @@ watch(searchQuery, debouncedSearch);
         class="modal-title"
         style="background-color: aqua; display: flex; flex-direction: row">
         <div
-          style="width: 64px; height: 64px; background-color: black"
+          style="width: 20px; height: 20px; background-color: black"
           @click="closeModal">
           <-
         </div>
@@ -225,6 +225,7 @@ watch(searchQuery, debouncedSearch);
   // bottom: $padding-default;
   display: flex;
   flex-direction: row;
+  @include custom-padding-y;
 }
 
 .button-default {
@@ -233,5 +234,6 @@ watch(searchQuery, debouncedSearch);
     $font-color: white
   );
   @include custom-margin-x;
+  width: 100%;
 }
 </style>
