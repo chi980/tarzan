@@ -100,7 +100,7 @@ const updateSortBy = (selectedIndex) => {
   );
 
   if (selectedOption && sortBy.value !== selectedOption.value) {
-    sortBy.value = selectedOption.name; // 변경되면 자동으로 fetchPosts() 호출됨
+    sortBy.value = selectedOption.name;
   }
 };
 
@@ -109,68 +109,72 @@ const updateDistrict = (district) => {
   selectedDistrict.value = district; // 변경되면 자동으로 fetchPosts() 호출됨
 };
 
-// // API: 게시글 데이터 불러오기
-// const fetchPosts = async () => {
-
-//   const queryParams = new URLSearchParams({
-//     size: 5,
-//     page: 1,
-//     sortBy: sortBy.value,
-//     tag: selectedButton.value,
-//     gu: selectedDistrict.value,
-//   }).toString();
-
-//   try {
-//     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
-
-//     if (response.data.success) {
-//       console.log("게시글 목록 가져오기 성공!");
-//       posts.value = response.data.data.list;
-//     } else {
-//       console.error("API 실패:", response.data.message);
-
-//     }
-//   } catch (error) {
-//     console.error("게시글 데이터 요청 중 오류 발생:", error);
-//   }
-// };
-
 // API: 게시글 데이터 불러오기
 const fetchPosts = async () => {
 
-const queryParams = new URLSearchParams({
-  size: 5,
-  page: page.value,
-  sortBy: sortBy.value,
-  tag: selectedButton.value,
-  gu: selectedDistrict.value,
-}).toString();
+  const queryParams = new URLSearchParams({
+    size: 5,
+    page: 1,
+    sortBy: sortBy.value,
+    tag: selectedButton.value,
+    gu: selectedDistrict.value,
+  }).toString();
 
-try {
-  const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+  try {
+    const response = await axiosInstance.get(`/v1/board?${queryParams}`);
 
-  if (response.data.success && response.data.data.list.length) {
-      posts.value.push(...response.data.data.list); // 기존 데이터에 추가
-      page.value++;
+    if (response.data.success) {
+      console.log("게시글 목록 가져오기 성공!");
+      posts.value = response.data.data.list;
+    } else {
+      console.error("API 실패:", response.data.message);
+
     }
-} catch (error) {
-  console.error("게시글 데이터 요청 중 오류 발생:", error);
-}
+  } catch (error) {
+    console.error("게시글 데이터 요청 중 오류 발생:", error);
+  }
 };
 
-// IntersectionObserver 사용
-const { target } = useInfiniteScroll(fetchPosts);
+// // API: 게시글 데이터 불러오기
+// const fetchPosts = async () => {
 
-watch([sortBy, selectedButton, selectedDistrict], () => {
-  posts.value = [];
-  page.value = 1;
-  fetchPosts();
-});
+// const queryParams = new URLSearchParams({
+//   size: 5,
+//   page: page.value,
+//   sortBy: sortBy.value,
+//   tag: selectedButton.value,
+//   gu: selectedDistrict.value,
+// }).toString();
+// try {
+//   const response = await axiosInstance.get(`/v1/board?${queryParams}`);
+//   console.log("게시글 데이터 불러오기 실행")
+
+//   if (response.data.success && response.data.data.list.length) {
+//       posts.value.push(...response.data.data.list); // 기존 데이터에 추가
+//       page.value++;
+//       console.log("게시글 데이터 불러오기 성공")
+//       console.log(response.data);
+//     }
+// } catch (error) {
+//   console.error("게시글 데이터 요청 중 오류 발생:", error.message);
+// }
+// };
+
+// // IntersectionObserver 사용
+// const { target } = useInfiniteScroll(fetchPosts);
+
+// watch([sortBy, selectedButton, selectedDistrict], () => {
+//   posts.value = [];
+//   page.value = 1;
+//   fetchPosts();
+// });
 
 // 글쓰기 페이지로 이동
 const goToPostCreate = () => {
   router.push({ name: "PostCreate" });
 };
+
+onMounted(fetchPosts);
 </script>
 
 
