@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -31,27 +33,29 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
             String accessToken = jwtTokenProvider.generateAccessToken(oAuth2User.getEmail());
+            Cookie accessTokenCookie = jwtTokenProvider.generateAccessTokenCookie(accessToken);
             String refreshToken = jwtTokenProvider.generateRefreshToken(oAuth2User.getEmail());
             Cookie refreshTokenCookie = jwtTokenProvider.generateRefreshTokenCookie(refreshToken);
+
+            response.addCookie(accessTokenCookie);
             response.addCookie(refreshTokenCookie);
 
+            log.info("accessTokenCookie: {}", accessTokenCookie);
             log.info("onAuthenticationSuccess: 로그인 성공");
             log.info("accessToken: {}", accessToken);
             log.info("accessToken is Exipred at {}", jwtTokenProvider.getExpirationDateFromToken(accessToken, false));
             log.info("refreshToken: {}", refreshToken);
             log.info("accessToken is Exipred at {}", jwtTokenProvider.getExpirationDateFromToken(refreshToken, true));
 
-            // 프론트엔드로 Access Token만 전달 (Refresh Token은 쿠키에 저장되므로 URL에서 제거)
-            String redirectUrl = frontBaseUrl + "/login-processing" +
-                    "?access_token=" + accessToken +
-                    "&email=" + oAuth2User.getEmail() +
-                    "&role=" + oAuth2User.getRole();
-
-            // GUEST 여부에 따라 추가 정보 전달
-            if (oAuth2User.getRole() != Role.GUEST) {
-                redirectUrl += "&gu=" + oAuth2User.getGu() + "&nickname=" + oAuth2User.getNickname();
-            }
-
+            String redirectUrl = UriComponentsBuilder.fromUriString(frontBaseUrl)
+                    .path("/login-processing")
+                    .queryParam("email", oAuth2User.getEmail())
+                    .queryParam("role", oAuth2User.getRole())
+                    .queryParamIfPresent("gu", Optional.ofNullable(oAuth2User.getGu()))
+                    .queryParamIfPresent("nickname", Optional.ofNullable(oAuth2User.getNickname()))
+                    .build()
+                    .toUriString();
+            log.info("{}", redirectUrl);
             response.sendRedirect(redirectUrl);
 
         } catch (Exception e) {

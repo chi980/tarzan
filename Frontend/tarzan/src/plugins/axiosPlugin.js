@@ -12,21 +12,6 @@ const axiosInstance = axios.create({
 });
 
 // ✅ 요청 인터셉터 설정
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const authStore = useAuthStore();
-    const accessToken = authStore.getAccessToken;
-    console.log(`accessToken: ${accessToken}`);
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    console.error("accessHeader가 없습니다.");
-    return Promise.reject(error);
-  }
-);
 
 // ✅ 응답 인터셉터 설정 (401 처리 + 토큰 자동 갱신)
 axiosInstance.interceptors.response.use(
@@ -49,23 +34,16 @@ function refreshTokenAndRetry(error) {
   });
 
   return new Promise((resolve, reject) => {
-    if (!authStore.getEmail) {
-      reject(new Error("email이 존재하지 않습니다."));
-      return;
-    }
+    // if (!authStore.getEmail) {
+    //   reject(new Error("email이 존재하지 않습니다."));
+    //   return;
+    // }
 
     axiosNewInstance
-      .post("/auth/refresh", {
-        email: authStore.getEmail,
-      })
+      .post("/auth/refresh")
       .then((res) => {
         console.log("access token을 새로 발급받았씁니다.");
-        const accessToken = res.data.data.access_token;
-        authStore.setAccessToken(accessToken);
 
-        error.config.headers["Authorization"] = `Bearer ${accessToken}`;
-
-        // 실패한 요청을 재시도
         resolve(axios(error.config)); // 실패한 요청을 재시도
       })
       .catch((err) => {

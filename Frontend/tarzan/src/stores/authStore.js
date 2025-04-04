@@ -6,44 +6,31 @@ import router from "@/router";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    accessToken: localStorage.getItem("accessToken") || null,
-    user: JSON.parse(localStorage.getItem("user")) || null,
+    user: JSON.parse(localStorage.getItem("user")) || null, // 새로고침 시 로컬스토리지에서 불러옴
+    userLoaded: false, // ✅ 한 번만 실행되도록 관리
   }),
   actions: {
-    setAccessToken(token) {
-      this.accessToken = token;
-      localStorage.setItem("accessToken", token); // 로컬 스토리지에 저장
-    },
-    setRole(role) {
-      this.role = role;
-      localStorage.setItem("role", role
-      ); // 로컬 스토리지에 저장
-    },
-    setUser(user) {
-      this.user = user;
-      localStorage.setItem("user", JSON.stringify(user)); // 로컬 스토리지에 저장
-    },
-    login(token, user) {
-      this.setAccessToken(token);
-      this.setUser(user);
+    setUser(userData) {
+      this.user = userData;
+      localStorage.setItem("user", JSON.stringify(userData)); // localStorage에 저장
+      this.userLoaded = true; // ✅ 데이터가 로드됨을 표시
     },
     logout() {
-      this.accessToken = null;
-      localStorage.removeItem("accessToken"); // 로컬 스토리지에서 삭제
       this.user = null;
-      localStorage.removeItem("user"); // 로컬 스토리지에서 삭제
+      localStorage.removeItem("user"); // 로그아웃 시 삭제
+      this.userLoaded = false; // ✅ 로그아웃 시 다시 요청 가능하도록 설정
 
       router.push({ name: "Login" });
     },
   },
   getters: {
-    getAccessToken: (state) => state.accessToken,
+    isLoggedIn: (state) => !!state.user, // ✅ 로그인 여부 쉽게 확인 가능
     getUser: (state) => {
       return state.user ? JSON.stringify(state.user) : "없음"; // user를 JSON 문자열로 변환하여 반환
     },
+    getRole: (state) => (!state.user ? null : state.user.role),
     getEmail: (state) => (!state.user ? null : state.user.email),
-    getGu: (state) => {
-      return state.user.gu;
-    },
+    getGu: (state) => (!state.user ? null : state.user.gu),
+    getNickname: (state) => (!state.user ? null : state.user.nickname),
   },
 });

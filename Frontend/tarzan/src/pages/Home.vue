@@ -44,7 +44,7 @@
       <BottomBar class="bottom-bar"></BottomBar>
     </div>
     <!-- 주소 검색 팝업 -->
-    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
+    <!-- <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" /> -->
   </div>
 </template>
 
@@ -60,9 +60,8 @@ import refreshIconImg from "@/assets/icons/Retry-refresh.png";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
-import AddressSearch from "@/components/common/AddressSearch.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
-import { getScaleRatio } from "@/data/kakaoMap";
+// import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
 const address = ref<string | null>(null);
@@ -103,13 +102,13 @@ watch(selectedButton, (newValue) => {
   const latitude = center.getLat(); // 예시 위도
   const longitude = center.getLng(); // 예시 경도
   console.log("현재 지도 중심 좌표:", latitude, longitude);
-  const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
-  console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
+  // const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
+  // console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
 
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
   } else {
-    fetchBuildings(newValue, latitude, longitude, radius);
+    // fetchBuildings(newValue, latitude, longitude, radius);
   }
 });
 
@@ -217,8 +216,18 @@ const fetchBuildings = async (
   }
 };
 
+import { useAuthStore } from "@/stores/authStore";
 /** building, house info overlay */
-const showInfoOverlay = () => {};
+const showInfoOverlay = async () => {
+  try {
+    const authStore = useAuthStore();
+    const response = await axiosInstance.get(`/check`);
+    console.log(response);
+    console.log(authStore.getUser);
+  } catch (error) {
+    console.error(error.message);
+  }
+};
 
 const buildingContent = ref("");
 
@@ -345,7 +354,7 @@ const addMarkers = (mapInstance, buildings) => {
     window.kakao.maps.event.addListener(marker, "click", () => {
       console.log("marker click");
       buildingContent.value = building;
-      contentHeight = "fit-content";
+      contentHeight.value = "fit-content";
     });
   });
 };

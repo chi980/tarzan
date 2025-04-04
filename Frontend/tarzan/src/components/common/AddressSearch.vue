@@ -1,80 +1,119 @@
 <script setup lang="ts">
-/** load */
-import { ref, defineEmits } from "vue";
-/** data, component load */
+import { ref, onMounted, defineEmits, watch } from "vue";
 import searchIconImg from "@/assets/icons/Magnifier.png";
-
-import TopBarBack from "@/components/common/TopBarBack.vue";
+import axios from "axios";
 import AddressSearchResult from "./AddressSearchResult.vue";
-import { Building } from "@/data/Building";
+import { debounce } from "lodash"; // lodash의 debounce 사용
 
-const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY; // 여기에 본인의 카카오 REST API 키를 입력하세요.
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
+const emit = defineEmits(["close", "selectAddress"]);
 
-const emit = defineEmits(["close"]);
+const searchQuery = ref("");
+const searchResults = ref([]);
+const userLocation = ref({ latitude: null, longitude: null });
 
-/** emits */
-const closeModal = () => {
-  emit("close"); // 부모 컴포넌트에 모달 닫기 이벤트 전달
-};
-
-/** */
-const selectLocation = () => {};
-
-// 검색어와 결과를 저장할 상태 변수
-const searchQuery = ref(""); // 사용자가 입력한 검색어
-interface SearchResult {
-  place_name: string;
-  road_address_name?: string;
-  address_name?: string;
-  x: string; // 경도
-  y: string; // 위도
-}
-
-const searchResults = ref<SearchResult[]>([]); // 검색 결과를 저장하는 배열
-
-// 위도와 경도를 저장할 상태 변수
-const selectedLocation = ref<{
-  latitude: string | null;
-  longitude: string | null;
-}>({
-  latitude: null,
-  longitude: null,
-});
-
-// 주소 검색 함수
-const searchAddress = async () => {
-  if (!searchQuery.value) {
-    searchResults.value = [];
+const getCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    alert("이 브라우저는 위치 서비스를 지원하지 않습니다.");
     return;
   }
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      userLocation.value = {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+      };
+    },
+    (error) => console.error("위치 정보를 가져오는 데 실패했습니다.", error)
+  );
+};
+
+const toRad = (value: number) => (value * Math.PI) / 180;
+const calculateDistance = (
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+) => {
+  const R = 6371; // 지구의 반지름 (단위: km)
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const distanceInMeters =
+    R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * 1000; // 거리 (단위: 미터)
+
+  // 1000m 이상이면 km 단위로 변환
+  return distanceInMeters >= 1000
+    ? `${(distanceInMeters / 1000).toFixed(1)}km`
+    : `${distanceInMeters.toFixed(0)}m`;
+};
+
+const searchAddress = async () => {
+  if (!searchQuery.value.trim()) return;
+  searchResults.value = []; // 이전 검색 결과 지우기
 
   try {
-    // 키워드 검색 API 호출
-    const response = await axios.get(
+    const { data } = await axios.get(
       "https://dapi.kakao.com/v2/local/search/keyword.json",
       {
-        params: { query: searchQuery.value },
+        params: { query: searchQuery.value.trim() },
         headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
       }
     );
-    searchResults.value = response.data.documents; // 검색 결과 저장
+
+    searchResults.value = data.documents.map(
+      ({ place_name, road_address_name, address_name, x, y }) => ({
+        place_name,
+        address_name: road_address_name || address_name,
+        x,
+        y,
+        distance:
+          userLocation.value.latitude && userLocation.value.longitude
+            ? calculateDistance(
+                userLocation.value.latitude,
+                userLocation.value.longitude,
+                parseFloat(y),
+                parseFloat(x)
+              )
+            : "거리 계산 불가",
+      })
+    );
   } catch (error) {
-    console.error("주소 검색 중 오류 발생: ", error);
+    console.error("주소 검색 중 오류 발생:", error);
+    if (error.response) {
+      console.error("응답 데이터:", error.response.data);
+      console.error("응답 상태 코드:", error.response.status);
+      console.error("응답 헤더:", error.response.headers);
+    }
     searchResults.value = [];
   }
 };
 
-// 주소 선택 함수
-const selectAddress = (selectedPlace: SearchResult) => {
-  searchQuery.value = `${selectedPlace.place_name} - ${
-    selectedPlace.road_address_name || selectedPlace.address_name
-  }`;
-  searchResults.value = []; // 검색 결과 목록 초기화
+// 디바운스 적용
+const debouncedSearch = debounce(searchAddress, 500);
 
-  // 위도와 경도 저장
-  selectedLocation.value.latitude = selectedPlace.y; // 위도
-  selectedLocation.value.longitude = selectedPlace.x; // 경도
+// 주소 선택 시 부모 컴포넌트로 주소 전달
+const selectAddress = (selectedAddress) => {
+  if (selectedAddress) {
+    emit("close", selectedAddress); // 'close' 이벤트로 selectedAddress 전달
+  } else {
+    console.error("선택된 주소가 없습니다");
+  }
 };
+
+const closeModal = () => {
+  emit("close"); // 부모에게 'close' 이벤트 전달
+};
+
+onMounted(getCurrentLocation);
+
+// 검색어가 변경될 때마다 디바운스된 검색 함수 호출
+watch(searchQuery, debouncedSearch);
 </script>
 
 <template>
@@ -86,35 +125,31 @@ const selectAddress = (selectedPlace: SearchResult) => {
         <div
           style="width: 64px; height: 64px; background-color: black"
           @click="closeModal">
-          --
+          <-
         </div>
         <h1>주소 검색</h1>
       </div>
+
+      <div class="search-container">
+        <img :src="searchIconImg" alt="search icon" class="icon-search" />
+        <input
+          v-model="searchQuery"
+          @keyup.enter="searchAddress"
+          type="text"
+          placeholder="검색할 주소명을 입력해주세요"
+          class="search-input"
+          aria-label="주소 검색" />
+      </div>
+
       <div class="modal-content">
-        <!-- <input type="text" v-model="searchQuery" placeholder="검색어를 입력하세요" />
-            <div v-if="searchResults.length > 0">
-                <ul>
-                    <li v-for="result in searchResults" :key="result.place_name" @click="selectAddress(result)">
-                        {{ result.place_name }} - {{ result.road_address_name || result.address_name }}
-                    </li>
-                </ul>
-            </div> -->
-        <div class="search-container">
-          <img :src="searchIconImg" alt="검색 아이콘" />
-          <input
-            v-model="searchQuery"
-            type="text"
-            inputmode="text"
-            enterkeyhint="enter"
-            placeholder="찾고 싶은 주소를 입력해주세요."
-            class="search-input" />
-        </div>
-        <AddressSearchResult></AddressSearchResult>
+        <AddressSearchResult
+          :addresses="searchResults"
+          @selectAddress="selectAddress" />
       </div>
     </div>
 
     <div class="button-wrapper">
-      <button class="button-default" @click="selectLocation">선택</button>
+      <button class="button-default" @click="searchAddress">검색</button>
     </div>
   </div>
 </template>
@@ -147,29 +182,42 @@ const selectAddress = (selectedPlace: SearchResult) => {
   @include custom-modal;
 }
 
+.search-input {
+  @include custom-input-style;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  // @include custom-shadow-style;
+}
+
 .search-container {
-  @include custom-padding-x($padding-default);
+  @include custom-margin-y;
+  @include custom-margin-x;
+  @include custom-padding-x;
+  background-color: white;
+
+  height: 48ox;
+
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: $padding-default;
+  border-radius: $border-radius-default;
 
-  border: 1px solid $border-color-input;
-  border-radius: 13px;
-  background-color: white;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
 
   img {
     @include custom-icon-style;
+    color: $input-placeholder-color;
   }
-}
-.search-input {
-  flex: 1;
-  font-family: "Pretendard", sans-serif;
-  font-size: 14px;
-  color: $text-color-default;
-  border: none;
-  height: 48px;
-  background-color: white;
+
+  input[type="text"] {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
 }
 
 .button-wrapper {

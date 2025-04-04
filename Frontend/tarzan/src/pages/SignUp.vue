@@ -106,7 +106,7 @@
     </form>
 
     <!-- 주소 검색 팝업 -->
-    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
+    <AddressSearch v-if="isAddressSearchOpen" @close="setAddress" />
 
     <div
       style="
@@ -116,7 +116,7 @@
         display: flex;
         flex-direction: row;
       ">
-      <div class="button-default" @click="submitForm">회원가입하기</div>
+      <div class="button-default" @click="submitForm">제출하기</div>
     </div>
   </div>
 </template>
@@ -129,6 +129,7 @@ import { debounce } from "lodash"; // lodash 라이브러리 사용
 /**data, componenet, env load */
 import { useAuthStore } from "@/stores/authStore";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+import { useRouter } from "vue-router";
 
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import AddressSearch from "@/components/common/AddressSearch.vue";
@@ -136,6 +137,7 @@ import AddressSearch from "@/components/common/AddressSearch.vue";
 import { Option } from "@/data/options";
 import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 
+const router = useRouter();
 const authStore = useAuthStore();
 
 /** form value */
@@ -230,6 +232,19 @@ const closeAddressSearch = (selectedAddress: string) => {
   isAddressSearchOpen.value = false;
 };
 
+// 부모로부터 전달받은 주소를 저장하는 메소드
+const setAddress = (selectedAddress) => {
+  console.log(selectedAddress); // selectedAddress가 무엇인지 확인
+  isAddressSearchOpen.value = false; // 모달 닫기
+  if (selectedAddress && selectedAddress.place_name) {
+    address.value = `${selectedAddress.place_name} - ${
+      selectedAddress.road_address_name || selectedAddress.address_name
+    }`;
+  } else {
+    console.error("선택된 주소에 place_name이 없습니다:", selectedAddress);
+  }
+};
+
 /** submit form */
 const submitForm = async () => {
   try {
@@ -267,20 +282,20 @@ const submitForm = async () => {
       alert("자차 유무를 선택해주세요");
       return;
     }
+    console.log("pet", petOptions.value[selectedPetIdx]);
 
     const formData = {
       user_image_url: "https://example.com/image.jpg",
       user_nickname,
       user_gu: gu,
-      user_have_animal: petOptions[selectedPetIdx].value,
-      user_have_car: carOptions[selectedCarIdx].value,
-      user_job_address: address.value == null ? "d" : address.value,
+      user_have_animal: petOptions.value[selectedPetIdx].value,
+      user_have_car: carOptions.value[selectedCarIdx].value,
+      user_job_address: address.value,
       user_latitude: 37.5665,
       user_longitude: 126.978,
     };
 
     const response = await axiosInstance.post("/v1/user", formData);
-
     const { email, role } = response.data.data;
     authStore.setUser({ email, role });
     alert("회원가입이 완료되었습니다.");

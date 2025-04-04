@@ -28,7 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
 
 
-    private static final Set<String> NO_CHECK_URLS = Set.of("/login",
+    private static final Set<String> NO_CHECK_URLS = Set.of(
+            "/favicon.ico",
+            "/login",
             "/oauth2/authorization", "/api/auth",
             "/api/test", "/api/data",
             "/api/fraud", "/api/v1/building", "/api/v1/house", "/api/v1/reviews");
@@ -58,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 유효한 토큰에서 이메일을 추출
                 log.info("유효한 토큰에서 이메일을 추출");
 
-                String email = jwtTokenProvider.getEmail(tokenOpt.get());
+                String email = jwtTokenProvider.getEmailFromAccessToken(tokenOpt.get());
                 log.info("email: {}", email);
                 Optional<CustomUserDetails> customUserDetails = customUserDetailsService.loadUserByEmail(email);
                 if(customUserDetails.isPresent()){

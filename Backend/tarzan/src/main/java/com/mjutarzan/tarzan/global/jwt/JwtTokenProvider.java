@@ -9,11 +9,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +30,7 @@ public class JwtTokenProvider {
     private String REFRESH_SECRET_KEY;
 
     @Value("${jwt.access.expiration}")
-    private Long ACCESS_EXPIRATION ;
+    private Integer ACCESS_EXPIRATION ;
 
     @Value("${jwt.refresh.expiration}")
     private Integer REFRESH_EXPIRATION ;
@@ -37,6 +40,9 @@ public class JwtTokenProvider {
 
     @Value("${jwt.refresh.header}")
     private String REFRESH_HEADER;
+
+    @Value("${jwt.cookie-secure}")
+    private Boolean cookieSecure;
 
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -79,28 +85,64 @@ public class JwtTokenProvider {
                 .sign(Algorithm.HMAC512(key));
     }
 
+    public Cookie generateAccessTokenCookie(String accessToken) {
+        return generateCookie(accessToken, ACCESS_TOKEN_SUBJECT, "/", ACCESS_EXPIRATION);
+    }
+
     /**
+     * https에서만 전송되고, /api/auth/refresh경로에서만 쿠키 접근이 가능
      * @return
      */
     public Cookie generateRefreshTokenCookie(String refreshToken) {
-        Cookie refreshTokenCookie = new Cookie(REFRESH_HEADER, refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);  // HTTPS에서만 전송 -> true로 바꿀것
-        refreshTokenCookie.setPath("/api/auth/refresh");  // `/api/auth/refresh` 경로에서만 쿠키 접근 가능
-        refreshTokenCookie.setMaxAge(REFRESH_EXPIRATION);
-        return refreshTokenCookie;
+        return generateCookie(refreshToken, REFRESH_TOKEN_SUBJECT, "/api/auth/refresh", REFRESH_EXPIRATION);
+    }
+
+    private Cookie generateCookie(String cookieValue, String cookieName, String cookiePath, Integer cookieAge){
+        Cookie cookie = new Cookie(cookieName, cookieValue);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(cookieSecure);
+        cookie.setPath(cookiePath);
+        cookie.setMaxAge(cookieAge);
+        return cookie;
+    }
+
+    public ResponseCookie generateAccessResponseCookie(String accessToken){
+        return generateResponseCookie(accessToken, ACCESS_TOKEN_SUBJECT, "/", ACCESS_EXPIRATION);
+    }
+
+    public ResponseCookie generateRefreshResponseCookie(String refreshToken){
+        return generateResponseCookie(refreshToken, REFRESH_TOKEN_SUBJECT, "/api/auth/refresh", REFRESH_EXPIRATION);
+
+    }
+
+    private ResponseCookie generateResponseCookie(String cookieValue, String cookieName, String cookiePath, Integer cookieAge){
+        ResponseCookie cookie = ResponseCookie.from(cookieName, cookieValue)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path(cookiePath)
+                .maxAge(cookieAge) // 1시간
+                .build();
+        return cookie;
     }
 
     /**
      * Jwt에서 사용자명(이메일) 추출
      */
-    public String getEmail(String accessToken) {
-        return JWT.require(Algorithm.HMAC512(SECRET_KEY))
+    private String getEmail(String token, String key) {
+        return JWT.require(Algorithm.HMAC512(key))
                 .build()
-                .verify(accessToken)
+                .verify(token)
                 .getSubject()
                 .toString();
 
+    }
+
+    public String getEmailFromAccessToken(String accessToken){
+        return this.getEmail(accessToken, SECRET_KEY);
+    }
+
+    public String getEmailFromRefreshToken(String refreshToken){
+        return this.getEmail(refreshToken, REFRESH_SECRET_KEY);
     }
 
     /**
@@ -138,10 +180,14 @@ public class JwtTokenProvider {
      *  헤더에서 토큰 추출
      */
     public Optional<String> resolveToken(HttpServletRequest request) {
-        log.info("resolve 하기전 token: {}", request.getHeader(ACCESS_HEADER));
-        return Optional.ofNullable(request.getHeader(ACCESS_HEADER))
-                .filter(token -> token.startsWith(BEARER))
-                .map(refreshToken -> refreshToken.replace(BEARER, ""));
+        if (request.getCookies() == null) {
+            return Optional.empty(); // 쿠키가 없으면 Optional.empty() 반환
+        }
+
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> ACCESS_TOKEN_SUBJECT.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .findFirst();
     }
 
     // Refresh Token 삭제 (로그아웃 시)
@@ -187,4 +233,5 @@ public class JwtTokenProvider {
         String key = REFRESH_PREFIX + email;
         redisService.saveData(key, refreshToken, REFRESH_EXPIRATION);
     }
+
 }

@@ -8,7 +8,9 @@ import com.mjutarzan.tarzan.global.jwt.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,19 +22,23 @@ public class TokenApi {
 
     private final AuthService authService;
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> reissueTokens(@RequestBody ReIssueTokensRequestDto requestDto, @CookieValue(value = "X-refresh-token", required = false) String refreshToken) {
-        log.info("email: {}", requestDto.getEmail());
-        log.info("refresh token: {}", refreshToken);
+    private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
 
-        ReIssueTokensResponseDto response = authService.reissueAccessToken(requestDto, refreshToken);
-        Cookie refreshTokenCookie = authService.reissueRefreshToken(requestDto);
+    @PostMapping("/refresh")
+    public ResponseEntity<?> reissueTokens(@CookieValue(value = REFRESH_TOKEN_SUBJECT, required = true) String refreshToken) {
+
+        ResponseCookie accessTokenCookie = authService.reissueAccessToken(refreshToken);
+        ResponseCookie refreshTokenCookie = authService.reissueRefreshToken(refreshToken);
+
+        log.info("access token cooke: {}", accessTokenCookie.toString());
+        log.info("refresh token cooke: {}", refreshTokenCookie.toString());
+
 
         return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())  // ✅ 쿠키 설정
                 .body(BaseResponseDto.builder()
                     .success(true)
-                    .data(response)
                     .build()
                 );
     }
@@ -49,16 +55,5 @@ public class TokenApi {
                 .message("완료되었습니다.")
                 .build());
     }
-/*    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        ResponseCookie deleteCookie = ResponseCookie.from("refreshToken", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/auth/refresh")
-                .maxAge(0)
-                .build();
 
-        response.addHeader("Set-Cookie", deleteCookie.toString());
-        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
-    }*/
 }
