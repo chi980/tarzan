@@ -22,6 +22,7 @@ import { ref, computed } from 'vue';
 import CustomSelectBox from '../common/CustomSelectBox.vue';
 import TopBarBack from '../common/TopBarBack.vue';
 import { useAuthStore } from "@/stores/authStore";
+
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRouter } from 'vue-router';
 
@@ -44,8 +45,14 @@ const tagOptions = [
 ];
 
 // authStore에서 사용자 정보 가져오기
+// const authStore = useAuthStore();
+// const userGu = computed(() => authStore.gu);
+
+// authStore에서 사용자 정보 가져오기
 const authStore = useAuthStore();
-const userGu = computed(() => authStore.gu);
+const selectedDistrict = ref(authStore.getGu); // 초기값 설정
+
+console.log(selectedDistrict);
 
 // API: 게시글 생성
 const submit = async () => {
@@ -54,10 +61,8 @@ const submit = async () => {
       board_title: post.value.title,
       board_content: post.value.content,
       board_tag: selectedTag.value, // selectedTag에서 선택된 태그값 가져오기
-      board_gu: userGu.value,
+      board_gu: "JONGNO",
     });
-
-    console.log(userGu.value);
 
     if (response.data.success) {
       message.value = '게시글이 성공적으로 생성되었습니다!';
