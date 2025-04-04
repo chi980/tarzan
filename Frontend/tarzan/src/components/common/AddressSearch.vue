@@ -3,6 +3,7 @@ import { ref, onMounted, defineEmits, watch } from 'vue';
 import axios from 'axios';
 import AddressSearchResult from './AddressSearchResult.vue';
 import { debounce } from 'lodash'; // lodash의 debounce 사용
+import TopBarBack from '@/components/common/TopBarBack.vue';
 
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_REST_KEY;
 const emit = defineEmits(['close', 'selectAddress']); 
@@ -100,9 +101,10 @@ watch(searchQuery, debouncedSearch);
 <template>
   <div class="modal-container" @click.self="closeModal">
     <div class="modal-wrapper">
+
+        <!-- <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;">  -->
         <div class="modal-title" style="background-color: aqua;display: flex;flex-direction: row;"> 
-            <div style="width: 64px;height: 64px;background-color: black;" @click="closeModal"><-</div>
-            <h1>주소 검색</h1>
+            <TopBarBack title="주소 검색" @back="closeModal" />
         </div>
 
       <div class="search-container">
