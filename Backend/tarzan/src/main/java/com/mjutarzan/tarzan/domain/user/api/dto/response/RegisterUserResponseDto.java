@@ -11,8 +11,10 @@ import lombok.Setter;
 @Builder
 public class RegisterUserResponseDto {
 
-    @JsonProperty("refresh_token")
-    private String refreshToken;
+    @JsonProperty("user_email")
+    private String email;
+
     @JsonProperty("user_role")
-    private Role userRole;
+    private Role role;
+
 }

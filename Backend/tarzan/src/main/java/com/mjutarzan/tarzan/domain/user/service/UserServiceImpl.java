@@ -42,7 +42,8 @@ public class UserServiceImpl implements UserService{
         loginedUser.updateUser(requestDto, jobLocation);
         userRepository.saveAndFlush(loginedUser);
         return RegisterUserResponseDto.builder()
-                .userRole(loginedUser.getRole())
+                .email(loginedUser.getEmail())
+                .role(loginedUser.getRole())
                 .build();
     }
 

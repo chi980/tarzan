@@ -55,7 +55,7 @@ public class OAuth2LoginSuccessHandler  implements AuthenticationSuccessHandler 
                     .queryParamIfPresent("nickname", Optional.ofNullable(oAuth2User.getNickname()))
                     .build()
                     .toUriString();
-
+            log.info("{}", redirectUrl);
             response.sendRedirect(redirectUrl);
 
         } catch (Exception e) {
