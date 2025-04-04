@@ -44,7 +44,7 @@
       <BottomBar class="bottom-bar"></BottomBar>
     </div>
     <!-- 주소 검색 팝업 -->
-    <!-- <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" /> -->
+    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
   </div>
 </template>
 
@@ -61,6 +61,7 @@ import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
+import AddressSearch from "@/components/common/AddressSearch.vue";
 // import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
