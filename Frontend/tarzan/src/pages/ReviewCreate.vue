@@ -29,6 +29,14 @@ onMounted(() => {
   console.log("houseIdx:", houseIdx);
 });
 
+const topBarHandler = () => {
+  if (step.value > 0) {
+    step.value--;
+    return;
+  }
+  router.back();
+};
+
 // 리뷰 작성 컴포넌트들
 const steps = [Step1, Step2];
 const step = ref(0);
@@ -52,7 +60,9 @@ const reviewData = ref<ReviewRequest>({
 const updateData = (partial: Partial<ReviewRequest>) => {
   Object.assign(reviewData.value, partial);
 };
-
+const prev = () => {
+  if (step.value > 0) step.value--;
+};
 const next = () => {
   if (step.value < steps.length - 1) step.value++;
   else submit();
@@ -65,7 +75,7 @@ const submit = () => {
 
 <template>
   <div class="sub-container">
-    <TopBarBack title="후기 작성" @back="$router.go(-1)" />
+    <TopBarBack title="후기 작성" @back="topBarHandler" />
     <div class="center-container">
       <div class="house-over-view-card">
         <p class="card-title">주소</p>
@@ -77,13 +87,7 @@ const submit = () => {
         <component :is="steps[step]" :data="reviewData" @update="updateData" />
       </div>
     </div>
-    <div
-      style="
-        width: 100%;
-        padding-bottom: 16px;
-        display: flex;
-        flex-direction: row;
-      ">
+    <div class="button-group">
       <div class="button-default" @click="next">
         {{ step < steps.length - 1 ? "다음" : "제출" }}
       </div>
@@ -147,7 +151,6 @@ const submit = () => {
 
 .create-review-tabs {
   flex: 1;
-  background-color: aqua;
 }
 .create-review-tabs .create-review-tab {
   display: flex;
@@ -156,13 +159,19 @@ const submit = () => {
   width: 100%;
 }
 
+.button-group {
+  width: 100%;
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+}
 .button-default {
+  @include custom-margin-x;
   @include custom-button-style(
     $bg-color: $secondary-color-default,
     $font-color: white
   );
-  @include custom-margin-x;
-  width: 100%;
+  flex: 1;
 }
 
 .center-container {

@@ -149,27 +149,17 @@ const routes = [
       {
         path: "",
         name: "Review",
-        component: () => import("@/components/review/Review.vue"),
+        component: () => import("@/pages/Review.vue"),
       },
       {
-        path: ":houseIdx",
+        path: ":reviewIdx",
         name: "ReviewDetail",
-        component: () => import("@/components/review/Review.vue"),
+        component: () => import("@/pages/Review.vue"),
       },
       {
         path: "create",
         name: "ReviewCreate",
         component: () => import("@/pages/ReviewCreate.vue"),
-      },
-      {
-        path: "create1",
-        name: "CreateReview1",
-        component: () => import("@/components/review/CreateReview1.vue"),
-      },
-      {
-        path: "create2",
-        name: "CreateReview2",
-        component: () => import("@/components/review/CreateReview2.vue"),
       },
     ],
   },
