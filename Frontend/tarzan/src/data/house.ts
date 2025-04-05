@@ -1,8 +1,7 @@
 export interface House {
-  idx: number;
-  name: string;
-  type: string;
-  address: string;
+  house_id: number;
+  house_latitude: number;
+  house_longitude: number;
 }
 
 export interface CompareHouse extends House {
@@ -39,4 +38,43 @@ export interface CompareHouse extends House {
     security: number;
     clinic: number;
   };
+}
+export interface Tag {
+  name: string; // Tag 구조에 따라 조정
+}
+
+export interface Review {
+  review_id: number;
+  review_img_url: string;
+  review_score: number;
+  review_lease_type: string; // LeaseType enum 형태면 string 또는 enum으로
+  review_deposit: number;
+  review_management_fee: number;
+  review_residence_period: number;
+  review_floor: number;
+  review_advantage: string;
+  review_advantage_tags: Tag[];
+  review_disadvantage: string;
+  review_disadvantage_tags: Tag[];
+  review_writer_nickname: string;
+  review_is_writer: boolean;
+}
+
+export interface HouseDetail {
+  house_name: string;
+  house_address: string;
+  house_category: string;
+  house_latitude: number;
+  house_longitude: number;
+  house_indexes: Index[];
+  house_review_images: string[];
+  house_reviews: Review[];
+}
+
+export interface Index {
+  house_index_amenity: number;
+  house_index_clinic: number;
+  house_index_security: number;
+  house_index_shopping: number;
+  house_index_transportation: number;
 }

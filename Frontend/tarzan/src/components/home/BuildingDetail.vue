@@ -1,15 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from "vue";
+import { Building } from "@/data/building";
 
-// Building 타입 정의 (필요 시 따로 인터페이스 분리해도 좋아)
-interface Building {
-  building_name: string;
-  building_category: string;
-  building_address: string;
-  building_latitude: number;
-  building_longitude: number;
-  building_type: string;
-}
 const { building } = defineProps<{ building: Building }>();
 </script>
 
@@ -27,7 +19,7 @@ const { building } = defineProps<{ building: Building }>();
 .building-detail-wrapper {
   @include custom-padding;
   @include custom-text($font-color: $text-color-light, $font-size: 12px);
-  width: 100%;
+  flex: 1;
 
   display: flex;
   flex-direction: column;

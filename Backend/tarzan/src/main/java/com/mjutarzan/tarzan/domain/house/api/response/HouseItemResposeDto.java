@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.domain.house.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mjutarzan.tarzan.domain.house.model.dto.HouseIndexes;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,20 +25,11 @@ public class HouseItemResposeDto {
     @JsonProperty("house_longitude")
     private Double longitude;
 
-    @JsonProperty("house_index_amenity")
-    private Integer indexAmenity;
+    @JsonProperty("house_category")
+    private String category;
 
-    @JsonProperty("house_index_clinic")
-    private Integer indexClinic;
-
-    @JsonProperty("house_index_security")
-    private Integer indexSecurity;
-
-    @JsonProperty("house_index_shopping")
-    private Integer indexShopping;
-
-    @JsonProperty("house_index_transportation")
-    private Integer indexTransportation;
+    @JsonProperty("house_indexes")
+    private HouseIndexes indexes;
 
     @JsonProperty("house_review_images")
     private List<String> reviewImageList;
@@ -46,19 +38,15 @@ public class HouseItemResposeDto {
     private List<ReviewListItemResponseDto> reviewList;
 
     @Builder
-    public HouseItemResposeDto(String name, String address, Double latitude, Double longitude,
-                                Integer indexAmenity, Integer indexClinic, Integer indexSecurity,
-                                Integer indexShopping, Integer indexTransportation,
+    public HouseItemResposeDto(String name, String address, Double latitude, Double longitude, String category,
+                               HouseIndexes indexes,
                                 List<String> reviewImageList, List<ReviewListItemResponseDto> reviewList) {
         this.name = name;
         this.address = address;
+        this.category = category;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.indexAmenity = indexAmenity;
-        this.indexClinic = indexClinic;
-        this.indexSecurity = indexSecurity;
-        this.indexShopping = indexShopping;
-        this.indexTransportation = indexTransportation;
+        this.indexes = indexes;
         this.reviewImageList = reviewImageList;
         this.reviewList = reviewList;
     }

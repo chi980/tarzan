@@ -7,6 +7,7 @@ import com.mjutarzan.tarzan.domain.house.api.response.HouseListItemResponseDto;
 import com.mjutarzan.tarzan.domain.house.api.response.HouseListResponseDto;
 import com.mjutarzan.tarzan.domain.house.api.response.SimpleHouseListItemResponseDto;
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
+import com.mjutarzan.tarzan.domain.house.model.dto.HouseIndexes;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
@@ -66,13 +67,16 @@ public class ApiHouseServiceImpl implements ApiHouseService{
         return HouseItemResposeDto.builder()
                 .name(house.getName())
                 .address(house.getAddress())
+                .category(house.getCategory())
                 .latitude(house.getLocation().getX())
                 .longitude(house.getLocation().getY())
-                .indexAmenity(0)
-                .indexClinic(0)
-                .indexSecurity(0)
-                .indexShopping(0)
-                .indexTransportation(0)
+                .indexes(HouseIndexes.builder()
+                        .indexAmenity(0)
+                        .indexClinic(0)
+                        .indexSecurity(0)
+                        .indexShopping(0)
+                        .indexTransportation(0)
+                        .build())
                 .reviewImageList(houseReviewList.stream().map(review -> review.getImgUrl()).collect(Collectors.toList()))
                 .reviewList(houseReviewList)
                 .build();
