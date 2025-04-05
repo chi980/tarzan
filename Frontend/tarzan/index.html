@@ -10,7 +10,7 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" /> -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 
     <title>Tarzan</title>
 
@@ -18,23 +18,24 @@
       type="text/javascript"
       src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=dbed32807cfd25e2fdaa8594c18c80f1&autoload=false"></script>
     <style>
+      html,
       body {
         margin: 0;
         padding: 0;
         width: 100%;
-        height: 100vh;
+        height: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         box-sizing: border-box; /* 예린 여백 정리중 */
-
-        display: flex; /* Flexbox를 사용하여 가운데 정렬 */
-        justify-content: center; /* 수평 가운데 정렬 */
-        align-items: center; /* 수직 가운데 정렬 */
 
         background-color: azure;
       }
 
       div#app {
-        height: 100%; /* Safari 하단 바 문제 해결 */
+        height: 100%;
         width: 360px;
         margin: 0;
         padding: 0;

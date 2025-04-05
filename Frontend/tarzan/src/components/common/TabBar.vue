@@ -5,17 +5,18 @@
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectTab(index)"
-        :class="['tab-title', { active: selectedTab === index }]"
-      >
+        :class="['tab-title', { active: selectedTabIdx === index }]">
         <p>{{ tab.name }}</p>
         <Transition name="indicator">
-          <div class="tab-indicator" v-if="selectedTab === index"></div>
+          <div class="tab-indicator" v-if="selectedTabIdx === index"></div>
         </Transition>
       </div>
     </div>
     <!-- 선택된 탭의 컨텐츠 -->
     <div class="tab-content">
-      <component :is="currentTabComponent" />
+      <component
+        :is="currentTabComponent"
+        v-bind="tabs[selectedTabIdx].props ?? {}" />
     </div>
   </div>
 </template>
@@ -32,16 +33,16 @@ const props = defineProps({
 });
 
 // 상태 변수
-const selectedTab = ref<number>(0); // 초기값: 첫 탭
+const selectedTabIdx = ref<number>(0); // 초기값: 첫 탭
 
 // 선택된 탭의 컴포넌트 계산
 const currentTabComponent = computed(() => {
-  return props.tabs[selectedTab.value].component;
+  return props.tabs[selectedTabIdx.value].component;
 });
 
 // 선택된 탭을 변경하는 메소드
 const selectTab = (index: number) => {
-  selectedTab.value = index;
+  selectedTabIdx.value = index;
   console.log(props.tabs[index]);
 };
 </script>
@@ -50,7 +51,6 @@ const selectTab = (index: number) => {
 .tab-container {
   width: 100%;
   flex: 1;
-
   display: flex;
   flex-direction: column;
 
@@ -60,7 +60,8 @@ const selectTab = (index: number) => {
   @include custom-padding-x;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  gap: $padding-default;
+  // justify-content: space-between;
 }
 .tab-title {
   @include custom-none-select-basic;
@@ -72,7 +73,7 @@ const selectTab = (index: number) => {
   align-items: center; /* 세로축 중앙 정렬 */
 
   position: relative;
-  min-width: 50px;
+  flex: 1;
   height: 48px;
 
   &.active {
