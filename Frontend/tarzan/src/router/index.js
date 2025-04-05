@@ -157,6 +157,11 @@ const routes = [
         component: () => import("@/components/review/Review.vue"),
       },
       {
+        path: "create",
+        name: "ReviewCreate",
+        component: () => import("@/pages/ReviewCreate.vue"),
+      },
+      {
         path: "create1",
         name: "CreateReview1",
         component: () => import("@/components/review/CreateReview1.vue"),

@@ -11,7 +11,6 @@ import router from "@/router/index.js";
 import App from "./App.vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
-library.add(faMagnifyingGlass);
 const app = createApp(App);
 app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(router);

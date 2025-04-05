@@ -46,6 +46,9 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
+
+import { Review, Tag } from "@/data/review";
+
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRoute, useRouter } from "vue-router";
 
@@ -53,7 +56,7 @@ const route = useRoute();
 const router = useRouter();
 
 onMounted(() => {
-  const houseIdx = route.query.houseIdx;
+  const houseIdx = Number(route.query.houseIdx);
 
   if (!houseIdx) {
     // 쿼리 파라미터가 없으면 홈으로 리디렉트
