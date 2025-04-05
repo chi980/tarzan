@@ -132,7 +132,7 @@ watch(searchQuery, debouncedSearch);
           v-model="searchQuery"
           @keyup.enter="searchAddress"
           type="text"
-          placeholder="검색할 주소명을 입력해주세요"
+          placeholder="찾고 싶은 주소를 입력해주세요."
           class="search-input"
           aria-label="주소 검색" />
       </div>
@@ -193,7 +193,7 @@ watch(searchQuery, debouncedSearch);
   border-radius: $border-radius-default;
 
   background: white;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
 
   img {
     @include custom-icon-style;
