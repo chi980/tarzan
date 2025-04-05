@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 public class HouseItemResposeDto {
 
+    @JsonProperty("house_id")
+    private Long id;
+
     @JsonProperty("house_name")
     private String name;
 
@@ -38,9 +41,10 @@ public class HouseItemResposeDto {
     private List<ReviewListItemResponseDto> reviewList;
 
     @Builder
-    public HouseItemResposeDto(String name, String address, Double latitude, Double longitude, String category,
+    public HouseItemResposeDto(Long id,String name, String address, Double latitude, Double longitude, String category,
                                HouseIndexes indexes,
                                 List<String> reviewImageList, List<ReviewListItemResponseDto> reviewList) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.category = category;

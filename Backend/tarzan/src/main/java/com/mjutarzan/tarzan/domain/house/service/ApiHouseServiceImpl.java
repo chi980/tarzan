@@ -65,6 +65,7 @@ public class ApiHouseServiceImpl implements ApiHouseService{
                 .collect(Collectors.toList());
 
         return HouseItemResposeDto.builder()
+                .id(house.getId())
                 .name(house.getName())
                 .address(house.getAddress())
                 .category(house.getCategory())
