@@ -2,13 +2,12 @@
   <div class="resultbar">
     <div class="resultbar-text">
       <span id="result-title">{{ resultTitle }}</span>
-      <span id="result-number">1600</span>
+      <!-- <span id="result-number">1600</span> -->
     </div>
     <div class="post-sort">
-      <CustomSelectBox 
-      :options="sortOptions"
-      @update:selected="handleSortSelectedIdx"
-      />
+      <CustomSelectBox
+        :options="sortOptions"
+        @update:selected="handleSortSelectedIdx" />
     </div>
   </div>
 </template>
@@ -28,6 +27,8 @@ const props = defineProps({
   },
 });
 
+console.log(props.sortOptions);
+
 // emits 정의
 const emit = defineEmits(["updateSortBy"]);
 
@@ -39,34 +40,32 @@ const handleSortSelectedIdx = (idx) => {
   selectedSortIdx.value = idx;
   console.log("Selected idx:", selectedSortIdx.value);
   emit("updateSortBy", idx); // 선택한 인덱스를 부모에게 전달
-
 };
 </script>
 
 <style lang="scss" scoped>
-  .resultbar {
-    display: flex;
-    align-items: center;
-    // background-color: yellow;
-  }
+.resultbar {
+  display: flex;
+  align-items: center;
+}
 
-  .resultbar-text {
-    display: flex;
-    align-items: baseline;
-    flex-grow: 1;
-    gap: 5px;
-  }
+.resultbar-text {
+  display: flex;
+  align-items: baseline;
+  flex-grow: 1;
+  gap: 5px;
+}
 
-  #result-title {
-    @include custom-text-bold;
-  }
+#result-title {
+  @include custom-text($font-size: 14px, $font-weight: 600);
+}
 
-  #result-number{
-    @include custom-text-bold($primary-color-default, 12px);
-    margin: 10px
-  }
+#result-number {
+  @include custom-text-bold($primary-color-default, 12px);
+  margin: 10px;
+}
 
-  :deep(.selected-item) {
-    background-color: white;
-  }
+:deep(.selected-item) {
+  background-color: white;
+}
 </style>
