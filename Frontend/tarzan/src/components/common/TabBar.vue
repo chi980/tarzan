@@ -51,7 +51,6 @@ const selectTab = (index: number) => {
 .tab-container {
   width: 100%;
   flex: 1;
-
   display: flex;
   flex-direction: column;
 
@@ -61,7 +60,8 @@ const selectTab = (index: number) => {
   @include custom-padding-x;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  gap: $padding-default;
+  // justify-content: space-between;
 }
 .tab-title {
   @include custom-none-select-basic;
@@ -73,7 +73,7 @@ const selectTab = (index: number) => {
   align-items: center; /* 세로축 중앙 정렬 */
 
   position: relative;
-  min-width: 50px;
+  flex: 1;
   height: 48px;
 
   &.active {

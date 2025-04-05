@@ -39,9 +39,22 @@ export interface CompareHouse extends House {
     clinic: number;
   };
 }
-export interface Tag {
-  name: string; // Tag 구조에 따라 조정
-}
+export type Tag =
+  | "NONE"
+  | "BUG"
+  | "BUILDING_MANAGEMENT"
+  | "PARKING"
+  | "SOUND_PROOF"
+  | "SECURITY"
+  | "TRAIL"
+  | "SECURITY_GUARD"
+  | "VENTILATION"
+  | "FLAT"
+  | "QUITE"
+  | "PREVENT_HEAT"
+  | "PET"
+  | "ELEVATOR"
+  | "MOLD";
 
 export interface Review {
   review_id: number;

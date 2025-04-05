@@ -111,7 +111,7 @@ watch(selectedButton, (newValue) => {
   console.log("현재 지도 중심 좌표:", latitude, longitude);
   const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
   console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
-
+  contentHeight.value = 0; // 정보창 닫기
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
     // fetchHouses(latitude, longitude, radius);

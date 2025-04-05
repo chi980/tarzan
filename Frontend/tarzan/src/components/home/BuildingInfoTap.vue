@@ -9,15 +9,8 @@ const props = defineProps<{
 
 <template>
   <div class="component">
-    <h1>{{ indexes }}</h1>
+    <p>{{ indexes }}</p>
   </div>
 </template>
 
-<style scoped lang="scss">
-.component {
-  background-color: greenyellow;
-  h1 {
-    color: blue;
-  }
-}
-</style>
+<style scoped lang="scss"></style>

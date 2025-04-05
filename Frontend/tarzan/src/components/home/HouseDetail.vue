@@ -140,13 +140,16 @@ const tabs: Tab[] = [
 <template>
   <div v-if="house" class="house-detail-wrapper">
     <BuildingDetail v-if="building" :building="building" />
-    <div class="tab-bar-wrapper"></div>
-    <TabBar :tabs="tabs"></TabBar>
+    <div class="tab-bar-wrapper">
+      <TabBar :tabs="tabs"></TabBar>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
 .house-detail-wrapper {
   background-color: aqua;
+  display: flex;
+  flex-direction: column;
 }
 </style>
