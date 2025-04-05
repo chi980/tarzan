@@ -24,16 +24,20 @@
 
         <div class="info-content-wrapper">
           <div
-            class="info-content-indicator"
-            @mousedown="startDrag"
-            @touchstart="startDragHandler"></div>
+            class="info-content-indicator-wrppaer"
+            @click="toggleContentHeight">
+            <div class="info-content-indicator"></div>
+          </div>
           <div
             class="info-content"
             ref="infoContent"
             :style="{
-              height: contentHeight,
+              height: contentHeight + 'px',
+              transition: 'height 0.3s ease',
             }">
-            <p>{{ buildingContent }}</p>
+            <BuildingDetail
+              v-if="buildingContent"
+              :building="buildingContent" />
           </div>
         </div>
       </div>
@@ -44,7 +48,7 @@
       <BottomBar class="bottom-bar"></BottomBar>
     </div>
     <!-- 주소 검색 팝업 -->
-    <!-- <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" /> -->
+    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
   </div>
 </template>
 
@@ -61,6 +65,8 @@ import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingInfo from "@/components/home/BuildingInfo.vue";
+import BuildingDetail from "@/components/common/BuildingDetail.vue";
+import AddressSearch from "@/components/common/AddressSearch.vue";
 // import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
@@ -109,6 +115,17 @@ watch(selectedButton, (newValue) => {
     // 매물 버튼 클릭 시
   } else {
     // fetchBuildings(newValue, latitude, longitude, radius);
+    buildings.value = [
+      {
+        building_name: "CNP차앤박피부과 도곡양재점",
+        building_category: "종합병원",
+        building_address: "서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)",
+        building_latitude: mapInstance.getCenter().getLat(),
+        building_longitude: mapInstance.getCenter().getLng(),
+        building_type: newValue,
+      },
+    ];
+    addMarkers(mapInstance, buildings.value); // 마커 추가
   }
 });
 
@@ -216,8 +233,8 @@ const fetchBuildings = async (
   }
 };
 
-import { useAuthStore } from "@/stores/authStore";
 /** building, house info overlay */
+import { useAuthStore } from "@/stores/authStore";
 const showInfoOverlay = async () => {
   try {
     const authStore = useAuthStore();
@@ -229,23 +246,15 @@ const showInfoOverlay = async () => {
   }
 };
 
-const buildingContent = ref("");
+const contentHeight = ref(0);
+const maxHeight = ref(0);
+const infoContent = ref<HTMLElement | null>(null);
 
-const minHeight = 0; // 최소 높이
-const maxHeight = ref(445); // 최대 높이 (기본값 445)
-// const contentHeight = ref("auto"); // 초기값은 auto
-const contentHeight = ref(0); // 초기값은 auto
-const startY = ref(0);
-const startHeight = ref(0);
-// const isDraggable = ref(false);
-const infoContent = ref(null);
+const buildingContent = ref(null);
 
 const updateInitialHeight = () => {
   if (infoContent.value) {
-    const actualHeight = infoContent.value.scrollHeight;
-    // isDraggable.value = actualHeight > 66; // 드래그 가능 여부 확인
-    maxHeight.value = actualHeight > 445 ? 445 : actualHeight; // 최대 높이 설정
-    contentHeight.value = actualHeight > 445 ? 125 : actualHeight; // 초기 높이 설정
+    contentHeight.value = 0; // 처음에는 숨긴 상태
   }
 };
 
@@ -253,50 +262,23 @@ onMounted(async () => {
   await nextTick();
   updateInitialHeight();
 });
-
-const startDrag = (event) => {
-  // if (!isDraggable.value) return;
-  console.log("드래그 시작");
-  console.log();
-
-  startY.value = event.clientY;
-  startHeight.value =
-    contentHeight.value === "auto"
-      ? infoContent.value.scrollHeight
-      : contentHeight.value;
-
-  document.addEventListener("mousemove", onDrag);
-  document.addEventListener("mouseup", endDrag);
-  document.addEventListener("touchmove", onDrag);
-  document.addEventListener("touchend", endDrag);
-};
-
-const startDragHandler = (event) => {
-  event.preventDefault(); // 기본 이벤트 방지
-  startDrag(event);
-};
-
-const onDrag = (event) => {
-  const deltaY = startY.value - event.clientY;
-  contentHeight.value = Math.min(
-    maxHeight.value,
-    Math.max(minHeight, startHeight.value + deltaY)
-  );
-};
-
-const endDrag = () => {
-  document.removeEventListener("mousemove", onDrag);
-  document.removeEventListener("mouseup", endDrag);
-  document.removeEventListener("touchmove", onDrag);
-  document.removeEventListener("touchend", endDrag);
-};
-
 onUnmounted(() => {
-  document.removeEventListener("mousemove", onDrag);
-  document.removeEventListener("mouseup", endDrag);
-  document.removeEventListener("touchmove", onDrag);
-  document.removeEventListener("touchend", endDrag);
+  contentHeight.value = 0; // 컴포넌트 언마운트 시 초기화
 });
+const toggleContentHeight = async () => {
+  console.log("indicator click");
+
+  if (contentHeight.value === 0) {
+    await nextTick(); // DOM 업데이트 기다림
+    if (infoContent.value) {
+      const newHeight = infoContent.value.scrollHeight;
+      maxHeight.value = newHeight;
+      contentHeight.value = newHeight;
+    }
+  } else {
+    contentHeight.value = 0;
+  }
+};
 
 /** kakao map functions */
 const mapContainer = ref<HTMLDivElement | null>(null); // 지도를 표시할 div
@@ -351,10 +333,14 @@ const addMarkers = (mapInstance, buildings) => {
     console.log(marker);
     console.log("마커 객체 생성 완료");
     // 마커 클릭 시 이벤트 추가 (선택 사항)
-    window.kakao.maps.event.addListener(marker, "click", () => {
-      console.log("marker click");
+    window.kakao.maps.event.addListener(marker, "click", async () => {
       buildingContent.value = building;
-      contentHeight.value = "fit-content";
+      await nextTick(); // DOM 업데이트 기다림
+      if (infoContent.value) {
+        const newHeight = infoContent.value.scrollHeight;
+        maxHeight.value = newHeight;
+        contentHeight.value = newHeight;
+      }
     });
   });
 };
@@ -485,10 +471,8 @@ const addMarkers = (mapInstance, buildings) => {
 
   .info-content-wrapper {
     @include custom-text;
-    padding-top: 11px;
     display: flex;
     flex-direction: column;
-    gap: 11px;
     align-items: center;
     justify-content: start;
     padding-left: 20;
@@ -499,21 +483,30 @@ const addMarkers = (mapInstance, buildings) => {
     height: fit-content;
 
     overflow: hidden;
-    transition: height 0.3s ease-out;
 
-    .info-content-indicator {
-      width: 134px;
-      height: 4px;
-      border-radius: 100px;
-      background-color: #e8e8e8;
+    background-color: white;
 
+    .info-content-indicator-wrppaer {
+      @include custom-padding-y($padding-small);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       cursor: grab;
+
+      .info-content-indicator {
+        width: 134px;
+        height: 4px;
+        border-radius: 100px;
+        background-color: #e8e8e8;
+      }
     }
 
     .info-content {
       width: 100%;
       // flex: 1;
-      background-color: aqua;
+      transition: height 0.3s ease-out;
+
       overflow-y: auto;
     }
   }
