@@ -29,6 +29,14 @@ onMounted(() => {
   console.log("houseIdx:", houseIdx);
 });
 
+const topBarHandler = () => {
+  if (step.value > 0) {
+    step.value--;
+    return;
+  }
+  router.back();
+};
+
 // 리뷰 작성 컴포넌트들
 const steps = [Step1, Step2];
 const step = ref(0);
@@ -67,7 +75,7 @@ const submit = () => {
 
 <template>
   <div class="sub-container">
-    <TopBarBack title="후기 작성" @back="$router.go(-1)" />
+    <TopBarBack title="후기 작성" @back="topBarHandler" />
     <div class="center-container">
       <div class="house-over-view-card">
         <p class="card-title">주소</p>
