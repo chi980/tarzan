@@ -1,7 +1,9 @@
 <template>
-  <div class="input-container">
+  <form class="input-form" @submit.prevent="submitForm">
     <div class="input-group" id="장점">
-      <h2 class="input-title">장점 (50자 이상)</h2>
+      <h2 class="input-title">
+        장점 (50자 이상)<span class="input-title-mandatory">*</span>
+      </h2>
       <textarea
         class="input-content"
         type="text"
@@ -27,7 +29,9 @@
     </div>
 
     <div class="input-group" id="단점">
-      <h2 class="input-title">단점 (50자 이상)</h2>
+      <h2 class="input-title">
+        단점 (50자 이상)<span class="input-title-mandatory">*</span>
+      </h2>
       <textarea
         class="input-content"
         type="text"
@@ -43,16 +47,8 @@
           <span>{{ button.label }}</span>
         </template>
       </TagButtonGroup>
-      <!-- <TagButtonGroup 
-            v-model:selectedButtons="selectedDisadvantageButtons"
-            :buttons="disadvantageButtons"
-            :multiple="true">
-            <template v-slot:default="{ button }">
-              <span>{{ button.label }}</span>
-            </template>
-          </TagButtonGroup> -->
     </div>
-  </div>
+  </form>
 </template>
 
 <script setup>
@@ -123,23 +119,45 @@ const submitReview = async () => {
 </script>
 
 <style lang="scss" scoped>
-.input-container {
+.input-form {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 32px;
-}
+  gap: $padding-big;
 
-.input-container .input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .input-group {
+    @include custom-padding-x();
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-.input-container .input-group .input-title {
-  @include custom-text-bold;
-  text-align: left;
-}
+    .input-title {
+      @include custom-text($font-size: 14px);
+      text-align: left;
 
+      .input-title-mandatory {
+        color: red;
+      }
+    }
+
+    .input-content {
+      display: flex;
+      align-items: center;
+      gap: $padding-small;
+
+      input[type="text"] {
+        @include custom-input-style;
+        flex: 1;
+      }
+    }
+  }
+}
+// scoped
+textarea {
+  @include custom-input-style;
+  @include custom-padding;
+  height: 100px;
+}
 .input-container .input-group .input-content {
   @include custom-input-style;
   text-align: left;
@@ -150,9 +168,5 @@ const submitReview = async () => {
 :deep(.tag-button-container) {
   overflow-x: auto;
   flex-wrap: wrap;
-}
-
-button {
-  margin-bottom: 26px;
 }
 </style>
