@@ -24,13 +24,16 @@
 
         <div class="info-content-wrapper">
           <div
-            class="info-content-indicator"
-            @click="toggleContentHeight"></div>
+            class="info-content-indicator-wrppaer"
+            @click="toggleContentHeight">
+            <div class="info-content-indicator"></div>
+          </div>
           <div
             class="info-content"
             ref="infoContent"
             :style="{
-              height: contentHeight === 0 ? '0' : contentHeight + 'px',
+              height: contentHeight + 'px',
+              transition: 'height 0.3s ease',
             }">
             <BuildingDetail
               v-if="buildingContent"
@@ -243,17 +246,14 @@ const showInfoOverlay = async () => {
   }
 };
 
-const minHeight = 0; // 최소 높이
-const maxHeight = ref(445); // 최대 높이 (기본값 445)
 const contentHeight = ref(0);
+const maxHeight = ref(0);
+const infoContent = ref<HTMLElement | null>(null);
 
-const infoContent = ref(null);
 const buildingContent = ref(null);
 
 const updateInitialHeight = () => {
   if (infoContent.value) {
-    const actualHeight = infoContent.value.scrollHeight;
-    maxHeight.value = actualHeight > 445 ? 445 : actualHeight;
     contentHeight.value = 0; // 처음에는 숨긴 상태
   }
 };
@@ -262,14 +262,19 @@ onMounted(async () => {
   await nextTick();
   updateInitialHeight();
 });
+onUnmounted(() => {
+  contentHeight.value = 0; // 컴포넌트 언마운트 시 초기화
+});
+const toggleContentHeight = async () => {
+  console.log("indicator click");
 
-// ✅ 함수 추가
-const toggleContentHeight = () => {
-  console.log("toggleContentHeight");
-  console.log("contentHeight", contentHeight.value);
-  console.log("maxHeight", maxHeight.value);
   if (contentHeight.value === 0) {
-    contentHeight.value = maxHeight.value;
+    await nextTick(); // DOM 업데이트 기다림
+    if (infoContent.value) {
+      const newHeight = infoContent.value.scrollHeight;
+      maxHeight.value = newHeight;
+      contentHeight.value = newHeight;
+    }
   } else {
     contentHeight.value = 0;
   }
@@ -328,12 +333,14 @@ const addMarkers = (mapInstance, buildings) => {
     console.log(marker);
     console.log("마커 객체 생성 완료");
     // 마커 클릭 시 이벤트 추가 (선택 사항)
-    window.kakao.maps.event.addListener(marker, "click", () => {
-      console.log("marker click");
-      console.log("building", building);
+    window.kakao.maps.event.addListener(marker, "click", async () => {
       buildingContent.value = building;
-      maxHeight.value = 445;
-      contentHeight.value = maxHeight.value;
+      await nextTick(); // DOM 업데이트 기다림
+      if (infoContent.value) {
+        const newHeight = infoContent.value.scrollHeight;
+        maxHeight.value = newHeight;
+        contentHeight.value = newHeight;
+      }
     });
   });
 };
@@ -464,10 +471,8 @@ const addMarkers = (mapInstance, buildings) => {
 
   .info-content-wrapper {
     @include custom-text;
-    padding-top: 11px;
     display: flex;
     flex-direction: column;
-    gap: 11px;
     align-items: center;
     justify-content: start;
     padding-left: 20;
@@ -478,21 +483,30 @@ const addMarkers = (mapInstance, buildings) => {
     height: fit-content;
 
     overflow: hidden;
-    transition: height 0.3s ease-out;
 
-    .info-content-indicator {
-      width: 134px;
-      height: 4px;
-      border-radius: 100px;
-      background-color: #e8e8e8;
+    background-color: white;
 
+    .info-content-indicator-wrppaer {
+      @include custom-padding-y($padding-small);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       cursor: grab;
+
+      .info-content-indicator {
+        width: 134px;
+        height: 4px;
+        border-radius: 100px;
+        background-color: #e8e8e8;
+      }
     }
 
     .info-content {
       width: 100%;
       // flex: 1;
-      background-color: aqua;
+      transition: height 0.3s ease-out;
+
       overflow-y: auto;
     }
   }
