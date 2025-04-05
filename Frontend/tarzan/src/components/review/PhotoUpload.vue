@@ -26,16 +26,24 @@
     <!-- 업로드된 이미지 목록 표시 -->
     <div class="uploaded-images">
       <div v-for="(img, index) in imageList" :key="index" class="image-wrapper">
-        <img :src="img" alt="Uploaded Image" class="preview-image">
+        <img :src="img" alt="Uploaded Image" class="preview-image" />
         <button class="delete-btn" @click="removeImage(index)">X</button>
       </div>
     </div>
 
     <!-- 파일 업로드 버튼 (최대 10장 제한) -->
     <label v-if="imageList.length < 10" for="file-upload" class="upload-btn">
-      <img id="photo-upload-icon" src="@/assets/icons/Filter/plus-icon.svg" alt="photo-upload-icon">
+      <img
+        id="photo-upload-icon"
+        src="@/assets/icons/Filter/plus-icon.svg"
+        alt="photo-upload-icon" />
     </label>
-    <input id="file-upload" type="file" @change="handleFileUpload" accept="image/*" multiple>
+    <input
+      id="file-upload"
+      type="file"
+      @change="handleFileUpload"
+      accept="image/*"
+      multiple />
   </div>
 </template>
 

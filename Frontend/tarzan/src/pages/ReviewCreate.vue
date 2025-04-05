@@ -52,7 +52,9 @@ const reviewData = ref<ReviewRequest>({
 const updateData = (partial: Partial<ReviewRequest>) => {
   Object.assign(reviewData.value, partial);
 };
-
+const prev = () => {
+  if (step.value > 0) step.value--;
+};
 const next = () => {
   if (step.value < steps.length - 1) step.value++;
   else submit();
@@ -77,13 +79,7 @@ const submit = () => {
         <component :is="steps[step]" :data="reviewData" @update="updateData" />
       </div>
     </div>
-    <div
-      style="
-        width: 100%;
-        padding-bottom: 16px;
-        display: flex;
-        flex-direction: row;
-      ">
+    <div class="button-group">
       <div class="button-default" @click="next">
         {{ step < steps.length - 1 ? "다음" : "제출" }}
       </div>
@@ -147,7 +143,6 @@ const submit = () => {
 
 .create-review-tabs {
   flex: 1;
-  background-color: aqua;
 }
 .create-review-tabs .create-review-tab {
   display: flex;
@@ -156,13 +151,19 @@ const submit = () => {
   width: 100%;
 }
 
+.button-group {
+  width: 100%;
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+}
 .button-default {
+  @include custom-margin-x;
   @include custom-button-style(
     $bg-color: $secondary-color-default,
     $font-color: white
   );
-  @include custom-margin-x;
-  width: 100%;
+  flex: 1;
 }
 
 .center-container {
