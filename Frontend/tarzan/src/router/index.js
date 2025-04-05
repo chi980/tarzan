@@ -145,11 +145,15 @@ const routes = [
 
   {
     path: "/review",
-    name: "Review",
     children: [
       {
         path: "",
         name: "Review",
+        component: () => import("@/components/review/Review.vue"),
+      },
+      {
+        path: ":houseIdx",
+        name: "ReviewDetail",
         component: () => import("@/components/review/Review.vue"),
       },
       {

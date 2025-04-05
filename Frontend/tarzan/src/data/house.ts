@@ -74,6 +74,7 @@ export interface Review {
 }
 
 export interface HouseDetail {
+  house_id: number;
   house_name: string;
   house_address: string;
   house_category: string;

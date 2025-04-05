@@ -24,6 +24,7 @@ const fetchHouseDetail = async (houseId: number) => {
     // const res = await axiosPlugin.get(`/api/v1/houses/${houseId}`);
     // houseDetail.value = res.data.data;
     houseDetail.value = {
+      house_id: 1,
       house_name: "타잔타워",
       house_address: "서울시 강남구 테헤란로 101",
       house_category: "아파트",
@@ -124,7 +125,10 @@ const tabs: Tab[] = [
     name: "리뷰",
     component: ReviewTap,
     props: houseDetail.value
-      ? { reviews: houseDetail.value.house_reviews }
+      ? {
+          reviews: houseDetail.value.house_reviews,
+          houseId: houseDetail.value.house_id,
+        }
       : undefined,
   },
   {

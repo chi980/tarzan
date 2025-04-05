@@ -1,15 +1,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
+
+import { useRouter } from "vue-router";
+
 import { Review } from "@/data/house";
 import ReviewItem from "@/components/review/ReviewItem.vue";
 import arrowRightImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Right/chevron-right.png";
 
+const router = useRouter();
+
 const props = defineProps<{
+  houseId: number;
   reviews: Review[];
 }>();
 
 const showMoreReviews = () => {
-  console.log("더보기 클릭");
+  console.log("houseId" + props.houseId);
+  router.push({
+    name: "Review",
+    query: {
+      houseIdx: props.houseId,
+    },
+  });
 };
 </script>
 
