@@ -6,12 +6,14 @@
         v-model:selectedButton="selectedMainTag"
         :multiple="false" />
     </div>
-    <div class="tag-button-wrapper sub scroll-hidden-box">
-      <TagButtonGroup
-        :buttons="subTagOptions"
-        v-model:selectedButton="selectedSubTag"
-        :multiple="false" />
-    </div>
+    <Transition name="slide-fade">
+      <div v-if="showSubTags" class="tag-button-wrapper sub scroll-hidden-box">
+        <TagButtonGroup
+          :buttons="subTagOptions"
+          v-model:selectedButton="selectedSubTag"
+          :multiple="false" />
+      </div>
+    </Transition>
     <!-- 필터링된 체크리스트 항목 -->
     <CheckListItem
       v-for="item in filteredChecklist"
@@ -43,8 +45,14 @@ const subTagOptions = ref([
   { label: "이사후", value: "AFTER_MOVE" },
 ]);
 
-const selectedMainTag = ref("homeAppliances");
-const selectedSubTag = ref("ALL");
+const selectedMainTag = ref(null);
+const selectedSubTag = ref(null);
+
+const showSubTags = ref(false);
+
+watch(selectedMainTag, () => {
+  showSubTags.value = true; // 메인 태그 바뀔 때마다 슬라이드다운
+});
 
 // ✅ 체크리스트 복사본 - 원본을 오염시키지 않도록 deep copy
 const checkList = ref(JSON.parse(JSON.stringify(originalData)));
@@ -137,5 +145,26 @@ function onChange(item: { idx: number; subKey: "BEFO_MOVE" | "AFTER_MOVE" }) {
 
 .scroll-hidden-box::-webkit-scrollbar {
   display: none; /* Chrome */
+}
+
+// scoped
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  max-height: 100px; // 적절한 높이로 조정
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>
