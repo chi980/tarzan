@@ -26,7 +26,7 @@ import { ref, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
   modelValue: Number, // 현재 별점 값 (v-model 사용)
-  readonly: Boolean, // 읽기 전용 모드 여부
+  readonly: Boolean,  // 읽기 전용 모드 여부
 });
 
 const emit = defineEmits(["update:modelValue"]);
