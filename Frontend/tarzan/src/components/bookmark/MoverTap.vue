@@ -101,93 +101,116 @@ const updateCheckItem = (category: string, idx: number) => {
   const item = list.find((i) => i.idx === idx);
   if (item) {
     item.value = !item.value;
+    saveToLocalStorage(); // ✅ 체크 상태 변경 시 저장
   }
 };
+
+const STORAGE_KEY = "checklist-storage-mover";
+const saveToLocalStorage = () => {
+  const dataToStore = JSON.parse(JSON.stringify(checkListData));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToStore));
+};
+const loadFromLocalStorage = () => {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    const parsed = JSON.parse(stored);
+    Object.keys(parsed).forEach((key) => {
+      if (checkListData[key]) {
+        checkListData[key].splice(0, checkListData[key].length, ...parsed[key]);
+      }
+    });
+  }
+};
+onMounted(() => {
+  loadFromLocalStorage();
+  // fetchCheckMoverList(); // API로 덮어씌우는 로직이 있다면 필요 시 선택
+});
+
 // API: 체크리스트 API 호출
-const fetchCheckMoverList = async () => {
-  try {
-    const response = await axiosInstance.get(`/v1/checklist/mover?`);
-
-    if (response.data.success) {
-      console.log("이사 체크리스트 가져오기 성공!");
-      const data = response.data.data;
-      console.log("API 응답 데이터:", data);
-
-      // checkListData.move_day_before_30days = data.move_day_before_30days.name_list.map(
-      //   (name, index) => ({
-      //     idx: data.move_day_before_30days.id_list[index],
-      //     name,
-      //     value: data.move_day_before_30days.value_list[index],
-      //   })
-      // );
-      // checkListData.move_day_before_7days = data.move_day_before_7days.name_list.map(
-      //   (name, index) => ({
-      //     idx: data.move_day_before_7days.id_list[index],
-      //     name,
-      //     value: data.move_day_before_7days.value_list[index],
-      //   })
-      // );
-      // checkListData.move_day_before_1days = data.move_day_before_1days.name_list.map(
-      //   (name, index) => ({
-      //     idx: data.move_day_before_1days.id_list[index],
-      //     name,
-      //     value: data.move_day_before_1days.value_list[index],
-      //   })
-      // );
-      // checkListData.move_day_before_ddays = data.move_day_before_ddays.name_list.map(
-      //   (name, index) => ({
-      //     idx: data.move_day_before_ddays.id_list[index],
-      //     name,
-      //     value: data.move_day_before_ddays.value_list[index],
-      //   })
-      // );
-      // 🔥 모든 카테고리를 한 번에 업데이트
-      Object.keys(checkListData).forEach((key) => {
-        if (data[key]) {
-          checkListData[key].splice(
-            0,
-            checkListData[key].length, // 기존 값 전부 제거
-            ...data[key].name_list.map((name, index) => ({
-              idx: data[key].id_list[index],
-              name,
-              value: data[key].value_list[index],
-            }))
-          );
-        }
-      });
-    } else {
-      console.error("체크리스트 데이터 없음", response.data.message);
-    }
-  } catch (error) {
-    console.error("API 요청 오류: ", error);
-  }
-};
-
-// const updateCheckItem = async (category: string, itemIdx: number) => {
+// const fetchCheckMoverList = async () => {
 //   try {
-//     const item = checkListData[category].find((item) => item.idx === itemIdx);
-//     if (!item) return;
-
-//     const response = await axiosInstance.post(`/v1/checklist/mover`, {
-//       itemIdx,
-//       value: !item.value, // 현재 값의 반대로 변경 요청
-//     });
+//     const response = await axiosInstance.get(`/v1/checklist/mover?`);
 
 //     if (response.data.success) {
-//       item.value = !item.value; // ✅ 요청이 성공한 경우에만 상태 변경
-//       console.log("체크 상태 저장 성공!", response.data);
+//       console.log("이사 체크리스트 가져오기 성공!");
+//       const data = response.data.data;
+//       console.log("API 응답 데이터:", data);
+
+//       // checkListData.move_day_before_30days = data.move_day_before_30days.name_list.map(
+//       //   (name, index) => ({
+//       //     idx: data.move_day_before_30days.id_list[index],
+//       //     name,
+//       //     value: data.move_day_before_30days.value_list[index],
+//       //   })
+//       // );
+//       // checkListData.move_day_before_7days = data.move_day_before_7days.name_list.map(
+//       //   (name, index) => ({
+//       //     idx: data.move_day_before_7days.id_list[index],
+//       //     name,
+//       //     value: data.move_day_before_7days.value_list[index],
+//       //   })
+//       // );
+//       // checkListData.move_day_before_1days = data.move_day_before_1days.name_list.map(
+//       //   (name, index) => ({
+//       //     idx: data.move_day_before_1days.id_list[index],
+//       //     name,
+//       //     value: data.move_day_before_1days.value_list[index],
+//       //   })
+//       // );
+//       // checkListData.move_day_before_ddays = data.move_day_before_ddays.name_list.map(
+//       //   (name, index) => ({
+//       //     idx: data.move_day_before_ddays.id_list[index],
+//       //     name,
+//       //     value: data.move_day_before_ddays.value_list[index],
+//       //   })
+//       // );
+//       // 🔥 모든 카테고리를 한 번에 업데이트
+//       Object.keys(checkListData).forEach((key) => {
+//         if (data[key]) {
+//           checkListData[key].splice(
+//             0,
+//             checkListData[key].length, // 기존 값 전부 제거
+//             ...data[key].name_list.map((name, index) => ({
+//               idx: data[key].id_list[index],
+//               name,
+//               value: data[key].value_list[index],
+//             }))
+//           );
+//         }
+//       });
 //     } else {
-//       console.error("체크 상태 저장 실패", response.data.message);
+//       console.error("체크리스트 데이터 없음", response.data.message);
 //     }
 //   } catch (error) {
-//     console.error("체크 상태 저장 중 오류 발생: ", error);
+//     console.error("API 요청 오류: ", error);
 //   }
 // };
 
-// 컴포넌트가 로드되었을 때 체크리스트 불러오기
-onMounted(() => {
-  fetchCheckMoverList();
-});
+// // const updateCheckItem = async (category: string, itemIdx: number) => {
+// //   try {
+// //     const item = checkListData[category].find((item) => item.idx === itemIdx);
+// //     if (!item) return;
+
+// //     const response = await axiosInstance.post(`/v1/checklist/mover`, {
+// //       itemIdx,
+// //       value: !item.value, // 현재 값의 반대로 변경 요청
+// //     });
+
+// //     if (response.data.success) {
+// //       item.value = !item.value; // ✅ 요청이 성공한 경우에만 상태 변경
+// //       console.log("체크 상태 저장 성공!", response.data);
+// //     } else {
+// //       console.error("체크 상태 저장 실패", response.data.message);
+// //     }
+// //   } catch (error) {
+// //     console.error("체크 상태 저장 중 오류 발생: ", error);
+// //   }
+// // };
+
+// // 컴포넌트가 로드되었을 때 체크리스트 불러오기
+// onMounted(() => {
+//   fetchCheckMoverList();
+// });
 </script>
 
 <style lang="scss" scoped>
