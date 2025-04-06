@@ -1,6 +1,12 @@
 <template>
   <div class="tab-content house-content-wrapper">
     <div class="house-item-wrapper">
+      <div class="tag-button-wrapper">
+        <TagButtonGroup
+          :buttons="tagOptions"
+          v-model:selectedButton="selectedTag"
+          :multiple="false" />
+      </div>
       <div class="house-item--add-wrapper">
         <div class="house-add-img-wrapper">
           <img :src="houseAddImg" alt="houseAddImg" />
@@ -26,6 +32,7 @@ import houseAddImg from "@/assets/icons/Plus/Pluse.png";
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
 import HouseItem from "@/components/bookmark/HouseItem.vue";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 
 /** data, plugin load */
 import { useRouter } from "vue-router";
@@ -46,6 +53,14 @@ const navigateToCheckCostPage = (house) => {
   const bookmarkIdx = house.bookmarkIdx;
   router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
 };
+
+const tagOptions = [
+  { label: "전체", value: "ALL" },
+  { label: "점검 전", value: "CHECK_PENDING" },
+  { label: "점검 완료", value: "CHECK_COMPLETED" },
+];
+
+const selectedTag = ref("ALL"); // 단일 선택용
 
 const list = ref([]);
 list.value = [

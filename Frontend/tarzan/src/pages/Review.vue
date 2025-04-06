@@ -104,7 +104,6 @@ const buttons = ref([
   { label: "👟 평지", value: "FLAT" },
 ]);
 const selectedButton = ref("ALL");
-// const sortOptions = ref(["최신순", "오래된순", "평점순"]);÷
 const sortOptions = ref([
   {
     idx: 0,
