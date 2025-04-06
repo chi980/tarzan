@@ -1,9 +1,20 @@
+<!--
+  - v-model로 별점 바인딩 (Number)
+  - :readonly="true" 옵션으로 읽기 전용 가능
+  - 최대 5점까지 평가 가능
+  - 사용 예시:
+      <StarRating v-model="rating" />
+      <StarRating v-model="rating" :readonly="true" />
+
+  Emits:
+    - update:modelValue (별 클릭 시 값 변경)
+-->
 <template>
   <div class="sub-container">
     <TopBarBack title="실거주 후기" />
     <div class="center-container">
       <div class="center-container-content">
-        <StarRating v-model="rating" />
+        <StarRating v-model="rating" :readonly="true" />
         <div class="rating-description">
           <span id="average">4.0</span>
           <span id="count">(45)</span>
