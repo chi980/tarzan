@@ -13,7 +13,7 @@
       </div>
     </div>
     <!-- 선택된 탭의 컨텐츠 -->
-    <div class="tab-content">
+    <div>
       <component
         :is="currentTabComponent"
         v-bind="tabs[selectedTabIdx].props ?? {}" />
@@ -53,15 +53,12 @@ const selectTab = (index: number) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-
-  background-color: white;
 }
 .tab-titles {
   @include custom-padding-x;
   display: flex;
   flex-direction: row;
   gap: $padding-default;
-  // justify-content: space-between;
 }
 .tab-title {
   @include custom-none-select-basic;

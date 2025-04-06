@@ -1,5 +1,5 @@
 <template>
-  <div class="accordion-wrapper tab-content">
+  <div>
     <div class="tag-button-wrapper">
       <TagButtonGroup
         :buttons="tagOptions"
@@ -192,25 +192,9 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 // 공통
-.tab-content {
-  margin-top: 0;
-}
-.button-in-tab {
-  @include custom-button-style(
-    $bg-color: #f2f2f2,
-    $icon-size: 18px,
-    $height: 52px
-  );
-  margin-bottom: $padding-small;
-}
 // scoped
-.accordion-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: $padding-small;
-}
-
 .tag-button-wrapper {
   @include custom-padding-x;
+  @include custom-padding-y($padding-small);
 }
 </style>
