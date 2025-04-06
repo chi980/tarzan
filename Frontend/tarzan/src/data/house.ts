@@ -1,8 +1,12 @@
 export interface House {
-  idx: number;
-  name: string;
-  type: string;
-  address: string;
+  house_id: number;
+  house_latitude: number;
+  house_longitude: number;
+}
+
+export interface HouseOverview {
+  house_name: string;
+  house_address: string;
 }
 
 export interface CompareHouse extends House {
@@ -39,4 +43,24 @@ export interface CompareHouse extends House {
     security: number;
     clinic: number;
   };
+}
+
+export interface HouseDetail {
+  house_id: number;
+  house_name: string;
+  house_address: string;
+  house_category: string;
+  house_latitude: number;
+  house_longitude: number;
+  house_indexes: Index[];
+  house_review_images: string[];
+  house_reviews: Review[];
+}
+
+export interface Index {
+  house_index_amenity: number;
+  house_index_clinic: number;
+  house_index_security: number;
+  house_index_shopping: number;
+  house_index_transportation: number;
 }

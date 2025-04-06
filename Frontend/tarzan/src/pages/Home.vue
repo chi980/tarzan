@@ -24,16 +24,21 @@
 
         <div class="info-content-wrapper">
           <div
-            class="info-content-indicator"
-            @mousedown="startDrag"
-            @touchstart="startDragHandler"></div>
+            class="info-content-indicator-wrppaer"
+            @click="toggleContentHeight">
+            <div class="info-content-indicator"></div>
+          </div>
           <div
             class="info-content"
             ref="infoContent"
             :style="{
-              height: contentHeight,
+              height: contentHeight + 'px',
+              transition: 'height 0.3s ease',
             }">
-            <p>{{ buildingContent }}</p>
+            <BuildingDetail
+              v-if="buildingContent"
+              :building="buildingContent" />
+            <HouseDetail v-if="houseContent" :house="houseContent" />
           </div>
         </div>
       </div>
@@ -44,7 +49,7 @@
       <BottomBar class="bottom-bar"></BottomBar>
     </div>
     <!-- 주소 검색 팝업 -->
-    <!-- <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" /> -->
+    <AddressSearch v-if="isAddressSearchOpen" @close="closeAddressSearch" />
   </div>
 </template>
 
@@ -60,8 +65,10 @@ import refreshIconImg from "@/assets/icons/Retry-refresh.png";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
-import BuildingInfo from "@/components/home/BuildingInfo.vue";
-// import { getScaleRatio } from "@/data/kakaoMap";
+import BuildingDetail from "@/components/home/BuildingDetail.vue";
+import HouseDetail from "@/components/home/HouseDetail.vue";
+import AddressSearch from "@/components/common/AddressSearch.vue";
+import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
 const address = ref<string | null>(null);
@@ -102,13 +109,33 @@ watch(selectedButton, (newValue) => {
   const latitude = center.getLat(); // 예시 위도
   const longitude = center.getLng(); // 예시 경도
   console.log("현재 지도 중심 좌표:", latitude, longitude);
-  // const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
-  // console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
-
+  const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
+  console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
+  contentHeight.value = 0; // 정보창 닫기
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
+    // fetchHouses(latitude, longitude, radius);
+    houses.value = [
+      {
+        house_id: 1,
+        house_latitude: latitude,
+        house_longitude: longitude,
+      },
+    ];
+    addHouseMarkers(mapInstance, houses.value);
   } else {
     // fetchBuildings(newValue, latitude, longitude, radius);
+    buildings.value = [
+      {
+        building_name: "CNP차앤박피부과 도곡양재점",
+        building_category: "종합병원",
+        building_address: "서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)",
+        building_latitude: mapInstance.getCenter().getLat(),
+        building_longitude: mapInstance.getCenter().getLng(),
+        building_type: newValue,
+      },
+    ];
+    addBuildingMarkers(mapInstance, buildings.value); // 마커 추가
   }
 });
 
@@ -116,7 +143,7 @@ watch(selectedButton, (newValue) => {
 
 const loading = ref(false); // 로딩 상태를 나타내는 변수
 const buildings = ref([]);
-const selectedBuilding = ref(null);
+const houses = ref([]);
 
 // 빌딩 데이터 타입 정의
 interface Building {
@@ -171,7 +198,7 @@ const fetchBuildings = async (
       console.log("타입별 빌딩 가져오기 성공!");
       console.log(response.data.data.length);
 
-      addMarkers(mapInstance, buildings.value); // 마커 추가
+      addBuildingMarkers(mapInstance, buildings.value); // 마커 추가
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
@@ -215,9 +242,70 @@ const fetchBuildings = async (
     loading.value = false;
   }
 };
+const fetchHouses = async (
+  latitude: number,
+  longitude: number,
+  radius: number
+): Promise<void> => {
+  if (loading.value) return; // 이미 요청 중이라면 무시
 
-import { useAuthStore } from "@/stores/authStore";
+  loading.value = true; // 로딩 상태 활성화
+
+  // query parameters 생성
+  const queryParams = new URLSearchParams({
+    latitude: latitude.toString(),
+    longitude: longitude.toString(),
+    radius: radius.toString(),
+  }).toString();
+
+  try {
+    // API 요청
+    const response = await axiosInstance.get<ApiResponse>(
+      `/v1/houses?${queryParams}`
+    );
+
+    if (response.data.success && response.data.data) {
+      houses.value = response.data.data;
+
+      addHouseMarkers(mapInstance, houses.value); // 마커 추가
+    } else {
+      console.error("API 실패:", response.data.message || "알 수 없는 오류");
+      houses.value = [];
+      alert(
+        `Error: ${
+          response.data.message || "데이터를 가져오는 중 문제가 발생했습니다."
+        }`
+      );
+    }
+  } catch (error: unknown) {
+    // 특정 오류 처리 (500, Illegal Argument)
+    if (error instanceof AxiosError && error.response) {
+      const status = error.response.status;
+
+      if (status === 500) {
+        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } else if (
+        status === 400 &&
+        error.response.data.message.includes("Illegal Argument")
+      ) {
+        alert("잘못된 입력 값이 포함되었습니다. 입력 값을 다시 확인해주세요.");
+      } else {
+        alert(`요청 실패: ${status} - ${error.response.statusText}`);
+      }
+    } else if (error instanceof Error && error.code === "ECONNABORTED") {
+      alert("요청 시간이 초과되었습니다. 네트워크 상태를 확인하세요.");
+    } else {
+      alert("요청을 처리하는 중 문제가 발생했습니다. 다시 시도해주세요.");
+    }
+
+    houses.value = [];
+  } finally {
+    // 로딩 상태 해제
+    loading.value = false;
+  }
+};
 /** building, house info overlay */
+import { useAuthStore } from "@/stores/authStore";
 const showInfoOverlay = async () => {
   try {
     const authStore = useAuthStore();
@@ -229,23 +317,17 @@ const showInfoOverlay = async () => {
   }
 };
 
-const buildingContent = ref("");
+const contentHeight = ref(0);
+const maxHeight = ref(0);
+const MAX_HEIGHT = 500;
+const infoContent = ref<HTMLElement | null>(null);
 
-const minHeight = 0; // 최소 높이
-const maxHeight = ref(445); // 최대 높이 (기본값 445)
-// const contentHeight = ref("auto"); // 초기값은 auto
-const contentHeight = ref(0); // 초기값은 auto
-const startY = ref(0);
-const startHeight = ref(0);
-// const isDraggable = ref(false);
-const infoContent = ref(null);
+const buildingContent = ref(null);
+const houseContent = ref(null);
 
 const updateInitialHeight = () => {
   if (infoContent.value) {
-    const actualHeight = infoContent.value.scrollHeight;
-    // isDraggable.value = actualHeight > 66; // 드래그 가능 여부 확인
-    maxHeight.value = actualHeight > 445 ? 445 : actualHeight; // 최대 높이 설정
-    contentHeight.value = actualHeight > 445 ? 125 : actualHeight; // 초기 높이 설정
+    contentHeight.value = 0; // 처음에는 숨긴 상태
   }
 };
 
@@ -253,50 +335,23 @@ onMounted(async () => {
   await nextTick();
   updateInitialHeight();
 });
-
-const startDrag = (event) => {
-  // if (!isDraggable.value) return;
-  console.log("드래그 시작");
-  console.log();
-
-  startY.value = event.clientY;
-  startHeight.value =
-    contentHeight.value === "auto"
-      ? infoContent.value.scrollHeight
-      : contentHeight.value;
-
-  document.addEventListener("mousemove", onDrag);
-  document.addEventListener("mouseup", endDrag);
-  document.addEventListener("touchmove", onDrag);
-  document.addEventListener("touchend", endDrag);
-};
-
-const startDragHandler = (event) => {
-  event.preventDefault(); // 기본 이벤트 방지
-  startDrag(event);
-};
-
-const onDrag = (event) => {
-  const deltaY = startY.value - event.clientY;
-  contentHeight.value = Math.min(
-    maxHeight.value,
-    Math.max(minHeight, startHeight.value + deltaY)
-  );
-};
-
-const endDrag = () => {
-  document.removeEventListener("mousemove", onDrag);
-  document.removeEventListener("mouseup", endDrag);
-  document.removeEventListener("touchmove", onDrag);
-  document.removeEventListener("touchend", endDrag);
-};
-
 onUnmounted(() => {
-  document.removeEventListener("mousemove", onDrag);
-  document.removeEventListener("mouseup", endDrag);
-  document.removeEventListener("touchmove", onDrag);
-  document.removeEventListener("touchend", endDrag);
+  contentHeight.value = 0; // 컴포넌트 언마운트 시 초기화
 });
+const toggleContentHeight = async () => {
+  console.log("indicator click");
+
+  if (contentHeight.value === 0) {
+    await nextTick(); // DOM 업데이트 기다림
+    if (infoContent.value) {
+      const newHeight = infoContent.value.scrollHeight;
+      maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
+      contentHeight.value = maxHeight.value; // 최대 높이로 설정
+    }
+  } else {
+    contentHeight.value = 0;
+  }
+};
 
 /** kakao map functions */
 const mapContainer = ref<HTMLDivElement | null>(null); // 지도를 표시할 div
@@ -326,35 +381,46 @@ const loadKakaoMap = (container) => {
     });
   };
 };
+const addHouseMarkers = (mapInstance, houses) => {
+  houses.forEach((house) => {
+    const position = new window.kakao.maps.LatLng(
+      house.house_latitude,
+      house.house_longitude
+    );
+    const marker = new window.kakao.maps.Marker({ position, map: mapInstance });
 
-// 버튼 클릭 시 마커 추가
-const addMarkers = (mapInstance, buildings) => {
-  if (!mapInstance) {
-    console.error("지도 객체가 아직 초기화되지 않았습니다.");
-    return;
-  }
-  console.log("순회합니다.");
-  console.log(buildings);
-  // buildings 배열을 순회하며 마커 추가
-  buildings.forEach((building) => {
-    console.log(building);
-    const markerPosition = new window.kakao.maps.LatLng(
-      33.450696253381196,
-      126.57066123419618
-    ); // 마커의 위치
-    console.log(markerPosition);
-    // 마커 객체 생성
-    const marker = new window.kakao.maps.Marker({
-      position: markerPosition, // 마커 위치
-      map: mapInstance, // 마커를 표시할 지도
+    window.kakao.maps.event.addListener(marker, "click", async () => {
+      houseContent.value = house;
+      buildingContent.value = null;
+
+      await nextTick();
+      if (infoContent.value) {
+        const newHeight = infoContent.value.scrollHeight;
+        maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
+        contentHeight.value = maxHeight.value;
+      }
     });
-    console.log(marker);
-    console.log("마커 객체 생성 완료");
-    // 마커 클릭 시 이벤트 추가 (선택 사항)
-    window.kakao.maps.event.addListener(marker, "click", () => {
-      console.log("marker click");
+  });
+};
+
+const addBuildingMarkers = (mapInstance, buildings) => {
+  buildings.forEach((building) => {
+    const position = new window.kakao.maps.LatLng(
+      building.building_latitude,
+      building.building_longitude
+    );
+    const marker = new window.kakao.maps.Marker({ position, map: mapInstance });
+
+    window.kakao.maps.event.addListener(marker, "click", async () => {
       buildingContent.value = building;
-      contentHeight.value = "fit-content";
+      houseContent.value = null;
+
+      await nextTick();
+      if (infoContent.value) {
+        const newHeight = infoContent.value.scrollHeight;
+        maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
+        contentHeight.value = maxHeight.value;
+      }
     });
   });
 };
@@ -485,10 +551,8 @@ const addMarkers = (mapInstance, buildings) => {
 
   .info-content-wrapper {
     @include custom-text;
-    padding-top: 11px;
     display: flex;
     flex-direction: column;
-    gap: 11px;
     align-items: center;
     justify-content: start;
     padding-left: 20;
@@ -499,21 +563,30 @@ const addMarkers = (mapInstance, buildings) => {
     height: fit-content;
 
     overflow: hidden;
-    transition: height 0.3s ease-out;
 
-    .info-content-indicator {
-      width: 134px;
-      height: 4px;
-      border-radius: 100px;
-      background-color: #e8e8e8;
+    background-color: white;
 
+    .info-content-indicator-wrppaer {
+      @include custom-padding-y($padding-small);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       cursor: grab;
+
+      .info-content-indicator {
+        width: 134px;
+        height: 4px;
+        border-radius: 100px;
+        background-color: #e8e8e8;
+      }
     }
 
     .info-content {
       width: 100%;
       // flex: 1;
-      background-color: aqua;
+      transition: height 0.3s ease-out;
+
       overflow-y: auto;
     }
   }
