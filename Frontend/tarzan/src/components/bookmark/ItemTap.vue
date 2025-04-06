@@ -49,6 +49,35 @@ const selectedSubTag = ref("ALL");
 // ✅ 체크리스트 복사본 - 원본을 오염시키지 않도록 deep copy
 const checkList = ref(JSON.parse(JSON.stringify(originalData)));
 
+// ✅ localStorage 키 생성기
+const getStorageKey = (main: string, sub: string) => `checklist-${main}-${sub}`;
+
+// ✅ 저장된 상태 불러오기
+const loadChecklistFromStorage = () => {
+  for (const main in checkList.value) {
+    for (const sub in checkList.value[main]) {
+      const key = getStorageKey(main, sub);
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        try {
+          checkList.value[main][sub] = JSON.parse(stored);
+        } catch (e) {
+          console.warn(`로컬스토리지 데이터 파싱 실패: ${key}`);
+        }
+      }
+    }
+  }
+};
+
+onMounted(loadChecklistFromStorage);
+
+// ✅ 상태 저장 함수
+const saveChecklistToStorage = (main: string, sub: string) => {
+  const key = getStorageKey(main, sub);
+  const data = checkList.value[main][sub];
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
 // 체크리스트 필터링
 const filteredChecklist = computed(() => {
   const main = selectedMainTag.value;
@@ -73,14 +102,15 @@ const filteredChecklist = computed(() => {
   }
 });
 
-// 체크 상태 변경
+// ✅ 체크 상태 변경 처리
 function onChange(item: { idx: number; subKey: "BEFO_MOVE" | "AFTER_MOVE" }) {
   const main = selectedMainTag.value;
   const sub = item.subKey;
-
   const target = checkList.value[main][sub].find((el) => el.idx === item.idx);
+
   if (target) {
     target.value = !target.value;
+    saveChecklistToStorage(main, sub); // 💾 저장
   }
 }
 </script>
