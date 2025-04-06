@@ -192,9 +192,9 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 // 공통
-// scoped
 .tag-button-wrapper {
   @include custom-padding-x;
   @include custom-padding-y($padding-small);
 }
+// scoped
 </style>
