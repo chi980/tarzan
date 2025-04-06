@@ -1,12 +1,12 @@
 <template>
-  <div class="tab-content house-content-wrapper">
+  <div>
+    <div class="tag-button-wrapper">
+      <TagButtonGroup
+        :buttons="tagOptions"
+        v-model:selectedButton="selectedTag"
+        :multiple="false" />
+    </div>
     <div class="house-item-wrapper">
-      <div class="tag-button-wrapper">
-        <TagButtonGroup
-          :buttons="tagOptions"
-          v-model:selectedButton="selectedTag"
-          :multiple="false" />
-      </div>
       <div class="house-item--add-wrapper">
         <div class="house-add-img-wrapper">
           <img :src="houseAddImg" alt="houseAddImg" />
@@ -134,13 +134,6 @@ onMounted(fetchRecentHouses);
 </script>
 
 <style lang="scss" scoped>
-.tab-content {
-  margin-top: 0;
-}
-.house-content-wrapper {
-  @include custom-padding-x($padding-default);
-}
-
 /** non content css */
 .non-content {
   display: flex;
@@ -158,6 +151,7 @@ onMounted(fetchRecentHouses);
 }
 
 .house-item-wrapper {
+  @include custom-padding-x;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
@@ -196,6 +190,10 @@ onMounted(fetchRecentHouses);
     flex: 1;
     text-align: left;
   }
+}
+.tag-button-wrapper {
+  @include custom-padding-x;
+  @include custom-padding-y($padding-small);
 }
 
 .house-content-wrapper {
