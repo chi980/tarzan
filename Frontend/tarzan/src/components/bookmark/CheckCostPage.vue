@@ -258,6 +258,7 @@ const directionOptions: Option[] = [
 
 <style lang="scss" scoped>
 // 공통
+// input-form(최종)
 .input-form {
   width: 100%;
   display: flex;
