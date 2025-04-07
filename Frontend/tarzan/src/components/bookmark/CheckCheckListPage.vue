@@ -1,79 +1,75 @@
 <template>
-  <div class="sub-container non-input-sub-container">
-    <div style="width: 100%">
-      <TopBarBack title="점검하기" />
-    </div>
-    <div class="center-container accordion-container">
-      <BasicAccordion accordionTitle="수도와 배수">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutWater"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutWater, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="창문">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutWindow"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutWindow, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="화장실">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutBathroom"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutBathroom, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="주변환경">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutSurroundings"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutSurroundings, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="기본옵션">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutOption"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutOption, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="디테일">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutDetail"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutDetail, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="보안">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutSecurity"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutSecurity, index, $event)"
-        />
-      </BasicAccordion>
-      <BasicAccordion accordionTitle="기타사항">
-        <CheckListItem
-          v-for="(item, index) in checkListAboutEtc"
-          :key="index"
-          :checkListItem="item"
-          @update:checkItem="updateCheckItem(checkListAboutEtc, index, $event)"
-        />
-      </BasicAccordion>
-    </div>
-    <div class="bottom-button-wrapper">
-      <div @click="submitChecklist">
-        <p>점검완료</p>
-      </div>
-    </div>
+  <div>
+    <BasicAccordion accordionTitle="수도와 배수">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutWater"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutWater, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="창문">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutWindow"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutWindow, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="화장실">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutBathroom"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutBathroom, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="주변환경">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutSurroundings"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutSurroundings, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="기본옵션">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutOption"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutOption, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="디테일">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutDetail"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutDetail, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="보안">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutSecurity"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="
+          updateCheckItem(checkListAboutSecurity, index, $event)
+        " />
+    </BasicAccordion>
+    <BasicAccordion accordionTitle="기타사항">
+      <CheckListItem
+        v-for="(item, index) in checkListAboutEtc"
+        :key="index"
+        :checkListItem="item"
+        @update:checkItem="updateCheckItem(checkListAboutEtc, index, $event)" />
+    </BasicAccordion>
   </div>
 </template>
 
@@ -104,7 +100,6 @@ const checkListAboutWater = ref<Check[]>([
   { idx: 3, name: "싱크대/화장실 배수구는 잘 내려가는가?", value: false },
   { idx: 4, name: "싱크대/화장실 온수는 잘 나오는가?", value: false },
 ]);
-
 
 const checkListAboutWindow = ref<Check[]>([
   { idx: 1, name: "햇빛은 잘 들어오는가?", value: false },
@@ -170,7 +165,6 @@ const checkLists = ref([
   { category: "기타사항", list: checkListAboutEtc },
 ]);
 
-
 // ✅ 체크리스트 업데이트 함수
 const updateCheckItem = (array: Check[], index: number, updatedItem: Check) => {
   array.splice(index, 1, updatedItem);
@@ -219,60 +213,5 @@ const submitChecklist = async () => {
 
 <style lang="scss" scoped>
 // 공통
-.top-bar-back {
-  @include custom-bar-style(
-    $height: $height-top-bar,
-    $z-index: $z-index-top-bar
-  );
-
-  background-color: rgba(0, 0, 0, 0.1); /* 검은색 배경, 50% 투명도 */
-}
-
-.center-container {
-  position: relative;
-  flex-grow: 1;
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow-y: auto;
-  /* 스크롤바 전체 영역 */
-  &::-webkit-scrollbar {
-    width: 4px; /* 세로축 스크롤바 폭 너비 */
-    height: 100%; /* 가로축 스크롤바 폭 너비 */
-  }
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-  /* 스크롤바 막대 제외 부분 */
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  /* 스크롤바 막대 */
-  &::-webkit-scrollbar-thumb {
-    border-radius: calc($border-radius-default * 2);
-    background: #f2f2f2;
-  }
-}
-.bottom-button-wrapper {
-  @include custom-padding-x;
-
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  div {
-    @include custom-button-style($height: 54px, $font-color: white);
-  }
-}
-
-.accordion-container {
-  justify-content: flex-start;
-  gap: $padding-default;
-  padding-top: calc(#{$padding-default}* 2);
-  padding-bottom: calc(54px + #{$margin-default} + #{$padding-default});
-}
 // scoped
 </style>

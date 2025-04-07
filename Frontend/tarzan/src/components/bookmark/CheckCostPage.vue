@@ -1,140 +1,165 @@
 <template>
-  <form class="input-form">
-    <!-- 가격 -->
-    <div class="input-group">
-      <h2 class="input-title">가격</h2>
-      <div class="input-content-wrapper">
-        <div class="input-content">
-          <input
-            v-model="houseData.bookmark_deposit"
-            type="text"
-            placeholder="보증금을 입력해주세요." />
-        </div>
-        <div class="input-content"></div>
-        <div class="input-content">
-          <div
-            class="select-content"
-            style="width: max-content; min-width: 100px">
-            <CustomSelectBox
-              v-model="houseData.bookmark_lease_type"
-              :options="rentalOptions" />
+  <div>
+    <form class="input-form">
+      <!-- 가격 -->
+      <div class="input-group">
+        <h2 class="input-title">
+          가격<span class="input-title-mandatory">*</span>
+        </h2>
+        <div class="input-content-wrapper">
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_deposit"
+              type="text"
+              placeholder="보증금을 입력해주세요." />
           </div>
-          <input
-            v-model="houseData.bookmark_rent"
-            type="text"
-            placeholder="금액을 입력해주세요." />
+          <div class="input-content select-container">
+            <div style="width: max-content; min-width: 100px">
+              <CustomSelectBox
+                v-model="houseData.bookmark_lease_type"
+                :options="rentalOptions"
+                :parent-style="{
+                  backgroundColor: 'white',
+                  fontWeight: 400,
+                  justifyContent: `space-between`,
+                  border: '1px solid #e7e7e7',
+                }" />
+            </div>
+            <input
+              v-model="houseData.bookmark_rent"
+              type="text"
+              placeholder="금액을 입력해주세요." />
+          </div>
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_commission"
+              type="text"
+              placeholder="중개수수료를 입력해주세요." />
+          </div>
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_management_fee"
+              type="text"
+              placeholder="관리비를 입력해주세요." />
+          </div>
         </div>
+      </div>
+
+      <!-- 부동산/집주인 -->
+      <div class="input-group">
+        <h2 class="input-title">부동산/집주인</h2>
+        <div class="input-content-wrapper">
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_estate_name"
+              type="text"
+              placeholder="부동산/집주인명을 입력해주세요." />
+          </div>
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_estate_phone_number"
+              type="text"
+              placeholder="부동산/집주인 핸드폰 번호를 입력해주세요." />
+          </div>
+        </div>
+      </div>
+
+      <!-- 반려동물 가능 여부 -->
+      <!-- 반려동물 유무 선택 -->
+      <div class="input-group">
+        <h2 class="input-title">
+          반려동물 유무<span class="input-title-mandatory">*</span>
+        </h2>
+        <div class="option-group">
+          <div
+            class="option-group-item"
+            v-for="(petOption, index) in petOptions"
+            :key="petOption.idx"
+            :class="{ active: petOption.isSelected }"
+            @click="selectOption(petOptions, index)">
+            {{ petOption.name }}
+          </div>
+        </div>
+      </div>
+
+      <!-- 방향 -->
+      <div class="input-group">
+        <h2 class="input-title">방향</h2>
+        <div class="input-content">
+          <div class="select-content">
+            <CustomSelectBox
+              v-model="houseData.bookmark_direction"
+              :options="directionOptions"
+              :parent-style="{
+                backgroundColor: 'white',
+                fontWeight: 400,
+                justifyContent: `space-between`,
+                border: '1px solid #e7e7e7',
+              }" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 주차장 대수 -->
+      <div class="input-group">
+        <h2 class="input-title">주차장 대수</h2>
+        <div class="input-content">
+          <div class="select-content">
+            <CustomSelectBox
+              v-model="houseData.bookmark_parking_cnt"
+              :options="carOptions"
+              :parent-style="{
+                backgroundColor: 'white',
+                fontWeight: 400,
+                justifyContent: `space-between`,
+                border: '1px solid #e7e7e7',
+              }" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 방수/욕실수 -->
+      <div class="input-group">
+        <h2 class="input-title">방수/욕실수</h2>
+        <div class="input-content-wrapper">
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_room_cnt"
+              type="text"
+              placeholder="방수를 입력해주세요." />
+          </div>
+          <div class="input-content">
+            <input
+              v-model="houseData.bookmark_bath_cnt"
+              type="text"
+              placeholder="욕실수를 입력해주세요." />
+          </div>
+        </div>
+      </div>
+
+      <!-- 입주가능일 -->
+      <div class="input-group">
+        <h2 class="input-title">입주가능일</h2>
         <div class="input-content">
           <input
-            v-model="houseData.bookmark_commission"
-            type="text"
-            placeholder="중개수수료를 입력해주세요." />
+            v-model="houseData.bookmark_available_date"
+            type="date"
+            placeholder="입주가능일을 입력해주세요." />
         </div>
+      </div>
+
+      <!-- 층수 -->
+      <div class="input-group">
+        <h2 class="input-title">층수</h2>
         <div class="input-content">
           <input
-            v-model="houseData.bookmark_management_fee"
+            v-model="houseData.bookmark_floor"
             type="text"
-            placeholder="관리비를 입력해주세요." />
+            placeholder="층수를 입력해주세요." />
         </div>
       </div>
-    </div>
-
-    <!-- 부동산/집주인 -->
-    <div class="input-group">
-      <h2 class="input-title">부동산/집주인</h2>
-      <div class="input-content-wrapper">
-        <div class="input-content">
-          <input
-            v-model="houseData.bookmark_estate_name"
-            type="text"
-            placeholder="부동산/집주인명을 입력해주세요." />
-        </div>
-        <div class="input-content">
-          <input
-            v-model="houseData.bookmark_estate_phone_number"
-            type="text"
-            placeholder="부동산/집주인 핸드폰 번호를 입력해주세요." />
-        </div>
-      </div>
-    </div>
-
-    <!-- 반려동물 가능 여부 -->
-    <div class="input-group">
-      <h2 class="input-title">반려동물 가능 여부</h2>
-      <div class="input-content">
-        <div class="select-content">
-          <CustomSelectBox
-            v-model="houseData.bookmark_can_animal"
-            :options="petOptions" />
-        </div>
-      </div>
-    </div>
-
-    <!-- 방향 -->
-    <div class="input-group">
-      <h2 class="input-title">방향</h2>
-      <div class="input-content">
-        <div class="select-content">
-          <CustomSelectBox
-            v-model="houseData.bookmark_direction"
-            :options="directionOptions" />
-        </div>
-      </div>
-    </div>
-
-    <!-- 주차장 대수 -->
-    <div class="input-group">
-      <h2 class="input-title">주차장 대수</h2>
-      <div class="input-content">
-        <div class="select-content">
-          <CustomSelectBox
-            v-model="houseData.bookmark_parking_cnt"
-            :options="carOptions" />
-        </div>
-      </div>
-    </div>
-
-    <!-- 방수/욕실수 -->
-    <div class="input-group">
-      <h2 class="input-title">방수/욕실수</h2>
-      <div class="input-content-wrapper">
-        <div class="input-content">
-          <input
-            v-model="houseData.bookmark_room_cnt"
-            type="text"
-            placeholder="방수를 입력해주세요." />
-        </div>
-        <div class="input-content">
-          <input
-            v-model="houseData.bookmark_bath_cnt"
-            type="text"
-            placeholder="욕실수를 입력해주세요." />
-        </div>
-      </div>
-    </div>
-
-    <!-- 입주가능일 -->
-    <div class="input-group">
-      <h2 class="input-title">입주가능일</h2>
-      <div class="input-content">
-        <input
-          v-model="houseData.bookmark_available_date"
-          type="date"
-          placeholder="입주가능일을 입력해주세요." />
-      </div>
-    </div>
-
-    <!-- 층수 -->
-    <div class="input-group">
-      <h2 class="input-title">층수</h2>
-      <div class="input-content">
-        <input
-          v-model="houseData.bookmark_floor"
-          type="text"
-          placeholder="층수를 입력해주세요." />
-      </div>
-    </div>
-  </form>
+    </form>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -233,60 +258,12 @@ const directionOptions: Option[] = [
 
 <style lang="scss" scoped>
 // 공통
-.top-bar-back {
-  @include custom-bar-style(
-    $height: $height-top-bar,
-    $z-index: $z-index-top-bar
-  );
-
-  background-color: rgba(0, 0, 0, 0.1); /* 검은색 배경, 50% 투명도 */
-}
-
-.center-container {
-  position: relative;
-  flex-grow: 1;
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow-y: auto;
-  /* 스크롤바 전체 영역 */
-  &::-webkit-scrollbar {
-    width: 4px; /* 세로축 스크롤바 폭 너비 */
-    height: 100%; /* 가로축 스크롤바 폭 너비 */
-  }
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-  /* 스크롤바 막대 제외 부분 */
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  /* 스크롤바 막대 */
-  &::-webkit-scrollbar-thumb {
-    border-radius: calc($border-radius-default * 2);
-    background: #f2f2f2;
-  }
-}
-.bottom-button-wrapper {
-  @include custom-padding-x;
-
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  div {
-    @include custom-button-style($height: 54px, $font-color: white);
-  }
-}
-
 .input-form {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: $padding-big;
+
   .input-group {
     @include custom-padding-x();
     display: flex;
@@ -294,17 +271,11 @@ const directionOptions: Option[] = [
     gap: 12px;
 
     .input-title {
-      @include custom-text-bold($font-size: 18px);
+      @include custom-text($font-size: 14px);
       text-align: left;
-    }
 
-    .input-content-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: $padding-small;
-
-      .input-content {
-        margin: 0;
+      .input-title-mandatory {
+        color: red;
       }
     }
 
@@ -313,31 +284,65 @@ const directionOptions: Option[] = [
       align-items: center;
       gap: $padding-small;
 
+      input[type="text"] {
+        @include custom-input-style;
+        flex: 1;
+      }
       input {
         @include custom-input-style;
-        flex-grow: 1; /* 남은 공간을 모두 차지하도록 설정 */
+        flex: 1;
       }
 
       .select-content {
         flex-grow: 1;
       }
     }
-    .input-description {
-      @include custom-text($font-size: 12px, $font-color: $text-color-light);
+  }
+}
 
-      p {
-        display: block;
-        @include custom-padding-y(4px);
-        text-align: left;
-      }
+.select-container {
+  display: flex;
+  flex-direction: row;
+  gap: $padding-small;
+
+  input[type="text"] {
+    width: 30px;
+  }
+}
+
+.option-group {
+  display: flex;
+  gap: $margin-small;
+  .option-group-item {
+    @include custom-text($font-size: 14px, $font-color: $text-color-light);
+    flex: 1;
+    height: 48px;
+    cursor: pointer;
+    border: 1px solid $border-color-input;
+    border-radius: 13px;
+
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+
+    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 전환 효과 추가 */
+
+    &.active {
+      background-color: $primary-color-light; /* active일 때 배경색 변경 */
+      color: $primary-color-default; /* active일 때 글자색 변경 */
+      border: 1px solid $primary-color-default; /* active일 때 테두리 색 변경 */
     }
   }
 }
-.left-top-container {
-  justify-content: flex-start;
-  gap: $padding-big;
-  padding-top: calc(#{$padding-default}* 2);
-  padding-bottom: calc(54px + #{$margin-default} + #{$padding-default});
-}
+
 // scoped
+.input-form {
+  @include custom-padding-y;
+}
+
+.input-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $padding-small;
+}
 </style>
