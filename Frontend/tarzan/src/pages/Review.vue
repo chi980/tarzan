@@ -49,9 +49,7 @@
       </div>
     </div>
 
-    <div class="button-group">
-      <div class="button-default" @click="buttonHandler">후기 작성하기</div>
-    </div>
+    <BottomDefaultButton :label="'후기 작성하기'" :onClick="buttonHandler" />
   </div>
 </template>
 <script setup>
@@ -61,6 +59,8 @@ import { ref, onMounted } from "vue";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRoute, useRouter } from "vue-router";
+
+import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -181,20 +181,6 @@ const buttonHandler = () => {
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
-}
-.button-group {
-  width: 100%;
-  padding-bottom: 8px;
-  display: flex;
-  flex-direction: row;
-}
-.button-default {
-  @include custom-margin-x;
-  @include custom-button-style(
-    $bg-color: $secondary-color-default,
-    $font-color: white
-  );
-  flex: 1;
 }
 
 // scoped

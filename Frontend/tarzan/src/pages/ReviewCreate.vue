@@ -10,6 +10,7 @@ import TopBarBack from "@/components/common/TopBarBack.vue";
 import AddressCard from "@/components/common/\bAddressCard.vue";
 import Step1 from "@/components/review/CreateReview1.vue";
 import Step2 from "@/components/review/CreateReview2.vue";
+import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -84,11 +85,9 @@ const submit = () => {
         <component :is="steps[step]" :data="reviewData" @update="updateData" />
       </div>
     </div>
-    <div class="button-group">
-      <div class="button-default" @click="next">
-        {{ step < steps.length - 1 ? "다음" : "제출" }}
-      </div>
-    </div>
+    <BottomDefaultButton
+      :label="step < steps.length - 1 ? '다음' : '제출'"
+      :onClick="next" />
   </div>
 </template>
 
@@ -131,21 +130,6 @@ const submit = () => {
   flex-direction: column;
   gap: 16px;
   width: 100%;
-}
-
-.button-group {
-  width: 100%;
-  padding-bottom: 8px;
-  display: flex;
-  flex-direction: row;
-}
-.button-default {
-  @include custom-margin-x;
-  @include custom-button-style(
-    $bg-color: $secondary-color-default,
-    $font-color: white
-  );
-  flex: 1;
 }
 
 .center-container {
