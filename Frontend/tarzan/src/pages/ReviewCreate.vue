@@ -7,6 +7,7 @@ import { ReviewRequest } from "@/data/review";
 import { LeaseType } from "@/data/review";
 
 import TopBarBack from "@/components/common/TopBarBack.vue";
+import AddressCard from "@/components/common/\bAddressCard.vue";
 import Step1 from "@/components/review/CreateReview1.vue";
 import Step2 from "@/components/review/CreateReview2.vue";
 
@@ -45,7 +46,7 @@ const reviewData = ref<ReviewRequest>({
   review_house_id: 1,
   review_img_url: "https://example.com/images/house1.jpg",
   review_score: 4,
-  review_lease_type: "MOnTHLY" as LeaseType,
+  review_lease_type: "MONTHLY" as LeaseType,
   review_rent: 0,
   review_deposit: 20000,
   review_management_fee: 10,
@@ -77,11 +78,7 @@ const submit = () => {
   <div class="sub-container">
     <TopBarBack title="후기 작성" @back="topBarHandler" />
     <div class="center-container">
-      <div class="house-over-view-card">
-        <p class="card-title">주소</p>
-        <p class="house-name">{{ houseOverview?.house_name }}</p>
-        <p class="house-address">{{ houseOverview?.house_address }}</p>
-      </div>
+      <AddressCard :houseOverview="houseOverview" />
 
       <div class="create-review-tabs">
         <component :is="steps[step]" :data="reviewData" @update="updateData" />
@@ -124,29 +121,6 @@ const submit = () => {
 
   align-items: center;
   justify-content: flex-start;
-}
-
-.house-over-view-card {
-  @include custom-text($font-size: 12px, $font-color: #969696);
-  @include custom-margin-x;
-  @include custom-padding;
-  display: flex;
-  flex-direction: column;
-  gap: $padding-small;
-  align-items: start;
-  justify-content: center;
-
-  border-radius: 16px;
-
-  background-color: #f8f8f8;
-
-  .card-title {
-    @include custom-text($font-size: 16px, $font-weight: 700);
-  }
-
-  .house-name {
-    @include custom-text($font-size: 14px);
-  }
 }
 
 .create-review-tabs {

@@ -15,11 +15,9 @@
       v-for="button in buttons"
       :key="button.value"
       class="tag-button"
-      :class="{ [activeClass]: isSelected(button.value) }"
       role="button"
       tabindex="0"
-      @click="toggleSelection(button.value)"
-    >
+      @click="toggleSelection(button.value)">
       <slot :button="button">{{ button.label }}</slot>
     </div>
   </div>

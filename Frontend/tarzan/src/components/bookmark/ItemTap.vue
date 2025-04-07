@@ -11,6 +11,7 @@
         <TagButtonGroup
           :buttons="subTagOptions"
           v-model:selectedButton="selectedSubTag"
+          activeClass="sub-active"
           :multiple="false" />
       </div>
     </Transition>
@@ -166,5 +167,11 @@ function onChange(item: { idx: number; subKey: "BEFO_MOVE" | "AFTER_MOVE" }) {
   max-height: 100px; // 적절한 높이로 조정
   opacity: 1;
   transform: translateY(0);
+}
+
+:deep(.sub-active) {
+  border: none;
+  background-color: $secondary-color-default;
+  color: white !important;
 }
 </style>
