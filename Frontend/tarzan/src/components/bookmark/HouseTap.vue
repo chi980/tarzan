@@ -1,5 +1,11 @@
 <template>
-  <div class="tab-content house-content-wrapper">
+  <div>
+    <div class="tag-button-wrapper">
+      <TagButtonGroup
+        :buttons="tagOptions"
+        v-model:selectedButton="selectedTag"
+        :multiple="false" />
+    </div>
     <div class="house-item-wrapper">
       <div class="house-item--add-wrapper">
         <div class="house-add-img-wrapper">
@@ -26,6 +32,7 @@ import houseAddImg from "@/assets/icons/Plus/Pluse.png";
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
 import HouseItem from "@/components/bookmark/HouseItem.vue";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 
 /** data, plugin load */
 import { useRouter } from "vue-router";
@@ -46,6 +53,14 @@ const navigateToCheckCostPage = (house) => {
   const bookmarkIdx = house.bookmarkIdx;
   router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
 };
+
+const tagOptions = [
+  { label: "전체", value: "ALL" },
+  { label: "점검 전", value: "CHECK_PENDING" },
+  { label: "점검 완료", value: "CHECK_COMPLETED" },
+];
+
+const selectedTag = ref("ALL"); // 단일 선택용
 
 const list = ref([]);
 list.value = [
@@ -119,13 +134,6 @@ onMounted(fetchRecentHouses);
 </script>
 
 <style lang="scss" scoped>
-.tab-content {
-  margin-top: 0;
-}
-.house-content-wrapper {
-  @include custom-padding-x($padding-default);
-}
-
 /** non content css */
 .non-content {
   display: flex;
@@ -143,6 +151,7 @@ onMounted(fetchRecentHouses);
 }
 
 .house-item-wrapper {
+  @include custom-padding-x;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
@@ -181,6 +190,10 @@ onMounted(fetchRecentHouses);
     flex: 1;
     text-align: left;
   }
+}
+.tag-button-wrapper {
+  @include custom-padding-x;
+  @include custom-padding-y($padding-small);
 }
 
 .house-content-wrapper {

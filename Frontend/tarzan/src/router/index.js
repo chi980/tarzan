@@ -29,6 +29,10 @@ const routes = [
         component: () => import("@/pages/BookMark.vue"),
       },
       {
+        path: "create",
+        component: () => import("@/pages/BookmarkCreate.vue"),
+      },
+      {
         path: "map",
         component: () => import("@/components/bookmark/MapPage.vue"),
       },

@@ -1,240 +1,177 @@
 <template>
-  <div class="tab-content">
-    <ComplexAccordion
-      accordionTitle="가전"
-      :accordionContents="homeAppliances"
-      @toggleAccordion="toggleAccordionHomeAppliances"
-      @toggleSubAccordion="toggleSubAccordionHomeAppliances"
-    />
-    <ComplexAccordion
-      accordionTitle="가구ㆍ패브릭"
-      :accordionContents="fabrics"
-      @toggleAccordion="toggleAccordionFabrics"
-      @toggleSubAccordion="toggleSubAccordionFabrics"
-    />
-    <ComplexAccordion
-      accordionTitle="욕실 용품"
-      :accordionContents="bathroomSupplies"
-      @toggleAccordion="toggleAccordionBathroomSupplies"
-      @toggleSubAccordion="toggleSubAccordionBathroomSupplies"
-    />
-    <ComplexAccordion
-      accordionTitle="필수 식재료"
-      :accordionContents="ingredients"
-      @toggleAccordion="toggleAccordionIngredients"
-      @toggleSubAccordion="toggleSubAccordionIngredients"
-    />
-    <ComplexAccordion
-      accordionTitle="주방 용품"
-      :accordionContents="kitchenUtensils"
-      @toggleAccordion="toggleAccordionKitchenUtensils"
-      @toggleSubAccordion="toggleSubAccordionKitchenUtensils"
-    />
-    <ComplexAccordion
-      accordionTitle="생활 용품"
-      :accordionContents="householdGoods"
-      @toggleAccordion="toggleAccordionHouseholdGoods"
-      @toggleSubAccordion="toggleSubAccordionHouseholdGoods"
-    />
+  <div>
+    <div class="tag-button-wrapper scroll-hidden-box">
+      <TagButtonGroup
+        :buttons="mainTagOptions"
+        v-model:selectedButton="selectedMainTag"
+        :multiple="false" />
+    </div>
+    <Transition name="slide-fade">
+      <div v-if="showSubTags" class="tag-button-wrapper sub scroll-hidden-box">
+        <TagButtonGroup
+          :buttons="subTagOptions"
+          v-model:selectedButton="selectedSubTag"
+          activeClass="sub-active"
+          :multiple="false" />
+      </div>
+    </Transition>
+    <!-- 필터링된 체크리스트 항목 -->
+    <CheckListItem
+      v-for="item in filteredChecklist"
+      :key="item.idx"
+      :checkListItem="item"
+      @change="onChange(item)" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { CheckList } from "@/data/check";
-import { axiosInstance } from "@/plugins/axiosPlugin";
-import { onMounted } from "vue";
-import ComplexAccordion from "@/components/common/ComplexAccordion.vue";
-import {
-  homeAppliances,
-  fabrics,
-  bathroomSupplies,
-  ingredients,
-  kitchenUtensils,
-  householdGoods,
-} from "@/data/bookmark/itemTab";
+import { ref, computed, watch, onMounted } from "vue";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
+import CheckListItem from "@/components/common/CheckListItem.vue";
+import { checkListData as originalData } from "@/data/bookmark/newItemTab";
 
-// 메인 아코디언 열고 닫기
-const toggleAccordion = (contents: { value: CheckList[] }) => {
-  contents.value.forEach((controlledCheckList: CheckList) => {
-    controlledCheckList.canSee = false;
-    controlledCheckList.isRotated = false;
-  });
-};
+// 메인 / 서브 태그 옵션
+const mainTagOptions = ref([
+  { label: "가전", value: "homeAppliances" },
+  { label: "가구ㆍ패브릭", value: "fabrics" },
+  { label: "욕실 용품", value: "bathroomSupplies" },
+  { label: "필수 식재료", value: "ingredients" },
+  { label: "주방 용품", value: "kitchenUtensils" },
+  { label: "생활 용품", value: "householdGoods" },
+]);
 
-// 서브 아코디언 열고 닫기
-const toggleSubAccordion = (contents: CheckList[], idx: number) => {
-  const controlledCheckList = contents.find((item) => item.idx === idx); // contents.values 대신 contents 사용
-  if (controlledCheckList) {
-    controlledCheckList.canSee = !controlledCheckList.canSee;
-    controlledCheckList.isRotated = !controlledCheckList.isRotated;
-  }
-};
+const subTagOptions = ref([
+  { label: "전체", value: "ALL" },
+  { label: "이사전", value: "BEFO_MOVE" },
+  { label: "이사후", value: "AFTER_MOVE" },
+]);
 
-const toggleAccordionHomeAppliances = () => {
-  toggleAccordion(homeAppliances);
-};
-const toggleSubAccordionHomeAppliances = (idx: number) => {
-  toggleSubAccordion(homeAppliances.value, idx);
-};
-const toggleAccordionFabrics = () => {
-  toggleAccordion(fabrics);
-};
-const toggleSubAccordionFabrics = (idx: number) => {
-  toggleSubAccordion(fabrics.value, idx);
-};
-const toggleAccordionBathroomSupplies = () => {
-  toggleAccordion(bathroomSupplies);
-};
-const toggleSubAccordionBathroomSupplies = (idx: number) => {
-  toggleSubAccordion(bathroomSupplies.value, idx);
-};
-const toggleAccordionIngredients = () => {
-  toggleAccordion(ingredients);
-};
-const toggleSubAccordionIngredients = (idx: number) => {
-  toggleSubAccordion(ingredients.value, idx);
-};
-const toggleAccordionKitchenUtensils = () => {
-  toggleAccordion(kitchenUtensils);
-};
-const toggleSubAccordionKitchenUtensils = (idx: number) => {
-  toggleSubAccordion(kitchenUtensils.value, idx);
-};
-const toggleAccordionHouseholdGoods = () => {
-  toggleAccordion(householdGoods);
-};
-const toggleSubAccordionHouseholdGoods = (idx: number) => {
-  toggleSubAccordion(householdGoods.value, idx);
-};
+const selectedMainTag = ref(null);
+const selectedSubTag = ref(null);
 
-const fetchCheckItemList = async () => {
-  try {
-    const response = await axiosInstance.get(`/v1/checklist/item`);
+const showSubTags = ref(false);
 
-    if (response.data?.success && response.data?.data) {
-      console.log("아이템 체크리스트 가져오기 성공!");
-      const data = response.data.data;
-      console.log(data);
-
-      // 🏠 "이사 전 필수품" (before_move) -> homeAppliances[0].contents에 삽입
-      homeAppliances.value[0].contents =
-        data.home_appliances_before_move.id_list.map(
-          (id: number, index: number) => ({
-            idx: id,
-            name: data.home_appliances_before_move.name_list[index],
-            value: data.home_appliances_before_move.value_list[index],
-          })
-        );
-      // 🏠 "이사 후 사도 되는 물품" (after_move) -> homeAppliances[1].contents에 삽입
-      homeAppliances.value[1].contents =
-        data.home_appliances_after_move.id_list.map(
-          (id: number, index: number) => ({
-            idx: id,
-            name: data.home_appliances_after_move.name_list[index],
-            value: data.home_appliances_after_move.value_list[index],
-          })
-        );
-
-      // 🛋 가구ㆍ패브릭 (fabrics)
-      fabrics.value[0].contents = data.furniture_fabric_before_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.furniture_fabric_before_move.name_list[index],
-          value: data.furniture_fabric_before_move.value_list[index],
-        })
-      );
-      fabrics.value[1].contents = data.furniture_fabric_after_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.furniture_fabric_after_move.name_list[index],
-          value: data.furniture_fabric_after_move.value_list[index],
-        })
-      );
-
-      // 🚿 욕실 용품 (bathroomSupplies)
-      bathroomSupplies.value[0].contents =
-        data.bathroom_before_move.id_list.map((id: number, index: number) => ({
-          idx: id,
-          name: data.bathroom_before_move.name_list[index],
-          value: data.bathroom_before_move.value_list[index],
-        }));
-      bathroomSupplies.value[1].contents = data.bathroom_after_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.bathroom_after_move.name_list[index],
-          value: data.bathroom_after_move.value_list[index],
-        })
-      );
-
-      // 🍽 주방 용품 (kitchenUtensils)
-      kitchenUtensils.value[0].contents = data.kitchen_before_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.kitchen_before_move.name_list[index],
-          value: data.kitchen_before_move.value_list[index],
-        })
-      );
-      kitchenUtensils.value[1].contents = data.kitchen_after_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.kitchen_after_move.name_list[index],
-          value: data.kitchen_after_move.value_list[index],
-        })
-      );
-
-      // 🍲 필수 식재료 (ingredients)
-      ingredients.value[0].contents = data.food_before_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.food_before_move.name_list[index],
-          value: data.food_before_move.value_list[index],
-        })
-      );
-      ingredients.value[1].contents = data.food_after_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.food_after_move.name_list[index],
-          value: data.food_after_move.value_list[index],
-        })
-      );
-
-      // 🏠 생활 용품 (householdGoods)
-      householdGoods.value[0].contents = data.household_before_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.household_before_move.name_list[index],
-          value: data.household_before_move.value_list[index],
-        })
-      );
-      householdGoods.value[1].contents = data.household_after_move.id_list.map(
-        (id: number, index: number) => ({
-          idx: id,
-          name: data.household_after_move.name_list[index],
-          value: data.household_after_move.value_list[index],
-        })
-      );
-    } else {
-      console.error("아이템리스트 데이터 없음", response.data?.message);
-    }
-  } catch (error) {
-    console.error("API 요청 오류: ", error);
-  }
-};
-
-onMounted(() => {
-  fetchCheckItemList();
+watch(selectedMainTag, () => {
+  showSubTags.value = true; // 메인 태그 바뀔 때마다 슬라이드다운
 });
-</script>
 
-<style lang="scss" scoped>
-// 공통
-.tab-content {
-  margin-top: 0;
+// ✅ 체크리스트 복사본 - 원본을 오염시키지 않도록 deep copy
+const checkList = ref(JSON.parse(JSON.stringify(originalData)));
+
+// ✅ localStorage 키 생성기
+const getStorageKey = (main: string, sub: string) => `checklist-${main}-${sub}`;
+
+// ✅ 저장된 상태 불러오기
+const loadChecklistFromStorage = () => {
+  for (const main in checkList.value) {
+    for (const sub in checkList.value[main]) {
+      const key = getStorageKey(main, sub);
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        try {
+          checkList.value[main][sub] = JSON.parse(stored);
+        } catch (e) {
+          console.warn(`로컬스토리지 데이터 파싱 실패: ${key}`);
+        }
+      }
+    }
+  }
+};
+
+onMounted(loadChecklistFromStorage);
+
+// ✅ 상태 저장 함수
+const saveChecklistToStorage = (main: string, sub: string) => {
+  const key = getStorageKey(main, sub);
+  const data = checkList.value[main][sub];
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+// 체크리스트 필터링
+const filteredChecklist = computed(() => {
+  const main = selectedMainTag.value;
+  const sub = selectedSubTag.value;
+
+  if (sub === "ALL") {
+    return [
+      ...(checkList.value[main]?.BEFO_MOVE ?? []).map((item) => ({
+        ...item,
+        subKey: "BEFO_MOVE",
+      })),
+      ...(checkList.value[main]?.AFTER_MOVE ?? []).map((item) => ({
+        ...item,
+        subKey: "AFTER_MOVE",
+      })),
+    ];
+  } else {
+    return (checkList.value[main]?.[sub] ?? []).map((item) => ({
+      ...item,
+      subKey: sub,
+    }));
+  }
+});
+
+// ✅ 체크 상태 변경 처리
+function onChange(item: { idx: number; subKey: "BEFO_MOVE" | "AFTER_MOVE" }) {
+  const main = selectedMainTag.value;
+  const sub = item.subKey;
+  const target = checkList.value[main][sub].find((el) => el.idx === item.idx);
+
+  if (target) {
+    target.value = !target.value;
+    saveChecklistToStorage(main, sub); // 💾 저장
+  }
 }
+</script>
+<style lang="scss" scoped>
+.tag-button-wrapper {
+  @include custom-padding-x;
+  @include custom-padding-y($padding-small);
+
+  overflow-x: auto;
+
+  &.sub {
+    background-color: #fafafa;
+    border-width: 1px 0px;
+    border-style: solid;
+    border-color: #f4f4f4;
+  }
+}
+
+.scroll-hidden-box {
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+
+.scroll-hidden-box::-webkit-scrollbar {
+  display: none; /* Chrome */
+}
+
 // scoped
-.tab-content {
-  display: flex;
-  flex-direction: column;
-  gap: $padding-small;
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  max-height: 100px; // 적절한 높이로 조정
+  opacity: 1;
+  transform: translateY(0);
+}
+
+:deep(.sub-active) {
+  border: none;
+  background-color: $secondary-color-default;
+  color: white !important;
 }
 </style>
