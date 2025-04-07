@@ -33,7 +33,7 @@ onMounted(() => {
 
 const topBarHandler = () => {
   if (step.value > 0) {
-    step.value--;
+    prev();
     return;
   }
   router.back();
@@ -79,7 +79,9 @@ const submit = () => {
   <div class="sub-container">
     <TopBarBack title="후기 작성" @back="topBarHandler" />
     <div class="center-container">
-      <AddressCard :houseOverview="houseOverview" />
+      <div class="padding-container">
+        <AddressCard :houseOverview="houseOverview" />
+      </div>
 
       <div class="create-review-tabs">
         <component :is="steps[step]" :data="reviewData" @update="updateData" />
@@ -112,6 +114,9 @@ const submit = () => {
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
+}
+.padding-container {
+  @include custom-padding-x;
 }
 // scoped
 .sub-container {

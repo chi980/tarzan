@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onprop } from "vue";
 import { HouseOverview } from "@/data/house";
 
 import { defineProps } from "vue";
@@ -12,15 +11,14 @@ const props = defineProps<{
 <template>
   <div class="house-over-view-card">
     <p class="card-title">주소</p>
-    <p class="house-name">{{ houseOverview?.house_name }}</p>
-    <p class="house-address">{{ houseOverview?.house_address }}</p>
+    <p class="house-name">{{ props.houseOverview?.house_name }}</p>
+    <p class="house-address">{{ props.houseOverview?.house_address }}</p>
   </div>
 </template>
 
 <style scoped lang="scss">
 .house-over-view-card {
   @include custom-text($font-size: 12px, $font-color: #969696);
-  @include custom-margin-x;
   @include custom-padding;
   display: flex;
   flex-direction: column;
