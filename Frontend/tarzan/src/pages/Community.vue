@@ -6,11 +6,7 @@
     /> 
     
     <div class="center-container">
-      <SearchBar 
-        v-model:searchQuery="searchQuery"/>
-      <!-- <SearchBar 
-      v-model:searchQuery="searchQuery" 
-      @search="searchPosts" /> -->
+      <SearchBar />
         
       <DescriptionComponent
           class="description-component"
@@ -201,6 +197,13 @@ onMounted(fetchPosts);
     width: 100%;
     flex-grow: 1;
     overflow-y: auto;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
   }
 
   .tag-button-container {

@@ -6,22 +6,24 @@
           v-model="searchQuery" 
           type="text"
           placeholder="찾고 싶은 글 제목을 입력해주세요."
-          @keyup.enter="onSearch" />
+          readonly
+          @focus="goToSearch"
+        />
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, defineEmits } from 'vue';
+import router from '@/router';
 
 const searchQuery = ref('');
 const emit = defineEmits();
 
-// 검색 버튼이나 Enter 키 입력 시 searchPosts 함수 호출
-const onSearch = () => {
-  console.log('검색어:', searchQuery.value);
-  emit('search', searchQuery.value); 
-};
+// 게시물 검색 페이지로 이동
+const goToSearch = () => {
+  router.push({ name: 'PostSearch' }) // 라우터 이름은 아래에 정의
+}
 </script>
 
 <style lang="scss" scoped>
@@ -31,6 +33,7 @@ const onSearch = () => {
     padding-bottom: $margin-default;
     @include custom-padding-x;
     box-sizing: border-box;
+    cursor: pointer;
   }
 
   .searchbar .input-icon-wrap {

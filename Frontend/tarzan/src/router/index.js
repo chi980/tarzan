@@ -140,6 +140,11 @@ const routes = [
         name: "PostCreate",
         component: () => import("@/components/post/PostCreate.vue"),
       },
+      {
+        path: "search",
+        name: "PostSearch",
+        component: () => import("@/components/post/PostSearchView.vue"),
+      },
     ],
   },
 
