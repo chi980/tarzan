@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <BottomBar />
+    <BottomBar class="bottom-bar" />
   </div>
 </template>
 
@@ -157,6 +157,10 @@ const goToEditProfile = () => {
     display: flex;
     flex-direction: column;
     background-color: #EDEDED;
+  }
+
+  .bottom-bar {
+    flex-shrink: 0;       /* 줄어들지 않게 고정 */
   }
 
   .center-container {
