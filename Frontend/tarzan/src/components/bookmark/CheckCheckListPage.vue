@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="arrordion-container">
     <BasicAccordion accordionTitle="수도와 배수">
       <CheckListItem
         v-for="(item, index) in checkListAboutWater"
@@ -214,4 +214,11 @@ const submitChecklist = async () => {
 <style lang="scss" scoped>
 // 공통
 // scoped
+.arrordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: $padding-small;
+
+  @include custom-padding-y;
+}
 </style>
