@@ -1,123 +1,116 @@
 <template>
   <div class="sub-container">
-    <form class="input-form" @submit.prevent="submitForm">
-      <!-- 닉네임 입력 -->
-      <div class="input-group">
-        <h2 class="input-title">
-          닉네임<span class="input-title-mandatory">*</span>
-        </h2>
-        <div class="input-content-wrapper">
+    <TopBarBack :title="''" />
+    <div class="center-container">
+      <form class="input-form" @submit.prevent="submitForm">
+        <!-- 닉네임 입력 -->
+        <div class="input-group">
+          <h2 class="input-title">
+            닉네임<span class="input-title-mandatory">*</span>
+          </h2>
+          <div class="input-content-wrapper">
+            <div class="input-content">
+              <input
+                type="text"
+                placeholder="닉네임을 입력해주세요"
+                v-model="nickname"
+                @input="handleInput"
+                required
+                :style="{
+                  border:
+                    nicknameValid === false
+                      ? '1px solid red'
+                      : '1px solid #e7e7e7',
+                }" />
+            </div>
+            <div class="input-description">
+              <p v-if="isChecking">✔ 닉네임 확인 중...</p>
+              <p v-if="nicknameValid === true">✅ 사용 가능한 닉네임입니다!</p>
+              <p v-if="nicknameValid === false" style="color: red">
+                ❌ 사용 불가능한 닉네임입니다.
+              </p>
+              <p>
+                <i class="bi bi-info-circle"> </i>
+                닉네임은 영문, 숫자로 이루어져야 합니다.
+              </p>
+              <p>
+                <i class="bi bi-info-circle"> </i>
+                닉네임은 6글자 이상 10글자 이하여야 합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 사는 곳 선택 -->
+        <div class="input-group">
+          <h2 class="input-title">
+            사는 곳<span class="input-title-mandatory">*</span>
+          </h2>
+          <div class="select-content">
+            <CustomSelectBox
+              :options="seoulDistrictOptions"
+              :parentStyle="{
+                backgroundColor: 'white',
+                fontWeight: 400,
+                justifyContent: `space-between`,
+                border: '1px solid #e7e7e7',
+              }"
+              @update:selected="handleSeoulDistrictSelectedIdx" />
+          </div>
+        </div>
+
+        <!-- 반려동물 유무 선택 -->
+        <div class="input-group">
+          <h2 class="input-title">
+            반려동물 유무<span class="input-title-mandatory">*</span>
+          </h2>
+          <div class="option-group">
+            <div
+              class="option-group-item"
+              v-for="(petOption, index) in petOptions"
+              :key="petOption.idx"
+              :class="{ active: petOption.isSelected }"
+              @click="selectOption(petOptions, index)">
+              {{ petOption.name }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 자차 유무 선택 -->
+        <div class="input-group">
+          <h2 class="input-title">
+            자차 유무<span class="input-title-mandatory">*</span>
+          </h2>
+          <div class="option-group">
+            <div
+              class="option-group-item"
+              v-for="(carOption, index) in carOptions"
+              :key="carOption.idx"
+              :class="{ active: carOption.isSelected }"
+              @click="selectOption(carOptions, index)">
+              {{ carOption.name }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 학교/직장 주소 입력 -->
+        <div class="input-group">
+          <h2 class="input-title">학교/직장 주소</h2>
           <div class="input-content">
             <input
               type="text"
-              placeholder="닉네임을 입력해주세요"
-              v-model="nickname"
-              @input="handleInput"
-              required
-              :style="{
-                border:
-                  nicknameValid === false
-                    ? '1px solid red'
-                    : '1px solid #e7e7e7',
-              }" />
-          </div>
-          <div class="input-description">
-            <p v-if="isChecking">✔ 닉네임 확인 중...</p>
-            <p v-if="nicknameValid === true">✅ 사용 가능한 닉네임입니다!</p>
-            <p v-if="nicknameValid === false" style="color: red">
-              ❌ 사용 불가능한 닉네임입니다.
-            </p>
-            <p>
-              <i class="bi bi-info-circle"> </i>
-              닉네임은 영문, 숫자로 이루어져야 합니다.
-            </p>
-            <p>
-              <i class="bi bi-info-circle"> </i>
-              닉네임은 6글자 이상 10글자 이하여야 합니다.
-            </p>
+              placeholder="주소를 입력해주세요"
+              readonly
+              v-model="address"
+              @click="openAddressSearch" />
           </div>
         </div>
-      </div>
-
-      <!-- 사는 곳 선택 -->
-      <div class="input-group">
-        <h2 class="input-title">
-          사는 곳<span class="input-title-mandatory">*</span>
-        </h2>
-        <div class="select-content">
-          <CustomSelectBox
-            :options="seoulDistrictOptions"
-            :parentStyle="{
-              backgroundColor: 'white',
-              fontWeight: 400,
-              justifyContent: `space-between`,
-              border: '1px solid #e7e7e7',
-            }"
-            @update:selected="handleSeoulDistrictSelectedIdx" />
-        </div>
-      </div>
-
-      <!-- 반려동물 유무 선택 -->
-      <div class="input-group">
-        <h2 class="input-title">
-          반려동물 유무<span class="input-title-mandatory">*</span>
-        </h2>
-        <div class="option-group">
-          <div
-            class="option-group-item"
-            v-for="(petOption, index) in petOptions"
-            :key="petOption.idx"
-            :class="{ active: petOption.isSelected }"
-            @click="selectOption(petOptions, index)">
-            {{ petOption.name }}
-          </div>
-        </div>
-      </div>
-
-      <!-- 자차 유무 선택 -->
-      <div class="input-group">
-        <h2 class="input-title">
-          자차 유무<span class="input-title-mandatory">*</span>
-        </h2>
-        <div class="option-group">
-          <div
-            class="option-group-item"
-            v-for="(carOption, index) in carOptions"
-            :key="carOption.idx"
-            :class="{ active: carOption.isSelected }"
-            @click="selectOption(carOptions, index)">
-            {{ carOption.name }}
-          </div>
-        </div>
-      </div>
-
-      <!-- 학교/직장 주소 입력 -->
-      <div class="input-group">
-        <h2 class="input-title">학교/직장 주소</h2>
-        <div class="input-content">
-          <input
-            type="text"
-            placeholder="주소를 입력해주세요"
-            readonly
-            v-model="address"
-            @click="openAddressSearch" />
-        </div>
-      </div>
-    </form>
-
+      </form>
+    </div>
     <!-- 주소 검색 팝업 -->
     <AddressSearch v-if="isAddressSearchOpen" @close="setAddress" />
 
-    <div
-      style="
-        width: 100%;
-        position: absolute;
-        bottom: 16px;
-        display: flex;
-        flex-direction: row;
-      ">
-      <div class="button-default" @click="submitForm">제출하기</div>
-    </div>
+    <BottomDefaultButton :label="'제출하기'" :onClick="submitForm" />
   </div>
 </template>
 
@@ -131,8 +124,10 @@ import { useAuthStore } from "@/stores/authStore";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRouter } from "vue-router";
 
+import TopBarBack from "@/components/common/TopBarBack.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import AddressSearch from "@/components/common/AddressSearch.vue";
+import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 
 import { Option } from "@/data/options";
 import { seoulSiGunGu } from "@/data/seoulsigungu.js";
@@ -402,21 +397,55 @@ const submitForm = async () => {
     }
   }
 }
-
-// scoped
-.sub-container {
+.center-container {
   position: relative;
+  flex-grow: 1;
+  width: 100%;
+
   display: flex;
   flex-direction: column;
-  gap: $padding-default;
+
+  background-color: white;
+
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
 }
 
-.button-default {
-  @include custom-button-style(
-    $bg-color: $secondary-color-default,
-    $font-color: white
-  );
-  @include custom-margin-x;
-  width: 100%;
+// scoped
+
+.center-container {
+  display: flex;
+  justify-content: center;
 }
+// .sub-container {
+//   position: relative;
+//   display: flex;
+//   flex-direction: column;
+//   gap: $padding-default;
+// }
+
+// .button-default {
+//   @include custom-button-style(
+//     $bg-color: $secondary-color-default,
+//     $font-color: white
+//   );
+//   @include custom-margin-x;
+//   width: 100%;
+// }
 </style>

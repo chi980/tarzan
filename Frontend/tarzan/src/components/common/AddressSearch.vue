@@ -5,6 +5,7 @@ import searchIconImg from "@/assets/icons/Magnifier.png";
 import AddressSearchResult from "./AddressSearchResult.vue";
 import { debounce } from "lodash"; // lodash의 debounce 사용
 import TopBarBack from "@/components/common/TopBarBack.vue";
+import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 
 const emit = defineEmits(["close", "selectAddress"]);
 
@@ -142,9 +143,10 @@ watch(searchQuery, debouncedSearch);
           :addresses="searchResults"
           @selectAddress="selectAddress" />
       </div>
-      <div class="button-wrapper">
+      <!-- <div class="button-wrapper">
         <button class="button-default" @click="searchAddress">검색</button>
-      </div>
+      </div> -->
+      <BottomDefaultButton :label="'검색'" :onClick="searchAddress" />
     </div>
   </div>
 </template>
@@ -205,20 +207,5 @@ watch(searchQuery, debouncedSearch);
     border: none;
     height: 100%;
   }
-}
-
-.button-wrapper {
-  @include custom-padding-y;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-}
-
-.button-default {
-  @include custom-button-style(
-    $bg-color: $secondary-color-default,
-    $font-color: white
-  );
-  @include custom-margin-x;
 }
 </style>
