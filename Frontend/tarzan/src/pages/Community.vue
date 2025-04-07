@@ -1,6 +1,9 @@
 <template>
   <div class="sub-container">
-    <TopBar @update:selected="updateDistrict" /> 
+    <TopBar 
+      class="top-bar"
+      @update:selected="updateDistrict" 
+    /> 
     
     <div class="center-container">
       <SearchBar 
@@ -10,6 +13,7 @@
       @search="searchPosts" /> -->
         
       <DescriptionComponent
+          class="description-component"
           descriptionImgSrc="/src/assets/etc/Saly-25.png"
           descriptionTitle="동네주민과<br/>얘기해보세요!"
           descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
@@ -44,7 +48,7 @@
       </div>
     </div>
     
-    <BottomBar />
+    <BottomBar class="bottom-bar" />
   </div>
 </template>
 
@@ -180,7 +184,15 @@ onMounted(fetchPosts);
 
 <style lang="scss" scoped>
   .sub-container {
-    justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .top-bar,
+  .bottom-bar,
+  .description-component {
+    flex-shrink: 0;
   }
 
   .center-container {
