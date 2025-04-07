@@ -218,6 +218,8 @@ const selectOption = (options: Option[] | undefined, idx: number) => {
 
 /** address */
 const address = ref<string | null>(null);
+const longitude = ref<number | null>(null);
+const latitude = ref<number | null>(null);
 const isAddressSearchOpen = ref<boolean>(false);
 const openAddressSearch = () => {
   isAddressSearchOpen.value = true;
@@ -235,6 +237,10 @@ const setAddress = (selectedAddress) => {
     address.value = `${selectedAddress.place_name} - ${
       selectedAddress.road_address_name || selectedAddress.address_name
     }`;
+
+    longitude.value = selectedAddress.x;
+    latitude.value = selectedAddress.y;
+    console.log(`경도: ${longitude.value},위도: ${latitude.value}`);
   } else {
     console.error("선택된 주소에 place_name이 없습니다:", selectedAddress);
   }
@@ -286,8 +292,8 @@ const submitForm = async () => {
       user_have_animal: petOptions.value[selectedPetIdx].value,
       user_have_car: carOptions.value[selectedCarIdx].value,
       user_job_address: address.value,
-      user_latitude: 37.5665,
-      user_longitude: 126.978,
+      user_latitude: latitude.value,
+      user_longitude: longitude.value,
     };
 
     const response = await axiosInstance.post("/v1/user", formData);
