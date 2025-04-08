@@ -54,9 +54,10 @@ const clickGoogleBtn = () => {
   location.href = googleLoginUrl;
 };
 
-// const clickNaverBtn = () => {
-//   const naverLoginUrl = import.meta.env.VITE_API_NAVER_URL;
-
+const clickNaverBtn = () => {
+  const naverLoginUrl = import.meta.env.VITE_API_NAVER_URL;
+  location.href = naverLoginUrl;
+};
 import { useAuthStore } from "@/stores/authStore";
 const clickBtn = () => {
   const authStore = useAuthStore();
