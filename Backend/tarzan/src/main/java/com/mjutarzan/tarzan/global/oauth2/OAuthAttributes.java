@@ -5,6 +5,7 @@ import com.mjutarzan.tarzan.domain.user.model.vo.Role;
 import com.mjutarzan.tarzan.domain.user.model.vo.SocialType;
 import com.mjutarzan.tarzan.global.oauth2.dto.GoogleOAuth2UserInfo;
 import com.mjutarzan.tarzan.global.oauth2.dto.KakaoOAuth2UserInfo;
+import com.mjutarzan.tarzan.global.oauth2.dto.NaverOAuth2UserInfo;
 import com.mjutarzan.tarzan.global.oauth2.dto.OAuth2UserInfo;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,9 +38,9 @@ public class OAuthAttributes {
     public static OAuthAttributes of(SocialType socialType,
                                      String userNameAttributeName, Map<String, Object> attributes) {
 //
-//        if (socialType == SocialType.NAVER) {
-//            return ofNaver(userNameAttributeName, attributes);
-//        }
+        if (socialType == SocialType.NAVER) {
+            return ofNaver(userNameAttributeName, attributes);
+        }
         if (socialType == SocialType.KAKAO) {
             return ofKakao(userNameAttributeName, attributes);
         }
@@ -60,12 +61,12 @@ public class OAuthAttributes {
                 .build();
     }
 
-//    public static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-//        return OAuthAttributes.builder()
-//                .nameAttributeKey(userNameAttributeName)
-//                .oauth2UserInfo(new NaverOAuth2UserInfo(attributes))
-//                .build();
-//    }
+    public static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
+        return OAuthAttributes.builder()
+                .nameAttributeKey(userNameAttributeName)
+                .oauth2UserInfo(new NaverOAuth2UserInfo(attributes))
+                .build();
+    }
 
     /**
      * of메소드로 OAuthAttributes 객체가 생성되어, 유저 정보들이 담긴 OAuth2UserInfo가 소셜 타입별로 주입된 상태
