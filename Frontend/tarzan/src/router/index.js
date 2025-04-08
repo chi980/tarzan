@@ -58,7 +58,7 @@ const routes = [
       },
       {
         path: "compare",
-        component: () => import("@/components/bookmark/CompareHouses.vue"),
+        component: () => import("@/pages/BookmarkCompare.vue"),
       },
     ],
   },
