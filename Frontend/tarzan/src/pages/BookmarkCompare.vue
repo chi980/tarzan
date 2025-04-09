@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BookmarkItem from "@/components/bookmark/BookmarkItem.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
+import CompareHouses from "@/components/bookmark/CompareHouses.vue";
 
 const list = ref([]);
 list.value = [
@@ -37,31 +38,41 @@ list.value = [
 // 체크 상태 바꿔주는 함수
 const toggleCheck = (idx: number) => {
   list.value[idx].checked = !list.value[idx].checked;
-  console.log(list.value[idx]);
+};
+
+const hideUI = ref(false);
+const compareBookmarks = () => {
+  const length = list.value.filter((item) => item.checked).length;
+  if (length < 2) return;
+  hideUI.value = true;
 };
 </script>
 
 <template>
   <div class="sub-container">
     <TopBarBack :title="'비교하기'" />
+
+    <CompareHouses v-if="hideUI" />
     <div class="center-container">
-      <div>
-        <div class="bookmark-item-wrapper">
-          <BookmarkItem
-            v-for="(bookmark, index) in list"
-            :key="index"
-            :house="bookmark.house"
-            :checked="bookmark.checked"
-            :idx="index"
-            @toggle-check="toggleCheck" />
-        </div>
+      <div class="bookmark-item-list-wrapper" v-if="!hideUI">
+        <BookmarkItem
+          v-for="(bookmark, index) in list"
+          :key="index"
+          :house="bookmark.house"
+          :checked="bookmark.checked"
+          :idx="index"
+          @toggle-check="toggleCheck" />
       </div>
     </div>
+    <BottomDefaultButton
+      :label="'비교하기'"
+      :onClick="compareBookmarks"
+      v-if="!hideUI" />
   </div>
 </template>
 
 <style scoped lang="scss">
-.center-container {
+:deep(.center-container) {
   position: relative;
   flex-grow: 1;
   width: 100%;
@@ -89,5 +100,13 @@ const toggleCheck = (idx: number) => {
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
+}
+
+// scoped
+.bookmark-item-list-wrapper {
+  @include custom-margin-y;
+  display: flex;
+  flex-direction: column;
+  gap: $padding-default;
 }
 </style>

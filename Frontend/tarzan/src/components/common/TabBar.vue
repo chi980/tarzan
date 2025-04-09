@@ -16,13 +16,13 @@
     <div>
       <component
         :is="currentTabComponent"
-        v-bind="tabs[selectedTabIdx].props ?? {}" />
+        v-bind="tabs[selectedTabIdx]?.props ?? {}" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, defineEmits } from "vue";
 import { Tab } from "@/data/tabs";
 // 부모로부터 받아온 options
 const props = defineProps({
@@ -30,21 +30,28 @@ const props = defineProps({
     type: Array as () => Tab[],
     required: true,
   },
+  selectedTabIdx: Number,
 });
 
 // 상태 변수
-const selectedTabIdx = ref<number>(0); // 초기값: 첫 탭
+// const selectedTabIdx = ref<number>(0); // 초기값: 첫 탭
 
 // 선택된 탭의 컴포넌트 계산
 const currentTabComponent = computed(() => {
-  return props.tabs[selectedTabIdx.value].component;
+  return props.tabs[props.selectedTabIdx]?.component;
 });
 
 // 선택된 탭을 변경하는 메소드
 const selectTab = (index: number) => {
-  selectedTabIdx.value = index;
-  console.log(props.tabs[index]);
+  // selectedTabIdx.value = index;
+  // console.log(props.tabs[index]);
+
+  emit("update:selectedTabIdx", index);
 };
+
+const emit = defineEmits<{
+  (e: "update:selectedTabIdx", value: number): void;
+}>();
 </script>
 
 <style lang="scss" scoped>

@@ -1,175 +1,167 @@
 <template>
-  <div class="sub-container non-input-sub-container">
-    <TopBarBack title="비교하기" />
-    <div class="center-container">
-      <div id="compare-container-banner-wrapper">
-        <img
-          :src="emojiSrc"
-          class="emoji-image"
-          style="
-            width: 30%;
-            height: auto;
-            top: -80px;
-            left: 20%;
-            transform: rotate(-15deg);
-          "
-        />
-        <img
-          :src="emojiSrc"
-          class="emoji-image"
-          style="
-            width: 20%;
-            height: auto;
-            top: 30%;
-            right: 8%;
-            transform: rotate(25deg);
-          "
-        />
-        <img
-          :src="emojiSrc"
-          class="emoji-image"
-          style="
-            width: 14%;
-            height: auto;
-            bottom: 10%;
-            left: 10%;
-            transform: rotate(-20deg);
-          "
-        />
-        <div id="compare-container-banner">
-          <p>
-            선택한 집을<br />
-            비교해봐요
-          </p>
+  <div class="center-container">
+    <div id="compare-container-banner-wrapper">
+      <img
+        :src="emojiSrc"
+        class="emoji-image"
+        style="
+          width: 30%;
+          height: auto;
+          top: -80px;
+          left: 20%;
+          transform: rotate(-15deg);
+        " />
+      <img
+        :src="emojiSrc"
+        class="emoji-image"
+        style="
+          width: 20%;
+          height: auto;
+          top: 30%;
+          right: 8%;
+          transform: rotate(25deg);
+        " />
+      <img
+        :src="emojiSrc"
+        class="emoji-image"
+        style="
+          width: 14%;
+          height: auto;
+          bottom: 10%;
+          left: 10%;
+          transform: rotate(-20deg);
+        " />
+      <div id="compare-container-banner">
+        <p>
+          선택한 집을<br />
+          비교해봐요
+        </p>
 
-          <a href="#">자세히 보기</a>
-        </div>
-      </div>
-      <div class="house-tab-wrapper">
-        <div
-          v-for="(house, index) in housesToCompare"
-          :key="house.idx"
-          class="house-tab"
-        >
-          <p class="numeric-text">{{ index + 1 }}</p>
-          <div class="house-info">
-            <div class="house-info-title">
-              <p>{{ house.name }}</p>
-              <p>{{ house.type }}</p>
-            </div>
-            <div class="house-info-content">
-              <p>{{ house.address }}</p>
-            </div>
-          </div>
-          <p class="numeric-text">{{ house.score }}</p>
-        </div>
-      </div>
-      <div class="chart-wrapper">
-        <Chart :chartData="chartData"></Chart>
-      </div>
-
-      <!-- <div>
-        <div class="content-indicator"></div>
-      </div> -->
-      <div
-        class="custom-flex-column"
-        style="margin-top: 8px; margin-bottom: 30px; gap: 24px"
-      >
-        <div class="table">
-          <div class="table-title">
-            <img :src="checkImgSrc" />
-            <p>가격</p>
-          </div>
-          <div class="table-content-wrapper">
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th v-for="house in housesToCompare" :key="house.idx">
-                      {{ house.name }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="row in costList" :key="row.idx">
-                    <td>{{ row.kor }}</td>
-                    <td v-for="house in housesToCompare" :key="house.idx">
-                      {{ house[row.eng] }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="table">
-          <div class="table-title">
-            <img :src="checkImgSrc" />
-            <p>체크 사항</p>
-          </div>
-
-          <div class="table-content-wrapper">
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th v-for="house in housesToCompare" :key="house.idx">
-                      {{ house.name }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="row in checkList" :key="row.idx">
-                    <td v-html="row.kor"></td>
-                    <td v-for="house in housesToCompare" :key="house.idx">
-                      {{ house[row.eng] }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="table">
-          <div class="table-title">
-            <img :src="checkImgSrc" />
-            <p>옵션</p>
-          </div>
-
-          <div class="table-content-wrapper">
-            <div class="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th v-for="house in housesToCompare" :key="house.idx">
-                      {{ house.name }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="row in optionList" :key="row.idx">
-                    <td v-html="row.kor"></td>
-                    <td v-for="house in housesToCompare" :key="house.idx">
-                      {{ house[row.eng] }}
-                    </td>
-                  </tr>
-
-                  <tr class="special-row">
-                    <td>총계</td>
-                    <td v-for="house in housesToCompare" :key="house.idx">
-                      {{ house.totalScore }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <a href="#">자세히 보기</a>
       </div>
     </div>
+    <!-- <div class="house-tab-wrapper">
+      <div
+        v-for="(house, index) in housesToCompare"
+        :key="house.idx"
+        class="house-tab">
+        <p class="numeric-text">{{ index + 1 }}</p>
+        <div class="house-info">
+          <div class="house-info-title">
+            <p>{{ house.name }}</p>
+            <p>{{ house.type }}</p>
+          </div>
+          <div class="house-info-content">
+            <p>{{ house.address }}</p>
+          </div>
+        </div>
+        <p class="numeric-text">{{ house.score }}</p>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <Chart :chartData="chartData"></Chart>
+    </div> -->
+
+    <!-- <div>
+        <div class="content-indicator"></div>
+      </div> -->
+    <!-- <div
+      class="custom-flex-column"
+      style="margin-top: 8px; margin-bottom: 30px; gap: 24px">
+      <div class="table">
+        <div class="table-title">
+          <img :src="checkImgSrc" />
+          <p>가격</p>
+        </div>
+        <div class="table-content-wrapper">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th v-for="house in housesToCompare" :key="house.idx">
+                    {{ house.name }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in costList" :key="row.idx">
+                  <td>{{ row.kor }}</td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house[row.eng] }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="table">
+        <div class="table-title">
+          <img :src="checkImgSrc" />
+          <p>체크 사항</p>
+        </div>
+
+        <div class="table-content-wrapper">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th v-for="house in housesToCompare" :key="house.idx">
+                    {{ house.name }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in checkList" :key="row.idx">
+                  <td v-html="row.kor"></td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house[row.eng] }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="table">
+        <div class="table-title">
+          <img :src="checkImgSrc" />
+          <p>옵션</p>
+        </div>
+
+        <div class="table-content-wrapper">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th v-for="house in housesToCompare" :key="house.idx">
+                    {{ house.name }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in optionList" :key="row.idx">
+                  <td v-html="row.kor"></td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house[row.eng] }}
+                  </td>
+                </tr>
+
+                <tr class="special-row">
+                  <td>총계</td>
+                  <td v-for="house in housesToCompare" :key="house.idx">
+                    {{ house.totalScore }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -179,7 +171,6 @@ import checkImgSrc from "@/assets/icons/Check/Check.svg";
 import { CompareHouse } from "@/data/house";
 import { ChartDataOption } from "@/data/chart";
 import Chart from "@/components/common/RadarChart.vue";
-import TopBarBack from "../common/TopBarBack.vue";
 const housesToCompare: CompareHouse[] = [
   {
     idx: 1,
@@ -341,52 +332,7 @@ const optionList: rowInfo[] = [
 
 <style lang="scss" scoped>
 // 공통
-.top-bar-back {
-  @include custom-bar-style(
-    $height: $height-top-bar,
-    $z-index: $z-index-top-bar
-  );
-}
 
-.center-container {
-  position: relative;
-  flex-grow: 1;
-  width: 100%;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow-y: auto;
-  /* 스크롤바 전체 영역 */
-  &::-webkit-scrollbar {
-    width: 4px; /* 세로축 스크롤바 폭 너비 */
-    height: 100%; /* 가로축 스크롤바 폭 너비 */
-  }
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-  /* 스크롤바 막대 제외 부분 */
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  /* 스크롤바 막대 */
-  &::-webkit-scrollbar-thumb {
-    border-radius: calc($border-radius-default * 2);
-    background: #f2f2f2;
-  }
-}
-.bottom-button-wrapper {
-  @include custom-padding-x;
-
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  div {
-    @include custom-button-style($height: 54px, $font-color: white);
-  }
-}
 .input-form {
   width: 100%;
   display: flex;

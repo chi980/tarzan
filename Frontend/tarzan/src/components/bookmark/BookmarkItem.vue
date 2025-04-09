@@ -16,15 +16,24 @@ const emit = defineEmits<{
 
 // 체크박스나 HouseItem 클릭 시
 const toggle = () => {
-  console.log(props.checked);
   emit("toggle-check", props.idx);
 };
 </script>
 
 <template>
-  <div>
+  <div class="bookmark-item-wrapper">
     <input type="checkbox" :checked="props.checked" @change="toggle" />
     <HouseItem :house="props.house" @navigate="toggle" />
   </div>
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.bookmark-item-wrapper {
+  @include custom-padding-x;
+  @include custom-padding-y($padding-small);
+  display: flex;
+  flex-direction: row;
+  gap: $padding-default;
+
+  align-items: center;
+}
+</style>

@@ -139,13 +139,15 @@ const tabs: Tab[] = [
       : undefined,
   },
 ];
+
+const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 </script>
 
 <template>
   <div v-if="house" class="house-detail-wrapper">
     <BuildingDetail v-if="building" :building="building" />
     <div class="tab-bar-wrapper">
-      <TabBar :tabs="tabs"></TabBar>
+      <TabBar :tabs="tabs" v-model:selectedTabIdx="selectedTabIndex"></TabBar>
     </div>
   </div>
 </template>
