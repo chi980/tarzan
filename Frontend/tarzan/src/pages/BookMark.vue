@@ -9,14 +9,17 @@
           descriptionImgSrc="/etc/Saly-26.png"
           descriptionTitle="타잔이와 함께 체크해봐요!"
           descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
-          backgroundColor="#f2ecff"
-        />
-        <TabBar :tabs="tabs"></TabBar>
+          backgroundColor="#f2ecff" />
+      </div>
+
+      <TabBar :tabs="tabs" v-model:selectedTabIdx="selectedTabIndex"></TabBar>
+      <div
+        class="center-container-fix-button"
+        @click="tabs[selectedTabIndex].onClick">
+        <p>{{ tabs[selectedTabIndex].buttonLabel }}</p>
+        <img :src="tabs[selectedTabIndex].imgSrc" />
       </div>
     </div>
-    <!-- <div class="center-container-fix-button">
-      <img :src="CompareImgSrc" />비교하기
-    </div> -->
 
     <div class="bottom-bar-wrapper">
       <BottomBar></BottomBar>
@@ -34,7 +37,10 @@ import MoverTap from "@/components/bookmark/MoverTap.vue";
 import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
 
-import { ref, watch } from "vue";
+import chevronImgSrc from "@/assets/icons/chevron-right.png";
+import exportImgSrc from "@/assets/icons/corner_up_arrows.png";
+
+import { ref, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
@@ -50,12 +56,42 @@ watch(
   },
   { immediate: true }
 );
+const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 
+interface ExtendedTab extends Tab {
+  buttonLabel: string;
+  imgSrc: string;
+  onClick: () => void;
+}
 // 탭 데이터 배열 초기화
-const tabs: Tab[] = [
-  { name: "집 선택", component: HouseTap },
-  { name: "이사 업체 선택", component: MoverTap },
-  { name: "자취 필수품 선택", component: ItemTap },
+const tabs: ExtendedTab[] = [
+  {
+    name: "집 선택",
+    component: HouseTap,
+    buttonLabel: "비교하기",
+    imgSrc: chevronImgSrc,
+    onClick: () => {
+      console.log("🏠 집 비교 로직 실행");
+    },
+  },
+  {
+    name: "이사 업체 선택",
+    component: MoverTap,
+    buttonLabel: "내보내기",
+    imgSrc: exportImgSrc,
+    onClick: () => {
+      console.log("🚚 이사 업체 비교 로직 실행");
+    },
+  },
+  {
+    name: "자취 필수품 선택",
+    component: ItemTap,
+    buttonLabel: "내보내기",
+    imgSrc: exportImgSrc,
+    onClick: () => {
+      console.log("📦 필수품 비교 로직 실행");
+    },
+  },
 ];
 </script>
 
@@ -71,7 +107,6 @@ const tabs: Tab[] = [
   width: 100%;
   z-index: $z-index-bottom-bar-wrapper;
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
-  background-color: aqua;
 }
 
 .non-input-sub-container {
@@ -85,8 +120,6 @@ const tabs: Tab[] = [
 
   display: flex;
   flex-direction: column;
-
-  background-color: white;
 
   overflow-y: auto;
   /* 스크롤바 전체 영역 */
@@ -109,26 +142,24 @@ const tabs: Tab[] = [
 }
 
 .center-container-fix-button {
-  @include custom-text($font-color: white, $font-weight: 800, $font-size: 14px);
-  @include custom-none-select-basic;
-  position: absolute;
-  bottom: calc(#{$height-bottom-bar} + #{$padding-default});
-  right: $padding-default;
-  z-index: $z-index-button;
-
+  @include custom-padding(12px);
+  @include custom-text($font-size: 12px);
+  position: sticky; // ✅ fixed로 바꾸기!
+  bottom: $padding-default;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center; /* 가로축 중앙 정렬 */
-  align-items: center; /* 세로축 중앙 정렬 */
-  padding: 12px 14px 12px 12px;
+  flex-direction: row;
   gap: $padding-small;
 
-  border-radius: 20px;
-  background-color: $primary-color-400;
+  width: fit-content;
 
-  box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   img {
-    @include custom-icon-style;
+    @include custom-icon-style(12px);
   }
 }
 </style>

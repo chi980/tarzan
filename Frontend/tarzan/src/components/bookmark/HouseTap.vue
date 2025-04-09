@@ -130,7 +130,7 @@ const fetchRecentHouses = async () => {
   }
 };
 
-onMounted(fetchRecentHouses);
+// onMounted(fetchRecentHouses);
 </script>
 
 <style lang="scss" scoped>
