@@ -6,7 +6,9 @@
     /> 
     
     <div class="center-container">
-      <SearchBar />
+      <SearchBar
+        routeName="PostSearch"    
+      />
         
       <DescriptionComponent
           class="description-component"
@@ -27,7 +29,7 @@
 
       <div class="result-bar-container">
         <ResultBar 
-          resultTitle="결과" 
+          resultTitle="전체 게시물" 
           :sortOptions="sortOptions"
           @updateSortBy="updateSortBy"
         />
@@ -50,7 +52,9 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch } from "vue";
+import router from '@/router';
 import { useRouter } from "vue-router";
+
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
 import { useInfiniteScroll } from "@/composables/useInfiniteScroll.js";
@@ -63,7 +67,7 @@ import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
 
-const router = useRouter();
+// const router = useRouter();
 
 const tagOptions = ref([
   { label: '전체', value: 'ALL' },

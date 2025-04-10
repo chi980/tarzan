@@ -48,12 +48,6 @@ const toggleSelection = (value) => {
 </script>
 
 <style scoped lang="scss">
-// .tag-button-container {
-//   display: flex;
-//   flex-wrap: nowrap;
-//   gap: 5px;
-
-// }
 .tag-button-container {
   display: flex;
   flex-wrap: nowrap;
@@ -85,6 +79,9 @@ const toggleSelection = (value) => {
   }
 }
 
+// 선택된 버튼의 스타일
+// 기존의 active 클래스를 사용하여 스타일을 적용합니다.
+// 필요에 따라 기존 스타일을 수정하거나 추가할 수 있습니다.
 .active {
   background-color: $primary-color-light;
   border: 1.2px solid $primary-color-default;
