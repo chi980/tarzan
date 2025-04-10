@@ -41,23 +41,24 @@ const routes = [
         name: "AddHousePage",
         component: () => import("@/components/bookmark/AddHousePage.vue"),
       },
-      {
-        path: ":bookmarkIdx",
-        name: "CheckCostPage",
-        component: () => import("@/components/bookmark/CheckCostPage.vue"),
-      },
-      {
-        path: ":bookmarkIdx",
-        name: "CheckOptionPage",
-        component: () => import("@/components/bookmark/CheckOptionPage.vue"),
-      },
-      {
-        path: ":bookmarkIdx",
-        name: "CheckCheckListPage",
-        component: () => import("@/components/bookmark/CheckCheckListPage.vue"),
-      },
+      // {
+      //   path: ":bookmarkIdx",
+      //   name: "CheckCostPage",
+      //   component: () => import("@/components/bookmark/CheckCostPage.vue"),
+      // },
+      // {
+      //   path: ":bookmarkIdx",
+      //   name: "CheckOptionPage",
+      //   component: () => import("@/components/bookmark/CheckOptionPage.vue"),
+      // },
+      // {
+      //   path: ":bookmarkIdx",
+      //   name: "CheckCheckListPage",
+      //   component: () => import("@/components/bookmark/CheckCheckListPage.vue"),
+      // },
       {
         path: "compare",
+        name: "BookmarkCompare",
         component: () => import("@/pages/BookmarkCompare.vue"),
       },
     ],
@@ -122,7 +123,7 @@ const routes = [
 
   {
     path: "/community",
-    name: "Community",
+    // name: "Community",
     children: [
       {
         path: "",

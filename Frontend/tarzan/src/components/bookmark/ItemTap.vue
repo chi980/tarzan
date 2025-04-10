@@ -18,7 +18,7 @@
     <!-- 필터링된 체크리스트 항목 -->
     <CheckListItem
       v-for="item in filteredChecklist"
-      :key="item.idx"
+      :key="`${selectedMainTag}-${item.subKey}-${item.idx}`"
       :checkListItem="item"
       @change="onChange(item)" />
   </div>
