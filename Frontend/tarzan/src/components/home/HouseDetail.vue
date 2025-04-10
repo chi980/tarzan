@@ -4,7 +4,10 @@ import { House, HouseDetail, Review, Tag } from "@/data/house";
 import { Building } from "@/data/building";
 import { Tab } from "@/data/tabs";
 
-import axiosPlugin from "@/plugins/axiosPlugin";
+import shareIconImg from "@/assets/icons/Share.png";
+import bookmarkIconImg from "@/assets/icons/Bookmark.png";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import BuildingDetail from "@/components/home/BuildingDetail.vue";
 import TabBar from "@/components/common/TabBar.vue";
 import ReviewTap from "@/components/home/ReviewTap.vue";
@@ -141,11 +144,36 @@ const tabs: Tab[] = [
 ];
 
 const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
+
+const bookmarkThis = async () => {
+  try {
+    const response = await axiosInstance.post("/v1/bookmark", {
+      house_id: houseDetail.value.house_id,
+    });
+
+    console.log("북마크 등록 성공!");
+  } catch (error) {
+    if (error.response && error.response.status === 400) {
+      console.error("잘못된 요청입니다.");
+    }
+  }
+};
+const shareThis = () => {};
 </script>
 
 <template>
   <div v-if="house" class="house-detail-wrapper">
-    <BuildingDetail v-if="building" :building="building" />
+    <div>
+      <BuildingDetail v-if="building" :building="building" />
+      <div class="house-detail-buttons">
+        <div class="button">
+          <img :src="bookmarkIconImg" alt="button" @click="bookmarkThis" />
+        </div>
+        <div class="button">
+          <img :src="shareIconImg" alt="button" @click="shareThis" />
+        </div>
+      </div>
+    </div>
     <div class="tab-bar-wrapper">
       <TabBar :tabs="tabs" v-model:selectedTabIdx="selectedTabIndex"></TabBar>
     </div>
@@ -154,8 +182,29 @@ const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 
 <style scoped lang="scss">
 .house-detail-wrapper {
-  background-color: aqua;
+  background-color: white;
   display: flex;
   flex-direction: column;
+}
+
+.house-detail-buttons {
+  @include custom-margin-x;
+  display: flex;
+  flex-direction: row;
+  gap: $padding-small;
+
+  .button {
+    @include custom-padding($padding-small);
+    border-radius: 20px;
+    background-color: $primary-color-light;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      @include custom-icon-style(18px);
+    }
+  }
 }
 </style>

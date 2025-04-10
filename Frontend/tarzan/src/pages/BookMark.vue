@@ -228,7 +228,7 @@ const tabs: ExtendedTab[] = [
 .center-container-fix-button {
   @include custom-padding(12px);
   @include custom-text($font-size: 12px);
-  position: sticky; // ✅ fixed로 바꾸기!
+  position: sticky;
   bottom: $padding-default;
   left: 50%;
   transform: translateX(-50%);
