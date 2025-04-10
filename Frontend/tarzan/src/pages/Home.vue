@@ -488,21 +488,6 @@ const addBuildingMarkers = (mapInstance, buildings) => {
   /** tag button group style */
   .tag-button-container-wrapper {
     @include custom-padding-x;
-    pointer-events: auto;
-    overflow-x: auto;
-
-    -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
-
-    // 웹킷 브라우저에서 스크롤바 숨기기
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-      display: none;
-    }
-
-    // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
-    scrollbar-width: none; // 파이어폭스
-    -ms-overflow-style: none; // IE, Edge
   }
   z-index: 10; /* Ensure this is below the search bar */
 }

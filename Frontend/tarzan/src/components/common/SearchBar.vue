@@ -1,7 +1,6 @@
 <template>
   <div class="searchbar">
     <div class="input-icon-wrap">
-      <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
         <input
           v-model="searchQuery" 
           type="text"
