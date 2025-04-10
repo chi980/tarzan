@@ -5,7 +5,7 @@ import { Building } from "@/data/building";
 import { Tab } from "@/data/tabs";
 
 import shareIconImg from "@/assets/icons/Share.png";
-import bookmarkIconImg from "@/assets/icons/Bookmark.png";
+import bookmarkIconImg from "@/assets/icons/Bookmark.svg";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import BuildingDetail from "@/components/home/BuildingDetail.vue";
@@ -197,6 +197,7 @@ const shareThis = () => {};
     @include custom-padding($padding-small);
     border-radius: 20px;
     background-color: $primary-color-light;
+    // border: 1px solid $primary-color-light;
 
     display: flex;
     align-items: center;
