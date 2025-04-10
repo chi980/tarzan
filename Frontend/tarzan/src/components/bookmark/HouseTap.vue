@@ -1,12 +1,13 @@
 <template>
   <div class="tab-content house-content-wrapper">
     <div class="house-item-wrapper">
-      <div class="house-item--add-wrapper">
+      <div class="house-item--add-wrapper" @click="emitOpenModal">
         <div class="house-add-img-wrapper">
           <img :src="houseAddImg" alt="houseAddImg" />
         </div>
         <p>집 추가하기</p>
       </div>
+
       <HouseItem
         v-for="(house, index) in list"
         :key="index"
@@ -19,9 +20,11 @@
 
 <script setup lang="ts">
 /**  */
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted, defineProps, defineExpose, defineEmits } from "vue";
 
 /** component load */
+import AddressHouseSearch from "@/components/common/AddressHouseSearch.vue";
+
 import houseAddImg from "@/assets/icons/Plus/Pluse.png";
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
@@ -30,6 +33,16 @@ import HouseItem from "@/components/bookmark/HouseItem.vue";
 /** data, plugin load */
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+
+const emit = defineEmits(["openAddressSearch"]);
+
+const emitOpenModal = () => {
+  emit("openAddressSearch");
+};
+
+defineExpose({
+  emitOpenModal,
+});
 
 const router = useRouter();
 
@@ -45,6 +58,16 @@ const navigateToCheckCostPage = (house) => {
 
   const bookmarkIdx = house.bookmarkIdx;
   router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+};
+
+const showAddressSearch = ref(false);
+
+const openAddressSearch = () => {
+  showAddressSearch.value = true;
+};
+
+const closeAddressSearch = () => {
+  showAddressSearch.value = false;
 };
 
 const list = ref([]);

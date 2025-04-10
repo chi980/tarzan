@@ -11,9 +11,16 @@
           descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
           backgroundColor="#f2ecff"
         />
-        <TabBar :tabs="tabs"></TabBar>
+        <TabBar :tabs="tabs" @open-address-search="openAddressSearchModal" />
       </div>
     </div>
+
+    <!-- 모달: 전체 화면을 덮는 AddressHouseSearch -->
+    <AddressHouseSearch
+      v-if="showAddressSearchModal"
+      @close="closeAddressSearchModal"
+    />
+
     <!-- <div class="center-container-fix-button">
       <img :src="CompareImgSrc" />비교하기
     </div> -->
@@ -33,6 +40,7 @@ import HouseTap from "@/components/bookmark/HouseTap.vue";
 import MoverTap from "@/components/bookmark/MoverTap.vue";
 import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
+import AddressHouseSearch from "@/components/common/AddressHouseSearch.vue";
 
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -57,6 +65,17 @@ const tabs: Tab[] = [
   { name: "이사 업체 선택", component: MoverTap },
   { name: "자취 필수품 선택", component: ItemTap },
 ];
+
+// 모달 제어
+const showAddressSearchModal = ref(false);
+
+const openAddressSearchModal = () => {
+  showAddressSearchModal.value = true;
+};
+
+const closeAddressSearchModal = () => {
+  showAddressSearchModal.value = false;
+};
 </script>
 
 <style lang="scss" scoped>

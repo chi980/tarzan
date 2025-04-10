@@ -16,7 +16,10 @@
     <div class="tab-content">
       <component
         :is="currentTabComponent"
-        v-bind="tabs[selectedTabIdx].props ?? {}" />
+        v-bind="tabs[selectedTabIdx].props ?? {}"
+        v-on="$attrs" 
+          @open-address-search="$emit('open-address-search')"
+        />
     </div>
   </div>
 </template>

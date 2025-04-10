@@ -6,18 +6,29 @@
         <p id="house_category">{{ house.house_category }}</p>
       </div>
       <p id="house_address">{{ house.house_address }}</p>
+      <p id="created_date">{{ formattedDate }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, computed } from "vue";
+import { format } from "date-fns";
+
 
 const props = defineProps({
   house: Object, // House object passed from parent
 });
 
 const emit = defineEmits(["navigate"]);
+
+// 날짜 포맷팅된 문자열
+const formattedDate = computed(() => {
+  const rawDate = props.house?.created_at;
+  if (!rawDate) return "";
+  const date = new Date(rawDate);
+  return format(date, "yy.MM.dd") + " 추가";
+});
 
 const handleClick = () => {
   const house = props.house; // Get the house object from props
@@ -65,6 +76,15 @@ const handleClick = () => {
 }
 
 #house_address {
+  font-size: 12px;
+  color: #9f9f9f;
+  width: 100%;
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
+}
+
+#created_date {
   font-size: 12px;
   color: #9f9f9f;
   width: 100%;

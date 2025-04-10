@@ -118,7 +118,7 @@ const routes = [
 
   {
     path: "/community",
-    name: "Community",
+    // name: "Community",
     children: [
       {
         path: "",
@@ -166,7 +166,7 @@ const routes = [
 
   {
     path: "/mypage",
-    name: "MyPage",
+    // name: "MyPage",
     children: [
       {
         path: "",
