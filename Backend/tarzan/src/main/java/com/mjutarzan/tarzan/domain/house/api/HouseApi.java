@@ -62,6 +62,7 @@ public class HouseApi {
                         .builder()
                         .success(true)
                         .message("완료되었습니다.")
+                        .data(result)
                         .build());
     }
 }

@@ -32,6 +32,8 @@ import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import TabBar from "@/components/common/TabBar.vue";
 import { Tab } from "@/data/tabs";
+import { checkListData as originalData } from "@/data/bookmark/newItemTab";
+
 import HouseTap from "@/components/bookmark/HouseTap.vue";
 import MoverTap from "@/components/bookmark/MoverTap.vue";
 import ItemTap from "@/components/bookmark/ItemTap.vue";
@@ -41,9 +43,19 @@ import chevronImgSrc from "@/assets/icons/chevron-right.png";
 import exportImgSrc from "@/assets/icons/corner_up_arrows.png";
 
 import { ref, watch, computed } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+import * as XLSX from "xlsx";
+
+const exportToExcel = (data: object[], fileName: string, sheetName: string) => {
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+  XLSX.writeFile(workbook, fileName);
+};
 const route = useRoute();
+const router = useRouter();
 const list = ref([]);
 
 watch(
@@ -71,7 +83,7 @@ const tabs: ExtendedTab[] = [
     buttonLabel: "비교하기",
     imgSrc: chevronImgSrc,
     onClick: () => {
-      console.log("🏠 집 비교 로직 실행");
+      router.push({ name: "BookmarkCompare" });
     },
   },
   {
@@ -80,7 +92,26 @@ const tabs: ExtendedTab[] = [
     buttonLabel: "내보내기",
     imgSrc: exportImgSrc,
     onClick: () => {
-      console.log("🚚 이사 업체 비교 로직 실행");
+      const STORAGE_KEY = "checklist-storage-mover";
+
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) {
+        alert("저장된 체크리스트가 없습니다.");
+        return;
+      }
+
+      const parsed = JSON.parse(stored);
+
+      const flatList = Object.keys(parsed).flatMap((category) =>
+        parsed[category].map((item: any) => ({
+          카테고리: category,
+          항목번호: item.idx,
+          내용: item.name,
+          체크여부: item.value ? "O" : "X",
+        }))
+      );
+
+      exportToExcel(flatList, "이사체크리스트.xlsx", "Checklist");
     },
   },
   {
@@ -89,7 +120,60 @@ const tabs: ExtendedTab[] = [
     buttonLabel: "내보내기",
     imgSrc: exportImgSrc,
     onClick: () => {
-      console.log("📦 필수품 비교 로직 실행");
+      // 태그명 매핑
+      const mainTagMap = {
+        homeAppliances: "가전",
+        fabrics: "가구ㆍ패브릭",
+        bathroomSupplies: "욕실 용품",
+        ingredients: "필수 식재료",
+        kitchenUtensils: "주방 용품",
+        householdGoods: "생활 용품",
+      };
+
+      const subTagMap = {
+        BEFO_MOVE: "이사 전",
+        AFTER_MOVE: "이사 후",
+      };
+
+      // 원본 데이터 전체 import
+      // ⚠️ 실제로는 @/data/bookmark/newItemTab에서 가져와야 함
+      const result: {
+        메인태그: string;
+        서브태그: string;
+        항목명: string;
+        체크여부: string;
+      }[] = [];
+
+      // 전 항목 순회
+      Object.entries(originalData).forEach(([mainKey, subMap]) => {
+        Object.entries(subMap).forEach(([subKey, items]) => {
+          const storageKey = `checklist-${mainKey}-${subKey}`;
+          const stored = localStorage.getItem(storageKey);
+          let storedMap: Record<number, boolean> = {};
+
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              parsed.forEach((item: any) => {
+                storedMap[item.idx] = item.value;
+              });
+            } catch (e) {
+              console.warn("저장된 데이터 파싱 실패:", storageKey);
+            }
+          }
+
+          items.forEach((item: any) => {
+            result.push({
+              메인태그: mainTagMap[mainKey as keyof typeof mainTagMap],
+              서브태그: subTagMap[subKey as keyof typeof subTagMap],
+              항목명: item.name,
+              체크여부: storedMap[item.idx] ? "체크" : "미체크",
+            });
+          });
+        });
+      });
+
+      exportToExcel(result, "자취체크리스트_전체.xlsx", "Checklist");
     },
   },
 ];
@@ -144,7 +228,7 @@ const tabs: ExtendedTab[] = [
 .center-container-fix-button {
   @include custom-padding(12px);
   @include custom-text($font-size: 12px);
-  position: sticky; // ✅ fixed로 바꾸기!
+  position: sticky;
   bottom: $padding-default;
   left: 50%;
   transform: translateX(-50%);

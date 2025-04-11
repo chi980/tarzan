@@ -11,8 +11,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// ✅ 요청 인터셉터 설정
-
 // ✅ 응답 인터셉터 설정 (401 처리 + 토큰 자동 갱신)
 axiosInstance.interceptors.response.use(
   (response) => response,

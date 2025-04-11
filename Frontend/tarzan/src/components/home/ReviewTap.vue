@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 
 import { Review } from "@/data/house";
 import ReviewItem from "@/components/review/ReviewItem.vue";
+import NonContent from "@/components/common/NonContent.vue";
 import arrowRightImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Right/chevron-right.png";
 
 const router = useRouter();
@@ -27,16 +28,21 @@ const showMoreReviews = () => {
 
 <template>
   <div class="review-tap-wrapper">
-    <ReviewItem
-      v-for="(review, index) in reviews"
-      :key="index"
-      :review="review" />
-    <div
-      class="more-button"
-      v-if="reviews.length >= 3"
-      @click="showMoreReviews">
-      <p>더보기</p>
-      <img :src="arrowRightImgSrc" alt=">" />
+    <div v-if="props.reviews > 0">
+      <ReviewItem
+        v-for="(review, index) in reviews"
+        :key="index"
+        :review="review" />
+      <div
+        class="more-button"
+        v-if="reviews.length >= 3"
+        @click="showMoreReviews">
+        <p>더보기</p>
+        <img :src="arrowRightImgSrc" alt=">" />
+      </div>
+    </div>
+    <div v-if="!props.reviews || props.reviews == 0">
+      <NonContent :value="'리뷰가 없습니다.'" />
     </div>
   </div>
 </template>
