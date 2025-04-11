@@ -30,10 +30,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Set<String> NO_CHECK_URLS = Set.of(
             "/favicon.ico",
-            "/login",
+//            "/login",
             "/oauth2/authorization", "/api/auth",
-            "/api/test", "/api/data",
-            "/api/fraud", "/api/v1/building", "/api/v1/house", "/api/v1/reviews");
+            "/api/test", "/api/data");
 
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
@@ -52,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("JWT 토큰을 요청에서 추출");
 
             Optional<String> tokenOpt = jwtTokenProvider.resolveToken(request);
+            log.info("jwt token: {}", tokenOpt);
 
             // 토큰이 존재하고 유효한지 확인
             log.info("// 토큰이 존재하고 유효한지 확인");

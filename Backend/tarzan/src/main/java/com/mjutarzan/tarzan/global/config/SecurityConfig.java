@@ -13,6 +13,7 @@ import com.mjutarzan.tarzan.global.login.service.LoginService;
 import com.mjutarzan.tarzan.global.oauth2.handler.OAuth2LoginFailureHandler;
 import com.mjutarzan.tarzan.global.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.mjutarzan.tarzan.global.oauth2.service.CustomOAuth2UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -67,12 +68,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/error").permitAll()
 
-                        .requestMatchers("/sign-up", "/api/auth/**","/api/test/**", "/api/data/**", "/api/fraud/**", "/api/v1/building/**", "/api/v1/house/**", "/api/v1/reviews/**").permitAll()
+                        .requestMatchers("/sign-up", "/api/auth/**","/api/test/**", "/api/data/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // Http Basic 인증 비활성화
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                        })
+                )
+
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler) // OAuth2 로그인 성공 핸들러
                         .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패 핸들러
