@@ -98,12 +98,12 @@ const fetchHouseDetail = async (houseId: number) => {
     };
 
     building.value = {
-      building_name: houseDetail.value.house_name,
-      building_category: houseDetail.value.house_category,
-      building_address: houseDetail.value.house_address,
-      building_latitude: houseDetail.value.house_latitude,
-      building_longitude: houseDetail.value.house_longitude,
-      building_type: houseDetail.value.house_category,
+      building_name: house.house_name,
+      building_category: house.house_category,
+      building_address: house.house_address,
+      building_latitude: house.house_latitude,
+      building_longitude: house.house_longitude,
+      building_type: house.house_category,
     };
     console.log(houseDetail.value);
   } catch (err) {

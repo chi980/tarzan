@@ -10,6 +10,7 @@ const selectAddress = (address: any) => {
 };
 
 const onClick = (address) => {
+  console.log("AddressSearchResult.vue: ", JSON.stringify(address));
   selectAddress(address); // 클릭된 address를 selectAddress로 전달
 };
 </script>

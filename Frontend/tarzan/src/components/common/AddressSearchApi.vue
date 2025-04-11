@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, defineEmits, watch } from "vue";
 import searchIconImg from "@/assets/icons/Magnifier.png";
-import axiosPlugin, { axiosInstance } from "@/plugins/axiosPlugin";
-import AddressSearchResult from "./AddressSearchResult.vue";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+import AddressSearchResult from "@/components/common/AddressSearchResult.vue";
 import { debounce } from "lodash"; // lodash의 debounce 사용
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
@@ -67,6 +67,7 @@ const searchAddress = async () => {
     console.log(response.data.data.list);
     if (response.data.data) {
       searchResults.value = response.data.data.list.map((house) => ({
+        id: house.house_id,
         place_name: house.house_name,
         address_name: house.house_address,
         x: house.house_longitude,
@@ -81,6 +82,8 @@ const searchAddress = async () => {
               )
             : "거리 계산 불가",
       }));
+      console.log("AddressSearchApi.vue");
+      console.log(searchResults.value);
     } else {
       throw new Error("결과를 불러오는데 실패했습니다.");
     }
