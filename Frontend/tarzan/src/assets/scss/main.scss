@@ -14,7 +14,6 @@
 
 // content를 구분해주는 회색 긴 선
 .content-indicator {
-  @include custom-margin-y;
   background-color: #ededed;
   height: 10px;
 }
