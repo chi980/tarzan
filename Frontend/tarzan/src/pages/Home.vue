@@ -67,7 +67,7 @@ import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingDetail from "@/components/home/BuildingDetail.vue";
 import HouseDetail from "@/components/home/HouseDetail.vue";
-import AddressSearch from "@/components/common/AddressSearch.vue";
+import AddressSearch from "@/components/common/AddressSearchApi.vue";
 import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
