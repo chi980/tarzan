@@ -39,17 +39,17 @@ const onMouseDown = (e: MouseEvent) => {
 const onMouseMove = (e: MouseEvent) => {
   if (!isDragging.value) return;
   const deltaX = e.clientX - startX.value;
-  if (deltaX < 0) {
-    moved.value = true;
-    translateX.value = deltaX;
-  }
+  moved.value = true;
+  translateX.value = deltaX;
 };
 
 const onMouseUp = () => {
   if (!isDragging.value) return;
   isDragging.value = false;
   if (!moved.value) return;
-  translateX.value = Math.abs(translateX.value) > threshold ? -80 : 0;
+
+  // 왼쪽으로 threshold 넘게 이동했으면 유지, 아니면 복귀
+  translateX.value = translateX.value < -threshold ? -80 : 0;
 };
 
 // Mobile
@@ -62,22 +62,21 @@ const onTouchStart = (e: TouchEvent) => {
 const onTouchMove = (e: TouchEvent) => {
   if (!isDragging.value) return;
   const deltaX = e.touches[0].clientX - startX.value;
-  if (deltaX < 0) {
-    moved.value = true;
-    translateX.value = deltaX;
-  }
+  moved.value = true;
+  translateX.value = deltaX;
 };
 
 const onTouchEnd = () => {
   if (!isDragging.value) return;
   isDragging.value = false;
   if (!moved.value) return;
-  translateX.value = Math.abs(translateX.value) > threshold ? -80 : 0;
+
+  translateX.value = translateX.value < -threshold ? -80 : 0;
 };
 
 // 클릭 이벤트 (드래그가 아닌 경우에만 emit)
 const onClick = () => {
-  if (!moved.value) {
+  if (!moved.value && translateX.value === 0) {
     emit("click");
   }
 };
@@ -113,7 +112,7 @@ const deleteThis = () => {
 .item-content {
   position: relative;
   background: white;
-  transition: transform 0.2s ease;
+  transition: transform 0.05s ease;
   z-index: 2;
   cursor: grab;
 }
