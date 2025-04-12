@@ -13,7 +13,7 @@
       </div>
     </div>
     <!-- 선택된 탭의 컨텐츠 -->
-    <div>
+    <div class=".tab-content-wrapper">
       <component
         :is="currentTabComponent"
         v-bind="tabs[selectedTabIdx]?.props ?? {}" />

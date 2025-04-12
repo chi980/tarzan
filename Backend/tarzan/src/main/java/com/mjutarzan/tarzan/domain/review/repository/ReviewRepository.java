@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @Query(value = "SELECT * FROM review r WHERE r.writer.id = :writerId ORDER BY r.created_at DESC LIMIT 3", nativeQuery = true)
-    List<Review> findByWriterLimit3(@Param("writerId") Long writerId);
+    @Query(value = "SELECT * FROM review r WHERE r.review_house = :houseId ORDER BY r.created_at DESC LIMIT 3", nativeQuery = true)
+    List<Review> findByHouseLimit3(@Param("houseId") Long houseId);
 
 
 //    @Query(value = "SELECT * FROM review WHERE review_house = :houseId", nativeQuery = true)

@@ -58,7 +58,7 @@ public class ApiHouseServiceImpl implements ApiHouseService{
 
 //        index 처리하는 로직 추가
 
-        List<ReviewListItemResponseDto> houseReviewList = reviewRepository.findByWriterLimit3(houseIdx).stream()
+        List<ReviewListItemResponseDto> houseReviewList = reviewRepository.findByHouseLimit3(houseIdx).stream()
                 .map(review -> ReviewListItemResponseDto
                         .builder()
                         .build())
@@ -91,6 +91,7 @@ public class ApiHouseServiceImpl implements ApiHouseService{
         List<HouseListItemResponseDto> list = apiHousePages
                 .stream()
                 .map(apiHouse -> HouseListItemResponseDto.builder()
+                        .id(apiHouse.getId())
                         .name(apiHouse.getName())
                         .category(apiHouse.getCategory())
                         .address(apiHouse.getAddress())
