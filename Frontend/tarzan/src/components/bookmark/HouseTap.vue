@@ -6,18 +6,25 @@
         v-model:selectedButton="selectedTag"
         :multiple="false" />
     </div>
-    <div class="house-item-wrapper">
+    <div class="house-content-wrapper">
       <div class="house-item--add-wrapper">
         <div class="house-add-img-wrapper">
           <img :src="houseAddImg" alt="houseAddImg" />
         </div>
         <p>집 추가하기</p>
       </div>
-      <HouseItem
-        v-for="(house, index) in list"
-        :key="index"
-        :house="house"
-        @navigate="navigateToCheckCostPage(house)" />
+      <div class="house-list-wrapper">
+        <SwipeItem
+          v-for="(bookmark, index) in bookmarks"
+          :key="index"
+          @delete="handleDelete(index)"
+          @click="handleCLick(index)">
+          <div class="house-item-wrapper">
+            <HouseItem :house="bookmark" />
+          </div>
+        </SwipeItem>
+      </div>
+
       <!-- <NonContent v-if="list.length === 0" :value="'북마크한 집이 존재하지 않습니다.'" /> -->
     </div>
   </div>
@@ -33,6 +40,7 @@ import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
 import HouseItem from "@/components/bookmark/HouseItem.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
+import SwipeItem from "@/components/common/SwipeItem.vue";
 
 /** data, plugin load */
 import { useRouter } from "vue-router";
@@ -45,13 +53,21 @@ function navigateToMap() {
 }
 
 const navigateToCheckCostPage = (house) => {
-  if (!house || !house.bookmarkIdx) {
-    console.error("house 또는 bookmarkIdx가 없습니다.");
-    return;
+  try {
+    if (!house.bookmarkIdx) throw new Error("bookmarkIdx 없음");
+    const bookmarkIdx = house.bookmarkIdx;
+    router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+  } catch (e) {
+    console.error("navigate 에러:", e);
   }
+};
+const handleDelete = (idx) => {
+  console.log("삭제 완료");
+  bookmarks.value.splice(idx, 1);
+};
 
-  const bookmarkIdx = house.bookmarkIdx;
-  router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+const handleCLick = (idx) => {
+  console.log("상세 가기");
 };
 
 const tagOptions = [
@@ -62,14 +78,74 @@ const tagOptions = [
 
 const selectedTag = ref("ALL"); // 단일 선택용
 
-const list = ref([]);
-list.value = [
+const bookmarks = ref([]);
+bookmarks.value = [
   {
     bookmarkIdx: 1,
     house_name: "집 이름 1",
     house_address: "주소 1",
     house_category: "카테고리 1",
     hoconstuse_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
     house_latitude: 37.5665,
     house_longitude: 126.978,
     created_at: "2025.03.16 10:00:00",
@@ -99,7 +175,7 @@ const fetchRecentHouses = async () => {
 
     if (response.data.success) {
       // 데이터를 변환하여 필요한 필드만 저장, bookmark_id를 bookmarkIdx로 변경
-      list.value = response.data.data.list
+      bookmarks.value = response.data.data.list
         .map((item) => ({
           bookmarkIdx: item.bookmark_id, // bookmark_id를 bookmarkIdx로 변경
           house_name: item.bookmark_house_name || "이름 없음",
@@ -112,7 +188,7 @@ const fetchRecentHouses = async () => {
         .filter((house) => house.bookmarkIdx !== undefined); // bookmarkIdx가 undefined인 항목은 제거
 
       // created_at을 기준으로 내림차순 정렬 (날짜 형식이 잘못된 경우 parse 처리를 추가할 수 있음)
-      list.value = list.value.sort((a, b) => {
+      bookmarks.value = bookmarks.value.sort((a, b) => {
         // 날짜 형식이 "2025.03.16 10:00:00" 형태인 경우 "2025-03-16T10:00:00"으로 변환
         const dateA = new Date(
           a.created_at.replace(/\./g, "-").replace(" ", "T")
@@ -150,7 +226,7 @@ const fetchRecentHouses = async () => {
   }
 }
 
-.house-item-wrapper {
+.house-content-wrapper {
   @include custom-padding-x;
   display: flex;
   flex-direction: column;
@@ -196,10 +272,7 @@ const fetchRecentHouses = async () => {
   @include custom-padding-y($padding-small);
 }
 
-.house-content-wrapper {
-  background-color: beige;
-  display: flex;
-  flex-direction: column;
-  gap: $padding-small;
+.house-item-wrapper {
+  @include custom-padding-y(4px);
 }
 </style>
