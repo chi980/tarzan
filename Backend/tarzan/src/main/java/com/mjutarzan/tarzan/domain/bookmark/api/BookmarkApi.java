@@ -66,6 +66,7 @@ public class BookmarkApi {
 
         BookmarkListResponseDto result = bookmarkService.getBookmarks(bookmarkListRequestDto, userDto);
 
+log.info("getBookmarks: {}", result.getCount());
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")

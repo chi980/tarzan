@@ -137,6 +137,9 @@ public class BookmarkServiceImpl implements BookmarkService{
         }else {
             bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
         }
+
+        log.info("{}", loginedUser.getId());
+        log.info("{}", bookmarkPages.getTotalElements());
         return BookmarkListResponseDto.builder()
                 .count(bookmarkPages.getTotalElements())
                 .list(bookmarkPages.getContent().stream()
@@ -148,7 +151,6 @@ public class BookmarkServiceImpl implements BookmarkService{
                                 .houseAddress(bookmark.getHouse().getAddress())
                                 .houseCategory(bookmark.getHouse().getCategory())
 //                                이거 고민해보자
-                                .isHouseRegister(bookmark.getUser().getEmail().equals(loginedUser.getEmail()))
                                 .createdAt(bookmark.getCreatedAt())
                                 .build())
                         .collect(Collectors.toList())
