@@ -131,9 +131,12 @@ public class BookmarkServiceImpl implements BookmarkService{
     public BookmarkListResponseDto getBookmarks(BookmarkListRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
-
-        Page<Bookmark> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
-
+        Page<Bookmark> bookmarkPages = null;
+        if(requestDto.getStatus() == BookmarkStatus.ALL){
+            bookmarkPages = bookmarkRepository.findByUserId(loginedUser.getId(), pageable);
+        }else {
+            bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
+        }
         return BookmarkListResponseDto.builder()
                 .count(bookmarkPages.getTotalElements())
                 .list(bookmarkPages.getContent().stream()

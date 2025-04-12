@@ -23,5 +23,13 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             Pageable pageable
     );
 
-
+    @Query("""
+    SELECT 
+    b
+    FROM Bookmark b
+    JOIN b.house h
+    WHERE b.user.id = :userId 
+""")
+    Page<Bookmark> findByUserId(@Param("userId") Long userId,
+                                Pageable pageable);
 }
