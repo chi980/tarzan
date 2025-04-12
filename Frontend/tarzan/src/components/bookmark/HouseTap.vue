@@ -61,13 +61,21 @@ const navigateToCheckCostPage = (house) => {
     console.error("navigate 에러:", e);
   }
 };
-const handleDelete = (idx) => {
-  console.log("삭제 완료");
-  bookmarks.value.splice(idx, 1);
+const handleDelete = async (idx) => {
+  console.log("삭제");
+  console.log(bookmarks.value[idx]);
+  const bookmarkIdx = bookmarks.value[idx].bookmarkIdx;
+  try {
+    const response = await axiosInstance.delete(`/v1/bookmark/${bookmarkIdx}`);
+    bookmarks.value.splice(idx, 1);
+  } catch {
+    console.error("잘못된 요청입니다.");
+  }
 };
 
 const handleCLick = (idx) => {
   console.log("상세 가기");
+  console.log(bookmarks.value[idx]);
 };
 
 const tagOptions = [
@@ -174,10 +182,10 @@ const fetchRecentHouses = async () => {
     });
 
     if (response.data.success) {
-      // 데이터를 변환하여 필요한 필드만 저장, bookmark_id를 bookmarkIdx로 변경
+      console.log(response.data);
       bookmarks.value = response.data.data.list
         .map((item) => ({
-          bookmarkIdx: item.bookmark_id, // bookmark_id를 bookmarkIdx로 변경
+          bookmarkIdx: item.bookmark_id,
           house_name: item.bookmark_house_name || "이름 없음",
           house_address: item.bookmark_house_address,
           house_category: item.bookmark_house_category || "카테고리 없음",
