@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 /**  */
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted, defineProps, watch } from "vue";
 
 /** component load */
 import houseAddImg from "@/assets/icons/Plus/Pluse.png";
@@ -79,88 +79,88 @@ const tagOptions = [
 const selectedTag = ref("ALL"); // 단일 선택용
 
 const bookmarks = ref([]);
-bookmarks.value = [
-  {
-    bookmarkIdx: 1,
-    house_name: "집 이름 1",
-    house_address: "주소 1",
-    house_category: "카테고리 1",
-    hoconstuse_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-  {
-    bookmarkdx: 2,
-    house_name: "집 이름 2",
-    house_address: "주소 2",
-    house_category: "카테고리 2",
-    house_review_score: 4.5,
-    house_latitude: 37.5665,
-    house_longitude: 126.978,
-    created_at: "2025.03.16 10:00:00",
-  },
-];
+// bookmarks.value = [
+//   {
+//     bookmarkIdx: 1,
+//     house_name: "집 이름 1",
+//     house_address: "주소 1",
+//     house_category: "카테고리 1",
+//     hoconstuse_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+// ];
 
 const fetchRecentHouses = async () => {
   try {
@@ -169,7 +169,7 @@ const fetchRecentHouses = async () => {
         size: 3,
         page: 0,
         sortBy: "최신순",
-        status: "CHECK_PENDING",
+        status: selectedTag.value,
       },
     });
 
@@ -187,17 +187,7 @@ const fetchRecentHouses = async () => {
         }))
         .filter((house) => house.bookmarkIdx !== undefined); // bookmarkIdx가 undefined인 항목은 제거
 
-      // created_at을 기준으로 내림차순 정렬 (날짜 형식이 잘못된 경우 parse 처리를 추가할 수 있음)
-      bookmarks.value = bookmarks.value.sort((a, b) => {
-        // 날짜 형식이 "2025.03.16 10:00:00" 형태인 경우 "2025-03-16T10:00:00"으로 변환
-        const dateA = new Date(
-          a.created_at.replace(/\./g, "-").replace(" ", "T")
-        );
-        const dateB = new Date(
-          b.created_at.replace(/\./g, "-").replace(" ", "T")
-        );
-        return dateB - dateA; // 내림차순 정렬
-      });
+      console.log(bookmarks.value);
     } else {
       console.error("Failed to fetch data:", response.data.message);
     }
@@ -206,7 +196,10 @@ const fetchRecentHouses = async () => {
   }
 };
 
-// onMounted(fetchRecentHouses);
+onMounted(fetchRecentHouses);
+watch(selectedTag, (newSeletedTag) => {
+  fetchRecentHouses();
+});
 </script>
 
 <style lang="scss" scoped>
