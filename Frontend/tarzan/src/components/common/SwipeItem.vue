@@ -21,25 +21,30 @@
 <script setup lang="ts">
 import { ref, defineEmits } from "vue";
 
-const emit = defineEmits(["delete", "click"]); // 클릭 이벤트도 emit할 수 있도록 추가
+const emit = defineEmits(["delete", "click"]);
 
 const startX = ref(0);
 const translateX = ref(0);
 const isDragging = ref(false);
+const moved = ref(false);
+const preventClick = ref(false);
 const threshold = 40;
-const moved = ref(false); // 클릭인지 드래그인지 구분
 
-// PC
+// PC 이벤트
 const onMouseDown = (e: MouseEvent) => {
   isDragging.value = true;
   startX.value = e.clientX;
   moved.value = false;
+  preventClick.value = false;
 };
 
 const onMouseMove = (e: MouseEvent) => {
   if (!isDragging.value) return;
   const deltaX = e.clientX - startX.value;
-  moved.value = true;
+  if (Math.abs(deltaX) > 5) {
+    moved.value = true;
+    preventClick.value = true;
+  }
   translateX.value = deltaX;
 };
 
@@ -48,21 +53,24 @@ const onMouseUp = () => {
   isDragging.value = false;
   if (!moved.value) return;
 
-  // 왼쪽으로 threshold 넘게 이동했으면 유지, 아니면 복귀
   translateX.value = translateX.value < -threshold ? -80 : 0;
 };
 
-// Mobile
+// 모바일 터치 이벤트
 const onTouchStart = (e: TouchEvent) => {
-  startX.value = e.touches[0].clientX;
   isDragging.value = true;
+  startX.value = e.touches[0].clientX;
   moved.value = false;
+  preventClick.value = false;
 };
 
 const onTouchMove = (e: TouchEvent) => {
   if (!isDragging.value) return;
   const deltaX = e.touches[0].clientX - startX.value;
-  moved.value = true;
+  if (Math.abs(deltaX) > 5) {
+    moved.value = true;
+    preventClick.value = true;
+  }
   translateX.value = deltaX;
 };
 
@@ -74,10 +82,15 @@ const onTouchEnd = () => {
   translateX.value = translateX.value < -threshold ? -80 : 0;
 };
 
-// 클릭 이벤트 (드래그가 아닌 경우에만 emit)
+// 클릭 이벤트: 드래그가 없고, 삭제 상태가 아닌 경우만 emit
 const onClick = () => {
-  if (!moved.value && translateX.value === 0) {
+  if (preventClick.value) return;
+
+  if (translateX.value === 0) {
     emit("click");
+  } else {
+    // 이미 스와이프되어 있던 상태라면 복귀
+    translateX.value = 0;
   }
 };
 

@@ -1,20 +1,19 @@
-package com.mjutarzan.tarzan.domain.bookmark.api.request;
+package com.mjutarzan.tarzan.domain.bookmark.api.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.HouseDirection;
 import com.mjutarzan.tarzan.domain.review.model.vo.LeaseType;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Getter
-@Setter
-@ToString
-public class UpdateBookmarkRequestDto {
+@NoArgsConstructor
+public class BookmarkDetailResponseDto2 {
 
     @JsonProperty("bookmark_id")
     private Long id;
@@ -61,4 +60,26 @@ public class UpdateBookmarkRequestDto {
     @JsonProperty("bookmark_direction")
     private HouseDirection direction;
 
+    @JsonProperty("bookmark_checklist")
+    private Map<String, List<BookmarkChecklistResponseDto2>> checklist;
+
+    @Builder
+    public BookmarkDetailResponseDto2(Long id, LeaseType leaseType, Integer rent, Integer deposit, Integer commissionFee, Integer managementFee, String realEstate, String realEstatePhoneNumber, Boolean canAnimal, Integer parkingLogCoverage, Integer roomCnt, Integer bathRoomCnt, LocalDate availableMoveInDate, Integer floor, HouseDirection direction, Map<String, List<BookmarkChecklistResponseDto2>> checklist) {
+        this.id = id;
+        this.leaseType = leaseType;
+        this.rent = rent;
+        this.deposit = deposit;
+        this.commissionFee = commissionFee;
+        this.managementFee = managementFee;
+        this.realEstate = realEstate;
+        this.realEstatePhoneNumber = realEstatePhoneNumber;
+        this.canAnimal = canAnimal;
+        this.parkingLogCoverage = parkingLogCoverage;
+        this.roomCnt = roomCnt;
+        this.bathRoomCnt = bathRoomCnt;
+        this.availableMoveInDate = availableMoveInDate;
+        this.floor = floor;
+        this.direction = direction;
+        this.checklist = checklist;
+    }
 }

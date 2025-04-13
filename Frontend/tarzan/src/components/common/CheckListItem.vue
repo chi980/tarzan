@@ -1,10 +1,7 @@
 <template>
   <div class="checklist-item" @click="changeValue">
-    <p>{{ props.checkListItem.name }}</p>
-    <input
-      type="checkbox"
-      :checked="props.checkListItem.value"
-      @change.stop="changeValue" />
+    <p>{{ props.checkListItem.name || props.checkListItem.label }}</p>
+    <input type="checkbox" :checked="props.checkListItem.value" @change.stop />
   </div>
 </template>
 

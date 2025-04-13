@@ -131,9 +131,15 @@ public class BookmarkServiceImpl implements BookmarkService{
     public BookmarkListResponseDto getBookmarks(BookmarkListRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+        Page<Bookmark> bookmarkPages = null;
+        if(requestDto.getStatus() == BookmarkStatus.ALL){
+            bookmarkPages = bookmarkRepository.findByUserId(loginedUser.getId(), pageable);
+        }else {
+            bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
+        }
 
-        Page<Bookmark> bookmarkPages = bookmarkRepository.findAllBookmarksByUserIdAndStatus(loginedUser.getId(), requestDto.getStatus(), pageable);
-
+        log.info("{}", loginedUser.getId());
+        log.info("{}", bookmarkPages.getTotalElements());
         return BookmarkListResponseDto.builder()
                 .count(bookmarkPages.getTotalElements())
                 .list(bookmarkPages.getContent().stream()
@@ -145,7 +151,6 @@ public class BookmarkServiceImpl implements BookmarkService{
                                 .houseAddress(bookmark.getHouse().getAddress())
                                 .houseCategory(bookmark.getHouse().getCategory())
 //                                이거 고민해보자
-                                .isHouseRegister(bookmark.getUser().getEmail().equals(loginedUser.getEmail()))
                                 .createdAt(bookmark.getCreatedAt())
                                 .build())
                         .collect(Collectors.toList())
@@ -230,10 +235,71 @@ public class BookmarkServiceImpl implements BookmarkService{
         }
 
         bookmark.update(requestDto);
+
+    }
+
+
+    @Override
+    public void updateBookmarkChecklist(Long bookmarkIdx, UpdateBookmarkChecklistRequestDto requestDto, CustomUserDetails loginedUserDto) {
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
+
+        if (!bookmark.getUser().getId().equals(loginedUser.getId())) {
+            throw new UnauthorizedException("북마크의 등록자만 수정할 수 있습니다.");
+        }
         List<BookmarkChecklistItem> checklist = bookmarkChecklistItemRepository.findAllById(requestDto.getChecklist().keySet().stream().collect(Collectors.toList()));
         checklist.forEach(bookmarkChecklistItem -> {
             bookmarkChecklistItem.update(requestDto.getChecklist().get(bookmarkChecklistItem.getId()));
         });
+    }
+
+    @Override
+    public BookmarkDetailResponseDto2 getBookmark2(Long bookmarkIdx, CustomUserDetails loginedUserDto) {
+        Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
+
+        if (!bookmark.getUser().getId().equals(loginedUser.getId())) {
+            throw new UnauthorizedException("북마크의 등록자만 수정할 수 있습니다.");
+        }
+        log.info("getBOokmrk2");
+
+
+        Map<String, List<BookmarkChecklistResponseDto2>> checklist = bookmark.getCheckListItemList().stream()
+                .collect(Collectors.groupingBy(
+                        item -> item.getType().name(), // key: BookmarkChecklistType.name()
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> {
+                                    return list.stream()
+                                            .map(item -> BookmarkChecklistResponseDto2.builder()
+                                                    .id(item.getId())
+                                                    .label(item.getName())
+                                                    .value(item.getValue())
+                                                    .build())
+                                            .collect(Collectors.toList());
+                                }
+                        )
+                ));
+
+
+        return BookmarkDetailResponseDto2.builder()
+                .id(bookmark.getId())
+                .leaseType(bookmark.getLeaseType())
+                .rent(bookmark.getRent())
+                .deposit(bookmark.getDeposit())
+                .commissionFee(bookmark.getCommissionFee())
+                .managementFee(bookmark.getManagementFee())
+                .realEstate(bookmark.getRealEstate())
+                .realEstatePhoneNumber(bookmark.getRealEstatePhoneNumber())
+                .canAnimal(bookmark.getCanAnimal())
+                .parkingLogCoverage(bookmark.getParkingLotCoverage())
+                .roomCnt(bookmark.getRoomCnt())
+                .bathRoomCnt(bookmark.getBathRoomCnt())
+                .availableMoveInDate(bookmark.getAvailableMoveInDate())
+                .floor(bookmark.getFloor())
+                .direction(bookmark.getDirection())
+                .checklist(checklist)
+                .build();
     }
 
     @Override
@@ -291,6 +357,7 @@ public class BookmarkServiceImpl implements BookmarkService{
                 .list(list)
                 .build();
     }
+
 
     private Integer getScore(Map<HouseIndexType, Long> indexes, Map<BookmarkChecklistType, Long> checks) {
         return 80;

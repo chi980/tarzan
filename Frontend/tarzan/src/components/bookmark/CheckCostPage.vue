@@ -9,37 +9,40 @@
         <div class="input-content-wrapper">
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_deposit"
-              type="text"
+              v-model.number="bookmarkData.value.bookmark_deposit"
+              type="number"
               placeholder="보증금을 입력해주세요." />
           </div>
           <div class="input-content select-container">
             <div style="width: max-content; min-width: 100px">
               <CustomSelectBox
-                v-model="houseData.bookmark_lease_type"
+                v-model="bookmarkData.value.bookmark_lease_type"
                 :options="rentalOptions"
                 :parent-style="{
                   backgroundColor: 'white',
                   fontWeight: 400,
                   justifyContent: `space-between`,
                   border: '1px solid #e7e7e7',
-                }" />
+                }"
+                @update:selected="handleSelectLeaseType" />
             </div>
             <input
-              v-model="houseData.bookmark_rent"
-              type="text"
-              placeholder="금액을 입력해주세요." />
+              v-model.number="bookmarkData.value.bookmark_rent"
+              :class="{ disabled: isDisabled }"
+              type="number"
+              placeholder="금액을 입력해주세요."
+              :disabled="isDisabled" />
           </div>
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_commission"
-              type="text"
+              v-model.number="bookmarkData.value.bookmark_commission_fee"
+              type="number"
               placeholder="중개수수료를 입력해주세요." />
           </div>
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_management_fee"
-              type="text"
+              v-model.number="bookmarkData.value.bookmark_management_fee"
+              type="number"
               placeholder="관리비를 입력해주세요." />
           </div>
         </div>
@@ -51,15 +54,15 @@
         <div class="input-content-wrapper">
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_estate_name"
+              v-model="bookmarkData.value.bookmark_real_estate"
               type="text"
               placeholder="부동산/집주인명을 입력해주세요." />
           </div>
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_estate_phone_number"
+              v-model="bookmarkData.value.bookmark_real_estate_phone_number"
               type="text"
-              placeholder="부동산/집주인 핸드폰 번호를 입력해주세요." />
+              placeholder="부동산/집주인 연락처를 입력해주세요." />
           </div>
         </div>
       </div>
@@ -68,7 +71,7 @@
       <!-- 반려동물 유무 선택 -->
       <div class="input-group">
         <h2 class="input-title">
-          반려동물 유무<span class="input-title-mandatory">*</span>
+          반려동물 가능 여부<span class="input-title-mandatory">*</span>
         </h2>
         <div class="option-group">
           <div
@@ -76,7 +79,7 @@
             v-for="(petOption, index) in petOptions"
             :key="petOption.idx"
             :class="{ active: petOption.isSelected }"
-            @click="selectOption(petOptions, index)">
+            @click="selectOption(petOptions, index, changePetData)">
             {{ petOption.name }}
           </div>
         </div>
@@ -88,14 +91,15 @@
         <div class="input-content">
           <div class="select-content">
             <CustomSelectBox
-              v-model="houseData.bookmark_direction"
+              v-model="bookmarkData.value.bookmark_direction"
               :options="directionOptions"
               :parent-style="{
                 backgroundColor: 'white',
                 fontWeight: 400,
                 justifyContent: `space-between`,
                 border: '1px solid #e7e7e7',
-              }" />
+              }"
+              @update:selected="handleSelectDirection" />
           </div>
         </div>
       </div>
@@ -106,14 +110,15 @@
         <div class="input-content">
           <div class="select-content">
             <CustomSelectBox
-              v-model="houseData.bookmark_parking_cnt"
+              v-model="bookmarkData.value.bookmark_parking_cnt"
               :options="carOptions"
               :parent-style="{
                 backgroundColor: 'white',
                 fontWeight: 400,
                 justifyContent: `space-between`,
                 border: '1px solid #e7e7e7',
-              }" />
+              }"
+              @update:selected="handleSelectParkingCnt" />
           </div>
         </div>
       </div>
@@ -124,14 +129,14 @@
         <div class="input-content-wrapper">
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_room_cnt"
-              type="text"
+              v-model.number="bookmarkData.value.bookmark_room_cnt"
+              type="number"
               placeholder="방수를 입력해주세요." />
           </div>
           <div class="input-content">
             <input
-              v-model="houseData.bookmark_bath_cnt"
-              type="text"
+              v-model.number="bookmarkData.value.bookmark_bath_room_cnt"
+              type="number"
               placeholder="욕실수를 입력해주세요." />
           </div>
         </div>
@@ -142,7 +147,7 @@
         <h2 class="input-title">입주가능일</h2>
         <div class="input-content">
           <input
-            v-model="houseData.bookmark_available_date"
+            v-model="bookmarkData.value.bookmark_available_move_in_date"
             type="date"
             placeholder="입주가능일을 입력해주세요." />
         </div>
@@ -153,8 +158,8 @@
         <h2 class="input-title">층수</h2>
         <div class="input-content">
           <input
-            v-model="houseData.bookmark_floor"
-            type="text"
+            v-model.number="bookmarkData.value.bookmark_floor"
+            type="number"
             placeholder="층수를 입력해주세요." />
         </div>
       </div>
@@ -163,32 +168,70 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { defineProps, ref, watch, reactive, defineModel, computed } from "vue";
 import { Option } from "@/data/options";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
-import TopBarBack from "../common/TopBarBack.vue";
 
-const route = useRoute();
-const router = useRouter();
+const props = defineProps<{ bookmarkIdx: number }>();
+const bookmarkData = defineModel<Object>("bookmarkData");
+console.log(bookmarkData.value.value);
 
-const bookmarkIdx = route.params.bookmarkIdx;
+const selectOption = (
+  options: Option[] | undefined,
+  idx: number,
+  changeData: Function
+) => {
+  if (!options || !Array.isArray(options)) {
+    console.error("options가 배열이 아닙니다:", options);
+    return;
+  }
 
-const houseData = ref({
+  options.forEach((option) => {
+    option.isSelected = false;
+  });
+
+  if (idx >= 0 && idx < options.length) {
+    options[idx].isSelected = true;
+    changeData(options, idx);
+  } else {
+    console.warn("잘못된 인덱스:", idx);
+  }
+};
+
+const isDisabled = computed(
+  () => bookmarkData.value.value.bookmark_lease_type !== "MONTHLY"
+);
+
+const handleSelectLeaseType = (idx: number) => {
+  bookmarkData.value.value.bookmark_lease_type = rentalOptions[idx].value;
+  bookmarkData.value.value.bookmark_rent = null;
+};
+const handleSelectDirection = (idx: number) => {
+  bookmarkData.value.value.bookmark_direction = directionOptions[idx].value;
+};
+const handleSelectParkingCnt = (idx: number) => {
+  bookmarkData.value.value.bookmark_parking_lot_coverage =
+    carOptions[idx].value;
+};
+const changePetData = (options, idx: number) => {
+  bookmarkData.value.value.bookmark_can_animal = options[idx].value;
+};
+
+const houseData = reactive({
   bookmark_lease_type: "MONTHLY", // 전세 | 월세
-  bookmark_rent: "", // 월세만 해당 항목 이용
-  bookmark_deposit: "",
-  bookmark_commission: "",
-  bookmark_management_fee: "",
+  bookmark_rent: null, // 월세만 해당 항목 이용
+  bookmark_deposit: null,
+  bookmark_commission: null,
+  bookmark_management_fee: null,
   bookmark_estate_name: "",
   bookmark_estate_phone_number: "",
-  bookmark_can_animal: "FALSE", // true | false
+  bookmark_can_animal: true, // true | false
   bookmark_parking_cnt: "0",
-  bookmark_room_cnt: "",
-  bookmark_bath_cnt: "",
+  bookmark_room_cnt: null,
+  bookmark_bath_cnt: null,
   bookmark_available_date: "",
-  bookmark_floor: "",
+  bookmark_floor: null,
   bookmark_direction: "SOUTH", // EAST | WEST | SOUTH | NORTH | UNKNOWN
 });
 
@@ -211,15 +254,6 @@ const updateHouseData = async () => {
   }
 };
 
-const goToCheckOptionPage = () => {
-  router.push({ name: "CheckOptionPage" }); // 'CheckOptionPage'로 네임 기반 라우팅
-};
-
-const handleClick = () => {
-  updateHouseData();
-  goToCheckOptionPage();
-};
-
 // 부모 컴포넌트의 배열 데이터 정의
 const rentalOptions: Option[] = [
   { idx: 1, name: "월세", value: "MONTHLY" },
@@ -227,11 +261,10 @@ const rentalOptions: Option[] = [
   { idx: 3, name: "매매", value: "PROPERTY" },
 ];
 
-const petOptions: Option[] = [
-  { idx: 1, name: "모름", value: "NULL" },
-  { idx: 2, name: "가능", value: "TRUE" },
-  { idx: 3, name: "불가능", value: "FALSE" },
-];
+const petOptions = ref<Option[]>([
+  { idx: 1, name: "가능", value: true, isSelected: false },
+  { idx: 2, name: "불가능", value: false, isSelected: false },
+]);
 
 const carOptions: Option[] = [
   { idx: 1, name: "모름", value: "NULL" },
@@ -306,7 +339,7 @@ const directionOptions: Option[] = [
   flex-direction: row;
   gap: $padding-small;
 
-  input[type="text"] {
+  input {
     width: 30px;
   }
 }
@@ -345,5 +378,10 @@ const directionOptions: Option[] = [
   display: flex;
   flex-direction: column;
   gap: $padding-small;
+}
+
+.disabled {
+  background-color: #00000010 !important;
+  cursor: not-allowed;
 }
 </style>

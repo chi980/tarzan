@@ -29,8 +29,10 @@ const routes = [
         component: () => import("@/pages/BookMark.vue"),
       },
       {
-        path: "create",
-        component: () => import("@/pages/BookmarkCreate.vue"),
+        path: ":id",
+        name: "BookMarkDetail",
+        component: () => import("@/pages/BookmarkDetail.vue"),
+        props: true,
       },
       {
         path: "map",
@@ -171,7 +173,7 @@ const routes = [
       {
         path: "edit-profile",
         name: "EditProfile",
-        component: () => import("@/components/mypage/EditProfile.vue"),
+        component: () => import("@/pages/EditProfile.vue"),
       },
     ],
   },

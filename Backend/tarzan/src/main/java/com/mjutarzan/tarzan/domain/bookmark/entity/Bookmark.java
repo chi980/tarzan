@@ -39,6 +39,7 @@ public class Bookmark extends CommonEntity {
     private List<BookmarkChecklistItem> checkListItemList = new ArrayList<>();
 
     @Column(name = "bookmark_status")
+    @Enumerated(EnumType.STRING)
     private BookmarkStatus status;
 
     @Enumerated(EnumType.STRING)

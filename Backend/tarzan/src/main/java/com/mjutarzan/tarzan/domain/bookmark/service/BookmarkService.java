@@ -2,6 +2,7 @@ package com.mjutarzan.tarzan.domain.bookmark.service;
 
 import com.mjutarzan.tarzan.domain.bookmark.api.request.*;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseDto;
+import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseDto2;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.CompareBookmarkResponseDto;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
@@ -20,4 +21,8 @@ public interface BookmarkService {
     void deleteBookmark(Long bookmarkIdx, CustomUserDetails userDto);
 
     CompareBookmarkResponseDto compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, CustomUserDetails userDto);
+
+    void updateBookmarkChecklist(Long bookmarkIdx, UpdateBookmarkChecklistRequestDto updateBookmarkChecklistRequestDto, CustomUserDetails useDto);
+
+    BookmarkDetailResponseDto2 getBookmark2(Long bookmarkIdx, CustomUserDetails userDto);
 }

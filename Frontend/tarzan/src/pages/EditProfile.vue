@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <TopBarBack :title="''" @back="backToLogin" />
+    <TopBarBack :title="'정보 수정'" @back="back" />
     <div class="center-container">
       <form class="input-form" @submit.prevent="submitForm">
         <!-- 닉네임 입력 -->
@@ -110,13 +110,13 @@
     <!-- 주소 검색 팝업 -->
     <AddressSearch v-if="isAddressSearchOpen" @close="setAddress" />
 
-    <BottomDefaultButton :label="'제출하기'" :onClick="submitForm" />
+    <BottomDefaultButton :label="'수정하기'" :onClick="submitForm" />
   </div>
 </template>
 
 <script setup lang="ts">
 /**library load */
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { debounce } from "lodash"; // lodash 라이브러리 사용
 
 /**data, componenet, env load */
@@ -135,17 +135,12 @@ import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 const router = useRouter();
 const authStore = useAuthStore();
 
+const user = ref(null);
 /** form value */
 const nickname = ref<string | null>(null);
 const seoulDistrictOptions: Option[] = seoulSiGunGu;
-const petOptions = ref<Option[]>([
-  { idx: 1, name: "반려동물 없음", value: false, isSelected: false },
-  { idx: 2, name: "반려동물 있음", value: true, isSelected: false },
-]);
-const carOptions = ref<Option[]>([
-  { idx: 1, name: "차 없음", value: false, isSelected: false },
-  { idx: 2, name: "차 있음", value: true, isSelected: false },
-]);
+const petOptions = ref<Option[]>(null);
+const carOptions = ref<Option[]>(null);
 
 /* nickname */
 const isChecking = ref(false);
@@ -296,18 +291,85 @@ const submitForm = async () => {
       user_longitude: longitude.value,
     };
 
-    const response = await axiosInstance.post("/v1/user", formData);
+    const response = await axiosInstance.put("/v1/user", formData);
     const { email, role } = response.data.data;
     authStore.setUser({ email, role });
-    alert("회원가입이 완료되었습니다.");
+    alert("수정이 완료되었습니다.");
     router.push({ name: "Home" });
   } catch (error) {
-    console.error("회원가입 중 오류 발생", error);
+    console.error("수정 중 오류 발생", error);
   }
 };
 
-const backToLogin = () => {
-  router.replace("/login");
+const back = () => {
+  router.back();
+};
+function applyOptionsFromUser(options: Option[], value: boolean) {
+  const index = findIndexFromOptions(options, value);
+  if (options[index]) {
+    options[index].isSelected = true;
+  }
+}
+
+watch(
+  () => [petOptions.length, carOptions.length],
+  ([petLen, carLen]) => {
+    if (petLen && carLen) {
+      applyOptionsFromUser();
+    }
+  },
+  { immediate: true }
+);
+
+onMounted(() => {
+  fetachMyProfile();
+});
+
+const fetachMyProfile = async () => {
+  petOptions.value = [
+    { idx: 1, name: "반려동물 없음", value: false, isSelected: false },
+    { idx: 2, name: "반려동물 있음", value: true, isSelected: false },
+  ];
+  carOptions.value = [
+    { idx: 1, name: "차 없음", value: false, isSelected: false },
+    { idx: 2, name: "차 있음", value: true, isSelected: false },
+  ];
+  try {
+    const response = await axiosInstance.get("/v1/user");
+
+    user.value = response.data.data;
+    nickname.value = user.value.user_nickname;
+    const selectedIndex =
+      user.value.user_gu === null || user.value.ser_gu === undefined
+        ? 0
+        : seoulDistrictOptions.findIndex(
+            (item) => item.value === user.value.user_gu
+          );
+
+    selectedSeoulSiGunGuIdx.value = selectedIndex === -1 ? 0 : selectedIndex;
+
+    address.value = user.value.user_address;
+    latitude.value = user.value.user_latitude;
+    longitude.value = user.value.user_longitude;
+
+    // 반려동물 유무 옵션 처리
+    const selectedPetIdx = petOptions.value.findIndex(
+      (option) => option.value === user.value.user_have_animal
+    );
+    if (selectedPetIdx !== -1) {
+      petOptions.value[selectedPetIdx].isSelected = true;
+    }
+
+    // 자차 유무 옵션 처리
+    const selectedCarIdx = carOptions.value.findIndex(
+      (option) => option.value === user.value.user_have_car
+    );
+    if (selectedCarIdx !== -1) {
+      carOptions.value[selectedCarIdx].isSelected = true;
+    }
+  } catch (error) {
+    console.error(error.message);
+  }
 };
 </script>
 
