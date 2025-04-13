@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import { ref, onMounted, defineEmits, watch } from "vue";
-import searchIconImg from "@/assets/icons/Magnifier.png";
-import { axiosInstance } from "@/plugins/axiosPlugin";
-import AddressSearchResult from "@/components/common/AddressSearchResult.vue";
 import { debounce } from "lodash"; // lodash의 debounce 사용
+import { useRouter } from "vue-router";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
+import searchIconImg from "@/assets/icons/Magnifier.png";
 import TopBarBack from "@/components/common/TopBarBack.vue";
+import NonContent from "@/components/common/NonContent.vue";
+import AddressSearchResult from "@/components/common/AddressSearchResult.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 
 const emit = defineEmits(["close", "selectAddress"]);
+
+const router = useRouter();
 
 const searchQuery = ref("");
 const searchResults = ref([]);
@@ -118,6 +124,10 @@ onMounted(getCurrentLocation);
 
 // 검색어가 변경될 때마다 디바운스된 검색 함수 호출
 watch(searchQuery, debouncedSearch);
+
+const goToAddBookmarkByUser = () => {
+  router.push("/bookmark/create");
+};
 </script>
 
 <template>
@@ -143,10 +153,16 @@ watch(searchQuery, debouncedSearch);
         <AddressSearchResult
           :addresses="searchResults"
           @selectAddress="selectAddress" />
+        <Transition name="fade">
+          <NonContent
+            v-if="searchResults.length === 0"
+            :value="'검색 결과가 없습니다'">
+            <p class="non-content-sub-desc" @click="goToAddBookmarkByUser">
+              직접 추가할까요?
+            </p>
+          </NonContent>
+        </Transition>
       </div>
-      <!-- <div class="button-wrapper">
-        <button class="button-default" @click="searchAddress">검색</button>
-      </div> -->
       <BottomDefaultButton :label="'검색'" :onClick="searchAddress" />
     </div>
   </div>
@@ -208,5 +224,26 @@ watch(searchQuery, debouncedSearch);
     border: none;
     height: 100%;
   }
+}
+
+//scoped
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+.non-content-sub-desc {
+  @include custom-text($font-size: 12px);
+  line-height: 100%;
+  text-decoration-line: underline;
 }
 </style>
