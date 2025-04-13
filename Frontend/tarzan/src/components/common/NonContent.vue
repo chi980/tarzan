@@ -4,6 +4,8 @@
       <i class="bi bi-info-circle"> </i>
       {{ props.value }}
     </p>
+
+    <slot />
   </div>
 </template>
 
@@ -20,9 +22,11 @@ const props = defineProps({
 <style lang="scss" scoped>
 .non-content {
   display: flex;
+  flex-direction: column;
   justify-content: center; /* 가로 중앙 정렬 */
   align-items: center; /* 세로 중앙 정렬 */
-  min-height: 140px;
+  min-height: 280px;
+  gap: $padding-small;
 
   p {
     @include custom-text-description(

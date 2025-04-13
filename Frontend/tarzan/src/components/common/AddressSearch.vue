@@ -2,7 +2,7 @@
 import { ref, onMounted, defineEmits, watch } from "vue";
 import axios from "axios";
 import searchIconImg from "@/assets/icons/Magnifier.png";
-import AddressSearchResult from "./AddressSearchResult.vue";
+import AddressSearchResult from "@/components/common/AddressSearchResult.vue";
 import { debounce } from "lodash"; // lodash의 debounce 사용
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
@@ -143,9 +143,6 @@ watch(searchQuery, debouncedSearch);
           :addresses="searchResults"
           @selectAddress="selectAddress" />
       </div>
-      <!-- <div class="button-wrapper">
-        <button class="button-default" @click="searchAddress">검색</button>
-      </div> -->
       <BottomDefaultButton :label="'검색'" :onClick="searchAddress" />
     </div>
   </div>

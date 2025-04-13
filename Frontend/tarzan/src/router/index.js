@@ -35,8 +35,8 @@ const routes = [
         props: true,
       },
       {
-        path: "map",
-        component: () => import("@/components/bookmark/MapPage.vue"),
+        path: "create",
+        component: () => import("@/components/bookmark/AddHousePage.vue"),
       },
       {
         path: "user",

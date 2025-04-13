@@ -38,6 +38,8 @@ import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
 
+import { seoulSiGunGu } from "@/data/seoulsigungu";
+
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import iconImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
@@ -49,40 +51,54 @@ import ReviewList from "@/components/review/ReviewList.vue";
 import { Tab } from "@/data/tabs";
 
 const router = useRouter();
+const user = ref(null);
+
+onMounted(() => {
+  fetchUser();
+});
+const fetchUser = async () => {
+  try {
+    const response = await axiosInstance.get("/v1/user");
+    user.value = response.data.data;
+
+    profiles.value = [
+      {
+        name: "이메일",
+        data: user.value.user_email,
+        isEditable: false,
+      },
+      {
+        name: "닉네임",
+        data: user.value.user_nickname,
+        isEditable: true,
+      },
+      {
+        name: "사는 곳",
+        data: getGuNameByValue(user.value.user_gu),
+        isEditable: true,
+      },
+      {
+        name: "반려동물",
+        data: user.value.user_have_animal,
+        isEditable: true,
+      },
+      {
+        name: "자차",
+        data: user.value.user_have_car,
+        isEditable: true,
+      },
+    ];
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 interface ProfileInfo {
   name: string;
   data: any;
   isEditable: boolean;
 }
-const profiles: ProfileInfo[] = [
-  {
-    name: "이메일",
-    data: "aldms8960@naver.com",
-
-    isEditable: false,
-  },
-  {
-    name: "닉네임",
-    data: "미은1",
-    isEditable: true,
-  },
-  {
-    name: "사는 곳",
-    data: "서울시 중구",
-    isEditable: true,
-  },
-  {
-    name: "반려동물",
-    data: false,
-    isEditable: true,
-  },
-  {
-    name: "자차",
-    data: false,
-    isEditable: true,
-  },
-];
+const profiles = ref<ProfileInfo[] | null>(null);
 
 function transformData(data: any): string {
   if (typeof data === "boolean") {
@@ -90,7 +106,9 @@ function transformData(data: any): string {
   }
   return String(data);
 }
-
+function getGuNameByValue(value: string): string | undefined {
+  return seoulSiGunGu.find((item) => item.value === value)?.name;
+}
 const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 const tabs: Tab[] = [
   {
