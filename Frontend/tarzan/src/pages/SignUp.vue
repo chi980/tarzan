@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <TopBarBack :title="''" />
+    <TopBarBack :title="''" @back="backToLogin" />
     <div class="center-container">
       <form class="input-form" @submit.prevent="submitForm">
         <!-- 닉네임 입력 -->
@@ -304,6 +304,10 @@ const submitForm = async () => {
   } catch (error) {
     console.error("회원가입 중 오류 발생", error);
   }
+};
+
+const backToLogin = () => {
+  router.replace("/login");
 };
 </script>
 
