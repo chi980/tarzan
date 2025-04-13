@@ -173,7 +173,7 @@ const routes = [
       {
         path: "edit-profile",
         name: "EditProfile",
-        component: () => import("@/components/mypage/EditProfile.vue"),
+        component: () => import("@/pages/EditProfile.vue"),
       },
     ],
   },

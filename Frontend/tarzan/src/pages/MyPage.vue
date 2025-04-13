@@ -8,7 +8,8 @@
         <div
           class="my-profile"
           v-for="(profile, index) in profiles"
-          :key="index">
+          :key="index"
+          @click="editProfile">
           <p>{{ profile.name }}</p>
           <p
             class="profile-data"
@@ -46,6 +47,8 @@ import CommentList from "@/components/post/CommentList.vue";
 import ReviewList from "@/components/review/ReviewList.vue";
 
 import { Tab } from "@/data/tabs";
+
+const router = useRouter();
 
 interface ProfileInfo {
   name: string;
@@ -109,6 +112,10 @@ const tabs: Tab[] = [
     component: ReviewList,
   },
 ];
+
+const editProfile = () => {
+  router.push({ name: "EditProfile" });
+};
 </script>
 
 <style lang="scss">
