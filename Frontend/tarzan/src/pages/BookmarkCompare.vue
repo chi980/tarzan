@@ -9,6 +9,7 @@ import BookmarkItem from "@/components/bookmark/BookmarkItem.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import CompareHouses from "@/components/bookmark/CompareHouses.vue";
 
+const isLoading = ref(true);
 onMounted(async () => {
   try {
     const response = await axiosInstance.get(`/v1/bookmark`, {
@@ -16,7 +17,7 @@ onMounted(async () => {
         size: 3,
         page: 0,
         sortBy: "최신순",
-        status: "CHECK_COMPLETED",
+        status: "ALL",
       },
     });
     const houseList = response.data.data.list;
@@ -36,6 +37,8 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error("북마크 불러오기 실패:", error);
+  } finally {
+    isLoading.value = false;
   }
 });
 const list = ref<
@@ -62,6 +65,9 @@ const compareBookmarks = () => {
   if (length < 2) return;
   hideUI.value = true;
 };
+const isNonContent = computed(
+  () => !isLoading.value && list.value.length === 0
+);
 </script>
 
 <template>
@@ -79,9 +85,11 @@ const compareBookmarks = () => {
           :idx="index"
           @toggle-check="toggleCheck" />
       </div>
-      <NonContent
-        :value="'점검 완료한 집이 없습니다.'"
-        v-if="list.length == 0"></NonContent>
+      <Transition name="fade">
+        <NonContent
+          :value="'점검 완료한 집이 없습니다.'"
+          v-if="isNonContent"></NonContent>
+      </Transition>
     </div>
     <BottomDefaultButton
       :label="'비교하기'"
@@ -126,6 +134,5 @@ const compareBookmarks = () => {
   @include custom-margin-y;
   display: flex;
   flex-direction: column;
-  gap: $padding-default;
 }
 </style>
