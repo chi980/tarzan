@@ -8,11 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Getter
 @NoArgsConstructor
-public class BookmarkDetailResponseDto {
+public class BookmarkDetailResponseDto2 {
 
     @JsonProperty("bookmark_id")
     private Long id;
@@ -60,10 +61,10 @@ public class BookmarkDetailResponseDto {
     private HouseDirection direction;
 
     @JsonProperty("bookmark_checklist")
-    private Map<String, BookmarkChecklistResponseDto> checklist;
+    private Map<String, List<BookmarkChecklistResponseDto2>> checklist;
 
     @Builder
-    public BookmarkDetailResponseDto(Long id, LeaseType leaseType, Integer rent, Integer deposit, Integer commissionFee, Integer managementFee, String realEstate, String realEstatePhoneNumber, Boolean canAnimal, Integer parkingLogCoverage, Integer roomCnt, Integer bathRoomCnt, LocalDate availableMoveInDate, Integer floor, HouseDirection direction, Map<String, BookmarkChecklistResponseDto> checklist) {
+    public BookmarkDetailResponseDto2(Long id, LeaseType leaseType, Integer rent, Integer deposit, Integer commissionFee, Integer managementFee, String realEstate, String realEstatePhoneNumber, Boolean canAnimal, Integer parkingLogCoverage, Integer roomCnt, Integer bathRoomCnt, LocalDate availableMoveInDate, Integer floor, HouseDirection direction, Map<String, List<BookmarkChecklistResponseDto2>> checklist) {
         this.id = id;
         this.leaseType = leaseType;
         this.rent = rent;

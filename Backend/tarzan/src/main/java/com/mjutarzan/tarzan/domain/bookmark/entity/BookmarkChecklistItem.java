@@ -39,7 +39,7 @@ public class BookmarkChecklistItem {
     @Column(name = "bookmark_checklist_item_value")
     private Boolean value;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bookmark_checklist_bookmark")
     private Bookmark bookmark;
 

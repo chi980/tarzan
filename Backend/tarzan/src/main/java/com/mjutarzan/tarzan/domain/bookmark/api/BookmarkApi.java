@@ -1,7 +1,9 @@
 package com.mjutarzan.tarzan.domain.bookmark.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.domain.bookmark.api.request.*;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseDto;
+import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkDetailResponseDto2;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkListResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.api.response.CompareBookmarkResponseDto;
 import com.mjutarzan.tarzan.domain.bookmark.service.BookmarkService;
@@ -14,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -78,7 +83,7 @@ log.info("getBookmarks: {}", result.getCount());
     @GetMapping("/bookmark/{bookmarkIdx}")
     public ResponseEntity<?> getBookmark(@PathVariable Long bookmarkIdx, @AuthenticationPrincipal CustomUserDetails userDto){
 
-        BookmarkDetailResponseDto result = bookmarkService.getBookmark(bookmarkIdx, userDto);
+        BookmarkDetailResponseDto2 result = bookmarkService.getBookmark2(bookmarkIdx, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
@@ -98,6 +103,16 @@ log.info("getBookmarks: {}", result.getCount());
                 .message("북마크가 성공적으로 수정되었습니다.")
                 .build());
 
+    }
+    @PutMapping("/bookmark/{bookmarkIdx}/checklist")
+    public ResponseEntity<?> updateBookmarkChecklist(@PathVariable Long bookmarkIdx, @RequestBody UpdateBookmarkChecklistRequestDto updateBookmarkChecklistRequestDto, @AuthenticationPrincipal CustomUserDetails useDto){
+        bookmarkService.updateBookmarkChecklist(bookmarkIdx, updateBookmarkChecklistRequestDto, useDto);
+
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                        .success(true)
+                        .message("북마크가 성공적으로 수정되었습니다.")
+
+                .build());
     }
 
     @DeleteMapping("/bookmark/{bookmarkIdx}")
