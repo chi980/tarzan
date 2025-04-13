@@ -1,39 +1,55 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
+import NonContent from "@/components/common/NonContent.vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BookmarkItem from "@/components/bookmark/BookmarkItem.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import CompareHouses from "@/components/bookmark/CompareHouses.vue";
 
-const list = ref([]);
-list.value = [
+onMounted(async () => {
+  try {
+    const response = await axiosInstance.get(`/v1/bookmark`, {
+      params: {
+        size: 3,
+        page: 0,
+        sortBy: "최신순",
+        status: "CHECK_COMPLETED",
+      },
+    });
+    const houseList = response.data.data.list;
+    console.log(houseList);
+    if (houseList.length) {
+      // checked 추가해서 list에 저장
+      list.value = houseList.map((item: any) => ({
+        checked: false,
+        house: {
+          bookmarkIdx: item.bookmark_id,
+          house_name: item.bookmark_house_name,
+          house_address: item.bookmark_house_address,
+          house_category: item.bookmark_house_category,
+          create_at: item.bookmark_created_at,
+        },
+      }));
+    }
+  } catch (error) {
+    console.error("북마크 불러오기 실패:", error);
+  }
+});
+const list = ref<
   {
-    checked: false,
+    checked: boolean;
     house: {
-      bookmarkIdx: 1,
-      house_name: "집 이름 1",
-      house_address: "주소 1",
-      house_category: "카테고리 1",
-      hoconstuse_review_score: 4.5,
-      house_latitude: 37.5665,
-      house_longitude: 126.978,
-      created_at: "2025.03.16 10:00:00",
-    },
-  },
-  {
-    checked: false,
-    house: {
-      bookmarkIdx: 2,
-      house_name: "집 이름 1",
-      house_address: "주소 1",
-      house_category: "카테고리 1",
-      hoconstuse_review_score: 4.5,
-      house_latitude: 37.5665,
-      house_longitude: 126.978,
-      created_at: "2025.03.16 10:00:00",
-    },
-  },
-];
+      bookmarkIdx: number;
+      house_name: string;
+      house_address: string;
+      house_category: string;
+      created_at: string;
+    };
+  }[]
+>([]);
 
 // 체크 상태 바꿔주는 함수
 const toggleCheck = (idx: number) => {
@@ -63,6 +79,9 @@ const compareBookmarks = () => {
           :idx="index"
           @toggle-check="toggleCheck" />
       </div>
+      <NonContent
+        :value="'점검 완료한 집이 없습니다.'"
+        v-if="list.length == 0"></NonContent>
     </div>
     <BottomDefaultButton
       :label="'비교하기'"
