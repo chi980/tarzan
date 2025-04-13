@@ -18,7 +18,7 @@
           v-for="(bookmark, index) in bookmarks"
           :key="index"
           @delete="handleDelete(index)"
-          @click="handleCLick(index)">
+          @click="handleCLick(bookmark)">
           <div class="house-item-wrapper">
             <HouseItem :house="bookmark" />
           </div>
@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 /**  */
-import { ref, onMounted, defineProps, watch } from "vue";
+import { ref, onMounted, watch } from "vue";
 
 /** component load */
 import houseAddImg from "@/assets/icons/Plus/Pluse.png";
@@ -73,9 +73,12 @@ const handleDelete = async (idx) => {
   }
 };
 
-const handleCLick = (idx) => {
-  console.log("상세 가기");
-  console.log(bookmarks.value[idx]);
+const handleCLick = (bookmark) => {
+  router.push({
+    name: "BookMarkDetail",
+    params: { id: bookmark.bookmarkIdx },
+    query: { bookmarkObj: JSON.stringify(bookmark) },
+  });
 };
 
 const tagOptions = [
