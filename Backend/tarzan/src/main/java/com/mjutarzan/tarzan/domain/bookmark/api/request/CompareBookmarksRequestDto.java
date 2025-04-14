@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -13,11 +14,10 @@ import java.util.Set;
 @ToString
 public class CompareBookmarksRequestDto {
 
-    @JsonProperty("bookmark_ids")
-    Set<Long> idList;
+    private List<Long> bookmark_ids;
 
     @Builder
-    public CompareBookmarksRequestDto(Set<Long> idList) {
-        this.idList = idList;
+    public CompareBookmarksRequestDto(List<Long> bookmark_ids) {
+        this.bookmark_ids = bookmark_ids;
     }
 }

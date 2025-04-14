@@ -55,6 +55,7 @@ const toggle = () => {
 
 .house-meta {
   display: flex;
+  align-items: center;
   flex-wrap: wrap; // 👉 자동 줄바꿈 허용
   gap: 8px;
   width: 100%;

@@ -14,6 +14,8 @@ public class UserResponseDto {
     @JsonProperty("user_image_url")
     private String imageUrl;
 
+    @JsonProperty("user_email")
+    private String email;
     @JsonProperty("user_nickname")
     private String nickname;
 
@@ -36,8 +38,9 @@ public class UserResponseDto {
     private Double longitude;
 
     @Builder
-    public UserResponseDto(String imageUrl, String nickname, SiGunGu gu, Boolean haveAnimal,Boolean haveCar, String jobAddress, Double latitude, Double longitude){
+    public UserResponseDto(String imageUrl, String email, String nickname, SiGunGu gu, Boolean haveAnimal,Boolean haveCar, String jobAddress, Double latitude, Double longitude){
         this.imageUrl = imageUrl;
+        this.email = email;
         this.nickname = nickname;
         this.gu = gu;
         this.haveAnimal = haveAnimal;
