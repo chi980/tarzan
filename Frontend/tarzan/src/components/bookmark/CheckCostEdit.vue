@@ -10,22 +10,36 @@
           <h2 class="input-title">가격</h2>
           <div class="input-content-wrapper">
             <div class="input-content">
-              <input v-model="houseData.bookmark_deposit" type="text" placeholder="보증금을 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_deposit"
+                type="text"
+                placeholder="보증금을 입력해주세요." />
             </div>
+            <div class="input-content"></div>
             <div class="input-content">
-
-            </div>
-            <div class="input-content">
-              <div class="select-content" style="width: max-content; min-width: 100px">
-                <CustomSelectBox v-model="houseData.bookmark_lease_type" :options="rentalOptions" />
+              <div
+                class="select-content"
+                style="width: max-content; min-width: 100px">
+                <CustomSelectBox
+                  v-model="houseData.bookmark_lease_type"
+                  :options="rentalOptions" />
               </div>
-            <input v-model="houseData.bookmark_rent" type="text" placeholder="금액을 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_rent"
+                type="text"
+                placeholder="금액을 입력해주세요." />
             </div>
             <div class="input-content">
-              <input v-model="houseData.bookmark_commission" type="text" placeholder="중개수수료를 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_commission"
+                type="text"
+                placeholder="중개수수료를 입력해주세요." />
             </div>
             <div class="input-content">
-              <input v-model="houseData.bookmark_management_fee" type="text" placeholder="관리비를 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_management_fee"
+                type="text"
+                placeholder="관리비를 입력해주세요." />
             </div>
           </div>
         </div>
@@ -35,10 +49,16 @@
           <h2 class="input-title">부동산/집주인</h2>
           <div class="input-content-wrapper">
             <div class="input-content">
-              <input v-model="houseData.bookmark_estate_name" type="text" placeholder="부동산/집주인명을 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_estate_name"
+                type="text"
+                placeholder="부동산/집주인명을 입력해주세요." />
             </div>
             <div class="input-content">
-              <input v-model="houseData.bookmark_estate_phone_number" type="text" placeholder="부동산/집주인 핸드폰 번호를 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_estate_phone_number"
+                type="text"
+                placeholder="부동산/집주인 핸드폰 번호를 입력해주세요." />
             </div>
           </div>
         </div>
@@ -48,7 +68,9 @@
           <h2 class="input-title">반려동물 가능 여부</h2>
           <div class="input-content">
             <div class="select-content">
-              <CustomSelectBox v-model="houseData.bookmark_can_animal" :options="petOptions" />
+              <CustomSelectBox
+                v-model="houseData.bookmark_can_animal"
+                :options="petOptions" />
             </div>
           </div>
         </div>
@@ -58,7 +80,9 @@
           <h2 class="input-title">방향</h2>
           <div class="input-content">
             <div class="select-content">
-              <CustomSelectBox v-model="houseData.bookmark_direction" :options="directionOptions" />
+              <CustomSelectBox
+                v-model="houseData.bookmark_direction"
+                :options="directionOptions" />
             </div>
           </div>
         </div>
@@ -68,7 +92,9 @@
           <h2 class="input-title">주차장 대수</h2>
           <div class="input-content">
             <div class="select-content">
-              <CustomSelectBox v-model="houseData.bookmark_parking_cnt" :options="carOptions" />
+              <CustomSelectBox
+                v-model="houseData.bookmark_parking_cnt"
+                :options="carOptions" />
             </div>
           </div>
         </div>
@@ -78,10 +104,16 @@
           <h2 class="input-title">방수/욕실수</h2>
           <div class="input-content-wrapper">
             <div class="input-content">
-              <input v-model="houseData.bookmark_room_cnt" type="text" placeholder="방수를 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_room_cnt"
+                type="text"
+                placeholder="방수를 입력해주세요." />
             </div>
             <div class="input-content">
-              <input v-model="houseData.bookmark_bath_cnt" type="text" placeholder="욕실수를 입력해주세요." />
+              <input
+                v-model="houseData.bookmark_bath_cnt"
+                type="text"
+                placeholder="욕실수를 입력해주세요." />
             </div>
           </div>
         </div>
@@ -90,7 +122,10 @@
         <div class="input-group">
           <h2 class="input-title">입주가능일</h2>
           <div class="input-content">
-            <input v-model="houseData.bookmark_available_date" type="date" placeholder="입주가능일을 입력해주세요." />
+            <input
+              v-model="houseData.bookmark_available_date"
+              type="date"
+              placeholder="입주가능일을 입력해주세요." />
           </div>
         </div>
 
@@ -98,7 +133,10 @@
         <div class="input-group">
           <h2 class="input-title">층수</h2>
           <div class="input-content">
-            <input v-model="houseData.bookmark_floor" type="text" placeholder="층수를 입력해주세요." />
+            <input
+              v-model="houseData.bookmark_floor"
+              type="text"
+              placeholder="층수를 입력해주세요." />
           </div>
         </div>
       </form>
@@ -113,11 +151,9 @@
   </div>
 </template>
 
-
-
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { Option } from "@/data/options";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
@@ -129,51 +165,49 @@ const router = useRouter();
 const bookmarkIdx = route.params.bookmarkIdx;
 
 const houseData = ref({
-  bookmark_lease_type: 'MONTHLY', // 전세 | 월세
-  bookmark_rent: '', // 월세만 해당 항목 이용
-  bookmark_deposit: '', 
-  bookmark_commission: '', 
-  bookmark_management_fee: '', 
-  bookmark_estate_name: '', 
-  bookmark_estate_phone_number: '', 
-  bookmark_can_animal: 'FALSE', // true | false
-  bookmark_parking_cnt: '0', 
-  bookmark_room_cnt: '', 
-  bookmark_bath_cnt: '', 
-  bookmark_available_date: '', 
-  bookmark_floor: '', 
-  bookmark_direction: 'SOUTH', // EAST | WEST | SOUTH | NORTH | UNKNOWN
+  bookmark_lease_type: "MONTHLY", // 전세 | 월세
+  bookmark_rent: "", // 월세만 해당 항목 이용
+  bookmark_deposit: "",
+  bookmark_commission: "",
+  bookmark_management_fee: "",
+  bookmark_estate_name: "",
+  bookmark_estate_phone_number: "",
+  bookmark_can_animal: "FALSE", // true | false
+  bookmark_parking_cnt: "0",
+  bookmark_room_cnt: "",
+  bookmark_bath_cnt: "",
+  bookmark_available_date: "",
+  bookmark_floor: "",
+  bookmark_direction: "SOUTH", // EAST | WEST | SOUTH | NORTH | UNKNOWN
 });
-
-
 
 const updateHouseData = async () => {
   try {
-    console.log('Request Data:', JSON.stringify(houseData.value, null, 2));
-    const response = await axiosInstance.put(`/v1/bookmark/${bookmarkIdx}`, houseData.value);
+    console.log("Request Data:", JSON.stringify(houseData.value, null, 2));
+    const response = await axiosInstance.put(
+      `/v1/bookmark/${bookmarkIdx}`,
+      houseData.value
+    );
 
     if (response.data.success) {
-      console.log('House data updated successfully:', response.data);
+      console.log("House data updated successfully:", response.data);
       houseData.value = response.data.data;
     } else {
-      console.error('Failed to update house data:', response.data.message);
+      console.error("Failed to update house data:", response.data.message);
     }
   } catch (error) {
-    console.error('API 요청 중 에러 발생:', error);
+    console.error("API 요청 중 에러 발생:", error);
   }
 };
 
 const goToCheckOptionPage = () => {
-  router.push({ name: 'CheckOptionPage' }); // 'CheckOptionPage'로 네임 기반 라우팅
+  router.push({ name: "CheckOptionPage" }); // 'CheckOptionPage'로 네임 기반 라우팅
 };
-
 
 const handleClick = () => {
   updateHouseData();
   goToCheckOptionPage();
 };
-
-
 
 // 부모 컴포넌트의 배열 데이터 정의
 const rentalOptions: Option[] = [
@@ -210,8 +244,6 @@ const directionOptions: Option[] = [
   { idx: 5, name: "북", value: "NORTH" },
 ];
 </script>
-
-
 
 <style lang="scss" scoped>
 // 공통

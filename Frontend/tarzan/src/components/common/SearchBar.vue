@@ -1,61 +1,66 @@
 <template>
-  <div class="searchbar">
+  <div class="searchbar" @click="goToSearch">
     <div class="input-icon-wrap">
-      <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="icon-search"/>
-        <input
-          v-model="searchQuery" 
-          type="text"
-          placeholder="찾고 싶은 글 제목을 입력해주세요."
-          @keyup.enter="onSearch" />
+      <img :src="searchIconImg" alt="search icon" class="icon-search" />
+      <p>찾고 싶은 주소를 입력해주세요.</p>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, defineEmits } from 'vue';
+import router from '@/router';
+import searchIconImg from "@/assets/icons/Magnifier.png";
 
-const searchQuery = ref('');
-const emit = defineEmits();
+const props = defineProps({
+  // 이동할 라우트 이름
+  routeName: {
+    type: String,
+    default: 'Home',
+  },
+});
 
-// 검색 버튼이나 Enter 키 입력 시 searchPosts 함수 호출
-const onSearch = () => {
-  console.log('검색어:', searchQuery.value);
-  emit('search', searchQuery.value); 
-};
+// 검색 페이지로 이동
+const goToSearch = () => {
+  console.log('라우트로 이동 시도:', props.routeName);
+  try {
+    router.push({
+      name: props.routeName,
+    });
+    console.log('라우트로 이동', props.routeName);
+  } catch (error) {
+    console.error('라우트 이동 오류:', error);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-  .searchbar {
-    display: flex;
-    padding-top: $margin-small;
-    padding-bottom: $margin-default;
+.searchbar {
+  @include custom-margin-x;
+  @include custom-padding-y;
+  display: flex;
+  cursor: pointer;
+  .input-icon-wrap {
     @include custom-padding-x;
-    box-sizing: border-box;
-  }
-
-  .searchbar .input-icon-wrap {
     display: flex;
+    gap: $padding-default;
     align-items: center;
     width: 100%;
     height: 48px;
     border-radius: 13px;
-    background-color: $input-color;
+    background-color: white;
     padding-right: $padding-default;
-  }
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
 
-  .searchbar .input-icon-wrap .icon-search {
-    width: 16px;
-    height: 16px;
-    @include custom-margin-x;
-    color: $input-placeholder-color;
-  }
+    .icon-search {
+      @include custom-icon-style;
+      color: $input-placeholder-color;
+    }
 
-  .searchbar .input-icon-wrap input {
-    width: 100%;
-    appearance: none;
-    border: none;
-    outline: none;
-    background: transparent;
-    @include custom-text;
+    p {
+      @include custom-text($font-size: 14px, $font-color: $text-color-light);
+    }
   }
+};
 </style>

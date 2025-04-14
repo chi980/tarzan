@@ -48,7 +48,6 @@ const handleClick = () => {
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  background-color: aqua;
 }
 
 .house-item-container .house-content {

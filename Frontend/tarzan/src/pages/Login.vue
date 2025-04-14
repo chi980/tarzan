@@ -1,9 +1,11 @@
 <template>
   <div class="sub-container">
-    <p id="logo_desc_text">정글같은 서울 도심 속 터전 찾기</p>
-    <p id="logo_text">TARZAN</p>
+    <div class="center-container">
+      <p id="logo_desc_text">정글같은 서울 도심 속 터전 찾기</p>
+      <p id="logo_text">TARZAN</p>
 
-    <img :src="logoImage" alt="Logo" id="logo" />
+      <img :src="logoImage" alt="Logo" id="logo" />
+    </div>
 
     <div class="custom-button-group">
       <div id="recommended-login-group" class="custom-button-item">
@@ -28,7 +30,6 @@
           <img :src="naverImage" alt="naverLogo" class="button-item-image" />
           <p class="button-item-content">네이버로 계속하기</p>
         </div>
-        "
       </div>
     </div>
 
@@ -54,9 +55,10 @@ const clickGoogleBtn = () => {
   location.href = googleLoginUrl;
 };
 
-// const clickNaverBtn = () => {
-//   const naverLoginUrl = import.meta.env.VITE_API_NAVER_URL;
-
+const clickNaverBtn = () => {
+  const naverLoginUrl = import.meta.env.VITE_API_NAVER_URL;
+  location.href = naverLoginUrl;
+};
 import { useAuthStore } from "@/stores/authStore";
 const clickBtn = () => {
   const authStore = useAuthStore();
@@ -80,6 +82,36 @@ const checkBack = async () => {
 </script>
 
 <style lang="scss">
+.center-container {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: white;
+
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
+}
+//scoped
 @keyframes shake {
   0% {
     transform: translateY(0);
@@ -90,6 +122,11 @@ const checkBack = async () => {
   100% {
     transform: translateY(0);
   }
+}
+
+.center-container {
+  align-items: center;
+  justify-content: center;
 }
 // logo
 #logo_desc_text {
@@ -118,6 +155,7 @@ const checkBack = async () => {
   padding: 0;
   width: 100%;
   flex-direction: column; /* 세로 방향으로 요소 배치 */
+  padding-bottom: 8px;
 }
 
 // 추천하는 sns login
@@ -140,7 +178,6 @@ const checkBack = async () => {
 
 .custom-button-item {
   @include custom-margin-x;
-  display: block;
 }
 
 .custom-button-kakao {

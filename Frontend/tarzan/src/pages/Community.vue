@@ -1,21 +1,23 @@
 <template>
   <div class="sub-container">
-    <TopBar @update:selected="updateDistrict" /> 
+    <TopBar 
+      class="top-bar"
+      @update:selected="updateDistrict" 
+    /> 
     
     <div class="center-container">
-      <SearchBar 
-        v-model:searchQuery="searchQuery"/>
-      <!-- <SearchBar 
-      v-model:searchQuery="searchQuery" 
-      @search="searchPosts" /> -->
+      <SearchBar
+        routeName="PostSearch"    
+      />
         
       <DescriptionComponent
+          class="description-component"
           descriptionImgSrc="/src/assets/etc/Saly-25.png"
           descriptionTitle="동네주민과<br/>얘기해보세요!"
           descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
           backgroundColor="#FFF7D9"/>
 
-      <div class="tag-button-container">
+      <div class="tag-button-container-wrapper">
 
         <TagButtonGroup 
           v-model:selectedButton="selectedButton" 
@@ -27,7 +29,7 @@
 
       <div class="result-bar-container">
         <ResultBar 
-          resultTitle="결과" 
+          resultTitle="전체 게시물" 
           :sortOptions="sortOptions"
           @updateSortBy="updateSortBy"
         />
@@ -44,13 +46,15 @@
       </div>
     </div>
     
-    <BottomBar />
+    <BottomBar class="bottom-bar" />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, watch } from "vue";
+import router from '@/router';
 import { useRouter } from "vue-router";
+
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
 import { useInfiniteScroll } from "@/composables/useInfiniteScroll.js";
@@ -63,7 +67,7 @@ import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
 
-const router = useRouter();
+// const router = useRouter();
 
 const tagOptions = ref([
   { label: '전체', value: 'ALL' },
@@ -86,7 +90,7 @@ const posts = ref([ ]);                 // 게시물 목록
 const sortBy = ref('최신순');             // 정렬 기준
 const selectedButton = ref('ALL');      // 태그
 const selectedDistrict = ref('JONGNO'); // 지역구
-const searchQuery = ref('');            // 검색어 상태
+// const searchQuery = ref('');            // 검색어 상태
 
 // 정렬 기준(정렬 기준, 태그, 지역구) 변화 감지
 watch([sortBy, selectedButton, selectedDistrict], () => {
@@ -179,55 +183,70 @@ onMounted(fetchPosts);
 
 
 <style lang="scss" scoped>
-  .sub-container {
-    justify-content: space-between;
+.sub-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.top-bar,
+.bottom-bar,
+.description-component {
+  flex-shrink: 0;
+}
+
+.center-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.tag-button-container-wrapper {
+  @include custom-padding-x;
+  @include custom-padding-y;
+}
+
+
+.result-bar-container {
+  @include custom-margin-x;
+}
+
+.post-list-container {
+  background-color: aqua;
+  @include custom-margin-x;
+  flex-grow: 1;
+}
+
+.center-container .write-button {
+  @include custom-text($font-color: white, $font-weight: 800, $font-size: 14px);
+  @include custom-none-select-basic;
+  position: absolute;
+  bottom: calc(#{$height-bottom-bar} + #{$padding-default});
+  right: $padding-default;
+  z-index: $z-index-button;
+
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  padding: 12px 14px 12px 12px;
+  gap: $padding-small;
+
+  border-radius: 20px;
+  background-color: $primary-color-400;
+
+  box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
+}
+
+#post-write-icon {
+    @include custom-icon-style;
   }
-
-  .center-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    flex-grow: 1;
-    overflow-y: auto;
-  }
-
-  .tag-button-container {
-    width: 100%;
-    padding: 8px;
-    background-color: yellowgreen;
-  }
-
-  .result-bar-container {
-    @include custom-margin-x;
-  }
-
-  .post-list-container {
-    background-color: aqua;
-    @include custom-margin-x;
-    flex-grow: 1;
-  }
-
-  .center-container .write-button {
-    @include custom-text($font-color: white, $font-weight: 800, $font-size: 14px);
-    @include custom-none-select-basic;
-    position: absolute;
-    bottom: calc(#{$height-bottom-bar} + #{$padding-default});
-    right: $padding-default;
-    z-index: $z-index-button;
-
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    padding: 12px 14px 12px 12px;
-    gap: $padding-small;
-
-    border-radius: 20px;
-    background-color: $primary-color-400;
-
-    box-shadow: 0px 0px 10px rgba(166, 166, 166, 0.3);
-  }
-
-  #post-write-icon {
-      @include custom-icon-style;
-    }
 </style>

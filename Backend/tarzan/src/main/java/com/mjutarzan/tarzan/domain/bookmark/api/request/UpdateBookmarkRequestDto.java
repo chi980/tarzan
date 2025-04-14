@@ -61,6 +61,4 @@ public class UpdateBookmarkRequestDto {
     @JsonProperty("bookmark_direction")
     private HouseDirection direction;
 
-    @JsonProperty("bookmark_checklist")
-    private Map<Long, Boolean> checklist = Collections.emptyMap();
 }

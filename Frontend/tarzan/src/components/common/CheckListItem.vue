@@ -1,20 +1,26 @@
 <template>
-  <div class="checklist-item">
-    <p>{{ props.checkListItem.name }}</p>
-    <input type="checkbox" v-model="props.checkListItem.value" />
+  <div class="checklist-item" @click="changeValue">
+    <p>{{ props.checkListItem.name || props.checkListItem.label }}</p>
+    <input type="checkbox" :checked="props.checkListItem.value" @change.stop />
   </div>
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
-import { defineProps, PropType } from "vue";
-import { Check } from "@/data/check";
+import { defineProps, PropType, defineEmits } from "vue";
+import type { Check } from "@/data/check";
+
 const props = defineProps({
   checkListItem: {
     type: Object as PropType<Check>,
     required: true,
   },
 });
+
+const emit = defineEmits(["change"]);
+
+const changeValue = () => {
+  emit("change");
+};
 </script>
 
 <style lang="scss" scoped>

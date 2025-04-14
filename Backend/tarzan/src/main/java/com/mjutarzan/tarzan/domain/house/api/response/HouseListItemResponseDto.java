@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HouseListItemResponseDto {
 
+    @JsonProperty("house_id")
+    private Long id;
+
     @JsonProperty("house_name")
     private String name;
 
@@ -25,8 +28,9 @@ public class HouseListItemResponseDto {
     private Double longitude;
 
     @Builder
-    public HouseListItemResponseDto(String name, String category, String address,
+    public HouseListItemResponseDto(Long id,String name, String category, String address,
                                     Double latitude, Double longitude) {
+        this.id = id;
         this.name = name;
         this.category = category;
         this.address = address;

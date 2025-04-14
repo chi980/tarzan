@@ -1,14 +1,3 @@
-<!-- TagButtonGroup 사용법:
- 
- Props 설명:
- - buttons: 버튼으로 표시할 데이터를 배열로 전달
-   예: [{ label: '표시할 이름', value: '고유값' }, ...]
- 
- - multiple: 다중선택(true), 단일선택(false)을 지정하는 옵션
- 
- v-model 설명:
- - 다중 선택일 때는 `selectedButtons` (배열)를 연결
- - 단일 선택일 경우 v-model:selectedButton 으로 연결 -->
 <template>
   <div class="tag-button-container">
     <div
@@ -18,8 +7,7 @@
       :class="{ [activeClass]: isSelected(button.value) }"
       role="button"
       tabindex="0"
-      @click="toggleSelection(button.value)"
-    >
+      @click="toggleSelection(button.value)">
       <slot :button="button">{{ button.label }}</slot>
     </div>
   </div>
@@ -35,7 +23,7 @@ const props = defineProps({
   multiple: Boolean,
   activeClass: {
     type: String,
-    default: "active", // 기본값은 기존과 동일하게 유지
+    default: "active", // 기본 css는 기존과 동일하게 유지
   },
 });
 
@@ -64,6 +52,17 @@ const toggleSelection = (value) => {
   display: flex;
   flex-wrap: nowrap;
   gap: 5px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .tag-button {
@@ -80,6 +79,9 @@ const toggleSelection = (value) => {
   }
 }
 
+// 선택된 버튼의 스타일
+// 기존의 active 클래스를 사용하여 스타일을 적용합니다.
+// 필요에 따라 기존 스타일을 수정하거나 추가할 수 있습니다.
 .active {
   background-color: $primary-color-light;
   border: 1.2px solid $primary-color-default;

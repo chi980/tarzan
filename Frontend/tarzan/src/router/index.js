@@ -29,8 +29,14 @@ const routes = [
         component: () => import("@/pages/BookMark.vue"),
       },
       {
-        path: "map",
-        component: () => import("@/components/bookmark/MapPage.vue"),
+        path: ":id",
+        name: "BookMarkDetail",
+        component: () => import("@/pages/BookmarkDetail.vue"),
+        props: true,
+      },
+      {
+        path: "create",
+        component: () => import("@/components/bookmark/AddHousePage.vue"),
       },
       {
         path: "user",
@@ -38,23 +44,9 @@ const routes = [
         component: () => import("@/components/bookmark/AddHousePage.vue"),
       },
       {
-        path: ":bookmarkIdx",
-        name: "CheckCostPage",
-        component: () => import("@/components/bookmark/CheckCostPage.vue"),
-      },
-      {
-        path: ":bookmarkIdx",
-        name: "CheckOptionPage",
-        component: () => import("@/components/bookmark/CheckOptionPage.vue"),
-      },
-      {
-        path: ":bookmarkIdx",
-        name: "CheckCheckListPage",
-        component: () => import("@/components/bookmark/CheckCheckListPage.vue"),
-      },
-      {
         path: "compare",
-        component: () => import("@/components/bookmark/CompareHouses.vue"),
+        name: "BookmarkCompare",
+        component: () => import("@/pages/BookmarkCompare.vue"),
       },
     ],
   },
@@ -140,6 +132,11 @@ const routes = [
         name: "PostCreate",
         component: () => import("@/components/post/PostCreate.vue"),
       },
+      {
+        path: "search",
+        name: "PostSearch",
+        component: () => import("@/components/post/PostSearchView.vue"),
+      },
     ],
   },
 
@@ -176,7 +173,7 @@ const routes = [
       {
         path: "edit-profile",
         name: "EditProfile",
-        component: () => import("@/components/mypage/EditProfile.vue"),
+        component: () => import("@/pages/EditProfile.vue"),
       },
     ],
   },

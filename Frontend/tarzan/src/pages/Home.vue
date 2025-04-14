@@ -67,18 +67,18 @@ import BottomBar from "@/components/common/BottomBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingDetail from "@/components/home/BuildingDetail.vue";
 import HouseDetail from "@/components/home/HouseDetail.vue";
-import AddressSearch from "@/components/common/AddressSearch.vue";
+import AddressSearch from "@/components/common/AddressSearchApi.vue";
 import { getScaleRatio } from "@/data/kakaoMap";
 
 /** search bar */
-const address = ref<string | null>(null);
 const isAddressSearchOpen = ref<boolean>(false);
 const openAddressSearch = () => {
   isAddressSearchOpen.value = true;
 };
-const closeAddressSearch = (selectedAddress: string) => {
-  address.value = selectedAddress;
+const closeAddressSearch = (selectedAddress) => {
   isAddressSearchOpen.value = false;
+  addAddressMarker(mapInstance, selectedAddress);
+  console.log("선택됨: " + JSON.stringify(selectedAddress));
 };
 /** tag button */
 const tagOptions = ref([
@@ -381,6 +381,42 @@ const loadKakaoMap = (container) => {
     });
   };
 };
+const addAddressMarker = (mapInstance, address) => {
+  console.log("add Address Marker", JSON.stringify(address));
+  const position = new window.kakao.maps.LatLng(
+    Number(address.y),
+    Number(address.x)
+  );
+
+  // 새 마커 생성
+  const marker = new window.kakao.maps.Marker({
+    position,
+    map: mapInstance,
+  });
+  window.kakao.maps.event.addListener(marker, "click", async () => {
+    houseContent.value = {
+      house_id: address.id,
+      house_name: address.place_name,
+      house_address: address.address_name,
+      house_category: "아파트",
+      house_latitude: address.y,
+      house_longitude: address.x,
+    };
+    buildingContent.value = null;
+
+    console.log("addmaker ", JSON.stringify(houseContent.value));
+
+    await nextTick();
+    if (infoContent.value) {
+      const newHeight = infoContent.value.scrollHeight;
+      maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
+      contentHeight.value = maxHeight.value;
+    }
+  });
+  // 지도 중심 이동
+  mapInstance.setCenter(position);
+};
+
 const addHouseMarkers = (mapInstance, houses) => {
   houses.forEach((house) => {
     const position = new window.kakao.maps.LatLng(
@@ -488,21 +524,6 @@ const addBuildingMarkers = (mapInstance, buildings) => {
   /** tag button group style */
   .tag-button-container-wrapper {
     @include custom-padding-x;
-    pointer-events: auto;
-    overflow-x: auto;
-
-    -webkit-overflow-scrolling: touch; // 모바일 부드러운 스크롤
-
-    // 웹킷 브라우저에서 스크롤바 숨기기
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-      display: none;
-    }
-
-    // 파이어폭스 및 다른 브라우저에서 스크롤바 숨기기
-    scrollbar-width: none; // 파이어폭스
-    -ms-overflow-style: none; // IE, Edge
   }
   z-index: 10; /* Ensure this is below the search bar */
 }

@@ -25,7 +25,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserRepository userRepository;
 
-//    private static final String NAVER = "naver";
+    private static final String NAVER = "naver";
     private static final String KAKAO = "kakao";
 
     @Override
@@ -67,9 +67,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private SocialType getSocialType(String registrationId) {
-//        if(NAVER.equals(registrationId)) {
-//            return SocialType.NAVER;
-//        }
+        if(NAVER.equals(registrationId)) {
+            return SocialType.NAVER;
+        }
         if(KAKAO.equals(registrationId)) {
             return SocialType.KAKAO;
         }

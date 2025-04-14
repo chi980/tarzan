@@ -26,10 +26,6 @@ const props = defineProps({
 function onBackClick() {
   emit('back');
 }
-
-// function goBack() {
-//   router.go(-1);
-// }
 </script>
 
 <style lang="scss" scoped>

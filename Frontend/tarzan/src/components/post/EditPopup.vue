@@ -1,7 +1,6 @@
 <template>
   <div class="EditPopup">
     <slot name="button"></slot>
-    
   </div>
 </template>
 <script>

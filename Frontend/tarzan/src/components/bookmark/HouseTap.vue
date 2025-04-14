@@ -1,18 +1,32 @@
 <template>
-  <div class="tab-content house-content-wrapper">
-    <div class="house-item-wrapper">
+  <div>
+    <div class="tag-button-wrapper">
+      <TagButtonGroup
+        :buttons="tagOptions"
+        :selectedButton="selectedTag"
+        :multiple="false" />
+    </div>
+
+    <div class="house-content-wrapper">
       <div class="house-item--add-wrapper" @click="emitOpenModal">
         <div class="house-add-img-wrapper">
           <img :src="houseAddImg" alt="houseAddImg" />
         </div>
         <p>집 추가하기</p>
       </div>
+      <div class="house-list-wrapper">
+        <SwipeItem
+          v-for="(bookmark, index) in bookmarks"
+          :key="index"
+          @delete="handleDelete(index)"
+          @click="navigateToCheckCostPage(bookmark)"
+        >
+          <div class="house-item-wrapper">
+            <HouseItem :house="bookmark" />
+          </div>
+        </SwipeItem>
+      </div>
 
-      <HouseItem
-        v-for="(house, index) in list"
-        :key="index"
-        :house="house"
-        @navigate="navigateToCheckCostPage(house)" />
       <!-- <NonContent v-if="list.length === 0" :value="'북마크한 집이 존재하지 않습니다.'" /> -->
     </div>
   </div>
@@ -20,7 +34,7 @@
 
 <script setup lang="ts">
 /**  */
-import { ref, onMounted, defineProps, defineExpose, defineEmits } from "vue";
+import { ref, onMounted, defineProps, defineExpose, defineEmits, watch } from "vue";
 
 /** component load */
 import AddressHouseSearch from "@/components/common/AddressHouseSearch.vue";
@@ -29,6 +43,8 @@ import houseAddImg from "@/assets/icons/Plus/Pluse.png";
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
 import HouseItem from "@/components/bookmark/HouseItem.vue";
+import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
+import SwipeItem from "@/components/common/SwipeItem.vue";
 
 /** data, plugin load */
 import { useRouter } from "vue-router";
@@ -51,13 +67,24 @@ function navigateToMap() {
 }
 
 const navigateToCheckCostPage = (house) => {
-  if (!house || !house.bookmarkIdx) {
-    console.error("house 또는 bookmarkIdx가 없습니다.");
-    return;
+  try {
+    if (!house.bookmarkIdx) throw new Error("bookmarkIdx 없음");
+    const bookmarkIdx = house.bookmarkIdx;
+    router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+  } catch (e) {
+    console.error("navigate 에러:", e);
   }
-
-  const bookmarkIdx = house.bookmarkIdx;
-  router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+};
+const handleDelete = async (idx) => {
+  console.log("삭제");
+  console.log(bookmarks.value[idx]);
+  const bookmarkIdx = bookmarks.value[idx].bookmarkIdx;
+  try {
+    const response = await axiosInstance.delete(`/v1/bookmark/${bookmarkIdx}`);
+    bookmarks.value.splice(idx, 1);
+  } catch {
+    console.error("잘못된 요청입니다.");
+  }
 };
 
 const showAddressSearch = ref(false);
@@ -77,7 +104,7 @@ list.value = [
     house_name: "집 이름 1",
     house_address: "주소 1",
     house_category: "카테고리 1",
-    hoconstuse_review_score: 4.5,
+    house_review_score: 4.5,
     house_latitude: 37.5665,
     house_longitude: 126.978,
     created_at: "2025.03.16 10:00:00",
@@ -94,6 +121,106 @@ list.value = [
   },
 ];
 
+const handleCLick = (bookmark) => {
+  router.push({
+    name: "BookMarkDetail",
+    params: { id: bookmark.bookmarkIdx },
+    query: { bookmarkObj: JSON.stringify(bookmark) },
+  });
+};
+
+const tagOptions = [
+  { label: "전체", value: "ALL" },
+  { label: "점검 전", value: "CHECK_PENDING" },
+  { label: "점검 완료", value: "CHECK_COMPLETED" },
+];
+
+const selectedTag = ref("ALL"); // 단일 선택용
+
+const bookmarks = ref<House[]>([]);
+// bookmarks.value = [
+//   {
+//     bookmarkIdx: 1,
+//     house_name: "집 이름 1",
+//     house_address: "주소 1",
+//     house_category: "카테고리 1",
+//     hoconstuse_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+//   {
+//     bookmarkdx: 2,
+//     house_name: "집 이름 2",
+//     house_address: "주소 2",
+//     house_category: "카테고리 2",
+//     house_review_score: 4.5,
+//     house_latitude: 37.5665,
+//     house_longitude: 126.978,
+//     created_at: "2025.03.16 10:00:00",
+//   },
+// ];
+
 const fetchRecentHouses = async () => {
   try {
     const response = await axiosInstance.get(`/v1/bookmark`, {
@@ -101,15 +228,15 @@ const fetchRecentHouses = async () => {
         size: 3,
         page: 0,
         sortBy: "최신순",
-        status: "CHECK_PENDING",
+        status: selectedTag.value,
       },
     });
 
     if (response.data.success) {
-      // 데이터를 변환하여 필요한 필드만 저장, bookmark_id를 bookmarkIdx로 변경
-      list.value = response.data.data.list
+      console.log(response.data);
+      bookmarks.value = response.data.data.list
         .map((item) => ({
-          bookmarkIdx: item.bookmark_id, // bookmark_id를 bookmarkIdx로 변경
+          bookmarkIdx: item.bookmark_id,
           house_name: item.bookmark_house_name || "이름 없음",
           house_address: item.bookmark_house_address,
           house_category: item.bookmark_house_category || "카테고리 없음",
@@ -119,17 +246,7 @@ const fetchRecentHouses = async () => {
         }))
         .filter((house) => house.bookmarkIdx !== undefined); // bookmarkIdx가 undefined인 항목은 제거
 
-      // created_at을 기준으로 내림차순 정렬 (날짜 형식이 잘못된 경우 parse 처리를 추가할 수 있음)
-      list.value = list.value.sort((a, b) => {
-        // 날짜 형식이 "2025.03.16 10:00:00" 형태인 경우 "2025-03-16T10:00:00"으로 변환
-        const dateA = new Date(
-          a.created_at.replace(/\./g, "-").replace(" ", "T")
-        );
-        const dateB = new Date(
-          b.created_at.replace(/\./g, "-").replace(" ", "T")
-        );
-        return dateB - dateA; // 내림차순 정렬
-      });
+      console.log(bookmarks.value);
     } else {
       console.error("Failed to fetch data:", response.data.message);
     }
@@ -139,16 +256,12 @@ const fetchRecentHouses = async () => {
 };
 
 onMounted(fetchRecentHouses);
+watch(selectedTag, (newSeletedTag) => {
+  fetchRecentHouses();
+});
 </script>
 
 <style lang="scss" scoped>
-.tab-content {
-  margin-top: 0;
-}
-.house-content-wrapper {
-  @include custom-padding-x($padding-default);
-}
-
 /** non content css */
 .non-content {
   display: flex;
@@ -165,7 +278,8 @@ onMounted(fetchRecentHouses);
   }
 }
 
-.house-item-wrapper {
+.house-content-wrapper {
+  @include custom-padding-x;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
@@ -205,11 +319,12 @@ onMounted(fetchRecentHouses);
     text-align: left;
   }
 }
+.tag-button-wrapper {
+  @include custom-padding-x;
+  @include custom-padding-y($padding-small);
+}
 
-.house-content-wrapper {
-  background-color: beige;
-  display: flex;
-  flex-direction: column;
-  gap: $padding-small;
+.house-item-wrapper {
+  @include custom-padding-y(4px);
 }
 </style>
