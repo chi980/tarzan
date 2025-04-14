@@ -60,11 +60,19 @@ const toggleCheck = (idx: number) => {
 };
 
 const hideUI = ref(false);
+const checkedList = computed(() =>
+  list.value
+    .filter((item) => item.checked)
+    .map((item) => item.house.bookmarkIdx)
+);
+
 const compareBookmarks = () => {
-  const length = list.value.filter((item) => item.checked).length;
-  if (length < 2) return;
+  const length = checkedList.value.length;
+  if (length < 2 || length > 3) return;
+
   hideUI.value = true;
 };
+
 const isNonContent = computed(
   () => !isLoading.value && list.value.length === 0
 );
@@ -72,10 +80,12 @@ const isNonContent = computed(
 
 <template>
   <div class="sub-container">
-    <TopBarBack :title="'비교하기'" />
+    <div class="top-bar-wrapper">
+      <TopBarBack :title="'비교하기'" />
+    </div>
 
-    <CompareHouses v-if="hideUI" />
     <div class="center-container">
+      <CompareHouses v-if="hideUI" :list="checkedList" />
       <div class="bookmark-item-list-wrapper" v-if="!hideUI">
         <BookmarkItem
           v-for="(bookmark, index) in list"
@@ -99,7 +109,10 @@ const isNonContent = computed(
 </template>
 
 <style scoped lang="scss">
-:deep(.center-container) {
+.top-bar-wrapper {
+  width: 100%;
+}
+.center-container {
   position: relative;
   flex-grow: 1;
   width: 100%;

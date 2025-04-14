@@ -11,6 +11,16 @@ export interface ChartDataOption {
   label: string;
   data: number[];
 }
+// 타입 정의
+export interface HouseIndexChart {
+  bookmarkId: number;
+  bookmarkCreatedAt: Date;
+  houseName: string;
+  indexes: {
+    label: string;
+    value: number;
+  }[];
+}
 
 export const ChartColorOptionDefault: ChartColorOption[] = [
   {

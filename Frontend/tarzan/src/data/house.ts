@@ -8,41 +8,35 @@ export interface HouseOverview {
   house_name: string;
   house_address: string;
 }
+// 체크리스트 항목 타입
+export interface HouseChecks {
+  CHECK_WINDOW: number;
+  CHECK_WATER: number;
+  CHECK_DETAIL: number;
+  CHECK_BATHROOM: number;
+  CHECK_OPTION: number;
+  [key: string]: number; // 추후 체크리스트 항목이 더 늘어날 수 있으므로
+}
 
-export interface CompareHouse extends House {
-  [key: string]: any; // 모든 string 타입 키에 대해 any 타입 값을 허용
-  score: number;
+// 인덱스 항목 타입
+export interface HouseIndexes {
+  AMENITY: number;
+  CLINIC: number;
+  SECURITY: number;
+  SHOPPING: number;
+  TRANSPORTATION: number;
+  [key: string]: number; // 확장성 고려
+}
 
-  moneyType: string;
-  deposit: number;
-  rent: number;
-  utilities: number;
-
-  pet: string;
-  parking: string;
-  roomCnt: number;
-  bathroomCnt: number;
-  movingDay: Date;
-  floor: number;
-  direction: string;
-
-  water: number;
-  window: number;
-  bathroom: number;
-  surrounding: number;
-  option: number;
-  detail: number;
-  security: number;
-  etc: number;
-  totalScore: number;
-
-  factor: {
-    transportation: number;
-    shopping: number;
-    amenity: number;
-    security: number;
-    clinic: number;
-  };
+// 전체 주택 정보 타입
+export interface HouseCompareInfo {
+  house_id: number;
+  house_name: string;
+  house_address: string;
+  house_category: string;
+  house_score: number;
+  house_checks: HouseChecks;
+  house_indexes: HouseIndexes;
 }
 
 export interface HouseDetail {
