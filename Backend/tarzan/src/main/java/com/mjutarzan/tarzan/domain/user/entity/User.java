@@ -205,6 +205,7 @@ public class User {
 
     public UserResponseDto getInstance() {
         return UserResponseDto.builder()
+                .email(this.email)
                 .imageUrl(this.imageUrl)
                 .nickname(this.nickname)
                 .gu(this.gu)
