@@ -10,30 +10,26 @@
         :style="parentStyle"
         class="selected-item"
         v-if="selectedOption"
-        @click="controllDropDown"
-      >
+        @click="controllDropDown">
         <span>{{ selectedOption.name }}</span>
         <img
           :src="arrowDownSrc"
           alt="arrowDown"
           class="input-item-image"
-          :class="{ rotated: isRotated, rotate: true }"
-        />
+          :class="{ rotated: isRotated, rotate: true }" />
       </div>
 
       <div
         class="scrollable-container dropdown-content"
         :class="['dropdown-content', { show: isDropDownOpen }]"
         style="min-width: max-content"
-        @click="controllDropDown"
-      >
+        @click="controllDropDown">
         <div class="scrollable-list">
           <ul>
             <li
               v-for="(option, index) in options"
               :key="option.idx"
-              @click="selectOption(option, index)"
-            >
+              @click="selectOption(option, index)">
               {{ option.name }}
             </li>
           </ul>
@@ -42,8 +38,7 @@
     </div>
     <div
       :class="['dropdown-exterior', { show: isDropDownOpen }]"
-      @click="controllDropDown"
-    ></div>
+      @click="controllDropDown"></div>
   </div>
 </template>
 
@@ -73,7 +68,7 @@ const props = defineProps({
       backgroundColor: `$input-color-white`,
       fontWeight: 400,
       justifyContent: `space-between`,
-      border: '$border-color-input',
+      border: "$border-color-input",
     }),
   },
 });
