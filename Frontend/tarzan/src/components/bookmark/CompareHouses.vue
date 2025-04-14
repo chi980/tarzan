@@ -1,5 +1,5 @@
 <template>
-  <div class="center-container">
+  <div>
     <div id="compare-container-banner-wrapper">
       <img
         :src="emojiSrc"
@@ -40,32 +40,32 @@
         <a href="#">자세히 보기</a>
       </div>
     </div>
-    <!-- <div class="house-tab-wrapper">
+    <div class="house-tab-wrapper">
       <div
         v-for="(house, index) in housesToCompare"
-        :key="house.idx"
+        :key="house.bookmark_id"
         class="house-tab">
         <p class="numeric-text">{{ index + 1 }}</p>
         <div class="house-info">
           <div class="house-info-title">
-            <p>{{ house.name }}</p>
-            <p>{{ house.type }}</p>
+            <p>{{ house.house_name }}</p>
           </div>
           <div class="house-info-content">
-            <p>{{ house.address }}</p>
+            <p>{{ house.house_category }}</p>
+            <p>{{ house.house_address }}</p>
           </div>
         </div>
-        <p class="numeric-text">{{ house.score }}</p>
+        <p class="numeric-text">{{ house.house_score }}</p>
       </div>
     </div>
     <div class="chart-wrapper">
       <Chart :chartData="chartData"></Chart>
-    </div> -->
+    </div>
 
     <!-- <div>
-        <div class="content-indicator"></div>
-      </div> -->
-    <!-- <div
+      <div class="content-indicator"></div>
+    </div> -->
+    <div
       class="custom-flex-column"
       style="margin-top: 8px; margin-bottom: 30px; gap: 24px">
       <div class="table">
@@ -79,16 +79,51 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th v-for="house in housesToCompare" :key="house.idx">
-                    {{ house.name }}
+                  <th
+                    v-for="(house, index) in housesToCompare"
+                    :key="house.bookmark_id">
+                    {{ house.house_name }}
+                    <span>{{ formatDate(house.bookmark_created_at) }}</span>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="row in costList" :key="row.idx">
                   <td>{{ row.kor }}</td>
+                  <td v-for="house in housesToCompare" :key="house.bookmark_id">
+                    {{ house.house_costs[row.eng] }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="table">
+        <div class="table-title">
+          <img :src="checkImgSrc" />
+          <p>세부 사항</p>
+        </div>
+
+        <div class="table-content-wrapper">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th
+                    v-for="(house, index) in housesToCompare"
+                    :key="house.bookmark_id">
+                    {{ house.house_name }}
+                    <span>{{ formatDate(house.bookmark_created_at) }}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in detailList" :key="row.idx">
+                  <td v-html="row.kor"></td>
                   <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house[row.eng] }}
+                    {{ house.house_details[row.eng] }}
                   </td>
                 </tr>
               </tbody>
@@ -108,37 +143,11 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th v-for="house in housesToCompare" :key="house.idx">
-                    {{ house.name }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in checkList" :key="row.idx">
-                  <td v-html="row.kor"></td>
-                  <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house[row.eng] }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="table">
-        <div class="table-title">
-          <img :src="checkImgSrc" />
-          <p>옵션</p>
-        </div>
-
-        <div class="table-content-wrapper">
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th v-for="house in housesToCompare" :key="house.idx">
-                    {{ house.name }}
+                  <th
+                    v-for="(house, index) in housesToCompare"
+                    :key="house.bookmark_id">
+                    {{ house.house_name }}
+                    <span>{{ formatDate(house.bookmark_created_at) }}</span>
                   </th>
                 </tr>
               </thead>
@@ -146,14 +155,18 @@
                 <tr v-for="row in optionList" :key="row.idx">
                   <td v-html="row.kor"></td>
                   <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house[row.eng] }}
+                    {{
+                      house.house_checks[row.eng] !== undefined
+                        ? house.house_checks[row.eng]
+                        : "N/A"
+                    }}
                   </td>
                 </tr>
 
                 <tr class="special-row">
                   <td>총계</td>
                   <td v-for="house in housesToCompare" :key="house.idx">
-                    {{ house.totalScore }}
+                    {{ getTotalScore(house.house_checks) }}
                   </td>
                 </tr>
               </tbody>
@@ -161,154 +174,110 @@
           </div>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, defineProps, onMounted } from "vue";
+
+import qs from "qs";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
 import emojiSrc from "@/assets/emoji/face-with-monocle.png";
 import checkImgSrc from "@/assets/icons/Check/Check.svg";
-import { CompareHouse } from "@/data/house";
-import { ChartDataOption } from "@/data/chart";
+
+import { HouseChecks, HouseIndexes, HouseCompareInfo } from "@/data/house";
+import { ChartRawDataOption } from "@/data/chart";
 import Chart from "@/components/common/RadarChart.vue";
-const housesToCompare: CompareHouse[] = [
-  {
-    idx: 1,
-    name: "원룸팰리스",
-    type: "빌라, 주택",
-    address: "서울 강남구 논현로71길 13 (우)06248",
-    score: 70,
+import { formatDate } from "@/utils/date";
+const props = defineProps<{
+  list: Number[];
+}>();
+const housesToCompare = ref<HouseCompareInfo[] | null>(null);
 
-    moneyType: "전세", // 예시 값
-    deposit: 5000, // 예시 값 (단위: 만원)
-    rent: 0, // 예시 값
-    utilities: 300, // 예시 값 (단위: 만원)
-
-    pet: "가능", // 예시 값
-    parking: "있음", // 예시 값
-    roomCnt: 1, // 예시 값
-    bathroomCnt: 1, // 예시 값
-    movingDay: new Date("2024-09-01"), // 예시 값
-    floor: 3, // 예시 값
-    direction: "남향", // 예시 값
-
-    water: 4, // 예시 값 (평가 점수)
-    window: 5, // 예시 값 (평가 점수)
-    bathroom: 3, // 예시 값 (평가 점수)
-    surrounding: 4, // 예시 값 (평가 점수)
-    option: 5, // 예시 값 (평가 점수)
-    detail: 4, // 예시 값 (평가 점수)
-    security: 3, // 예시 값 (평가 점수)
-    etc: 2, // 예시 값 (평가 점수)
-    totalScore: 30, // 예시 값 (모든 평가 점수의 합계)
-
-    factor: {
-      transportation: 10,
-      shopping: 20,
-      amenity: 30,
-      security: 20,
-      clinic: 15,
-    },
-  },
-
-  {
-    idx: 3,
-    name: "홍시 빌라",
-    type: "빌라, 주택",
-    address: "서울 강남구 논현로70길 1 (우)06142",
-    score: 50,
-
-    moneyType: "월세", // 예시 값
-    deposit: 1000, // 예시 값 (단위: 만원)
-    rent: 50, // 예시 값 (단위: 만원)
-    utilities: 100, // 예시 값 (단위: 만원)
-
-    pet: "불가능", // 예시 값
-    parking: "없음", // 예시 값
-    roomCnt: 2, // 예시 값
-    bathroomCnt: 1, // 예시 값
-    movingDay: new Date("2024-10-01"), // 예시 값
-    floor: 2, // 예시 값
-    direction: "북향", // 예시 값
-
-    water: 3, // 예시 값 (평가 점수)
-    window: 4, // 예시 값 (평가 점수)
-    bathroom: 4, // 예시 값 (평가 점수)
-    surrounding: 3, // 예시 값 (평가 점수)
-    option: 3, // 예시 값 (평가 점수)
-    detail: 4, // 예시 값 (평가 점수)
-    security: 2, // 예시 값 (평가 점수)
-    etc: 3, // 예시 값 (평가 점수)
-    totalScore: 25, // 예시 값 (모든 평가 점수의 합계)
-
-    factor: {
-      transportation: 20,
-      shopping: 30,
-      amenity: 40,
-      security: 50,
-      clinic: 65,
-    },
-  },
-  {
-    idx: 3,
-    name: "홍시 빌라",
-    type: "빌라, 주택",
-    address: "서울 강남구 논현로70길 1 (우)06142",
-    score: 50,
-
-    moneyType: "월세", // 예시 값
-    deposit: 1000, // 예시 값 (단위: 만원)
-    rent: 50, // 예시 값 (단위: 만원)
-    utilities: 100, // 예시 값 (단위: 만원)
-
-    pet: "불가능", // 예시 값
-    parking: "없음", // 예시 값
-    roomCnt: 2, // 예시 값
-    bathroomCnt: 1, // 예시 값
-    movingDay: new Date("2024-10-01"), // 예시 값
-    floor: 2, // 예시 값
-    direction: "북향", // 예시 값
-
-    water: 3, // 예시 값 (평가 점수)
-    window: 4, // 예시 값 (평가 점수)
-    bathroom: 4, // 예시 값 (평가 점수)
-    surrounding: 3, // 예시 값 (평가 점수)
-    option: 3, // 예시 값 (평가 점수)
-    detail: 4, // 예시 값 (평가 점수)
-    security: 2, // 예시 값 (평가 점수)
-    etc: 3, // 예시 값 (평가 점수)
-    totalScore: 25, // 예시 값 (모든 평가 점수의 합계)
-
-    factor: {
-      transportation: 20,
-      shopping: 30,
-      amenity: 40,
-      security: 50,
-      clinic: 65,
-    },
-  },
-];
-
-const chartData: ChartDataOption[] = housesToCompare.map((raw) => {
-  return {
-    label: raw.name,
-    data: Object.values(raw.factor),
-  };
+onMounted(() => {
+  fetchCompareBookmark();
 });
 
+const chartData = ref({
+  7: {
+    houseName: "우리집1",
+    indexes: [
+      { label: "교통", value: 4 },
+      { label: "상업시설", value: 2 },
+      { label: "편의시설", value: 4 },
+      { label: "치안", value: 5 },
+      { label: "보건", value: 2 },
+    ],
+  },
+  8: {
+    houseName: "우리집2",
+    indexes: [
+      { label: "교통", value: 3 },
+      { label: "상업시설", value: 1 },
+      { label: "편의시설", value: 3 },
+      { label: "치안", value: 4 },
+      { label: "보건", value: 1 },
+    ],
+  },
+});
+
+const fetchCompareBookmark = async () => {
+  try {
+    // bookmark_ids 배열을 올바르게 직렬화
+    const params = qs.stringify(
+      {
+        bookmark_ids: props.list,
+      },
+      { arrayFormat: "repeat" }
+    );
+
+    const response = await axiosInstance.get(`/v1/bookmark/compare?${params}`);
+
+    if (response.data && response.data.data) {
+      const data = response.data.data.list;
+      housesToCompare.value = data;
+
+      chartData.value = data.reduce((acc, item) => {
+        acc[item.bookmark_id] = {
+          houseId: item.house_id,
+          houseName: item.house_name,
+          bookmarkId: item.bookmark_id,
+          bookmarkCreatedAt: item.bookmark_created_at,
+          indexes: [
+            { label: "교통", value: item.house_indexes.TRANSPORTATION },
+            { label: "상업시설", value: item.house_indexes.SHOPPING },
+            { label: "편의시설", value: item.house_indexes.AMENITY },
+            { label: "치안", value: item.house_indexes.SECURITY },
+            { label: "보건", value: item.house_indexes.CLINIC },
+          ],
+        };
+        return acc;
+      }, {});
+      console.log(data);
+      console.log(chartData.value);
+    } else {
+      console.error("Invalid response data:", response.data);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 interface rowInfo {
   idx: number;
   eng: string;
   kor: string;
 }
 const costList: rowInfo[] = [
-  { idx: 1, eng: "moneyType", kor: "유형" },
+  { idx: 1, eng: "money-type", kor: "유형" },
   { idx: 2, eng: "deposit", kor: "보증금" },
   { idx: 3, eng: "rent", kor: "월세" },
   { idx: 4, eng: "utilities", kor: "공과금" },
 ];
 
-const checkList: rowInfo[] = [
+const detailList: rowInfo[] = [
   { idx: 1, eng: "pet", kor: "반려동물<br>가능여부" },
   { idx: 2, eng: "parking", kor: "주차장 대수" },
   { idx: 3, eng: "roomCnt", kor: "방수" },
@@ -319,15 +288,22 @@ const checkList: rowInfo[] = [
 ];
 
 const optionList: rowInfo[] = [
-  { idx: 1, eng: "water", kor: "수도와 배수" },
-  { idx: 2, eng: "window", kor: "창문" },
-  { idx: 3, eng: "bathroom", kor: "화장실" },
-  { idx: 4, eng: "surrounding,", kor: "주변환경" },
-  { idx: 5, eng: "option,", kor: "기본 옵션" },
-  { idx: 6, eng: "detail,", kor: "디테일" },
-  { idx: 7, eng: "security,", kor: "보안" },
-  { idx: 8, eng: "etc,", kor: "기타사항" },
+  { idx: 1, eng: "CHECK_WATER", kor: "수도와 배수" },
+  { idx: 2, eng: "CHECK_WINDOW", kor: "창문" },
+  { idx: 3, eng: "CHECK_BATHROOM", kor: "화장실" },
+  { idx: 4, eng: "CHECK_SURROUNDINGS", kor: "주변환경" },
+  { idx: 5, eng: "CHECK_OPTION", kor: "기본 옵션" },
+  { idx: 6, eng: "CHECK_DETAIL", kor: "디테일" },
+  { idx: 7, eng: "CHECK_SECURITY", kor: "보안" },
+  { idx: 8, eng: "CHECK_ETC", kor: "기타사항" },
 ];
+
+const getTotalScore = (checks: Record<string, number | undefined>) => {
+  if (!checks) return 0;
+  return Object.entries(checks)
+    .filter(([key, val]) => key.startsWith("CHECK") && typeof val === "number")
+    .reduce((sum, [, val]) => sum + (val ?? 0), 0);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -412,6 +388,7 @@ const optionList: rowInfo[] = [
   }
 
   table {
+    @include custom-text;
     th,
     td {
       @include custom-padding;
@@ -421,8 +398,12 @@ const optionList: rowInfo[] = [
       vertical-align: middle; /* 수직 중앙 정렬 */
     }
 
+    // th,
+    // tr td:first-child {
+    //   @include custom-text($font-size: 16px, $font-weight: 600);
+    // }
     th,
-    tr td:first-child {
+    tr {
       @include custom-text($font-size: 16px, $font-weight: 600);
     }
 
@@ -438,29 +419,40 @@ const optionList: rowInfo[] = [
   .table-content-wrapper {
     overflow-x: auto;
     /* 스크롤바 전체 영역 */
+    // &::-webkit-scrollbar {
+    //   width: 100%; /* 세로축 스크롤바 폭 너비 */
+    //   height: 4px; /* 가로축 스크롤바 폭 너비 */
+    // }
+    // &::-webkit-scrollbar-button {
+    //   display: none;
+    // }
+    // /* 스크롤바 막대 제외 부분 */
+    // &::-webkit-scrollbar-track {
+    //   background: transparent;
+    // }
+    // /* 스크롤바 막대 */
+    // &::-webkit-scrollbar-thumb {
+    //   border-radius: calc($border-radius-default * 2);
+    //   background: #f2f2f2;
+    // }
+    // Webkit 기반 브라우저 (Chrome, Safari 등)
     &::-webkit-scrollbar {
-      width: 100%; /* 세로축 스크롤바 폭 너비 */
-      height: 4px; /* 가로축 스크롤바 폭 너비 */
-    }
-    &::-webkit-scrollbar-button {
       display: none;
     }
-    /* 스크롤바 막대 제외 부분 */
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    /* 스크롤바 막대 */
-    &::-webkit-scrollbar-thumb {
-      border-radius: calc($border-radius-default * 2);
-      background: #f2f2f2;
-    }
+
+    // Firefox
+    scrollbar-width: none;
+
+    // IE, Edge
+    -ms-overflow-style: none;
 
     .table-wrapper {
       @include custom-margin-y;
       @include custom-padding($padding-size: 12px);
-
+      // background-color: aqua;
       background-color: $light-gray;
       border-radius: $border-radius-default;
+      width: fit-content;
     }
     table {
     }
@@ -610,12 +602,16 @@ const optionList: rowInfo[] = [
       flex: 1;
       align-items: flex-start;
       justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       .house-info-title {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: center;
-        align-items: center;
+        align-items: start;
+        text-align: left;
         gap: $padding-extra-small;
 
         p:first-child {
@@ -624,6 +620,9 @@ const optionList: rowInfo[] = [
       }
 
       .house-info-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
         text-align: left;
       }
     }
@@ -640,6 +639,12 @@ table {
     border: 1px solid #ddd; /* 셀 안쪽의 테두리 설정 */
   }
 
+  th {
+    width: fit-content;
+  }
+  span {
+    @include custom-text($font-size: 8px, $font-color: $text-color-light);
+  }
   th:first-child,
   td:first-child {
     border-left: 0;

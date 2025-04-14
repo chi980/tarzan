@@ -4,15 +4,25 @@
       <Radar :data="data" :options="options" />
     </div>
     <div class="legend">
-      <div v-for="item in data.datasets" :key="item.label" class="legend-item">
-        <div :style="{ backgroundColor: item.borderColor }"></div>
-        <p>{{ item.label }}</p>
+      <div
+        v-for="item in data.datasets"
+        :key="item.bookmarkId"
+        class="legend-item">
+        <div
+          :style="{ backgroundColor: item.borderColor }"
+          class="legend-color"></div>
+        <div class="legend-text">
+          <p>{{ item.label }}</p>
+          <p class="legend-sub">{{ formatDate(item.created_at) }} 추가</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { defineProps, ref } from "vue";
+import * as ChartData from "@/data/chart";
+import { formatDate } from "@/utils/date";
+import { defineProps, ref, computed } from "vue";
 import { Radar } from "vue-chartjs";
 import {
   Chart as ChartJS,
@@ -23,10 +33,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import * as ChartData from "@/data/chart";
-// import { ChartColorOptionDefault } from "../../data/chart";
 
-// 차트에 필요한 Chart.js 구성 요소 등록
+// Chart.js 구성 요소 등록
 ChartJS.register(
   RadialLinearScale,
   PointElement,
@@ -36,25 +44,24 @@ ChartJS.register(
   Legend
 );
 
-// Props 정의
 const props = defineProps<{
-  chartData: ChartData.ChartDataOption[];
+  chartData: Record<number, ChartData.HouseIndexChart>;
 }>();
 
-console.log(props.chartData);
-// 차트 데이터 및 옵션 정의
-const data = ref({
-  labels: ["교통", "상업시설", "편의시설", "치안", "보건"],
-  datasets: [
-    {
-      ...props.chartData[0],
-      ...ChartData.ChartColorOptionDefault[0],
-    },
-    {
-      ...props.chartData[1],
-      ...ChartData.ChartColorOptionDefault[1],
-    },
-  ],
+const data = computed(() => {
+  const labels = props.chartData[Object.keys(props.chartData)[0]].indexes.map(
+    (i) => i.label
+  );
+
+  const datasets = Object.values(props.chartData).map((item, idx) => ({
+    bookmarkId: item.bookmarkId,
+    label: item.houseName,
+    created_at: item.bookmarkCreatedAt,
+    data: item.indexes.map((i) => i.value),
+    ...ChartData.ChartColorOptionDefault[idx], // 색상 지정
+  }));
+
+  return { labels, datasets };
 });
 
 const options = {
@@ -63,13 +70,13 @@ const options = {
   scales: {
     r: {
       grid: {
-        circular: true, // 배경을 원형으로 설정
+        circular: true,
       },
     },
   },
   plugins: {
     legend: {
-      display: false, // 이 줄을 추가하여 legend를 숨깁니다
+      display: false,
     },
   },
 };
@@ -92,10 +99,20 @@ const options = {
     display: flex;
     flex-direction: row;
     gap: $padding-extra-small;
-    div {
+
+    align-items: center;
+
+    .legend-color {
       height: 10px;
       width: 10px;
       border-radius: 4px;
+    }
+    .legend-text {
+      text-align: left;
+    }
+
+    .legend-sub {
+      @include custom-text($font-size: 10px, $font-color: $text-color-light);
     }
   }
 }

@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -146,9 +147,9 @@ log.info("getBookmarks: {}", result.getCount());
 //   - 각 내부 항목에 대한 가중치를 설정합니다. 중요한 항목일수록 가중치를 높이고, 그에 따른 점수를 배정할 수 있습니다.
 //
 //각 항목별 가중치와 기준을 설정한 후, 이를 합산하여 최종 점수를 매기는 방식이 효율적일 수 있습니다.
-    @GetMapping("/bookmark/compare")
-    public ResponseEntity<?> compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
-
+@GetMapping("/bookmark/compare")
+public ResponseEntity<?> compareBookmarks(
+        @ModelAttribute CompareBookmarksRequestDto compareBookmarksRequestDto, @AuthenticationPrincipal CustomUserDetails userDto) {
         CompareBookmarkResponseDto result = bookmarkService.compareBookmarks(compareBookmarksRequestDto, userDto);
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)

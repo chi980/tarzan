@@ -66,8 +66,8 @@ const handleDelete = async (idx) => {
   console.log(bookmarks.value[idx]);
   const bookmarkIdx = bookmarks.value[idx].bookmarkIdx;
   try {
-    const response = await axiosInstance.delete(`/v1/bookmark/${bookmarkIdx}`);
     bookmarks.value.splice(idx, 1);
+    const response = await axiosInstance.delete(`/v1/bookmark/${bookmarkIdx}`);
   } catch {
     console.error("잘못된 요청입니다.");
   }
@@ -90,89 +90,6 @@ const tagOptions = [
 const selectedTag = ref("ALL"); // 단일 선택용
 
 const bookmarks = ref([]);
-// bookmarks.value = [
-//   {
-//     bookmarkIdx: 1,
-//     house_name: "집 이름 1",
-//     house_address: "주소 1",
-//     house_category: "카테고리 1",
-//     hoconstuse_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-//   {
-//     bookmarkdx: 2,
-//     house_name: "집 이름 2",
-//     house_address: "주소 2",
-//     house_category: "카테고리 2",
-//     house_review_score: 4.5,
-//     house_latitude: 37.5665,
-//     house_longitude: 126.978,
-//     created_at: "2025.03.16 10:00:00",
-//   },
-// ];
-
 const fetchRecentHouses = async () => {
   try {
     const response = await axiosInstance.get(`/v1/bookmark`, {

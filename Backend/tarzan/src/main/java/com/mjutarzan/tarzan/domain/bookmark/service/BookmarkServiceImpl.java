@@ -36,10 +36,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -321,11 +318,11 @@ public class BookmarkServiceImpl implements BookmarkService{
 
     @Override
     public CompareBookmarkResponseDto compareBookmarks(CompareBookmarksRequestDto compareBookmarksRequestDto, CustomUserDetails loginedUserDto) {
-        if(compareBookmarksRequestDto.getIdList().size() <= 1 || compareBookmarksRequestDto.getIdList().size()>3){
+        if(compareBookmarksRequestDto.getBookmark_ids().size() <= 1 || compareBookmarksRequestDto.getBookmark_ids().size()>3){
             throw new IllegalArgumentException("2개 이상 3개 이하의 집들만 비교할 수 있습니다.");
         }
 
-        List<Bookmark> bookmarks = bookmarkRepository.findAllById(compareBookmarksRequestDto.getIdList().stream().collect(Collectors.toList()));
+        List<Bookmark> bookmarks = bookmarkRepository.findAllById(compareBookmarksRequestDto.getBookmark_ids().stream().collect(Collectors.toList()));
         if(bookmarks.size() <= 1 || bookmarks.size()>3){
             throw new IllegalArgumentException("북마크의 id를 잘못 전달했습니다.");
         }
@@ -385,12 +382,24 @@ public class BookmarkServiceImpl implements BookmarkService{
         double longitude = location.getX();  // 경도
         List<Building> buildingList = buildingRepository.findAllWithinRadius(longitude, latitude, radiusHaveToCheck);
 
-        return buildingList.stream()
-                .map(building -> getHouseIndexTypeFromBuilding(building))
+        // 기본 맵: 모든 타입을 0으로 초기화
+        Map<HouseIndexType, Long> result = new EnumMap<>(HouseIndexType.class);
+        for (HouseIndexType type : HouseIndexType.values()) {
+            result.put(type, 0L);
+        }
+
+        // 실제 데이터 기반 집계
+        Map<HouseIndexType, Long> actual = buildingList.stream()
+                .map(this::getHouseIndexTypeFromBuilding)
                 .collect(Collectors.groupingBy(
-                        houseIndexType -> houseIndexType, // 그룹화 기준 (key)
-                        Collectors.summingLong(e -> 1) // 각 그룹에 대해 count를 계산 (value)
+                        type -> type,
+                        Collectors.counting()
                 ));
+
+        // 실제 값으로 덮어쓰기
+        actual.forEach(result::put);
+
+        return result;
     }
 
     private HouseIndexType getHouseIndexTypeFromBuilding(Building building) {
