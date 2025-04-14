@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      hmr: false,
       host: "0.0.0.0", // iphone에서 접근 가능하도록 설정
       proxy: {
         "/api": env.VITE_API_BASE_URL, // 로드한 환경 변수를 서버 프록시에 적용
