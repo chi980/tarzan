@@ -25,6 +25,7 @@
 
 <script setup>
 import { defineProps, defineEmits } from "vue";
+import router from "@/router";
 
 const emit = defineEmits(["back"]);
 

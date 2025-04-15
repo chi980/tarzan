@@ -6,18 +6,8 @@
         <TagButtonGroup
           :buttons="checkItemsInKitchen"
           :multiple="true"
-          :selected-buttons="selectedCheckItemsInKitchen"
-          @update:selectedButtons="
-            (updated) => {
-              console.log(selectedCheckItemsInKitchen);
-              checkItemsInKitchen.forEach((item) => {
-                item.value = updated.includes(item.label);
-              });
-            }
-          ">
-          <template v-slot:default="{ button }">
-            <span>{{ button.label }}</span>
-          </template>
+          v-model:selectedButtons="selectedCheckItemsInKitchen"
+        >
         </TagButtonGroup>
       </div>
     </div>
@@ -27,17 +17,8 @@
         <TagButtonGroup
           :buttons="checkItemsInLivingRoom"
           :multiple="true"
-          :selected-buttons="selectedCheckItemsInLivingRoom"
-          @update:selectedButtons="
-            (updated) => {
-              checkItemsInLivingRoom.forEach((item) => {
-                item.value = updated.includes(item.label);
-              });
-            }
-          ">
-          <template v-slot:default="{ button }">
-            <span>{{ button.label }}</span>
-          </template>
+          v-model:selectedButtons="selectedCheckItemsInLivingRoom"
+        >
         </TagButtonGroup>
       </div>
     </div>
@@ -47,17 +28,8 @@
         <TagButtonGroup
           :buttons="checkItemsInRoom"
           :multiple="true"
-          :selected-buttons="selectedCheckItemsInRoom"
-          @update:selectedButtons="
-            (updated) => {
-              checkItemsInRoom.forEach((item) => {
-                item.value = updated.includes(item.label);
-              });
-            }
-          ">
-          <template v-slot:default="{ button }">
-            <span>{{ button.label }}</span>
-          </template>
+          v-model:selectedButtons="selectedCheckItemsInRoom"
+        >
         </TagButtonGroup>
       </div>
     </div>
@@ -67,17 +39,8 @@
         <TagButtonGroup
           :buttons="checkItemsInBathRoom"
           :multiple="true"
-          :selected-buttons="selectedCheckItemsInBathRoom"
-          @update:selectedButtons="
-            (updated) => {
-              checkItemsInBathRoom.forEach((item) => {
-                item.value = updated.includes(item.label);
-              });
-            }
-          ">
-          <template v-slot:default="{ button }">
-            <span>{{ button.label }}</span>
-          </template>
+          v-model:selectedButtons="selectedCheckItemsInBathRoom"
+        >
         </TagButtonGroup>
       </div>
     </div>
@@ -87,17 +50,8 @@
         <TagButtonGroup
           :buttons="checkItemsInEtc"
           :multiple="true"
-          :selected-buttons="selectedCheckItemsInEtc"
-          @update:selectedButtons="
-            (updated) => {
-              checkItemsInEtc.forEach((item) => {
-                item.value = updated.includes(item.label);
-              });
-            }
-          ">
-          <template v-slot:default="{ button }">
-            <span>{{ button.label }}</span>
-          </template>
+          v-model:selectedButtons="selectedCheckItemsInEtc"
+        >
         </TagButtonGroup>
       </div>
     </div>

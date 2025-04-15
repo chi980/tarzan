@@ -4,10 +4,11 @@
       v-for="button in buttons"
       :key="button.value"
       class="tag-button"
-      :class="{ [activeClass]: isSelected(button.value) }"
+      :class="{ [activeClass]: isSelected(button.label) }"
       role="button"
       tabindex="0"
-      @click="toggleSelection(button.value)">
+      @click="toggleSelection(button.label)"
+    >
       <slot :button="button">{{ button.label }}</slot>
     </div>
   </div>
@@ -29,10 +30,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update:selectedButton", "update:selectedButtons"]);
 
-const isSelected = (value) => {
+const isSelected = (label) => {
   return props.multiple
-    ? props.selectedButtons.includes(value)
-    : props.selectedButton === value;
+    ? props.selectedButtons.includes(label)
+    : props.selectedButton === label;
 };
 
 const toggleSelection = (value) => {
