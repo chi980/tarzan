@@ -1,8 +1,8 @@
 <template>
   <div class="sub-container">
     <TopBar class="topbar"></TopBar>
-    <div class="center-container">
-      <div class="top-overlay-wrapper">
+    <div class="center-container" ref="centerContainer">
+      <div class="top-overlay-wrapper" ref="topOverlayWrapper">
         <div class="searchbar" @click="openAddressSearch">
           <div class="input-icon-wrap">
             <img :src="searchIconImg" alt="search icon" class="icon-search" />
@@ -16,31 +16,33 @@
             :multiple="false" />
         </div>
       </div>
+
       <div class="bottom-overlay-wrapper">
-        <div class="info-refresh-button" @click="showInfoOverlay">
+        <div
+          class="info-refresh-button"
+          @click="showInfoOverlay"
+          ref="refreshButton">
           <img :src="refreshIconImg" alt="refresh icon" />
           <p>새로 불러오기</p>
         </div>
-
-        <div class="info-content-wrapper">
-          <div
-            class="info-content-indicator-wrppaer"
-            @click="toggleContentHeight">
-            <div class="info-content-indicator"></div>
+        <OverlayPanel
+          v-show="isVisibleOverlay"
+          :minHeight="minHeight"
+          :midHeight="midHeight"
+          :maxHeight="maxHeight"
+          :initialHeight="initialHeight"
+          :type="overlayType">
+          <div class="overlay-content">
+            <div class="indicator-wrapper" ref="indicatorWrapper">
+              <div class="indicator"></div>
+            </div>
+            <div ref="buildingDetail">
+              <BuildingDetail
+                v-if="buildingContent"
+                :building="buildingContent" />
+            </div>
           </div>
-          <div
-            class="info-content"
-            ref="infoContent"
-            :style="{
-              height: contentHeight + 'px',
-              transition: 'height 0.3s ease',
-            }">
-            <BuildingDetail
-              v-if="buildingContent"
-              :building="buildingContent" />
-            <HouseDetail v-if="houseContent" :house="houseContent" />
-          </div>
-        </div>
+        </OverlayPanel>
       </div>
       <div ref="mapContainer" class="map-container"></div>
     </div>
@@ -54,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, watch, computed } from "vue";
 
 /** data, componenet load */
 import { axiosInstance } from "@/plugins/axiosPlugin";
@@ -68,8 +70,13 @@ import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import BuildingDetail from "@/components/home/BuildingDetail.vue";
 import HouseDetail from "@/components/home/HouseDetail.vue";
 import AddressSearch from "@/components/common/AddressSearchApi.vue";
+import OverlayPanel from "@/components/common/OverlayPannel.vue";
 import { getScaleRatio } from "@/data/kakaoMap";
 
+import { useAuthStore } from "@/stores/authStore";
+
+const authStore = useAuthStore();
+console.log(authStore.get);
 /** search bar */
 const isAddressSearchOpen = ref<boolean>(false);
 const openAddressSearch = () => {
@@ -111,7 +118,6 @@ watch(selectedButton, (newValue) => {
   console.log("현재 지도 중심 좌표:", latitude, longitude);
   const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
   console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
-  contentHeight.value = 0; // 정보창 닫기
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
     // fetchHouses(latitude, longitude, radius);
@@ -305,53 +311,62 @@ const fetchHouses = async (
   }
 };
 /** building, house info overlay */
-import { useAuthStore } from "@/stores/authStore";
 const showInfoOverlay = async () => {
-  try {
-    const authStore = useAuthStore();
-    const response = await axiosInstance.get(`/check`);
-    console.log(response);
-    console.log(authStore.getUser);
-  } catch (error) {
-    console.error(error.message);
-  }
+  console.log("새로 불러오기");
 };
-
-const contentHeight = ref(0);
-const maxHeight = ref(0);
-const MAX_HEIGHT = 500;
-const infoContent = ref<HTMLElement | null>(null);
 
 const buildingContent = ref(null);
 const houseContent = ref(null);
 
-const updateInitialHeight = () => {
-  if (infoContent.value) {
-    contentHeight.value = 0; // 처음에는 숨긴 상태
-  }
-};
+const centerContainer = ref<HTMLDivElement | null>(null);
+const topOverlayWrapper = ref<HTMLDivElement | null>(null);
+const refreshButton = ref<HTMLDivElement | null>(null);
+const BOTTOM_OVERLAY_MAX_HEIGHT = ref(400);
 
+const buildingDetail = ref<HTMLDivElement | null>(null);
+
+const minHeight = ref(0);
+const midHeight = computed(() => {
+  return (minHeight.value + maxHeight.value) / 2;
+});
+const maxHeight = ref(400);
+const initialHeight = ref(0);
+
+const isVisibleOverlay = ref<boolean | null>(null);
+const overlayType = ref("full"); // "full", "small" 중 하나
 onMounted(async () => {
   await nextTick();
-  updateInitialHeight();
+  isVisibleOverlay.value = false;
+  initHeights();
+  isVisibleOverlay.value = true;
 });
-onUnmounted(() => {
-  contentHeight.value = 0; // 컴포넌트 언마운트 시 초기화
-});
-const toggleContentHeight = async () => {
-  console.log("indicator click");
 
-  if (contentHeight.value === 0) {
-    await nextTick(); // DOM 업데이트 기다림
-    if (infoContent.value) {
-      const newHeight = infoContent.value.scrollHeight;
-      maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
-      contentHeight.value = maxHeight.value; // 최대 높이로 설정
-    }
-  } else {
-    contentHeight.value = 0;
-  }
+const initHeights = () => {
+  BOTTOM_OVERLAY_MAX_HEIGHT.value =
+    centerContainer.value.clientHeight -
+    topOverlayWrapper.value.clientHeight -
+    refreshButton.value.clientHeight;
+
+  initialHeight.value = 0;
+  maxHeight.value = BOTTOM_OVERLAY_MAX_HEIGHT.value;
 };
+watch(
+  () => buildingContent.value, // 여기!
+  async (newVal) => {
+    if (newVal) {
+      console.log("빌딩 존재");
+      isVisibleOverlay.value = true;
+      await nextTick(); // DOM 업데이트 후 높이 계산
+      const newHeight = buildingDetail.value?.scrollHeight ?? 0;
+      console.log("newHeight", newHeight);
+      maxHeight.value = newHeight; // 최대 높이 설정
+      overlayType.value = "small";
+    } else {
+      isVisibleOverlay.value = false;
+      overlayType.value = "full";
+    }
+  }
+);
 
 /** kakao map functions */
 const mapContainer = ref<HTMLDivElement | null>(null); // 지도를 표시할 div
@@ -428,13 +443,6 @@ const addHouseMarkers = (mapInstance, houses) => {
     window.kakao.maps.event.addListener(marker, "click", async () => {
       houseContent.value = house;
       buildingContent.value = null;
-
-      await nextTick();
-      if (infoContent.value) {
-        const newHeight = infoContent.value.scrollHeight;
-        maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
-        contentHeight.value = maxHeight.value;
-      }
     });
   });
 };
@@ -450,13 +458,6 @@ const addBuildingMarkers = (mapInstance, buildings) => {
     window.kakao.maps.event.addListener(marker, "click", async () => {
       buildingContent.value = building;
       houseContent.value = null;
-
-      await nextTick();
-      if (infoContent.value) {
-        const newHeight = infoContent.value.scrollHeight;
-        maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
-        contentHeight.value = maxHeight.value;
-      }
     });
   });
 };
@@ -567,48 +568,6 @@ const addBuildingMarkers = (mapInstance, buildings) => {
 
     p {
       @include custom-text($font-size: 12px);
-    }
-  }
-
-  .info-content-wrapper {
-    @include custom-text;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    padding-left: 20;
-    background-color: white;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    width: 100%;
-    height: fit-content;
-
-    overflow: hidden;
-
-    background-color: white;
-
-    .info-content-indicator-wrppaer {
-      @include custom-padding-y($padding-small);
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: grab;
-
-      .info-content-indicator {
-        width: 134px;
-        height: 4px;
-        border-radius: 100px;
-        background-color: #e8e8e8;
-      }
-    }
-
-    .info-content {
-      width: 100%;
-      // flex: 1;
-      transition: height 0.3s ease-out;
-
-      overflow-y: auto;
     }
   }
 }
