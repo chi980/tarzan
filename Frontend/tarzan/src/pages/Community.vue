@@ -44,7 +44,7 @@
       </div> -->
       <div class="write-post-button" @click="goToPostCreate">
         <img :src="writeIconImg" alt="refresh icon" />
-        <p>새로 불러오기</p>
+        <p>글쓰기</p>
       </div>
     </div>
 
@@ -69,8 +69,6 @@ import PostList from "@/components/post/PostList.vue";
 
 import writeIconImg from "@/assets/write_post.png";
 
-// const router = useRouter();
-
 const tagOptions = ref([
   { label: "전체", value: "ALL" },
   { label: "교통", value: "TRANSPORT" },
@@ -90,9 +88,8 @@ const sortOptions = ref([
 const page = ref(1);
 const posts = ref([]); // 게시물 목록
 const sortBy = ref("최신순"); // 정렬 기준
-const selectedButton = ref("ALL"); // 태그
+const selectedButton = ref("전체"); // 태그
 const selectedDistrict = ref("JONGNO"); // 지역구
-// const searchQuery = ref('');            // 검색어 상태
 
 // 정렬 기준(정렬 기준, 태그, 지역구) 변화 감지
 watch([sortBy, selectedButton, selectedDistrict], () => {
@@ -219,14 +216,14 @@ onMounted(fetchPosts);
 }
 
 .post-list-container {
-  background-color: aqua;
+  // background-color: aqua;
   @include custom-margin-x;
   flex-grow: 1;
 }
 
 .write-post-button {
-  position: fixed; // 💡 위치 고정
-  bottom: 70px; // 💡 화면 하단에서 20px 띄우기
+  position: fixed;
+  bottom: 70px;
   left: 50%; // 💡 가로 중앙 기준
   transform: translateX(-50%); // 💡 정확히 가운데 정렬
   z-index: 5;
