@@ -4,7 +4,7 @@
       <p id="logo_desc_text">정글같은 서울 도심 속 터전 찾기</p>
       <p id="logo_text">TARZAN</p>
 
-      <img :src="logoImage" alt="Logo" id="logo" />
+      <!-- <img :src="logoImage" alt="Logo" id="logo" /> -->
     </div>
 
     <div class="custom-button-group">
