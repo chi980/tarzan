@@ -23,14 +23,32 @@ const getCurrentLocation = () => {
   }
   navigator.geolocation.getCurrentPosition(
     ({ coords }) => {
+      console.log("📍 현재 위치:", coords); // ✅ 콘솔에 찍어보자
       userLocation.value = {
         latitude: coords.latitude,
         longitude: coords.longitude,
       };
     },
-    (error) => console.error("위치 정보를 가져오는 데 실패했습니다.", error)
+    (error) => {
+      console.error("위치 정보를 가져오는 데 실패했습니다.", error);
+    }
   );
 };
+
+onMounted(() => {
+  getCurrentLocation();
+});
+
+// 위치 받아온 후 자동 재검색
+watch(userLocation, (newVal) => {
+  if (
+    newVal.latitude !== null &&
+    newVal.longitude !== null &&
+    searchQuery.value.trim()
+  ) {
+    searchAddress(); // 위치 정보 준비되면 검색 다시 수행
+  }
+});
 
 const toRad = (value: number) => (value * Math.PI) / 180;
 const calculateDistance = (
@@ -72,29 +90,40 @@ const searchAddress = async () => {
       }
     );
 
-    searchResults.value = data.documents.map(
-    ({ address, road_address, x, y }) => {
-        const mainAddress =
-        road_address?.address_name || address?.address_name || "주소 없음";
-        const subAddress = address?.address_name || "";
-        const type = road_address ? "도로명" : "지번";
-        return {
+    searchResults.value = data.documents.map(({ address, road_address, x, y }) => {
+      const mainAddress = road_address?.address_name || address?.address_name || "주소 없음";
+      const subAddress = address?.address_name || "";
+      const type = road_address ? "도로명" : "지번";
+
+      // ✅ 거리 계산 여부 체크
+      const distance =
+        userLocation.value.latitude !== null && userLocation.value.longitude !== null
+          ? calculateDistance(
+              userLocation.value.latitude,
+              userLocation.value.longitude,
+              parseFloat(y),
+              parseFloat(x)
+            )
+          : "거리 계산 불가";
+
+      return {
         mainAddress,
         subAddress,
-        buildingName: "", // 주소 검색이므로 건물명 없음
+        buildingName: "", // 주소 검색 결과에 건물명 없음
         x,
         y,
-        distance: "", // 위치 기반 거리 없음
+        distance,
         type,
-        };
-    }
-    );
+      };
+    });
 
   } catch (error) {
     console.error("주소 검색 중 오류:", error);
     searchResults.value = [];
   }
 };
+
+
 
 const debouncedSearch = debounce(searchAddress, 500);
 
@@ -115,7 +144,6 @@ const selectAddress = (selectedAddress) => {
 
 const closeModal = () => emit("close");
 
-onMounted(getCurrentLocation);
 
 watch(searchQuery, debouncedSearch);
 </script>
