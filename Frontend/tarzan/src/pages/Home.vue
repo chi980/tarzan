@@ -414,7 +414,6 @@ const loadKakaoMap = (container) => {
       const options = {
         center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
         level: 3, // 지도 확대 레벨
-        maxLevel: 7, // 지도 축소 제한 레벨
       };
 
       mapInstance = new window.kakao.maps.Map(container, options); // 지도 생성
