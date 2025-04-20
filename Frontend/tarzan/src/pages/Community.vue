@@ -35,13 +35,6 @@
       <!-- 감시할 요소 -->
       <div ref="target" class="loading-trigger">무한스크롤</div>
 
-      <!-- <div class="write-button" @click="goToPostCreate">
-        <img
-          id="post-write-icon"
-          src="@/assets/icons/Filter/post-write-icon.png"
-        />
-        글쓰기
-      </div> -->
       <div class="write-post-button" @click="goToPostCreate">
         <img :src="writeIconImg" alt="refresh icon" />
         <p>글쓰기</p>
@@ -88,7 +81,8 @@ const sortOptions = ref([
 const page = ref(1);
 const posts = ref([]); // 게시물 목록
 const sortBy = ref("최신순"); // 정렬 기준
-const selectedButton = ref("전체"); // 태그
+// const selectedButton = ref("전체"); // 태그
+const selectedButton = ref(tagOptions.value[0]);
 const selectedDistrict = ref("JONGNO"); // 지역구
 
 // 정렬 기준(정렬 기준, 태그, 지역구) 변화 감지
@@ -118,7 +112,7 @@ const fetchPosts = async () => {
     size: 5,
     page: 1,
     sortBy: sortBy.value,
-    tag: selectedButton.value,
+    tag: selectedButton.value.value,
     gu: selectedDistrict.value,
   }).toString();
 

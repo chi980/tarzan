@@ -77,6 +77,7 @@ const checkItemsInLivingRoom = ref([]);
 const checkItemsInRoom = ref([]);
 const checkItemsInBathRoom = ref([]);
 const checkItemsInEtc = ref([]);
+console.log(bookmarkData.value);
 
 onMounted(() => {
   checkItemsInKitchen.value =
