@@ -87,6 +87,16 @@ const handleBuildingCategorySelected = (idx: number) => {
   console.log('선택된 건물 종류:', HouseCategoryOptions[idx].name);
 };
 
+onMounted(() => {
+  house_address.value = route.query.house_address as string || '';
+  house_name.value = route.query.house_name as string || '';
+  house_latitude.value = route.query.house_latitude
+    ? parseFloat(route.query.house_latitude as string)
+    : null;
+  house_longitude.value = route.query.house_longitude
+    ? parseFloat(route.query.house_longitude as string)
+    : null;
+});
 
 // "직접 추가하기" 버튼 클릭 시
 const handleAddHouseClick = async () => {

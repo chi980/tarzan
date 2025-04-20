@@ -9,10 +9,16 @@
           descriptionImgSrc="/etc/Saly-26.png"
           descriptionTitle="타잔이와 함께 체크해봐요!"
           descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
+
+
           backgroundColor="#f2ecff" />
       </div>
 
-      <TabBar :tabs="tabs" v-model:selectedTabIdx="selectedTabIndex"></TabBar>
+      <TabBar
+        :tabs="tabs"
+        v-model:selectedTabIdx="selectedTabIndex"
+        @open-address-search="openAddressSearchModal"
+      />
       <div
         class="center-container-fix-button"
         @click="tabs[selectedTabIndex].onClick">
@@ -20,6 +26,12 @@
         <img :src="tabs[selectedTabIndex].imgSrc" />
       </div>
     </div>
+
+    <!-- 모달: 전체 화면을 덮는 AddressHouseSearch -->
+    <AddressHouseSearch
+      v-if="showAddressSearchModal"
+      @close="closeAddressSearchModal"
+    />
 
     <div class="bottom-bar-wrapper">
       <BottomBar></BottomBar>
@@ -38,6 +50,7 @@ import HouseTap from "@/components/bookmark/HouseTap.vue";
 import MoverTap from "@/components/bookmark/MoverTap.vue";
 import ItemTap from "@/components/bookmark/ItemTap.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
+import AddressHouseSearch from "@/components/common/AddressHouseSearch.vue";
 
 import chevronImgSrc from "@/assets/icons/chevron-right.png";
 import exportImgSrc from "@/assets/icons/corner_up_arrows.png";
@@ -177,6 +190,17 @@ const tabs: ExtendedTab[] = [
     },
   },
 ];
+
+// 모달 제어
+const showAddressSearchModal = ref(false);
+
+const openAddressSearchModal = () => {
+  showAddressSearchModal.value = true;
+};
+
+const closeAddressSearchModal = () => {
+  showAddressSearchModal.value = false;
+};
 </script>
 
 <style lang="scss" scoped>

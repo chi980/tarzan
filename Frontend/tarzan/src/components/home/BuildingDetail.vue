@@ -25,7 +25,7 @@ const { building } = defineProps<{ building: Building }>();
   flex-direction: column;
   align-items: flex-start;
   gap: $padding-small;
-
+  height: fit-content;
   .building-detail-header {
     display: flex;
     flex-direction: row;

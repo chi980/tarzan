@@ -163,7 +163,7 @@ const routes = [
 
   {
     path: "/mypage",
-    name: "MyPage",
+    // name: "MyPage",
     children: [
       {
         path: "",
