@@ -1,3 +1,5 @@
+import { Review } from "@/data/review";
+
 export interface House {
   house_id: number;
   house_latitude: number;
@@ -48,7 +50,7 @@ export interface HouseDetail {
   house_longitude: number;
   house_indexes: Index[];
   house_review_images: string[];
-  house_reviews: string[];
+  house_reviews: Review[];
 }
 
 export interface Index {

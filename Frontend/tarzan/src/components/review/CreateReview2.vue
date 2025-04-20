@@ -8,24 +8,16 @@
         class="input-content"
         type="text"
         placeholder="내용를 입력해주세요."
-        v-model="reviewStore.reviewData.review_advantage" />
+        v-model="reviewData.review_advantage" />
 
       <TagButtonGroup
-        v-model:selectedButtons="reviewStore.reviewData.review_advantage_tags"
+        v-model:selectedButtons="reviewData.review_advantage_tags"
         :buttons="advantageButtons"
         :multiple="true">
         <template v-slot:default="{ button }">
           <span>{{ button.label }}</span>
         </template>
       </TagButtonGroup>
-      <!-- <TagButtonGroup 
-            v-model:selectedButtons="selectedAdvantageButtons"
-            :buttons="advantageButtons"
-            :multiple="true">
-            <template v-slot:default="{ button }">
-              <span>{{ button.label }}</span>
-            </template>
-          </TagButtonGroup> -->
     </div>
 
     <div class="input-group" id="단점">
@@ -36,11 +28,9 @@
         class="input-content"
         type="text"
         placeholder="내용를 입력해주세요."
-        v-model="reviewStore.reviewData.review_disadvantage" />
+        v-model="reviewData.review_disadvantage" />
       <TagButtonGroup
-        v-model:selectedButtons="
-          reviewStore.reviewData.review_disadvantage_tags
-        "
+        v-model:selectedButtons="reviewData.review_disadvantage_tags"
         :buttons="disadvantageButtons"
         :multiple="true">
         <template v-slot:default="{ button }">
@@ -52,17 +42,10 @@
 </template>
 
 <script setup>
-import { useReviewStore } from "@/stores/reviewStore";
-import { createReview } from "@/api/reviewApi";
-import { useRouter } from "vue-router";
-import { ref } from "vue";
-import TopBarBack from "@/components/common/TopBarBack.vue";
-import AddressCard from "./AddressCard.vue";
+import { ref, defineModel } from "vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 
-const router = useRouter();
-const reviewStore = useReviewStore();
-
+const reviewData = defineModel("reviewData");
 // 장점 리스트
 const advantageButtons = ref([
   { label: "❌ 없음", value: "NONE" },
@@ -104,18 +87,6 @@ const disadvantageButtons = ref([
 // 선택된 태그
 // const selectedAdvantageButtons = ref([]);  // 장점 태그 선택
 // const selectedDisadvantageButtons = ref([]); // 단점 태그 선택
-
-const submitReview = async () => {
-  try {
-    await createReview(reviewStore.reviewData);
-    alert("리뷰가 성공적으로 등록되었습니다!");
-    reviewStore.resetReviewData(); // 데이터 초기화
-    router.push("/review"); // 리뷰 리스트 페이지로 이동
-  } catch (error) {
-    alert("리뷰 등록에 실패했습니다.");
-  }
-  console.log("🚀 CreateReview2:", reviewStore.reviewData);
-};
 </script>
 
 <style lang="scss" scoped>

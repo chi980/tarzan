@@ -1,19 +1,19 @@
 <template>
   <form class="input-form" @submit.prevent="submitForm">
-    <div class="input-group photo-upload-container">
+    <!-- <div class="input-group photo-upload-container">
       <PhotoUpload />
       <p>
         캡쳐한 이미지, 본인이 촬용하지 않은 사진, 식별 불가능한 이미지를
         등록하는 경우 이미지 비노출 및 정상 후기로 인정되지 않습니다.
       </p>
-    </div>
+    </div> -->
     <div class="input-group">
       <h2 class="input-title">
         만족도<span class="input-title-mandatory">*</span>
       </h2>
       <div class="input-content star-container">
         <StarRating
-          v-model="reviewStore.reviewData.review_score"
+          v-model="reviewData.review_score"
           @update:score="updateReviewScore"
           :readonly="false" />
       </div>
@@ -33,24 +33,26 @@
               justifyContent: `space-between`,
               border: '1px solid #e7e7e7',
             }"
-            v-model:selected="reviewStore.reviewData.review_lease_type"
-            @update:selected="updateLeaseType" />
+            v-model="reviewData.review_lease_type"
+            @update:selected="handleLeaseType" />
           <input
             type="text"
             placeholder="월세를 입력해주세요."
-            v-model="reviewStore.reviewData.review_rent" />
+            :class="{ disabled: isDisabled }"
+            v-model="reviewData.review_rent"
+            :disabled="isDisabled" />
         </div>
         <div class="input-content">
           <input
             type="text"
             placeholder="보증금을 입력해주세요."
-            v-model="reviewStore.reviewData.review_deposit" />
+            v-model="reviewData.review_deposit" />
         </div>
         <div class="input-content">
           <input
             type="text"
             placeholder="관리비를 입력해주세요."
-            v-model="reviewStore.reviewData.review_management_fee" />
+            v-model="reviewData.review_management_fee" />
         </div>
       </div>
     </div>
@@ -62,7 +64,14 @@
         <input
           type="text"
           placeholder="거주 년도를 입력해주세요."
-          v-model="reviewStore.reviewData.review_residence_period" />
+          v-model="reviewData.review_residence_period"
+          maxlength="4"
+          @input="
+            (e) => {
+              const onlyNums = e.target.value.replace(/[^0-9]/g, '');
+              reviewData.review_residence_period = onlyNums.slice(0, 4);
+            }
+          " />
       </div>
     </div>
 
@@ -72,7 +81,16 @@
         <input
           type="text"
           placeholder="층수를 입력해주세요."
-          v-model="reviewStore.reviewData.review_floor" />
+          v-model="reviewData.review_floor"
+          maxlength="3"
+          @input="
+            (e) => {
+              const val = e.target.value;
+              // 0 이상의 숫자만 허용
+              const parsed = val.replace(/[^0-9]/g, ''); // 숫자만 허용
+              reviewData.review_floor = parsed;
+            }
+          " />
       </div>
     </div>
     <!-- 
@@ -88,47 +106,35 @@
 </template>
 
 <script setup>
-import { reactive, ref, watchEffect } from "vue";
-import { useRouter } from "vue-router";
-import { useReviewStore } from "@/stores/reviewStore";
+import { reactive, ref, defineModel, computed } from "vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import AddressCard from "./AddressCard.vue";
 import PhotoUpload from "./PhotoUpload.vue";
 import StarRating from "./StarRating.vue";
 import Divider from "../common/Divider.vue";
 import CustomSelectBox from "../common/CustomSelectBox.vue";
+const reviewData = defineModel("reviewData");
 
-const router = useRouter();
-const reviewStore = useReviewStore();
-
-const rating = ref(0);
-
+// 임대 유형 선택
 const rentalOptions = reactive([
   { idx: 0, name: "월세", value: "MONTHLY" },
   { idx: 1, name: "전세", value: "KEY_MONEY" },
 ]);
-
-const goToNextPage = () => {
-  console.log(
-    "🚀 CreateReview1 - 다음 페이지 이동 직전 데이터:",
-    reviewStore.reviewData
-  );
-  router.push({ name: "CreateReview2" });
-};
-
-// 선택된 임대 유형 업데이트
-const updateLeaseType = (idx) => {
+const handleLeaseType = (idx) => {
   const selectedOption = rentalOptions.find((option) => option.idx === idx);
-  if (selectedOption) {
-    reviewStore.reviewData.review_lease_type = selectedOption.value;
+  if (selectedOption.value == "MONTHLY") {
+    reviewData.value.review_rent = null;
   }
-};
 
-// 별점 선택 시 review_score 업데이트
-const updateReviewScore = (newScore) => {
-  reviewStore.reviewData.review_score = newScore;
-  console.log("현재 선택된 리뷰 점수:", reviewStore.reviewData.review_score);
+  reviewData.value.review_lease_type = selectedOption.value;
 };
+const isDisabled = computed(
+  () => reviewData.value.review_lease_type !== "MONTHLY"
+);
+
+// 별점 선택 
+const rating = ref(0);
+const updateReviewScore = (newScore) => {};
 </script>
 
 <style scoped lang="scss">
@@ -195,5 +201,9 @@ const updateReviewScore = (newScore) => {
   display: flex;
   flex-direction: column;
   gap: $padding-small;
+}
+.disabled {
+  background-color: #00000010 !important;
+  cursor: not-allowed;
 }
 </style>
