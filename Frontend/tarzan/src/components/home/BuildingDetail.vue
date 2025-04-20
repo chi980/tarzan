@@ -3,6 +3,7 @@ import { defineProps } from "vue";
 import { Building } from "@/data/building";
 
 const { building } = defineProps<{ building: Building }>();
+console.log(building);
 </script>
 
 <template>

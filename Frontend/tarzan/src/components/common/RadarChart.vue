@@ -13,7 +13,9 @@
           class="legend-color"></div>
         <div class="legend-text">
           <p>{{ item.label }}</p>
-          <p class="legend-sub">{{ formatDate(item.created_at) }} 추가</p>
+          <p class="legend-sub" v-if="item.created_at">
+            {{ formatDate(item.created_at) }} 추가
+          </p>
         </div>
       </div>
     </div>

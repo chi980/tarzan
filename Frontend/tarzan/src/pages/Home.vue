@@ -41,6 +41,7 @@
                 v-if="buildingContent"
                 :building="buildingContent" />
             </div>
+            <HouseDetail v-if="houseContent" :house="houseContent" />
           </div>
         </OverlayPanel>
       </div>
@@ -108,7 +109,7 @@ const tagOptions = ref([
 const selectedButton = ref(null); // 배열이 아니라 문자열로 명시
 
 /** tag button 값이 바뀔 때 데이터 요청 */
-watch(selectedButton, (newValue) => {
+watch(selectedButton, async (newValue) => {
   console.log("선택된 값 변경됨:", newValue);
   if (newValue == null) return;
 
@@ -120,28 +121,57 @@ watch(selectedButton, (newValue) => {
   console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
   if (newValue === "HOUSE") {
     // 매물 버튼 클릭 시
-    // fetchHouses(latitude, longitude, radius);
-    houses.value = [
-      {
-        house_id: 1,
-        house_latitude: latitude,
-        house_longitude: longitude,
-      },
-    ];
-    addHouseMarkers(mapInstance, houses.value);
+    await fetchHouses(latitude, longitude, radius);
+    console.log(houses.value);
+    if (houses.value.length === 0) {
+      alert("해당 지역에 매물이 없습니다.");
+      return;
+    }
+    mapInstance.setCenter(
+      new kakao.maps.LatLng(
+        houses.value[0].house_latitude,
+        houses.value[0].house_longitude
+      )
+    );
+    addMarker(
+      mapInstance,
+      houses.value[0].house_latitude,
+      houses.value[0].house_longitude,
+      "HOUSE",
+      houses.value[0]
+    );
+    // addHouseMarkers(mapInstance, houses.value);
   } else {
-    // fetchBuildings(newValue, latitude, longitude, radius);
-    buildings.value = [
-      {
-        building_name: "CNP차앤박피부과 도곡양재점",
-        building_category: "종합병원",
-        building_address: "서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)",
-        building_latitude: mapInstance.getCenter().getLat(),
-        building_longitude: mapInstance.getCenter().getLng(),
-        building_type: newValue,
-      },
-    ];
-    addBuildingMarkers(mapInstance, buildings.value); // 마커 추가
+    fetchBuildings(newValue, latitude, longitude, radius);
+    if (buildings.value.length === 0) {
+      alert("해당 지역에 건물이 없습니다.");
+      return;
+    }
+    mapInstance.setCenter(
+      new kakao.maps.LatLng(
+        buildings.value[0].building_latitude,
+        buildings.value[0].building_longitude
+      )
+    );
+    console.log("빌딩", buildings.value);
+    addMarker(
+      mapInstance,
+      buildings.value[0].building_latitude,
+      buildings.value[0].building_longitude,
+      "BUILDING",
+      buildings.value[0]
+    );
+    // buildings.value = [
+    //   {
+    //     building_name: "CNP차앤박피부과 도곡양재점",
+    //     building_category: "종합병원",
+    //     building_address: "서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)",
+    //     building_latitude: mapInstance.getCenter().getLat(),
+    //     building_longitude: mapInstance.getCenter().getLng(),
+    //     building_type: newValue,
+    //   },
+    // ];
+    // addBuildingMarkers(mapInstance, buildings.value); // 마커 추가
   }
 });
 
@@ -181,8 +211,6 @@ const fetchBuildings = async (
     return;
   }
 
-  console.log("현재 위치: ", latitude, longitude);
-
   loading.value = true; // 로딩 상태 활성화
 
   // query parameters 생성
@@ -201,10 +229,6 @@ const fetchBuildings = async (
 
     if (response.data.success && response.data.data) {
       buildings.value = response.data.data;
-      console.log("타입별 빌딩 가져오기 성공!");
-      console.log(response.data.data.length);
-
-      addBuildingMarkers(mapInstance, buildings.value); // 마커 추가
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
@@ -215,14 +239,6 @@ const fetchBuildings = async (
       );
     }
   } catch (error: unknown) {
-    // 요청 실패 처리
-    // if (error instanceof Error) {
-    //   console.error("빌딩 데이터 요청 중 오류 발생:", error.message);
-    // } else {
-    //   console.error("빌딩 데이터 요청 중 알 수 없는 오류 발생");
-    // }
-
-    // 특정 오류 처리 (500, Illegal Argument)
     if (error instanceof AxiosError && error.response) {
       const status = error.response.status;
 
@@ -269,11 +285,10 @@ const fetchHouses = async (
     const response = await axiosInstance.get<ApiResponse>(
       `/v1/houses?${queryParams}`
     );
+    console.log("response", response.data);
 
     if (response.data.success && response.data.data) {
       houses.value = response.data.data;
-
-      addHouseMarkers(mapInstance, houses.value); // 마커 추가
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       houses.value = [];
@@ -348,7 +363,8 @@ const initHeights = () => {
     refreshButton.value.clientHeight;
 
   initialHeight.value = 0;
-  maxHeight.value = BOTTOM_OVERLAY_MAX_HEIGHT.value;
+  maxHeight.value = 0;
+  overlayType.value = "small";
 };
 watch(
   () => buildingContent.value, // 여기!
@@ -364,6 +380,24 @@ watch(
     } else {
       isVisibleOverlay.value = false;
       overlayType.value = "full";
+      initHeights();
+    }
+  }
+);
+
+watch(
+  () => houseContent.value, // 여기!
+  async (newVal) => {
+    if (newVal) {
+      console.log("집 존재");
+      isVisibleOverlay.value = true;
+      await nextTick(); // DOM 업데이트 후 높이 계산
+      maxHeight.value = BOTTOM_OVERLAY_MAX_HEIGHT.value;
+      overlayType.value = "full";
+    } else {
+      isVisibleOverlay.value = false;
+      overlayType.value = "full";
+      initHeights();
     }
   }
 );
@@ -460,6 +494,27 @@ const addBuildingMarkers = (mapInstance, buildings) => {
       houseContent.value = null;
     });
   });
+};
+
+const addMarker = (mapInstance, latitude, longitude, type, content) => {
+  const position = new window.kakao.maps.LatLng(latitude, longitude);
+
+  const marker = new window.kakao.maps.Marker({
+    position,
+    map: mapInstance,
+  });
+
+  window.kakao.maps.event.addListener(marker, "click", () => {
+    if (type == "HOUSE") {
+      houseContent.value = content;
+      buildingContent.value = null;
+    } else if (type == "BUILDING") {
+      houseContent.value = null;
+      buildingContent.value = content;
+    }
+  });
+
+  return marker; // 필요 시 marker 반환
 };
 </script>
 

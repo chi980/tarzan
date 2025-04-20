@@ -48,7 +48,7 @@ export interface HouseDetail {
   house_longitude: number;
   house_indexes: Index[];
   house_review_images: string[];
-  house_reviews: Review[];
+  house_reviews: string[];
 }
 
 export interface Index {

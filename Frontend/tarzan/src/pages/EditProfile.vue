@@ -294,9 +294,10 @@ const submitForm = async () => {
     const response = await axiosInstance.put("/v1/user", formData);
     authStore.setUser({
       nickname: user_nickname,
-      role: "USER",
-      email: uesr_email,
-      bu,
+      role: user.value.user_role,
+      email: user.value.user_email,
+      gu: user.value.user_gu,
+      imageUrl: user.value.user_image_url,
     });
     alert("수정이 완료되었습니다.");
     router.push({ name: "Home" });
