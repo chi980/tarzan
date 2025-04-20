@@ -4,10 +4,11 @@
       v-for="button in buttons"
       :key="button.value"
       class="tag-button"
-      :class="{ [activeClass]: isSelected(button.value) }"
+      :class="{ [activeClass]: isSelected(button) }"
       role="button"
       tabindex="0"
-      @click="toggleSelection(button.value)">
+      @click="toggleSelection(button)"
+    >
       <slot :button="button">{{ button.label }}</slot>
     </div>
   </div>
@@ -17,32 +18,69 @@
 import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
-  selectedButton: String,
-  selectedButtons: Array,
-  buttons: Array,
-  multiple: Boolean,
+  selectedButton: Object, // 단일 선택일 때 선택된 버튼 객체
+  selectedButtons: Array, // 다중 선택일 때 선택된 버튼 객체 배열
+  buttons: Array, // 버튼 내용 목록
+  multiple: Boolean, // 다중 선택 여부
+
+  // 활성화 클래스 (기본: "active")
   activeClass: {
     type: String,
-    default: "active", // 기본 css는 기존과 동일하게 유지
+    default: "active",
   },
 });
 
 const emit = defineEmits(["update:selectedButton", "update:selectedButtons"]);
 
-const isSelected = (value) => {
-  return props.multiple
-    ? props.selectedButtons.includes(value)
-    : props.selectedButton === value;
+// const isSelected = (label) => {
+//   return props.multiple
+//     ? props.selectedButtons.includes(label)
+//     : props.selectedButton === label;
+// };
+
+// 버튼이 선택되었는지 여부 확인
+const isSelected = (button) => {
+  if (props.multiple) {
+    return props.selectedButtons.some(
+      (selectedButton) => selectedButton.value === button.value
+    );
+  } else {
+    return props.selectedButton && props.selectedButton.value === button.value;
+  }
 };
 
-const toggleSelection = (value) => {
+// const toggleSelection = (value) => {
+//   if (props.multiple) {
+//     const updated = props.selectedButtons.includes(value)
+//       ? props.selectedButtons.filter((v) => v !== value)
+//       : [...props.selectedButtons, value];
+//     emit("update:selectedButtons", updated);
+//   } else {
+//     emit("update:selectedButton", value);
+//   }
+// };
+
+// 버튼을 클릭했을 때 선택 상태를 토글(켜고 끄는) 하는 함수
+const toggleSelection = (button) => {
   if (props.multiple) {
-    const updated = props.selectedButtons.includes(value)
-      ? props.selectedButtons.filter((v) => v !== value)
-      : [...props.selectedButtons, value];
-    emit("update:selectedButtons", updated);
+    // 다중 선택 모드
+    const isAlreadySelected = props.selectedButtons.some(
+      (selectedButton) => selectedButton.value === button.value
+    );
+
+    if (isAlreadySelected) {
+      // 이미 선택된 버튼이면 제거
+      const updated = props.selectedButtons.filter(
+        (selectedButton) => selectedButton.value !== button.value
+      );
+      emit("update:selectedButtons", updated);
+    } else {
+      // 선택되지 않은 버튼이면 추가
+      emit("update:selectedButtons", [...props.selectedButtons, button]);
+    }
   } else {
-    emit("update:selectedButton", value);
+    // 단일 선택 모드
+    emit("update:selectedButton", button);
   }
 };
 </script>

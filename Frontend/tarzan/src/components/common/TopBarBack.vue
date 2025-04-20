@@ -1,3 +1,15 @@
+<!-- 
+1. 기본 동작(router.back)만 사용하고 싶을 때
+<TopBarBack title="페이지 제목" />
+
+2. 커스텀 뒤로가기 동작을 사용하고 싶을 때
+<TopBarBack 
+  title="페이지 제목" 
+  :useCustomBack="true" 
+  @back="myCustomBackFunction" 
+/> 
+-->
+
 <template>
   <div class="topbar">
     <img
@@ -12,19 +24,29 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from "vue";
+import router from "@/router";
 
-const emit = defineEmits(['back']);
+const emit = defineEmits(["back"]);
 
 const props = defineProps({
   title: {
     type: String,
     required: true,
   },
+  useCustomBack: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 function onBackClick() {
-  emit('back');
+  emit("back");
+
+  // 커스텀 뒤로가기가 설정되지 않은 경우에만 router.back() 실행
+  if (!props.useCustomBack) {
+    router.back();
+  }
 }
 </script>
 

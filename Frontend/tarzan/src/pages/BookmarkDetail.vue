@@ -84,6 +84,7 @@ const fetachBookmark = async (bookmarkIdx: number) => {
     );
     if (response.data && response.data.data) {
       bookmarkData.value = response.data.data;
+      // console.log("서버에서 받아온 bookmarkData:", response.data.data);
     } else {
       new Error("잘못된 요청입니다.");
     }
@@ -104,12 +105,14 @@ const fetachBookmark = async (bookmarkIdx: number) => {
         <component
           :is="steps[step].component"
           :bookmarkIdx="bookmarkIdx"
-          v-model:bookmarkData="bookmarkData" />
+          v-model:bookmarkData="bookmarkData"
+        />
       </div>
     </div>
     <BottomDefaultButton
       :label="step < steps.length - 1 ? '다음' : '제출'"
-      :onClick="next" />
+      :onClick="next"
+    />
   </div>
 </template>
 
