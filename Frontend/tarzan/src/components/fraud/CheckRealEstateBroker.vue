@@ -14,7 +14,8 @@
                 fontWeight: 400,
                 justifyContent: `space-between`,
                 border: '1px solid #e7e7e7',
-              }" />
+              }"
+              @update:selected="selectSiGunGu" />
           </div>
         </div>
 
@@ -28,38 +29,49 @@
                   fontWeight: 400,
                   justifyContent: `space-between`,
                   border: '1px solid #e7e7e7',
-                }" />
+                }"
+                @update:selected="selectOption" />
             </div>
-            <input type="type" placeholder="검색어를 입력해주세요." />
+            <input
+              type="type"
+              placeholder="검색어를 입력해주세요."
+              v-model="searchData.search" />
           </div>
         </div>
         <div class="button-default-wrapper">
-          <div class="button-default">검색하기</div>
+          <div class="button-default" @click="submitData">검색하기</div>
         </div>
       </form>
       <div class="content-indicator"></div>
       <div class="result-wrapper">
-        <div v-for="n in 100" :key="n">
+        <div v-for="(realEstate, index) in realEstates" :key="index">
           <div class="real-estate-container">
-            <div class="real-estate-status closed">폐업</div>
-            <div class="real-estate-content">
-              <p class="real-estate-name">신흥사 부동산 중개인 사무소</p>
-              <p>강정식</p>
-              <p class="real-estate-address">
-                서울특별시 종로구 종로6가 262-1(서울특별시 종로구 종로 266)
-              </p>
-              <p>나92200000-51</p>
+            <div
+              class="real-estate-status"
+              :class="{ ok: realEstate['status-code'] === '1' }">
+              {{ realEstate["status-name"] }}
             </div>
-          </div>
-          <div class="real-estate-container">
-            <div class="real-estate-status ok">영업중</div>
             <div class="real-estate-content">
-              <p class="real-estate-name">신흥사 부동산 중개인 사무소</p>
-              <p>강정식</p>
-              <p class="real-estate-address">
-                서울특별시 종로구 종로6가 262-1(서울특별시 종로구 종로 266)
+              <p class="real-estate-name">
+                {{ realEstate["real-estate-name"] }}
               </p>
-              <p>나92200000-51</p>
+              <p>{{ realEstate["real-estate-person-name"] }}</p>
+              <p class="real-estate-address">
+                {{ realEstate["road-name-address"] }}
+                <span v-if="realEstate['lot-number-address']">
+                  ({{ realEstate["lot-number-address"] }})
+                </span>
+              </p>
+
+              <p>
+                {{ realEstate["establish-begin-date"] }} ~
+                {{ realEstate["establish-end-date"] }}
+              </p>
+              <p>
+                {{ realEstate["register-code"] }}/{{
+                  realEstate["register-date"]
+                }}
+              </p>
             </div>
           </div>
         </div>
@@ -69,27 +81,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+
+import { RealEstate } from "@/data/fraud";
 import { Option } from "@/data/options";
-// import DropDown from "@/components/common/DropDown.vue";
-import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import { seoulSiGunGu } from "@/data/seoulSiGunGu";
-import TopBarBack from "../common/TopBarBack.vue";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 
 const router = useRouter();
+
+const searchData = ref({
+  gu: null,
+  searchBy: null,
+  search: null,
+});
 
 const seoulDistrictOptions = seoulSiGunGu.map((district) => ({
   idx: district.idx,
   name: district.name.split(" ")[1],
   value: district.value,
 }));
+const selectSiGunGu = (idx) => {
+  searchData.value.gu = seoulDistrictOptions[idx].value;
+};
+
 const searchOption: Option[] = [
   { idx: 1, name: "중개업자명", value: "중개업자명" },
   { idx: 2, name: "사업자상호", value: "사업자상호" },
 ];
+const selectOption = (idx) => {
+  searchData.value.searchBy = searchOption[idx].value;
+};
 
-const resultCnt: Ref<number> = ref(0);
+const realEstates = ref<RealEstate[] | null>(null);
+
+const submitData = async () => {
+  if (searchData.value.search === null) {
+    alert("검색어를 입력해주세요.");
+    return;
+  }
+
+  try {
+    const response = await axiosInstance.get("/fraud/real-estate", {
+      params: {
+        gu: searchData.value.gu,
+        searchBy: searchData.value.searchBy,
+        search: searchData.value.search,
+        numOfRows: 100,
+        pageNo: 1,
+      },
+    });
+    console.log("response", response.data);
+    realEstates.value = response.data.data.list;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 
 function goSomewhere() {
   router.push({ name: "Home" }); // 또는 router.go(-1) 도 가능
@@ -239,7 +291,6 @@ function goSomewhere() {
 
 .real-estate-container {
   @include custom-padding;
-  background-color: white;
 
   border-bottom: 1px solid #f8f8f8;
 

@@ -1,6 +1,8 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <TopBarBack title="공인중개사 확인" @back="goSomewhere" />
+    <div class="top-bar-wrapper">
+      <TopBarBack title="시세 확인" @back="goSomewhere" />
+    </div>
     <div class="center-container">
       <form class="input-form" @submit.prevent="submitForm">
         <div class="input-group">
@@ -39,56 +41,30 @@
             <input type="type" placeholder="금액을 입력해주세요." />
           </div>
         </div>
+        <div class="button-default-wrapper">
+          <div class="button-default">검색하기</div>
+        </div>
       </form>
-      <div class="content-indicator"></div>
 
       <div class="result-wrapper">
-        <div class="result-bar">
-          <p>결과</p>
-          <p class="result-cnt">{{ resultCnt }}</p>
-        </div>
-        <hr />
-
-        <ul>
-          <li v-for="n in 2" :key="n">
-            <div class="real-estitate-content">
-              <div class="real-estitate-description">
-                <p class="real-estitate-name">우리공인중개사사무소</p>
-                <p>서울 강남구 논현로 71길 13 (우) 06248</p>
-                <p>등록번호: 11620-2020-00067</p>
-                <p>김정현, 02-522-4933</p>
-              </div>
-              <div class="real-estate-status active">영업중</div>
-            </div>
-            <div class="real-estitate-content">
-              <div class="real-estitate-description">
-                <p class="real-estitate-name">우리공인중개사사무소</p>
-                <p>서울 강남구 논현로 71길 13 (우) 06248</p>
-                <p>등록번호: 11620-2020-00067</p>
-                <p>김정현, 02-522-4933</p>
-              </div>
-              <div class="real-estate-status unactive">폐업</div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="bottom-button-wrapper">
-      <div>
-        <p>직접 추가하기</p>
+        <TabBar
+          :tabs="tabs"
+          :selectedTabIdx="selectedTabIdx"
+          @update:selectedTabIdx="selectTab" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { Option } from "@/data/options";
 // import DropDown from "@/components/common/DropDown.vue";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import { seoulSiGunGu } from "@/data/seoulSiGunGu";
-import TopBarBack from "../common/TopBarBack.vue";
+import TabBar from "@/components/common/TabBar.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 
 const router = useRouter();
 
@@ -103,15 +79,42 @@ const searchOption: Option[] = [
   { idx: 3, name: "상호", value: "name" },
 ];
 
-const resultCnt: Ref<number> = ref(0);
-
 function goSomewhere() {
   router.push({ name: "Home" }); // 또는 router.go(-1) 도 가능
 }
+
+const tabs = [
+  {
+    name: "매매",
+    title: "매매",
+    component: "CheckRealEstateBroker",
+    props: {
+      url: "매매 url",
+      type: "매매",
+    },
+  },
+  {
+    name: "전월세",
+    title: "전월세",
+    component: "CheckRealEstateBroker",
+    props: {
+      url: "전월세 url",
+      type: "전월세",
+    },
+  },
+];
+const selectedTabIdx = ref(0);
+const selectTab = (index: number) => {
+  selectedTabIdx.value = index;
+};
 </script>
 
 <style lang="scss" scoped>
 // 공통
+
+.top-bar-wrapper {
+  width: 100%;
+}
 .top-bar-back {
   @include custom-bar-style(
     $height: $height-top-bar,
@@ -146,18 +149,7 @@ function goSomewhere() {
     background: #f2f2f2;
   }
 }
-.bottom-button-wrapper {
-  @include custom-padding-x;
 
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  div {
-    @include custom-button-style($height: 54px, $font-color: white);
-  }
-}
 .input-form {
   width: 100%;
   display: flex;
@@ -211,13 +203,6 @@ function goSomewhere() {
 }
 
 // content를 구분해주는 회색 긴 선
-.content-indicator {
-  margin: 0;
-  margin-top: $margin-default;
-  background-color: #ededed;
-  height: 10px;
-}
-
 .result-wrapper {
   @include custom-padding-x;
   flex: 1;
@@ -239,80 +224,20 @@ function goSomewhere() {
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
-
-  .result-bar {
-    height: 48px;
-    display: flex;
-    flex-direction: row; /* 기본값이 row이지만 명시적으로 지정 */
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: flex-start; /* 수평 왼쪽 정렬 */
-    gap: 4px;
-
-    p {
-      @include custom-text;
-
-      &:first-child {
-        font-weight: 600; // weight가 아니라 font-weight
-      }
-
-      &.result-cnt {
-        @include custom-text(
-          $font-color: $primary-color-default,
-          $font-size: 16px,
-          $font-weight: 400
-        );
-      }
-    }
-  }
-  hr {
-    border: none;
-    margin: 0;
-    height: 1px;
-    background-color: #ccc;
-  }
 }
-// scoped
-.real-estitate-content {
-  @include custom-padding-y;
-  display: flex;
-  align-items: center;
 
-  .real-estitate-description {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    p {
-      @include custom-text(
-        $font-color: $text-color-light,
-        $font-weight: 300,
-        $font-size: 14px
-      );
-      text-align: left;
-
-      &.real-estitate-name {
-        @include custom-text;
-        margin-bottom: 4px;
-      }
-    }
-  }
-
-  .real-estate-status {
-    &.active {
-      @include custom-text(
-        $font-color: $primary-color-default,
-        $font-size: 14px
-      );
-      background-color: #e0f9ed;
-    }
-    &.unactive {
-      @include custom-text($font-size: 14px);
-      background-color: #f7f7f7;
-    }
-    display: flex;
-    height: fit-content;
-    border-radius: 20px;
-    padding: 10px;
-  }
+//scoped
+.button-default-wrapper {
+  @include custom-padding-x;
+}
+.button-default {
+  @include custom-button-style;
+}
+.input-form {
+  gap: $padding-small !important;
+  padding-top: $padding-default;
+}
+.result-wrapper {
+  background-color: red;
 }
 </style>
