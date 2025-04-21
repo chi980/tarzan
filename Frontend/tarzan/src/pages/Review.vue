@@ -56,8 +56,6 @@ import { ref, onMounted } from "vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRoute, useRouter } from "vue-router";
 
-import { formatDateWithoutTime } from "@/utils/date";
-
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 
 const route = useRoute();

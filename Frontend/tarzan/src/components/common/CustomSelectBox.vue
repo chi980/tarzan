@@ -115,6 +115,7 @@ const selectOption = (option: Option, index: number) => {
 <style lang="scss" scoped>
 .select-wrapper {
   display: flex;
+  flex: 1;
 }
 .selected-item {
   @include custom-text($font-size: 14px);

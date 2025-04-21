@@ -1,154 +1,318 @@
 <template>
-  <div class="sub-container">
-    <TopBarBack title="시세 확인하기" />
+  <div class="sub-container non-input-sub-container">
+    <TopBarBack title="공인중개사 확인" @back="goSomewhere" />
     <div class="center-container">
-      <div class="address-conatienr">
-        <h2 class="title">주소</h2>
-        <div class="content">
-          <div class="input-wapper">
-            <CustomSelectBox :options="seoulDistrictOptions" />
-            <CustomSelectBox :options="dongOptions" />
-          </div>
-          <div class="input-wapper">
-            <CustomSelectBox :options="yearOptions" />
-            <CustomSelectBox :options="monthOptions" />
+      <form class="input-form" @submit.prevent="submitForm">
+        <div class="input-group">
+          <div class="select-container">
+            <CustomSelectBox
+              :options="seoulDistrictOptions"
+              :parent-style="{
+                backgroundColor: 'white',
+                fontWeight: 400,
+                justifyContent: `space-between`,
+                border: '1px solid #e7e7e7',
+              }" />
+            <CustomSelectBox
+              :options="seoulDistrictOptions"
+              :parent-style="{
+                backgroundColor: 'white',
+                fontWeight: 400,
+                justifyContent: `space-between`,
+                border: '1px solid #e7e7e7',
+              }" />
           </div>
         </div>
-      </div>
 
-      <div class="transaction-history-container">
-        <ResultBar resultTitle="거래 내역" />
-        <Divider />
-        <div class="content">
-          <TransactionHistory />
+        <div class="input-group">
+          <div class="input-content select-container">
+            <div style="width: max-content; min-width: 100px">
+              <CustomSelectBox
+                :options="searchOption"
+                :parent-style="{
+                  backgroundColor: 'white',
+                  fontWeight: 400,
+                  justifyContent: `space-between`,
+                  border: '1px solid #e7e7e7',
+                }" />
+            </div>
+            <input type="type" placeholder="금액을 입력해주세요." />
+          </div>
         </div>
+      </form>
+      <div class="content-indicator"></div>
+
+      <div class="result-wrapper">
+        <div class="result-bar">
+          <p>결과</p>
+          <p class="result-cnt">{{ resultCnt }}</p>
+        </div>
+        <hr />
+
+        <ul>
+          <li v-for="n in 2" :key="n">
+            <div class="real-estitate-content">
+              <div class="real-estitate-description">
+                <p class="real-estitate-name">우리공인중개사사무소</p>
+                <p>서울 강남구 논현로 71길 13 (우) 06248</p>
+                <p>등록번호: 11620-2020-00067</p>
+                <p>김정현, 02-522-4933</p>
+              </div>
+              <div class="real-estate-status active">영업중</div>
+            </div>
+            <div class="real-estitate-content">
+              <div class="real-estitate-description">
+                <p class="real-estitate-name">우리공인중개사사무소</p>
+                <p>서울 강남구 논현로 71길 13 (우) 06248</p>
+                <p>등록번호: 11620-2020-00067</p>
+                <p>김정현, 02-522-4933</p>
+              </div>
+              <div class="real-estate-status unactive">폐업</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="bottom-button-wrapper">
+      <div>
+        <p>직접 추가하기</p>
       </div>
     </div>
   </div>
 </template>
-<script>
-import CustomSelectBox from '../common/CustomSelectBox.vue';
-import Divider from '../common/Divider.vue';
-import ResultBar from '../common/ResultBar.vue';
-import TopBarBack from '../common/TopBarBack.vue';
-import TransactionHistory from './TransactionHistory.vue';
 
-export default {
-  components: {
-    TopBarBack,
-    CustomSelectBox,
-    ResultBar,
-    Divider,
-    TransactionHistory,
-  },
-  data() {
-    return {
-      seoulDistrictOptions: [
-        { idx: 1, name: "서울시 종로구", value: "JONGNO" },
-        { idx: 2, name: "서울시 중구", value: "JUNG" },
-        { idx: 3, name: "서울시 용산구", value: "YONGSAN" },
-        { idx: 4, name: "서울시 성동구", value: "SEONGDONG" },
-        { idx: 5, name: "서울시 광진구", value: "GWANGJIN" },
-        { idx: 6, name: "서울시 동대문구", value: "DONGDAEMUN" },
-        { idx: 7, name: "서울시 중랑구", value: "JUNGNANG" },
-        { idx: 8, name: "서울시 성북구", value: "SEONGBUK" },
-        { idx: 9, name: "서울시 강북구", value: "GANGBUK" },
-        { idx: 10, name: "서울시 도봉구", value: "DOBONG" },
-        { idx: 11, name: "서울시 노원구", value: "NOWON" },
-        { idx: 12, name: "서울시 은평구", value: "EUNPYEONG" },
-        { idx: 13, name: "서울시 서대문구", value: "SEODAEMUN" },
-        { idx: 14, name: "서울시 마포구", value: "MAPO" },
-        { idx: 15, name: "서울시 양천구", value: "YANGCHEON" },
-        { idx: 16, name: "서울시 강서구", value: "GANGSEO" },
-        { idx: 17, name: "서울시 구로구", value: "GURO" },
-        { idx: 18, name: "서울시 금천구", value: "GEUMCHEON" },
-        { idx: 19, name: "서울시 영등포구", value: "YEONGDEUNGPO" },
-        { idx: 20, name: "서울시 동작구", value: "DONGJAK" },
-        { idx: 21, name: "서울시 관악구", value: "GWANAK" },
-        { idx: 22, name: "서울시 서초구", value: "SEOCHO" },
-        { idx: 23, name: "서울시 강남구", value: "GANGNAM" },
-        { idx: 24, name: "서울시 송파구", value: "SONGPA" },
-        { idx: 25, name: "서울시 강동구", value: "GANGDONG" },
-      ],
-      dongOptions: [
-        { idx: 1, name: "신계동", value: "trans" },
-        { idx: 2, name: "효창동", value: "food" },
-        { idx: 3, name: "청파동", value: "tip" },
-        { idx: 4, name: "원효로 1동", value: "question" },
-        { idx: 5, name: "원효로 2동", value: "?" }
-      ],
-      yearOptions: this.generateYearOptions(),
-      monthOptions: [
-        { idx: 1, name: "1월", value: "1" },
-        { idx: 2, name: "2월", value: "2" },
-        { idx: 3, name: "3월", value: "3" },
-        { idx: 4, name: "4월", value: "4" },
-        { idx: 5, name: "5월", value: "5" },
-        { idx: 6, name: "6월", value: "6" },
-        { idx: 7, name: "7월", value: "7" },
-        { idx: 8, name: "8월", value: "8" },
-        { idx: 9, name: "9월", value: "9" },
-        { idx: 10, name: "10월", value: "10" },
-        { idx: 11, name: "11월", value: "11" },
-        { idx: 12, name: "12월", value: "12" },
-      ],
+<script setup lang="ts">
+import { ref, Ref } from "vue";
+import { useRouter } from "vue-router";
+import { Option } from "@/data/options";
+// import DropDown from "@/components/common/DropDown.vue";
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import { seoulSiGunGu } from "@/data/seoulSiGunGu";
+import TopBarBack from "../common/TopBarBack.vue";
+
+const router = useRouter();
+
+const seoulDistrictOptions = seoulSiGunGu.map((district) => ({
+  idx: district.idx,
+  name: district.name.split(" ")[1],
+  value: district.value,
+}));
+const searchOption: Option[] = [
+  { idx: 1, name: "날짜순", value: "name" },
+  { idx: 2, name: "최신순", value: "name" },
+  { idx: 3, name: "상호", value: "name" },
+];
+
+const resultCnt: Ref<number> = ref(0);
+
+function goSomewhere() {
+  router.push({ name: "Home" }); // 또는 router.go(-1) 도 가능
+}
+</script>
+
+<style lang="scss" scoped>
+// 공통
+.top-bar-back {
+  @include custom-bar-style(
+    $height: $height-top-bar,
+    $z-index: $z-index-top-bar
+  );
+}
+
+.center-container {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
+}
+.bottom-button-wrapper {
+  @include custom-padding-x;
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  div {
+    @include custom-button-style($height: 54px, $font-color: white);
+  }
+}
+.input-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $padding-big;
+
+  .input-group {
+    @include custom-padding-x();
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .input-title {
+      @include custom-text($font-size: 14px);
+      text-align: left;
+
+      .input-title-mandatory {
+        color: red;
+      }
     }
-  },
-  methods: {
-    generateYearOptions() {
-      const currentYear = new Date().getFullYear();
-      const startYear = 2000; // 선택 가능한 시작 연도 설정
-      let options = [];
 
-      for (let year = startYear; year <= currentYear; year++) {
-        options.push({ 
-          idx: year - startYear + 1, 
-          name: `${year}년`, 
-          value: year.toString() });
+    .input-content {
+      display: flex;
+      align-items: center;
+      gap: $padding-small;
+
+      input[type="text"] {
+        @include custom-input-style;
+        flex: 1;
+      }
+      input {
+        @include custom-input-style;
+        flex: 1;
       }
 
-      return options;
+      .select-content {
+        flex-grow: 1;
+      }
     }
   }
 }
-</script>
-<style lang="scss" scoped>
-  .center-container {
+
+.select-container {
+  display: flex;
+  flex-direction: row;
+  gap: $padding-small;
+
+  input {
+    width: 30px;
+  }
+}
+
+// content를 구분해주는 회색 긴 선
+.content-indicator {
+  margin: 0;
+  margin-top: $margin-default;
+  background-color: #ededed;
+  height: 10px;
+}
+
+.result-wrapper {
+  @include custom-padding-x;
+  flex: 1;
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
+
+  .result-bar {
+    height: 48px;
+    display: flex;
+    flex-direction: row; /* 기본값이 row이지만 명시적으로 지정 */
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: flex-start; /* 수평 왼쪽 정렬 */
+    gap: 4px;
+
+    p {
+      @include custom-text;
+
+      &:first-child {
+        font-weight: 600; // weight가 아니라 font-weight
+      }
+
+      &.result-cnt {
+        @include custom-text(
+          $font-color: $primary-color-default,
+          $font-size: 16px,
+          $font-weight: 400
+        );
+      }
+    }
+  }
+  hr {
+    border: none;
+    margin: 0;
+    height: 1px;
+    background-color: #ccc;
+  }
+}
+// scoped
+.real-estitate-content {
+  @include custom-padding-y;
+  display: flex;
+  align-items: center;
+
+  .real-estitate-description {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-    width: 100%;
-    gap: 10px;
-    background-color: #EDEDED;
+    gap: 4px;
+    p {
+      @include custom-text(
+        $font-color: $text-color-light,
+        $font-weight: 300,
+        $font-size: 14px
+      );
+      text-align: left;
+
+      &.real-estitate-name {
+        @include custom-text;
+        margin-bottom: 4px;
+      }
+    }
   }
 
-  .address-conatienr {
-    background-color: white;
-    @include custom-padding-x;
-  }
-
-  .address-conatienr .title {
-    text-align: left;
-    @include custom-text-bold($font-size: 16px);
-    @include custom-padding-y;
-  }
-
-  .address-conatienr .content {
+  .real-estate-status {
+    &.active {
+      @include custom-text(
+        $font-color: $primary-color-default,
+        $font-size: 14px
+      );
+      background-color: #e0f9ed;
+    }
+    &.unactive {
+      @include custom-text($font-size: 14px);
+      background-color: #f7f7f7;
+    }
     display: flex;
-    gap: 8px;
-    padding-bottom: 16px;
+    height: fit-content;
+    border-radius: 20px;
+    padding: 10px;
   }
-
-  .address-conatienr .content .input-wapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .transaction-history-container {
-    background-color: white;
-    flex-grow: 1;
-    @include custom-padding-x;
-  }
+}
 </style>
