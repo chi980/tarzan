@@ -44,36 +44,43 @@
       </form>
       <div class="content-indicator"></div>
       <div class="result-wrapper">
-        <div v-for="(realEstate, index) in realEstates" :key="index">
-          <div class="real-estate-container">
-            <div
-              class="real-estate-status"
-              :class="{ ok: realEstate['status-code'] === '1' }">
-              {{ realEstate["status-name"] }}
-            </div>
-            <div class="real-estate-content">
-              <p class="real-estate-name">
-                {{ realEstate["real-estate-name"] }}
-              </p>
-              <p>{{ realEstate["real-estate-person-name"] }}</p>
-              <p class="real-estate-address">
-                {{ realEstate["road-name-address"] }}
-                <span v-if="realEstate['lot-number-address']">
-                  ({{ realEstate["lot-number-address"] }})
-                </span>
-              </p>
+        <div v-if="isLoading">
+          <SkeletonCard v-for="n in 3" :key="n" />
+        </div>
+        <div v-if="!isLoading">
+          <transition-group name="fade" tag="div">
+            <div v-for="(realEstate, index) in realEstates" :key="index">
+              <div class="real-estate-container">
+                <div
+                  class="real-estate-status"
+                  :class="{ ok: realEstate['status-code'] === '1' }">
+                  {{ realEstate["status-name"] }}
+                </div>
+                <div class="real-estate-content">
+                  <p class="real-estate-name">
+                    {{ realEstate["real-estate-name"] }}
+                  </p>
+                  <p>{{ realEstate["real-estate-person-name"] }}</p>
+                  <p class="real-estate-address">
+                    {{ realEstate["road-name-address"] }}
+                    <span v-if="realEstate['lot-number-address']">
+                      ({{ realEstate["lot-number-address"] }})
+                    </span>
+                  </p>
 
-              <p>
-                {{ realEstate["establish-begin-date"] }} ~
-                {{ realEstate["establish-end-date"] }}
-              </p>
-              <p>
-                {{ realEstate["register-code"] }}/{{
-                  realEstate["register-date"]
-                }}
-              </p>
+                  <p>
+                    {{ realEstate["establish-begin-date"] }} ~
+                    {{ realEstate["establish-end-date"] }}
+                  </p>
+                  <p>
+                    {{ realEstate["register-code"] }}/{{
+                      realEstate["register-date"]
+                    }}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          </transition-group>
         </div>
       </div>
     </div>
@@ -91,6 +98,7 @@ import { seoulSiGunGu } from "@/data/seoulSiGunGu";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import SkeletonCard from "@/components/common/SkeletonCard.vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 
 const router = useRouter();
@@ -119,6 +127,7 @@ const selectOption = (idx) => {
 };
 
 const realEstates = ref<RealEstate[] | null>(null);
+const isLoading = ref(false);
 
 const submitData = async () => {
   if (searchData.value.search === null) {
@@ -126,6 +135,7 @@ const submitData = async () => {
     return;
   }
 
+  isLoading.value = true;
   try {
     const response = await axiosInstance.get("/fraud/real-estate", {
       params: {
@@ -137,9 +147,16 @@ const submitData = async () => {
       },
     });
     console.log("response", response.data);
-    realEstates.value = response.data.data.list;
+    if (response.data.data.list) {
+      realEstates.value = response.data.data.list;
+    } else {
+      throw new Error("No data found");
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
+    realEstates.value = [];
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -325,5 +342,14 @@ function goSomewhere() {
     @include custom-text($font-size: 12px, $font-color: $text-color-light);
     text-align: left;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
