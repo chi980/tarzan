@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-import { useRouter } from "vue-router";
+import router from "@/router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -70,8 +70,8 @@ const selectedTag = computed(() => {
 
 // authStore에서 사용자 지역구 정보 가져오기
 const authStore = useAuthStore();
-const userGu = authStore.getGul;
-console.log("userGu", userGu);
+// const userGu = authStore.getGul;
+// console.log("userGu", userGu);
 
 // API: 게시글 생성
 const submit = async () => {
@@ -82,19 +82,19 @@ const submit = async () => {
   }
 
   // 게시글 제목, 내용, 태그를 콘솔에 출력
-  console.log({
-    board_title: post.value.title,
-    board_content: post.value.content,
-    board_tag: selectedTag.value?.value,
-    board_gu: userGu.value,
-  });
+  // console.log({
+  //   board_title: post.value.title,
+  //   board_content: post.value.content,
+  //   board_tag: selectedTag.value?.value,
+  //   board_gu: userGu.value,
+  // });
 
   try {
     const response = await axiosInstance.post("/v1/board", {
       board_title: post.value.title,
       board_content: post.value.content,
       board_tag: selectedTag.value?.value,
-      board_gu: userGu, // ✅ .value 빼기
+      board_gu: "JONGNO", // userGu.value,
     });
 
     if (response.data.success) {
