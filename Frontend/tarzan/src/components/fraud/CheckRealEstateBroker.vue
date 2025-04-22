@@ -1,133 +1,175 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <TopBarBack title="공인중개사 확인" @back="goSomewhere" />
+    <div class="top-bar-wrapper">
+      <TopBarBack title="공인중개사 확인" @back="goSomewhere" />
+    </div>
     <div class="center-container">
-      <form class="input-form">
-        <!-- 컴포넌트 화 하기 -->
+      <form class="input-form" @submit.prevent="">
         <div class="input-group">
-          <h2 class="input-title">검색조건</h2>
-          <div class="input-content-wrapper">
-            <div class="input-content">
-              <div style="flex: 1">
-                <CustomSelectBox :options="seoulDistrictOptions" />
-              </div>
-              <div style="flex: 1">
-                <CustomSelectBox :options="seoulDistrictOptions" />
-              </div>
-            </div>
+          <div class="select-container">
+            <CustomSelectBox
+              :options="seoulDistrictOptions"
+              :parent-style="{
+                backgroundColor: 'white',
+                fontWeight: 400,
+                justifyContent: `space-between`,
+                border: '1px solid #e7e7e7',
+              }"
+              @update:selected="selectSiGunGu" />
           </div>
-          <div class="input-content-wrapper">
-            <div class="input-content">
-              <div>
-                <CustomSelectBox :options="searchOption" />
-              </div>
-              <div style="flex: 1; display: flex">
-                <input
-                  type="text"
-                  style="width: 100%; box-sizing: border-box"
-                  placeholder="df"
-                />
-              </div>
+        </div>
+
+        <div class="input-group" style="">
+          <div class="input-content select-container">
+            <div style="width: max-content; min-width: 100px">
+              <CustomSelectBox
+                :options="searchOption"
+                :parent-style="{
+                  backgroundColor: 'white',
+                  fontWeight: 400,
+                  justifyContent: `space-between`,
+                  border: '1px solid #e7e7e7',
+                }"
+                @update:selected="selectOption" />
             </div>
+            <input
+              type="type"
+              placeholder="검색어를 입력해주세요."
+              v-model="searchData.search" />
           </div>
+        </div>
+        <div class="button-default-wrapper">
+          <div class="button-default" @click="submitData">검색하기</div>
         </div>
       </form>
-
       <div class="content-indicator"></div>
-
       <div class="result-wrapper">
-        <div class="result-bar">
-          <p>결과</p>
-          <p class="result-cnt">{{ resultCnt }}</p>
+        <div v-if="isLoading">
+          <SkeletonCard v-for="n in 3" :key="n" />
         </div>
-        <hr />
+        <div v-if="!isLoading">
+          <transition-group name="fade" tag="div">
+            <div v-for="(realEstate, index) in realEstates" :key="index">
+              <div class="real-estate-container">
+                <div
+                  class="real-estate-status"
+                  :class="{ ok: realEstate['status-code'] === '1' }">
+                  {{ realEstate["status-name"] }}
+                </div>
+                <div class="real-estate-content">
+                  <p class="real-estate-name">
+                    {{ realEstate["real-estate-name"] }}
+                  </p>
+                  <p>{{ realEstate["real-estate-person-name"] }}</p>
+                  <p class="real-estate-address">
+                    {{ realEstate["road-name-address"] }}
+                    <span v-if="realEstate['lot-number-address']">
+                      ({{ realEstate["lot-number-address"] }})
+                    </span>
+                  </p>
 
-        <ul>
-          <li v-for="n in 2" :key="n">
-            <div class="real-estitate-content">
-              <div class="real-estitate-description">
-                <p class="real-estitate-name">우리공인중개사사무소</p>
-                <p>서울 강남구 논현로 71길 13 (우) 06248</p>
-                <p>등록번호: 11620-2020-00067</p>
-                <p>김정현, 02-522-4933</p>
+                  <p>
+                    {{ realEstate["establish-begin-date"] }} ~
+                    {{ realEstate["establish-end-date"] }}
+                  </p>
+                  <p>
+                    {{ realEstate["register-code"] }}/{{
+                      realEstate["register-date"]
+                    }}
+                  </p>
+                </div>
               </div>
-              <div class="real-estate-status active">영업중</div>
             </div>
-            <div class="real-estitate-content">
-              <div class="real-estitate-description">
-                <p class="real-estitate-name">우리공인중개사사무소</p>
-                <p>서울 강남구 논현로 71길 13 (우) 06248</p>
-                <p>등록번호: 11620-2020-00067</p>
-                <p>김정현, 02-522-4933</p>
-              </div>
-              <div class="real-estate-status unactive">폐업</div>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="bottom-button-wrapper">
-      <div>
-        <p>직접 추가하기</p>
+          </transition-group>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, Ref } from "vue";
-import { useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+
+import { RealEstate } from "@/data/fraud";
 import { Option } from "@/data/options";
-// import DropDown from "@/components/common/DropDown.vue";
+import { seoulSiGunGu } from "@/data/seoulSiGunGu";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
-import TopBarBack from "../common/TopBarBack.vue";
+import SkeletonCard from "@/components/common/SkeletonCard.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 
 const router = useRouter();
 
-const seoulDistrictOptions: Option[] = [
-  { idx: 0, name: "서울시 종로구", value: "JONGNO" },
-  { idx: 1, name: "서울시 종로구", value: "JONGNO" },
-  { idx: 2, name: "서울시 중구", value: "JUNG" },
-  { idx: 3, name: "서울시 용산구", value: "YONGSAN" },
-  { idx: 4, name: "서울시 성동구", value: "SEONGDONG" },
-  { idx: 5, name: "서울시 광진구", value: "GWANGJIN" },
-  { idx: 6, name: "서울시 동대문구", value: "DONGDAEMUN" },
-  { idx: 7, name: "서울시 중랑구", value: "JUNGNANG" },
-  { idx: 8, name: "서울시 성북구", value: "SEONGBUK" },
-  { idx: 9, name: "서울시 강북구", value: "GANGBUK" },
-  { idx: 10, name: "서울시 도봉구", value: "DOBONG" },
-  { idx: 11, name: "서울시 노원구", value: "NOWON" },
-  { idx: 12, name: "서울시 은평구", value: "EUNPYEONG" },
-  { idx: 13, name: "서울시 서대문구", value: "SEODAEMUN" },
-  { idx: 14, name: "서울시 마포구", value: "MAPO" },
-  { idx: 15, name: "서울시 양천구", value: "YANGCHEON" },
-  { idx: 16, name: "서울시 강서구", value: "GANGSEO" },
-  { idx: 17, name: "서울시 구로구", value: "GURO" },
-  { idx: 18, name: "서울시 금천구", value: "GEUMCHEON" },
-  { idx: 19, name: "서울시 영등포구", value: "YEONGDEUNGPO" },
-  { idx: 20, name: "서울시 동작구", value: "DONGJAK" },
-  { idx: 21, name: "서울시 관악구", value: "GWANAK" },
-  { idx: 22, name: "서울시 서초구", value: "SEOCHO" },
-  { idx: 23, name: "서울시 강남구", value: "GANGNAM" },
-  { idx: 24, name: "서울시 송파구", value: "SONGPA" },
-  { idx: 25, name: "서울시 강동구", value: "GANGDONG" },
-];
+const searchData = ref({
+  gu: null,
+  searchBy: null,
+  search: null,
+});
+
+const seoulDistrictOptions = seoulSiGunGu.map((district) => ({
+  idx: district.idx,
+  name: district.name.split(" ")[1],
+  value: district.value,
+}));
+const selectSiGunGu = (idx) => {
+  searchData.value.gu = seoulDistrictOptions[idx].value;
+};
 
 const searchOption: Option[] = [
-  { idx: 1, name: "날짜순", value: "name" },
-  { idx: 2, name: "최신순", value: "name" },
-  { idx: 3, name: "상호", value: "name" },
+  { idx: 1, name: "중개업자명", value: "중개업자명" },
+  { idx: 2, name: "사업자상호", value: "사업자상호" },
 ];
+const selectOption = (idx) => {
+  searchData.value.searchBy = searchOption[idx].value;
+};
 
-const resultCnt: Ref<number> = ref(0);
+const realEstates = ref<RealEstate[] | null>(null);
+const isLoading = ref(false);
+
+const submitData = async () => {
+  if (searchData.value.search === null) {
+    alert("검색어를 입력해주세요.");
+    return;
+  }
+
+  isLoading.value = true;
+  try {
+    const response = await axiosInstance.get("/fraud/real-estate", {
+      params: {
+        gu: searchData.value.gu,
+        searchBy: searchData.value.searchBy,
+        search: searchData.value.search,
+        numOfRows: 100,
+        pageNo: 1,
+      },
+    });
+    console.log("response", response.data);
+    if (response.data.data.list) {
+      realEstates.value = response.data.data.list;
+    } else {
+      throw new Error("No data found");
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    realEstates.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 function goSomewhere() {
-  router.push({ name: 'Home' }); // 또는 router.go(-1) 도 가능
+  router.push({ name: "Home" }); // 또는 router.go(-1) 도 가능
 }
 </script>
 
 <style lang="scss" scoped>
 // 공통
+.top-bar-wrapper {
+  width: 100%;
+}
 .top-bar-back {
   @include custom-bar-style(
     $height: $height-top-bar,
@@ -179,6 +221,7 @@ function goSomewhere() {
   display: flex;
   flex-direction: column;
   gap: $padding-big;
+
   .input-group {
     @include custom-padding-x();
     display: flex;
@@ -186,17 +229,11 @@ function goSomewhere() {
     gap: 12px;
 
     .input-title {
-      @include custom-text-bold($font-size: 18px);
+      @include custom-text($font-size: 14px);
       text-align: left;
-    }
 
-    .input-content-wrapper {
-      display: flex;
-      flex-direction: column;
-      gap: $padding-small;
-
-      .input-content {
-        margin: 0;
+      .input-title-mandatory {
+        color: red;
       }
     }
 
@@ -205,40 +242,50 @@ function goSomewhere() {
       align-items: center;
       gap: $padding-small;
 
-      input[tgype="text"] {
-        @include custom-input-style-basic;
-        padding: 14px;
-        box-sizing: border-box;
-        flex: 1; /* 남은 공간을 모두 차지하도록 설정 */
+      input[type="text"] {
+        @include custom-input-style;
+        flex: 1;
+      }
+      input {
+        @include custom-input-style;
+        flex: 1;
       }
 
       .select-content {
         flex-grow: 1;
       }
     }
-    .input-description {
-      @include custom-text($font-size: 12px, $font-color: $text-color-light);
-
-      p {
-        display: block;
-        @include custom-padding-y(4px);
-        text-align: left;
-      }
-    }
   }
 }
 
-// content를 구분해주는 회색 긴 선
-.content-indicator {
-  margin: 0;
-  margin-top: $margin-default;
-  background-color: #ededed;
-  height: 10px;
+.select-container {
+  display: flex;
+  flex-direction: row;
+  gap: $padding-small;
+
+  input {
+    width: 30px;
+  }
+}
+
+// scoped
+
+.input-form {
+  padding-top: $padding-default;
+  gap: $padding-small !important;
+}
+.button-default-wrapper {
+  @include custom-padding-x;
+}
+.button-default {
+  @include custom-button-style;
 }
 
 .result-wrapper {
-  @include custom-padding-x;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+
   overflow-y: auto;
   /* 스크롤바 전체 영역 */
   &::-webkit-scrollbar {
@@ -257,84 +304,52 @@ function goSomewhere() {
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
-
-  .result-bar {
-    height: 48px;
-    display: flex;
-    flex-direction: row; /* 기본값이 row이지만 명시적으로 지정 */
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: flex-start; /* 수평 왼쪽 정렬 */
-    gap: 4px;
-
-    p {
-      @include custom-text;
-
-      &:first-child {
-        font-weight: 600; // weight가 아니라 font-weight
-      }
-
-      &.result-cnt {
-        @include custom-text(
-          $font-color: $primary-color-default,
-          $font-size: 16px,
-          $font-weight: 400
-        );
-      }
-    }
-  }
-  hr {
-    border: none;
-    margin: 0;
-    height: 1px;
-    background-color: #ccc;
-  }
-}
-// scoped
-.input-form {
-  margin-top: $margin-default;
 }
 
-.real-estitate-content {
-  @include custom-padding-y;
+.real-estate-container {
+  @include custom-padding;
+
+  border-bottom: 1px solid #f8f8f8;
+
   display: flex;
-  align-items: center;
-
-  .real-estitate-description {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    p {
-      @include custom-text(
-        $font-color: $text-color-light,
-        $font-weight: 300,
-        $font-size: 14px
-      );
-      text-align: left;
-
-      &.real-estitate-name {
-        @include custom-text;
-        margin-bottom: 4px;
-      }
-    }
-  }
+  flex-direction: column;
+  gap: 12px;
 
   .real-estate-status {
-    &.active {
-      @include custom-text(
-        $font-color: $primary-color-default,
-        $font-size: 14px
-      );
-      background-color: #e0f9ed;
+    @include custom-padding(8px);
+    @include custom-text($font-size: 10px, $font-color: #717277);
+
+    width: fit-content;
+
+    background-color: #f2f3f9;
+    border-radius: 10px;
+
+    &.ok {
+      background-color: $primary-color-light;
+      color: $primary-color-default !important;
     }
-    &.unactive {
-      @include custom-text($font-size: 14px);
-      background-color: #f7f7f7;
-    }
-    display: flex;
-    height: fit-content;
-    border-radius: 20px;
-    padding: 10px;
   }
+  .real-estate-name {
+    @include custom-text($font-size: 16px);
+  }
+  .real-estate-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  p {
+    @include custom-text($font-size: 12px, $font-color: $text-color-light);
+    text-align: left;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

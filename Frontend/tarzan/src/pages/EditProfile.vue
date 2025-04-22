@@ -292,8 +292,13 @@ const submitForm = async () => {
     };
 
     const response = await axiosInstance.put("/v1/user", formData);
-    const { email, role } = response.data.data;
-    authStore.setUser({ email, role });
+    authStore.setUser({
+      nickname: user_nickname,
+      role: user.value.user_role,
+      email: user.value.user_email,
+      gu: user.value.user_gu,
+      imageUrl: user.value.user_image_url,
+    });
     alert("수정이 완료되었습니다.");
     router.push({ name: "Home" });
   } catch (error) {
@@ -347,8 +352,8 @@ const fetachMyProfile = async () => {
           );
 
     selectedSeoulSiGunGuIdx.value = selectedIndex === -1 ? 0 : selectedIndex;
-
-    address.value = user.value.user_address;
+    console.log(user.value);
+    address.value = user.value.user_job_address;
     latitude.value = user.value.user_latitude;
     longitude.value = user.value.user_longitude;
 

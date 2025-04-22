@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -56,11 +58,14 @@ public class ReviewListItemResponseDto {
     @JsonProperty("review_is_writer")
     private Boolean isWriter;
 
+    @JsonProperty("review_created_at")
+    private LocalDateTime createdAt;
+
     @Builder
     public ReviewListItemResponseDto(Long id, String imgUrl, Integer score, LeaseType leaseType, Integer deposit,
                                      Integer managementFee, Integer residencePeriod, Integer floor,
                                      String advantage, List<Tag> advantageTagList, String disadvantage,
-                                     List<Tag> disadvantageTagList, String writerNickname, Boolean isWriter) {
+                                     List<Tag> disadvantageTagList, String writerNickname, Boolean isWriter, LocalDateTime createdAt) {
         this.id = id;
         this.imgUrl = imgUrl;
         this.score = score;
@@ -75,6 +80,8 @@ public class ReviewListItemResponseDto {
         this.disadvantageTagList = disadvantageTagList;
         this.writerNickname = writerNickname;
         this.isWriter = isWriter;
+
+        this.createdAt = createdAt;
     }
 
     public ReviewListItemResponseDto(Review review, boolean isWriter) {
@@ -92,5 +99,6 @@ public class ReviewListItemResponseDto {
         this.disadvantageTagList = review.getDisadvantageTagList();
         this.writerNickname = review.getWriter().getNickname();
         this.isWriter = isWriter;
+        this.createdAt = review.getCreatedAt();
     }
 }

@@ -87,6 +87,8 @@ public class BuildingServiceImpl implements BuildingService{
         Point location = locationService.createPoint(buildingListRequestDto.getLatitude(), buildingListRequestDto.getLongitude());
         Double latitude = buildingListRequestDto.getLatitude();
         Double longitude = buildingListRequestDto.getLongitude();
+        log.info("latitude: {}", latitude);
+        log.info("longitude: {}", longitude);
         double radius = buildingListRequestDto.getRadius();
         List<BuildingListItemResponseDto> list;
 

@@ -1,104 +1,198 @@
 <template>
   <div class="review-item">
-    <div class="writer-container">
-      <!-- <img :src="review.review_img_url" alt="후기 이미지" class="writer-img" v-if="review.review_img_url">
-      <img src="@/assets/icons/Filter/writer-icon.png" alt="기본 이미지" class="writer-img" v-else> -->
-      <img
-        :src="review.review_img_url || defaultImage"
-        alt="후기 이미지"
-        class="review-image" />
-      <div class="writer-info">
-        <span class="username">{{ review.review_writer_nickname }}</span>
-        <span class="residence-period">{{
-          review.review_residence_period
-        }}</span>
-        <StarRating v-model="rating" :readonly="true" />
+    <div class="header">
+      <div class="column">
+        <span id="nickname">{{ props.review.review_writer_nickname }}</span>
+        <div class="row content">
+          <StarRating v-model="props.review.review_score" :readonly="true" />
+          <p>{{ formatDateWithoutTime(props.review.review_created_at) }}</p>
+        </div>
+        <div class="row">
+          <div class="tag" v-if="props.review.review_residence_period">
+            {{ props.review.review_residence_period }} 거주
+          </div>
+          <div class="tag" v-if="props.review.review_floo">
+            {{ props.review.review_floo }} 층
+          </div>
+        </div>
+      </div>
+      <div class="dropdown" @click="toggleDropdown">
+        <img :src="menuButtonImgSrc" alt="..." />
+        <div v-if="showMenu" class="dropdown-content">
+          <div v-if="props.review.review_is_writer">
+            <!-- <div @click="onEdit">수정</div> -->
+            <div @click="onDelete">삭제</div>
+          </div>
+          <div v-else>
+            <div @click="onReport">신고</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="review-content-container">
-      <div class="review-content">
-        <h4>장점</h4>
-        <p>{{ review.review_advantage }}</p>
-      </div>
-      <div class="review-content">
-        <h4>단점</h4>
-        <p>{{ review.review_disadvantage }}</p>
-      </div>
+    <div class="row content" v-if="props.review.review_advantage">
+      <img :src="advantageImgSrc" alt="장점" />
+      <p>{{ props.review.review_advantage }}</p>
+    </div>
+
+    <div class="row content" v-if="props.review.review_disadvantage">
+      <img :src="disadvantageImgSrc" alt="단점" />
+      <p>{{ props.review.review_disadvantage }}</p>
     </div>
   </div>
 </template>
-<script setup>
-import { ref, defineProps } from "vue";
-import defaultImage from "@/assets/icons/Filter/writer-icon.png";
-import StarRating from "./StarRating.vue";
 
-const pros = defineProps({
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+import advantageImgSrc from "@/assets/emoji/advantage.png";
+import disadvantageImgSrc from "@/assets/emoji/disadvantage.png";
+import menuButtonImgSrc from "@/assets/icons/menu.png";
+
+import { formatDateWithoutTime } from "@/utils/date";
+
+import { axiosInstance } from "@/plugins/axiosPlugin";
+
+import StarRating from "@/components/review/StarRating.vue";
+
+const props = defineProps<{
   review: {
-    type: Object,
-    require: true,
-  },
+    review_score: number;
+    review_advantage: string;
+    review_disadvantage: string;
+    review_writer_nickname: string;
+    review_is_writer: boolean;
+    review_created_at: string;
+  };
+}>();
+
+const showMenu = ref(false);
+
+// 드롭다운 열고 닫는 함수
+const toggleDropdown = (event: Event) => {
+  showMenu.value = !showMenu.value;
+  event.stopPropagation(); // 클릭 이벤트 전파 방지
+};
+
+// 외부 클릭 시 드롭다운 닫기
+const closeDropdown = () => {
+  showMenu.value = false;
+};
+
+// 수정, 삭제, 신고 클릭 시 처리
+const onEdit = () => {
+  closeDropdown();
+};
+
+const onDelete = () => {
+  closeDropdown();
+
+  deleteReview();
+};
+
+const deleteReview = async () => {
+  try {
+    const response = await axiosInstance.delete(
+      `/v1/reviews/${props.review.review_id}`
+    );
+    console.log("리뷰 삭제 성공", response.data);
+  } catch (error) {
+    console.error("리뷰 삭제 실패", error);
+  }
+};
+
+const onReport = () => {
+  console.log("신고 클릭");
+  closeDropdown();
+};
+
+// 외부 클릭 시 드롭다운을 닫도록 이벤트 리스너 추가
+onMounted(() => {
+  document.addEventListener("click", closeDropdown);
 });
 
-const rating = ref(3); // 초기 별점 값
+onUnmounted(() => {
+  document.removeEventListener("click", closeDropdown);
+});
 </script>
-<style lang="scss" scoped>
+
+<style scoped lang="scss">
 .review-item {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $padding-small;
+
+  padding-bottom: $padding-small;
+  border-bottom: 1px solid #d9d9d9;
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    #nickname {
+      @include custom-text($font-weight: 600);
+      font-weight: bold;
+      text-align: left;
+    }
+
+    img {
+      @include custom-icon-style(16px);
+    }
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    align-items: center;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tag {
+    @include custom-padding(8px);
+    @include custom-text($font-size: 12px, $font-color: #717277);
+    background-color: #f2f3f9;
+    border-radius: 10px;
+  }
+
+  .content {
+    @include custom-text($font-size: 12px, $font-color: $text-color-light);
+  }
+  img {
+    @include custom-icon-style(36px);
+  }
+}
+:deep(.star svg) {
+  width: 18px;
+  height: 18px;
 }
 
-.writer-container {
-  display: flex;
-  gap: 16px;
-}
+.dropdown {
+  position: relative;
 
-.writer-container img {
-  width: 40px;
-  height: 40px;
-}
+  .dropdown-content {
+    @include custom-padding(16px);
+    @include custom-text($font-size: 12px);
+    position: absolute;
+    right: 0;
 
-.writer-container .writer-info {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  gap: 4px;
-}
+    width: max-content;
 
-.writer-container .writer-info .username {
-  font-size: 14px;
-  font-weight: 500;
-}
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.05);
 
-.writer-container .writer-info .residence-period {
-  font-size: 12px;
-}
-
-.review-content-container {
-  background-color: #f8f8f8;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  @include custom-padding;
-}
-
-.review-content-container .review-content {
-  display: flex;
-  gap: 12px;
-  text-align: left;
-  align-items: baseline;
-}
-
-.review-content-container .review-content h4 {
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.review-content-container .review-content p {
-  font-size: 12px;
-  color: #969696;
-  line-height: 1.5;
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: $padding-default;
+    }
+  }
 }
 </style>

@@ -6,6 +6,7 @@ import com.mjutarzan.tarzan.domain.house.api.response.HouseItemResposeDto;
 import com.mjutarzan.tarzan.domain.house.api.response.HouseListResponseDto;
 import com.mjutarzan.tarzan.domain.house.api.response.SimpleHouseListItemResponseDto;
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface ApiHouseService {
 
     List<SimpleHouseListItemResponseDto> getHouses(ApiHouseListRequestDto apiHouseListRequestDto);
 
-    HouseItemResposeDto getHouse(Long houseIdx);
+    HouseItemResposeDto getHouse(Long houseIdx, CustomUserDetails userDto);
 
     HouseListResponseDto searchHouses(HouseSearchRequestDto houseSearchRequestDto);
 }

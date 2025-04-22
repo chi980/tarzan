@@ -36,6 +36,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -337,16 +339,36 @@ public class BookmarkServiceImpl implements BookmarkService{
             
             // index 구하는 과정
             Map<HouseIndexType, Long> indexes = getHouseIndexesScore(bookmark.getHouse());
+            log.info("checklist 갯수:{}",bookmark.getCheckListItemList().size());
             Map<BookmarkChecklistType, Long> checks = getCheckListScore(bookmark.getCheckListItemList());
-            
+
+
+            Map<String, String>costs = new HashMap<>();
+            costs.put("money-type", bookmark.getLeaseType() != null ? bookmark.getLeaseType().getKor() : "");
+            costs.put("deposit", bookmark.getDeposit() != null ? Integer.toString(bookmark.getDeposit()) : "");
+            costs.put("rent", bookmark.getRent() != null ? Integer.toString(bookmark.getRent()) : "");
+            costs.put("utilities", bookmark.getManagementFee() != null ? Integer.toString(bookmark.getManagementFee()) : "");
+            Map<String, String> details = new HashMap<>();
+            details.put("pet", bookmark.getCanAnimal() != null ? (bookmark.getCanAnimal() ? "가능" : "불가능") : "");
+            details.put("parking", bookmark.getParkingLotCoverage() != null ? Integer.toString(bookmark.getParkingLotCoverage()) : "");
+            details.put("roomCnt", bookmark.getRoomCnt() != null ? Integer.toString(bookmark.getRoomCnt()) : "");
+            details.put("bathroomCnt", bookmark.getBathRoomCnt() != null ? Integer.toString(bookmark.getBathRoomCnt()) : "");
+            details.put("movingDay", bookmark.getAvailableMoveInDate() != null ? bookmark.getAvailableMoveInDate().format(DateTimeFormatter.ofPattern("yyyy.MM.dd")) : "");
+            details.put("floor", bookmark.getFloor() != null ? Integer.toString(bookmark.getFloor()) : "");
+            details.put("direction", bookmark.getDirection() != null ? bookmark.getDirection().getKor() : "");
+
             return CompareBookmarkDetailResponseDto.builder()
-                    .id(house.getId())
+                    .id(bookmark.getId())
+                    .houseId(house.getId())
                     .name(house.getName())
                     .address(house.getAddress())
                     .category(house.getCategory())
                     .score(getScore(indexes, checks))  // 항상 100점
+                    .costs(costs)
+                    .details(details)
                     .indexes(indexes)
                     .checks(checks)
+                    .bookmarkCreatedAt(bookmark.getCreatedAt())
                     .build();
         }).collect(Collectors.toList());
 
@@ -361,18 +383,27 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     private Map<BookmarkChecklistType, Long> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
-        return checkListItemList.stream()
-                // type이 CHECK로 시작하는 항목만 필터링
-                .filter(item -> item.getType().name().startsWith("CHECK"))
-                // type별로 그룹화
-                .collect(Collectors.groupingBy(
-                        BookmarkChecklistItem::getType,  // type으로 그룹화
-                        // 각 그룹에서 value가 true인 항목을 카운트
-                        Collectors.filtering(
-                                BookmarkChecklistItem::getValue, // value가 true인 항목만 필터링
-                                Collectors.counting() // true인 항목을 카운트
-                        )
-                ));
+            // 1. CHECK_로 시작하는 항목만 필터링하여 초기화 (기본값 0)
+            Map<BookmarkChecklistType, Long> result = Arrays.stream(BookmarkChecklistType.values())
+                    .filter(type -> type.name().startsWith("CHECK"))  // CHECK_로 시작하는 항목만 필터링
+                    .collect(Collectors.toMap(
+                            type -> type, // BookmarkChecklistType을 key로 사용
+                            type -> 0L // 기본값은 0
+                    ));
+
+            // 2. 각 항목에서 true인 것만 카운트하여 결과에 반영
+            for (BookmarkChecklistItem item : checkListItemList) {
+                if (item.getValue() != null && item.getValue()) {  // value가 true인 항목만 처리
+                    BookmarkChecklistType type = item.getType();
+                    if (result.containsKey(type)) {
+                        result.put(type, result.get(type) + 1); // 해당 항목의 값을 증가
+                    }
+                }
+            }
+
+            return result;
+
+
 
     }
 

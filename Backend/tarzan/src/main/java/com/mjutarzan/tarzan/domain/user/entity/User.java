@@ -208,6 +208,7 @@ public class User {
                 .email(this.email)
                 .imageUrl(this.imageUrl)
                 .nickname(this.nickname)
+                .role(this.role)
                 .gu(this.gu)
                 .haveAnimal(this.haveAnimal)
                 .haveCar(this.haveCar)

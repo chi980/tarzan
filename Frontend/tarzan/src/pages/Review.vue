@@ -30,9 +30,9 @@
         </div>
       </div>
       <div>
-        <div class="center-container-content" id="review-photo-wrapper">
+        <!-- <div class="center-container-content" id="review-photo-wrapper">
           <div v-for="n in 4" :key="n" class="box"></div>
-        </div>
+        </div> -->
 
         <div class="center-container-content">
           <ResultBar resultTitle="전체 후기" :sortOptions="sortOptions" />
@@ -44,8 +44,6 @@
               :review="review" />
           </div>
         </div>
-
-        <button>더보기</button>
       </div>
     </div>
 
@@ -54,8 +52,6 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
-
-// import { Review, Tag } from "@/data/review";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRoute, useRouter } from "vue-router";
@@ -73,8 +69,7 @@ onMounted(() => {
     router.replace("/");
   }
 
-  // houseIdx가 있을 경우 처리
-  console.log("houseIdx:", houseIdx);
+  fetchReviews();
 });
 
 import TopBarBack from "@/components/common/TopBarBack.vue";
@@ -104,6 +99,8 @@ const buttons = ref([
   { label: "👟 평지", value: "FLAT" },
 ]);
 const selectedButton = ref("ALL");
+
+// 정렬 옵션
 const sortOptions = ref([
   {
     idx: 0,
@@ -112,13 +109,13 @@ const sortOptions = ref([
   },
   {
     idx: 1,
-    name: "오래된순",
-    value: "오래된순",
+    name: "호평순",
+    value: "호평순",
   },
   {
     idx: 2,
-    name: "평점순",
-    value: "평점순",
+    name: "혹평순",
+    value: "혹평순",
   },
 ]);
 
@@ -149,11 +146,6 @@ const fetchReviews = async () => {
     alert("후기를 불러오는 데 실패했습니다.");
   }
 };
-
-// 컴포넌트가 생성될 때 데이터를 불러옴
-onMounted(() => {
-  // fetchReviews();
-});
 
 const buttonHandler = () => {
   router.push(`/review/create?houseIdx=${houseIdx}`);

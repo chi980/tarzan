@@ -10,30 +10,26 @@
         :style="parentStyle"
         class="selected-item"
         v-if="selectedOption"
-        @click="controllDropDown"
-      >
+        @click="controllDropDown">
         <span>{{ selectedOption.name }}</span>
         <img
           :src="arrowDownSrc"
           alt="arrowDown"
           class="input-item-image"
-          :class="{ rotated: isRotated, rotate: true }"
-        />
+          :class="{ rotated: isRotated, rotate: true }" />
       </div>
 
       <div
         class="scrollable-container dropdown-content"
         :class="['dropdown-content', { show: isDropDownOpen }]"
         style="min-width: max-content"
-        @click="controllDropDown"
-      >
+        @click="controllDropDown">
         <div class="scrollable-list">
           <ul>
             <li
               v-for="(option, index) in options"
               :key="option.idx"
-              @click="selectOption(option, index)"
-            >
+              @click="selectOption(option, index)">
               {{ option.name }}
             </li>
           </ul>
@@ -42,22 +38,17 @@
     </div>
     <div
       :class="['dropdown-exterior', { show: isDropDownOpen }]"
-      @click="controllDropDown"
-    ></div>
+      @click="controllDropDown"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
-import { ref, onMounted, defineEmits } from "vue";
+import { ref, onMounted, defineEmits, watch } from "vue";
 
-// @ts-ignore
 import { Option } from "@/data/options";
 
-// @ts-ignore
 import { SelectStyle } from "@/data/selectStyle";
 
-// @ts-ignore
 import arrowDownSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 
 // 부모로부터 받아온 options
@@ -73,7 +64,7 @@ const props = defineProps({
       backgroundColor: `$input-color-white`,
       fontWeight: 400,
       justifyContent: `space-between`,
-      border: '$border-color-input',
+      border: "$border-color-input",
     }),
   },
 });
@@ -114,12 +105,27 @@ const selectOption = (option: Option, index: number) => {
   selectedIdx.value = index;
   emit("update:selected", selectedIdx.value); // 선택한 옵션의 idx emit
   // console.log("커스텀박스: ",selectedOption.value.value);
-};
+}; // options가 바뀔 때마다 selectedOption도 초기화
+watch(
+  () => props.options,
+  (newOptions) => {
+    if (newOptions.length > 0) {
+      selectedOption.value = newOptions[0];
+      selectedIdx.value = 0;
+      emit("update:selected", 0);
+    } else {
+      selectedOption.value = null;
+      selectedIdx.value = null;
+    }
+  },
+  { immediate: true, deep: true } // 컴포넌트 마운트될 때도 실행되게 함
+);
 </script>
 
 <style lang="scss" scoped>
 .select-wrapper {
   display: flex;
+  flex: 1;
 }
 .selected-item {
   @include custom-text($font-size: 14px);

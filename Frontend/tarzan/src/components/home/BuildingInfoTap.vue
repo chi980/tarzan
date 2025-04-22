@@ -1,32 +1,76 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-
-import { Index } from "@/data/house";
-import { ChartDataOption } from "@/data/chart";
+import { ref, watch } from "vue";
 
 import RadarChart from "@/components/common/RadarChart.vue";
 
 const props = defineProps<{
-  indexes: Index[];
+  house: any;
 }>();
-const chartData = computed<ChartDataOption[]>(() => [
-  {
-    label: "현재 건물",
-    data: [
-      props.indexes.house_index_amenity,
-      props.indexes.house_index_clinic,
-      props.indexes.house_index_security,
-      props.indexes.house_index_shopping,
-      props.indexes.house_index_transportation,
+const chartData = ref(null);
+
+chartData.value = {
+  [props.house.house_id]: {
+    houseName: props.house.value.house_name,
+    indexes: [
+      {
+        label: "교통",
+        value: props.house.value.house_indexes.house_index_transportation,
+      },
+      {
+        label: "상업시설",
+        value: props.house.value.house_indexes.house_index_shopping,
+      },
+      {
+        label: "편의시설",
+        value: props.house.value.house_indexes.house_index_amenity,
+      },
+      {
+        label: "치안",
+        value: props.house.value.house_indexes.house_index_security,
+      },
+      {
+        label: "보건",
+        value: props.house.value.house_indexes.house_index_clinic,
+      },
     ],
   },
-]);
+};
+watch(
+  () => props.house,
+  (newHouse) => {
+    if (!newHouse || !newHouse.house_indexes) return;
+    console.log(newHouse.house_indexes);
+
+    chartData.value = {
+      [newHouse.house_id]: {
+        houseName: newHouse.house_name,
+        indexes: [
+          {
+            label: "교통",
+            value: newHouse.house_indexes.house_index_transportation,
+          },
+          {
+            label: "상업시설",
+            value: newHouse.house_indexes.house_index_shopping,
+          },
+          {
+            label: "편의시설",
+            value: newHouse.house_indexes.house_index_amenity,
+          },
+          { label: "치안", value: newHouse.house_indexes.house_index_security },
+          { label: "보건", value: newHouse.house_indexes.house_index_clinic },
+        ],
+      },
+    };
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <div class="building-info-tap-wrapper">
     <div class="chart-wrapper">
-      <RadarChart :chartData="chartData" />
+      <RadarChart :chartData="chartData" v-if="chartData" />
     </div>
   </div>
 </template>

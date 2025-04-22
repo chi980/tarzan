@@ -7,10 +7,12 @@ import com.mjutarzan.tarzan.domain.house.api.response.HouseListResponseDto;
 import com.mjutarzan.tarzan.domain.house.api.response.SimpleHouseListItemResponseDto;
 import com.mjutarzan.tarzan.domain.house.service.ApiHouseService;
 import com.mjutarzan.tarzan.domain.house.service.UserHouseService;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,9 +43,9 @@ public class HouseApi {
     }
 
     @GetMapping("/houses/{houseIdx}")
-    public ResponseEntity<?> getHouse(@PathVariable Long houseIdx) {
+    public ResponseEntity<?> getHouse(@PathVariable Long houseIdx,@AuthenticationPrincipal CustomUserDetails userDto) {
 
-        HouseItemResposeDto response = apiHouseService.getHouse(houseIdx);
+        HouseItemResposeDto response = apiHouseService.getHouse(houseIdx, userDto);
 
         return ResponseEntity.ok().body(
                 BaseResponseDto

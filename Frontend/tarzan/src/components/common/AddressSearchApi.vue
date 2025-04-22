@@ -225,12 +225,11 @@ const goToAddBookmarkByUser = () => {
     height: 100%;
   }
 }
-
-//scoped
-
 .non-content-sub-desc {
   @include custom-text($font-size: 12px);
   line-height: 100%;
   text-decoration-line: underline;
 }
+
+//scoped
 </style>

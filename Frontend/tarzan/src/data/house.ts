@@ -1,3 +1,5 @@
+import { Review } from "@/data/review";
+
 export interface House {
   house_id: number;
   house_latitude: number;

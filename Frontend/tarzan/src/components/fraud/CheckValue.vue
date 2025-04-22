@@ -1,154 +1,312 @@
 <template>
-  <div class="sub-container">
-    <TopBarBack title="시세 확인하기" />
+  <div class="sub-container non-input-sub-container">
+    <div class="top-bar-wrapper">
+      <TopBarBack title="시세 확인" @back="goSomewhere" />
+    </div>
     <div class="center-container">
-      <div class="address-conatienr">
-        <h2 class="title">주소</h2>
-        <div class="content">
-          <div class="input-wapper">
-            <CustomSelectBox :options="seoulDistrictOptions" />
-            <CustomSelectBox :options="dongOptions" />
-          </div>
-          <div class="input-wapper">
-            <CustomSelectBox :options="yearOptions" />
-            <CustomSelectBox :options="monthOptions" />
+      <form class="input-form" @submit.prevent="handleSearch">
+        <div class="input-group">
+          <div class="select-container">
+            <CustomSelectBox
+              :options="seoulDistrictOptions"
+              :parent-style="customStyle"
+              @update:selected="updateSeoulSiGunGu" />
+            <CustomSelectBox
+              :options="dongOptions"
+              :parent-style="customStyle"
+              @update:selected="updateSeoulDong" />
           </div>
         </div>
-      </div>
 
-      <div class="transaction-history-container">
-        <ResultBar resultTitle="거래 내역" />
-        <Divider />
-        <div class="content">
-          <TransactionHistory />
+        <div class="input-group">
+          <div class="input-content select-container">
+            <div style="width: max-content; min-width: 100px">
+              <CustomSelectBox
+                :options="searchOption"
+                :parent-style="customStyle"
+                @update:selected="updateSearchBy" />
+            </div>
+            <input
+              type="text"
+              placeholder="검색어를 입력해주세요."
+              v-model="searchData.search" />
+          </div>
         </div>
+        <div class="button-default-wrapper">
+          <div class="button-default" @click="handleSearch">검색하기</div>
+        </div>
+      </form>
+
+      <div class="result-wrapper">
+        <TabBar
+          :tabs="computedTabs"
+          :selectedTabIdx="selectedTabIdx"
+          @update:selectedTabIdx="selectTab" />
       </div>
     </div>
   </div>
 </template>
-<script>
-import CustomSelectBox from '../common/CustomSelectBox.vue';
-import Divider from '../common/Divider.vue';
-import ResultBar from '../common/ResultBar.vue';
-import TopBarBack from '../common/TopBarBack.vue';
-import TransactionHistory from './TransactionHistory.vue';
 
-export default {
-  components: {
-    TopBarBack,
-    CustomSelectBox,
-    ResultBar,
-    Divider,
-    TransactionHistory,
-  },
-  data() {
-    return {
-      seoulDistrictOptions: [
-        { idx: 1, name: "서울시 종로구", value: "JONGNO" },
-        { idx: 2, name: "서울시 중구", value: "JUNG" },
-        { idx: 3, name: "서울시 용산구", value: "YONGSAN" },
-        { idx: 4, name: "서울시 성동구", value: "SEONGDONG" },
-        { idx: 5, name: "서울시 광진구", value: "GWANGJIN" },
-        { idx: 6, name: "서울시 동대문구", value: "DONGDAEMUN" },
-        { idx: 7, name: "서울시 중랑구", value: "JUNGNANG" },
-        { idx: 8, name: "서울시 성북구", value: "SEONGBUK" },
-        { idx: 9, name: "서울시 강북구", value: "GANGBUK" },
-        { idx: 10, name: "서울시 도봉구", value: "DOBONG" },
-        { idx: 11, name: "서울시 노원구", value: "NOWON" },
-        { idx: 12, name: "서울시 은평구", value: "EUNPYEONG" },
-        { idx: 13, name: "서울시 서대문구", value: "SEODAEMUN" },
-        { idx: 14, name: "서울시 마포구", value: "MAPO" },
-        { idx: 15, name: "서울시 양천구", value: "YANGCHEON" },
-        { idx: 16, name: "서울시 강서구", value: "GANGSEO" },
-        { idx: 17, name: "서울시 구로구", value: "GURO" },
-        { idx: 18, name: "서울시 금천구", value: "GEUMCHEON" },
-        { idx: 19, name: "서울시 영등포구", value: "YEONGDEUNGPO" },
-        { idx: 20, name: "서울시 동작구", value: "DONGJAK" },
-        { idx: 21, name: "서울시 관악구", value: "GWANAK" },
-        { idx: 22, name: "서울시 서초구", value: "SEOCHO" },
-        { idx: 23, name: "서울시 강남구", value: "GANGNAM" },
-        { idx: 24, name: "서울시 송파구", value: "SONGPA" },
-        { idx: 25, name: "서울시 강동구", value: "GANGDONG" },
-      ],
-      dongOptions: [
-        { idx: 1, name: "신계동", value: "trans" },
-        { idx: 2, name: "효창동", value: "food" },
-        { idx: 3, name: "청파동", value: "tip" },
-        { idx: 4, name: "원효로 1동", value: "question" },
-        { idx: 5, name: "원효로 2동", value: "?" }
-      ],
-      yearOptions: this.generateYearOptions(),
-      monthOptions: [
-        { idx: 1, name: "1월", value: "1" },
-        { idx: 2, name: "2월", value: "2" },
-        { idx: 3, name: "3월", value: "3" },
-        { idx: 4, name: "4월", value: "4" },
-        { idx: 5, name: "5월", value: "5" },
-        { idx: 6, name: "6월", value: "6" },
-        { idx: 7, name: "7월", value: "7" },
-        { idx: 8, name: "8월", value: "8" },
-        { idx: 9, name: "9월", value: "9" },
-        { idx: 10, name: "10월", value: "10" },
-        { idx: 11, name: "11월", value: "11" },
-        { idx: 12, name: "12월", value: "12" },
-      ],
+<script setup lang="ts">
+import { ref, computed, watch } from "vue";
+import { useRouter } from "vue-router";
+import { axiosInstance } from "@/plugins/axiosPlugin";
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import TabBar from "@/components/common/TabBar.vue";
+import SaleRealEstateList from "@/components/fraud/SaleRealEstateList.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
+import { seoulSiGunGu } from "@/data/seoulSiGunGu";
+import seoulDongJson from "@/data/dong.json";
+import { Option } from "@/data/options";
+
+const router = useRouter();
+
+const customStyle = {
+  backgroundColor: "white",
+  fontWeight: 400,
+  justifyContent: `space-between`,
+  border: "1px solid #e7e7e7",
+};
+
+// 1. 검색 데이터
+const searchData = ref({
+  gu: null,
+  dong: null,
+  searchBy: null,
+  search: "",
+});
+
+// 2. 시군구 선택
+const seoulDistrictIndex = ref(0);
+const seoulDistrictOptions = seoulSiGunGu.map((district) => ({
+  idx: district.idx,
+  name: district.name.split(" ")[1],
+  value: district.value,
+}));
+const updateSeoulSiGunGu = (idx: number) => {
+  seoulDistrictIndex.value = idx;
+  searchData.value.gu = seoulDistrictOptions[idx].value;
+};
+
+// 3. 동 옵션
+const convertOptionArray = (dongJson) =>
+  Object.keys(dongJson).map((key, index) => ({
+    idx: index,
+    name: dongJson[key].name,
+    value: dongJson[key].value,
+  }));
+const dongOptions = ref(
+  convertOptionArray(seoulDongJson[seoulDistrictOptions[0].name])
+);
+watch(seoulDistrictIndex, (newIdx) => {
+  const guValue = seoulDistrictOptions[newIdx].name;
+  dongOptions.value = convertOptionArray(seoulDongJson[guValue]);
+});
+const updateSeoulDong = (idx: number) => {
+  searchData.value.dong = dongOptions.value[idx].value;
+};
+
+// 4. 검색 옵션
+const searchOption: Option[] = [
+  { idx: 1, name: "지번", value: "지번" },
+  { idx: 2, name: "건물명", value: "건물명" },
+];
+const updateSearchBy = (idx: number) => {
+  searchData.value.searchBy = searchOption[idx].value;
+};
+
+// 5. 탭 + 결과 데이터
+const selectedTabIdx = ref(0);
+const resultList = ref<any[]>([]);
+const resultCache = ref<Record<number, any[]>>({});
+
+const tabs = [
+  { name: "매매", apiUrl: "/fraud/price/sale" },
+  { name: "전월세", apiUrl: "/fraud/price/rent" },
+];
+
+const computedTabs = computed(() =>
+  tabs.map((tab, idx) => ({
+    name: tab.name,
+    title: tab.name,
+    component: SaleRealEstateList,
+    props: {
+      data: resultList.value,
+    },
+  }))
+);
+
+const selectTab = (idx: number) => {
+  selectedTabIdx.value = idx;
+};
+
+// 6. 검색 요청
+const handleSearch = async () => {
+  const { gu, dong, searchBy, search } = searchData.value;
+  // if (!gu || !dong || !searchBy || !search.trim()) {
+  //   alert("모든 값을 입력해주세요.");
+  //   return;
+  // }
+
+  const selectedTab = tabs[selectedTabIdx.value];
+
+  try {
+    const response = await axiosInstance.get(selectedTab.apiUrl, {
+      params: {
+        gu,
+        dong,
+        searchBy,
+        search,
+        numOfRows: 100,
+        pageNo: 1,
+      },
+    });
+
+    if (response.data.data.list) {
+      resultList.value = response.data.data.list;
+      console.log("검색 결과", resultList.value);
+    } else {
+      resultList.value = [];
+      alert("검색 결과가 없습니다.");
     }
-  },
-  methods: {
-    generateYearOptions() {
-      const currentYear = new Date().getFullYear();
-      const startYear = 2000; // 선택 가능한 시작 연도 설정
-      let options = [];
+  } catch (e) {
+    console.error("API 호출 실패", e);
+  }
+};
+// 7. 라우팅
+const goSomewhere = () => {
+  router.push({ name: "Home" });
+};
+</script>
 
-      for (let year = startYear; year <= currentYear; year++) {
-        options.push({ 
-          idx: year - startYear + 1, 
-          name: `${year}년`, 
-          value: year.toString() });
+<style lang="scss" scoped>
+// 공통
+
+.top-bar-wrapper {
+  width: 100%;
+}
+.top-bar-back {
+  @include custom-bar-style(
+    $height: $height-top-bar,
+    $z-index: $z-index-top-bar
+  );
+}
+
+.center-container {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
+  }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
+}
+
+.input-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $padding-big;
+
+  .input-group {
+    @include custom-padding-x();
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .input-title {
+      @include custom-text($font-size: 14px);
+      text-align: left;
+
+      .input-title-mandatory {
+        color: red;
+      }
+    }
+
+    .input-content {
+      display: flex;
+      align-items: center;
+      gap: $padding-small;
+
+      input[type="text"] {
+        @include custom-input-style;
+        flex: 1;
+      }
+      input {
+        @include custom-input-style;
+        flex: 1;
       }
 
-      return options;
+      .select-content {
+        flex-grow: 1;
+      }
     }
   }
 }
-</script>
-<style lang="scss" scoped>
-  .center-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    width: 100%;
-    gap: 10px;
-    background-color: #EDEDED;
-  }
 
-  .address-conatienr {
-    background-color: white;
-    @include custom-padding-x;
-  }
+.select-container {
+  display: flex;
+  flex-direction: row;
 
-  .address-conatienr .title {
-    text-align: left;
-    @include custom-text-bold($font-size: 16px);
-    @include custom-padding-y;
+  input {
+    width: 30px;
   }
+}
 
-  .address-conatienr .content {
-    display: flex;
-    gap: 8px;
-    padding-bottom: 16px;
+// content를 구분해주는 회색 긴 선
+.result-wrapper {
+  @include custom-padding-x;
+  flex: 1;
+  overflow-y: auto;
+  /* 스크롤바 전체 영역 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 세로축 스크롤바 폭 너비 */
+    height: 100%; /* 가로축 스크롤바 폭 너비 */
   }
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* 스크롤바 막대 제외 부분 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  /* 스크롤바 막대 */
+  &::-webkit-scrollbar-thumb {
+    border-radius: calc($border-radius-default * 2);
+    background: #f2f2f2;
+  }
+}
 
-  .address-conatienr .content .input-wapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .transaction-history-container {
-    background-color: white;
-    flex-grow: 1;
-    @include custom-padding-x;
-  }
+//scoped
+.button-default-wrapper {
+  @include custom-padding-x;
+}
+.button-default {
+  @include custom-button-style;
+}
+.input-form {
+  gap: $padding-small !important;
+  padding-top: $padding-default;
+}
+.result-wrapper {
+  background-color: red;
+}
 </style>

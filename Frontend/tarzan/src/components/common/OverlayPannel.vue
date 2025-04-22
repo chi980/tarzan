@@ -7,7 +7,9 @@
     <div class="indicator-wrapper" ref="indicatorWrapper">
       <div class="indicator"></div>
     </div>
-    <slot></slot>
+    <div class="overlay-slot-wrapper">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -183,6 +185,8 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .overlay-panel {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   cursor: grab;
   transition: height 0.3s ease;
@@ -206,5 +210,11 @@ onUnmounted(() => {
     border-radius: 100px;
     background-color: #e8e8e8;
   }
+}
+
+.overlay-slot-wrapper {
+  flex: 1;
+  overflow: auto;
+  background-color: white;
 }
 </style>
