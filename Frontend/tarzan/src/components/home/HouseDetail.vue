@@ -25,7 +25,6 @@ const fetchHouseDetail = async (houseId: number) => {
   try {
     const res = await axiosInstance.get(`/v1/houses/${houseId}`);
     houseDetail.value = res.data.data;
-    console.log(houseDetail.value);
     building.value = {
       building_name: houseDetail.value.house_name,
       building_category: houseDetail.value.house_category,

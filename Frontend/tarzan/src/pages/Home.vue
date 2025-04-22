@@ -31,6 +31,8 @@
           :midHeight="midHeight"
           :maxHeight="maxHeight"
           :initialHeight="initialHeight"
+          :isStretch="isStretch"
+          @updateIsStretch="handleIsStretch"
           :type="overlayType">
           <div class="overlay-content">
             <div class="indicator-wrapper" ref="indicatorWrapper">
@@ -74,10 +76,6 @@ import AddressSearch from "@/components/common/AddressSearchApi.vue";
 import OverlayPanel from "@/components/common/OverlayPannel.vue";
 import { getScaleRatio } from "@/data/kakaoMap";
 
-import { useAuthStore } from "@/stores/authStore";
-
-const authStore = useAuthStore();
-console.log(authStore.get);
 /** search bar */
 const isAddressSearchOpen = ref<boolean>(false);
 const openAddressSearch = () => {
@@ -110,27 +108,25 @@ const selectedButton = ref(null); // 배열이 아니라 문자열로 명시
 
 /** tag button 값이 바뀔 때 데이터 요청 */
 watch(selectedButton, async (newValue) => {
-  console.log("선택된 값 변경됨:", newValue);
   if (newValue == null) return;
 
   // 지도 중심 좌표
   const center = mapInstance.getCenter();
   const latitude = center.getLat(); // 예시 위도
   const longitude = center.getLng(); // 예시 경도
-  console.log("현재 지도 중심 좌표:", latitude, longitude);
+  // console.log("현재 지도 중심 좌표:", latitude, longitude);
   const radius = getScaleRatio(mapInstance.getLevel()).distance; // 단위: 미터
-  console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
-  
+  // console.log("현재 지도 레벨: ", mapInstance.getLevel(), "radius:", radius);
+
   // 이전 매물, 건물 마커 제거
-  clearMarkers(houseMarkers.value);
-  clearMarkers(buildingMarkers.value);
-  clearClusterer(buildingClusterer);
+  // clearMarkers(houseMarkers.value);
+  // clearMarkers(buildingMarkers.value);
+  // clearClusterer(buildingClusterer);
 
-
-  if (newValue === "HOUSE") {
-    // 매물 버튼 클릭 
+  const type = newValue.value;
+  if (type === "HOUSE") {
+    // 매물 버튼 클릭
     await fetchHouses(latitude, longitude, radius);
-    console.log(houses.value);
     if (houses.value.length === 0) {
       alert("해당 지역에 매물이 없습니다.");
       return;
@@ -150,7 +146,7 @@ watch(selectedButton, async (newValue) => {
     );
     // addHouseMarkers(mapInstance, houses.value);
   } else {
-    fetchBuildings(newValue, latitude, longitude, radius);
+    await fetchBuildings(type, latitude, longitude, radius);
     if (buildings.value.length === 0) {
       alert("해당 지역에 건물이 없습니다.");
       return;
@@ -161,7 +157,6 @@ watch(selectedButton, async (newValue) => {
         buildings.value[0].building_longitude
       )
     );
-    console.log("빌딩", buildings.value);
     addMarker(
       mapInstance,
       buildings.value[0].building_latitude,
@@ -169,18 +164,6 @@ watch(selectedButton, async (newValue) => {
       "BUILDING",
       buildings.value[0]
     );
-    // buildings.value = [
-    //   {
-    //     building_name: "CNP차앤박피부과 도곡양재점",
-    //     building_category: "종합병원",
-    //     building_address: "서울 강남구 강남대로 248 목원빌딩 3층 (도곡동)",
-    //     building_latitude: mapInstance.getCenter().getLat(),
-    //     building_longitude: mapInstance.getCenter().getLng(),
-    //     building_type: newValue,
-    //   },
-    // ];
-    // addBuildingMarkers(mapInstance, buildings.value); // 마커 추가
-
   }
 });
 
@@ -221,7 +204,7 @@ const fetchBuildings = async (
   }
 
   loading.value = true; // 로딩 상태 활성화
-
+  console.log(type);
   // query parameters 생성
   const queryParams = new URLSearchParams({
     type,
@@ -358,6 +341,11 @@ const initialHeight = ref(0);
 
 const isVisibleOverlay = ref<boolean | null>(null);
 const overlayType = ref("full"); // "full", "small" 중 하나
+const isStretch = ref(false);
+const handleIsStretch = (value: boolean) => {
+  isStretch.value = value;
+};
+
 onMounted(async () => {
   await nextTick();
   isVisibleOverlay.value = false;
@@ -379,15 +367,12 @@ watch(
   () => buildingContent.value, // 여기!
   async (newVal) => {
     if (newVal) {
-      console.log("빌딩 존재");
       isVisibleOverlay.value = true;
       await nextTick(); // DOM 업데이트 후 높이 계산
       const newHeight = buildingDetail.value?.scrollHeight ?? 0;
-      console.log("newHeight", newHeight);
       maxHeight.value = newHeight; // 최대 높이 설정
       overlayType.value = "small";
     } else {
-      isVisibleOverlay.value = false;
       overlayType.value = "full";
       initHeights();
     }
@@ -398,13 +383,11 @@ watch(
   () => houseContent.value, // 여기!
   async (newVal) => {
     if (newVal) {
-      console.log("집 존재");
       isVisibleOverlay.value = true;
       await nextTick(); // DOM 업데이트 후 높이 계산
       maxHeight.value = BOTTOM_OVERLAY_MAX_HEIGHT.value;
       overlayType.value = "full";
     } else {
-      isVisibleOverlay.value = false;
       overlayType.value = "full";
       initHeights();
     }
@@ -432,7 +415,7 @@ const loadKakaoMap = (container) => {
     window.kakao.maps.load(() => {
       const options = {
         center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
-        level: 3, // 지도 확대 레벨
+        level: 5, // 지도 확대 레벨
       };
 
       mapInstance = new window.kakao.maps.Map(container, options); // 지도 생성
@@ -441,7 +424,7 @@ const loadKakaoMap = (container) => {
       const clusterer = new kakao.maps.MarkerClusterer({
         map: mapInstance, // 클러스터러가 적용될 지도
         averageCenter: true, // 클러스터의 중심을 평균 위치로 설정
-        minLevel: 5, 
+        minLevel: 5,
       });
     });
   };
@@ -476,13 +459,11 @@ const addAddressMarker = (mapInstance, address) => {
     if (infoContent.value) {
       const newHeight = infoContent.value.scrollHeight;
       maxHeight.value = newHeight > MAX_HEIGHT ? MAX_HEIGHT : newHeight; // 최대 높이 설정
-      contentHeight.value = maxHeight.value;
     }
   });
   // 지도 중심 이동
   mapInstance.setCenter(position);
 };
-
 
 const houseMarkers = ref<kakao.maps.Marker[]>([]);
 const buildingMarkers = ref<kakao.maps.Marker[]>([]);
@@ -491,13 +472,15 @@ let houseClusterer: kakao.maps.MarkerClusterer | null = null;
 let buildingClusterer: kakao.maps.MarkerClusterer | null = null;
 
 const addHouseMarkers = (map, houses) => {
-
   houseMarkers.value = [];
 
   houses.forEach((house) => {
     const marker = new kakao.maps.Marker({
       map: map,
-      position: new kakao.maps.LatLng(house.house_latitude, house.house_longitude),
+      position: new kakao.maps.LatLng(
+        house.house_latitude,
+        house.house_longitude
+      ),
     });
 
     window.kakao.maps.event.addListener(marker, "click", async () => {
@@ -508,7 +491,6 @@ const addHouseMarkers = (map, houses) => {
     houseMarkers.value.push(marker);
   });
 };
-
 
 const addBuildingMarkers = (map, buildings) => {
   // 클러스터러가 초기화되지 않았다면 초기화
@@ -529,10 +511,11 @@ const addBuildingMarkers = (map, buildings) => {
   buildings.forEach((building) => {
     const marker = new kakao.maps.Marker({
       map: map,
-      position: new kakao.maps.LatLng(building.building_latitude, building.building_longitude),
+      position: new kakao.maps.LatLng(
+        building.building_latitude,
+        building.building_longitude
+      ),
     });
-
-    
 
     // 마커 클릭 이벤트
     window.kakao.maps.event.addListener(marker, "click", async () => {
@@ -554,6 +537,9 @@ const addMarker = (mapInstance, latitude, longitude, type, content) => {
   });
 
   window.kakao.maps.event.addListener(marker, "click", () => {
+    console.log("마커클릭됨, " + type);
+    console.log(content);
+    console.log(isVisibleOverlay.value);
     if (type == "HOUSE") {
       houseContent.value = content;
       buildingContent.value = null;
@@ -561,6 +547,8 @@ const addMarker = (mapInstance, latitude, longitude, type, content) => {
       houseContent.value = null;
       buildingContent.value = content;
     }
+    overlayType.value = "full";
+    isStretch.value = true;
   });
 
   return marker; // 필요 시 marker 반환
@@ -583,7 +571,6 @@ const clearMarkers = (markers: kakao.maps.Marker[]) => {
   markers.forEach((marker) => marker.setMap(null));
   markers.splice(0); // 마커 배열도 비워야 이후 문제가 없음
 };
-
 </script>
 
 <style lang="scss" scoped>
