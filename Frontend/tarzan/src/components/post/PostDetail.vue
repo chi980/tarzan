@@ -32,9 +32,11 @@
         <div class="comment-list">
           <CommentList :comments="comments" />
         </div>
-        <div class="comment-input-wrapper">
-          <CommentInput :boardIdx="boardIdx" @commentSubmitted="onNewComment" />
-        </div>
+        <CommentInput
+          class="comment-input"
+          :boardIdx="boardIdx"
+          @commentSubmitted="onNewComment"
+        />
         <div ref="commentTarget" class="loading-trigger"></div>
       </div>
     </div>
@@ -186,20 +188,20 @@ onMounted(async () => {
 }
 
 .comment-container {
-  position: relative;
+  // position: relative;
   flex-grow: 1;
   padding-top: 15px;
+  padding-bottom: 80px;
   background-color: white;
+  @include custom-padding-x;
 
-  .comment-list {
-    @include custom-padding-x;
-  }
-
-  .comment-input-wrapper {
-    position: sticky;
-    bottom: 0;
+  .comment-input {
+    position: fixed;
+    bottom: 80px;
     z-index: 10;
-    background-color: yellow;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 355px;
   }
 }
 </style>
