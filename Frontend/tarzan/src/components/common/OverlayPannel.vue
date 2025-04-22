@@ -14,7 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onUnmounted, nextTick, watch } from "vue";
+import {
+  ref,
+  defineProps,
+  defineEmits,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  watch,
+} from "vue";
 
 const props = defineProps({
   minHeight: { type: Number, default: 0 },
@@ -22,7 +30,11 @@ const props = defineProps({
   maxHeight: { type: Number, required: true },
   initialHeight: { type: Number, required: true },
   type: { type: String as PropType<"full" | "small">, default: "full" },
+  isStretch: { type: Boolean, default: false }, // 부모로부터 isStretch 받기
 });
+const emit = defineEmits<{
+  (event: "updateIsStretch", value: boolean): void;
+}>();
 
 // 내부 상태
 const baseHeight = ref(props.initialHeight); // min/mid/max 중 하나
@@ -160,6 +172,28 @@ watch(
     }
   }
 );
+// watch로 isStretch 상태 변경 시 처리
+watch(
+  () => props.isStretch,
+  (val) => {
+    nextTick(() => {
+      console.log(props.type);
+      if (val) {
+        if (props.type === "full") {
+          baseHeight.value = props.midHeight;
+          currentState.value = "mid";
+        } else {
+          baseHeight.value = props.maxHeight;
+          currentState.value = "max";
+        }
+      } else {
+        baseHeight.value = props.minHeight;
+        currentState.value = "min";
+      }
+      updatePanelHeight(); // 패널 높이 갱신
+    });
+  }
+);
 
 const panelRef = ref<HTMLElement | null>(null);
 
@@ -171,6 +205,9 @@ const onClickOutside = (e: MouseEvent) => {
     baseHeight.value = props.minHeight;
     currentState.value = "min";
     updatePanelHeight();
+
+    // 부모 컴포넌트로 isStretch 상태 전달
+    emit("updateIsStretch", false);
   }
 };
 
