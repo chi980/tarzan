@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div class="comment-more-container">
+    <!-- <div class="comment-more-container">
       <button id="comment-more-button" @click="loadMoreComments">
         <span>더보기</span>
         <img 
@@ -17,13 +17,13 @@
           alt="arrowDown"
         />
       </button>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-import CommentItem from '@/components/post/CommentItem.vue';
+import { defineProps, defineEmits } from "vue";
+import CommentItem from "@/components/post/CommentItem.vue";
 
 const props = defineProps({
   comments: {
@@ -34,31 +34,31 @@ const props = defineProps({
 </script>
 
 <style scoped lang="scss">
-  .comment-list-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; 
-    justify-content: space-between;
-    gap: 16px;
-  }
+.comment-list-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  gap: 16px;
+}
 
-  .comment-list-container .comment-items-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  #comment-more-button {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.comment-list-container .comment-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-  #comment-more-icon {
+#comment-more-button {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#comment-more-icon {
   @include custom-icon-style;
-  }
+}
 </style>

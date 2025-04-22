@@ -1,51 +1,51 @@
 <template>
   <div class="comment-input">
-    <input 
-    v-model="commentText"
-    type="text" 
-    placeholder="댓글을 입력해주세요." 
+    <input
+      v-model="commentText"
+      type="text"
+      placeholder="댓글을 입력해주세요."
     />
     <button @click="createComment" class="create-button">
-      <img src="@/assets/icons/Filter/comment-input-icon.png" alt="comment-input-icon">
+      <img
+        src="@/assets/icons/Filter/comment-input-icon.png"
+        alt="comment-input-icon"
+      />
     </button>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, defineEmits } from "vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
-// Props 정의
 const props = defineProps({
   boardIdx: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-// 이벤트 정의
-const emit = defineEmits(['commentSubmitted']);
+const emit = defineEmits(["commentSubmitted"]);
 
-// 상태 변수
-const commentText = ref('');
+const commentText = ref("");
 
 // API: 댓글 생성
 const createComment = async () => {
-  if (commentText.value.trim() === '') {
-    alert('댓글 내용을 입력하세요!');
+  if (commentText.value.trim() === "") {
+    alert("댓글 내용을 입력하세요!");
     return;
   }
 
   try {
-    const response = await axiosInstance.post('/v1/comments', {
+    const response = await axiosInstance.post("/v1/comments", {
       comment_board_idx: props.boardIdx,
-      comment_content: commentText.value, 
+      comment_content: commentText.value,
     });
-    console.log(props.boardIdx,commentText.value);
+    console.log(props.boardIdx, commentText.value);
 
     if (response.data.success) {
-      commentText.value = ''; // 입력란 초기화
-      emit('commentSubmitted');
+      commentText.value = ""; // 입력란 초기화
+      emit("commentSubmitted", response.data.data);
       console.log("댓글 등록 성공!");
     } else {
       console.error("API 실패:", response.data.message);
@@ -69,7 +69,7 @@ const createComment = async () => {
 .comment-input input {
   @include custom-margin-x($margin-small);
   @include custom-padding-x;
-  flex-grow: 1;  
+  flex-grow: 1;
   height: 48px;
   appearance: none;
   border: none;
