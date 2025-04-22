@@ -3,7 +3,7 @@
     <TopBar class="top-bar" @update:selected="updateDistrict" />
 
     <div class="center-container">
-      <SearchBar routeName="PostSearch" />
+      <SearchPostBar @click="openSearchModal" />
 
       <DescriptionComponent
         class="description-component"
@@ -41,6 +41,8 @@
       </div>
     </div>
 
+    <PostSearch v-if="isPostSearchModalOpen" @close="closeSearchModal" />
+
     <BottomBar class="bottom-bar" />
   </div>
 </template>
@@ -54,13 +56,24 @@ import { useInfiniteScroll } from "@/composables/useInfiniteScroll.js";
 
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-import SearchBar from "@/components/common/SearchBar.vue";
+import SearchPostBar from "@/components/common/SearchPostBar.vue";
 import DescriptionComponent from "@/components/common/Description.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 import PostList from "@/components/post/PostList.vue";
+import PostSearch from "@/components/post/PostSearch.vue";
 
 import writeIconImg from "@/assets/write_post.png";
+
+const isPostSearchModalOpen = ref(false);
+
+const openSearchModal = () => {
+  isPostSearchModalOpen.value = true;
+};
+
+const closeSearchModal = () => {
+  isPostSearchModalOpen.value = false;
+};
 
 const tagOptions = ref([
   { label: "전체", value: "ALL" },
