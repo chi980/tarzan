@@ -19,7 +19,7 @@
           v-for="(bookmark, index) in bookmarks"
           :key="index"
           @delete="handleDelete(index)"
-          @click="navigateToCheckCostPage(bookmark)"
+          @click="navigateToDetailPage(bookmark)"
         >
           <div class="house-item-wrapper">
             <HouseItem :house="bookmark" />
@@ -66,15 +66,16 @@ function navigateToMap() {
   router.push("/bookmark/map");
 }
 
-const navigateToCheckCostPage = (house) => {
+const navigateToDetailPage = (house) => {
   try {
     if (!house.bookmarkIdx) throw new Error("bookmarkIdx 없음");
-    const bookmarkIdx = house.bookmarkIdx;
-    router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+    router.push({ name: "BookMarkDetail", params: { id: house.bookmarkIdx } });
   } catch (e) {
     console.error("navigate 에러:", e);
   }
 };
+
+
 const handleDelete = async (idx) => {
   console.log("삭제");
   console.log(bookmarks.value[idx]);
@@ -110,7 +111,7 @@ list.value = [
     created_at: "2025.03.16 10:00:00",
   },
   {
-    bookmarkdx: 2,
+    bookmarkIdx: 2,
     house_name: "집 이름 2",
     house_address: "주소 2",
     house_category: "카테고리 2",
