@@ -11,10 +11,10 @@ import com.mjutarzan.tarzan.domain.house.model.dto.HouseIndexes;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
+import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,20 +40,19 @@ public class ApiHouseServiceImpl implements ApiHouseService{
 
     @Override
     public List<SimpleHouseListItemResponseDto> getHouses(ApiHouseListRequestDto requestDto) {
-        Point location = locationService.createPoint(requestDto.getLatitude(), requestDto.getLongitude());
-//        List<SimpleHouseListItemResponseDto> list = apiHouseRepository.findAllWithinRadius(location, requestDto.getRadius()).stream()
-//                .map(apiHouse -> SimpleHouseListItemResponseDto
-//                        .builder()
-//                        .id(apiHouse.getId())
-//                        .latitude(apiHouse.getLocation().getX())
-//                        .longitude(apiHouse.getLocation().getY())
-//                        .build())
-//                .collect(Collectors.toList());
-        return null;
+        List<SimpleHouseListItemResponseDto> list = apiHouseRepository.findAllWithinRadius(requestDto.getLongitude(), requestDto.getLatitude(), requestDto.getRadius()).stream()
+                .map(apiHouse -> SimpleHouseListItemResponseDto
+                        .builder()
+                        .id(apiHouse.getId())
+                        .latitude(apiHouse.getLocation().getX())
+                        .longitude(apiHouse.getLocation().getY())
+                        .build())
+                .collect(Collectors.toList());
+        return list;
     }
 
     @Override
-    public HouseItemResposeDto getHouse(Long houseIdx) {
+    public HouseItemResposeDto getHouse(Long houseIdx, CustomUserDetails userDto) {
         ApiHouse house = apiHouseRepository.findById(houseIdx).orElseThrow();
 
 //        index 처리하는 로직 추가
@@ -61,6 +60,20 @@ public class ApiHouseServiceImpl implements ApiHouseService{
         List<ReviewListItemResponseDto> houseReviewList = reviewRepository.findByHouseLimit3(houseIdx).stream()
                 .map(review -> ReviewListItemResponseDto
                         .builder()
+                        .id(review.getId())
+                        .imgUrl(review.getImgUrl())
+                        .score(review.getScore())
+                        .leaseType(review.getLeaseType())
+                        .deposit(review.getDeposit())
+                        .managementFee(review.getManagementFee())
+                        .floor(review.getFloor())
+                        .advantage(review.getAdvantage())
+                        .advantageTagList(review.getAdvantageTagList())
+                        .disadvantage(review.getDisadvantage())
+                        .disadvantageTagList(review.getDisadvantageTagList())
+                        .writerNickname(review.getWriter().getNickname())
+                        .isWriter(review.getWriter().getEmail().equals(userDto.getEmail()))
+                        .createdAt(review.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
 

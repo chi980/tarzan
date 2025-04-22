@@ -4,6 +4,7 @@ import com.mjutarzan.tarzan.domain.house.entity.House;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.model.vo.LeaseType;
 import com.mjutarzan.tarzan.domain.review.model.vo.Tag;
+import com.mjutarzan.tarzan.domain.review.util.TagListToArrayConverter;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
 import jakarta.persistence.*;
@@ -57,6 +58,11 @@ public class Review extends CommonEntity{
     @Column(name = "review_disadvantage", columnDefinition = "TEXT") // 또는 CLOB
     private String disadvantage;
 
+    @Column(name = "advantage_tags", columnDefinition = "text[]")
+    private List<String> advantageTagList;
+
+    @Column(name = "disadvantage_tags", columnDefinition = "text[]")
+    private List<String> disadvantageTagList;
 
     @Column(name = "review_option_none")
     private Boolean optionNone;
@@ -128,6 +134,9 @@ public class Review extends CommonEntity{
         this.floor = floor;
         this.advantage = advantage;
         this.disadvantage = disadvantage;
+
+        this.advantageTagList = advantageTagList.stream().map(tag -> tag.getName()).toList();
+        this.disadvantageTagList = disadvantageTagList.stream().map(tag->tag.getName()).toList();
 
         // option 설정하는 로직
 
