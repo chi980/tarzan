@@ -1,20 +1,25 @@
 <template>
   <div class="sub-container">
-    <TopBarBack title="글쓰기" @back="goToBack"/>
+    <TopBarBack title="글쓰기" />
     <div class="input-container">
-      <input 
-        class="input-item" 
-        type="text" 
-        placeholder="제목을 입력해주세요" 
-        v-model="post.title" />
-        <CustomSelectBox 
-          :options="tagOptions" 
-          v-model:selected="selectedTagIndex" 
+      <input
+        class="input-item"
+        type="text"
+        placeholder="제목을 입력해주세요"
+        v-model="post.title"
+      />
+      <div class="tag-select-wrapper">
+        <CustomSelectBox
+          :options="tagOptions"
+          v-model:selected="selectedTagIndex"
         />
-      <textarea 
-        class="input-item" 
-        placeholder="내용을 입력해주세요" 
-        v-model="post.content" >
+      </div>
+
+      <textarea
+        class="input-item"
+        placeholder="내용을 입력해주세요"
+        v-model="post.content"
+      >
       </textarea>
     </div>
 
@@ -27,23 +32,23 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, watch } from "vue";
+import router from "@/router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
 
-import CustomSelectBox from '@/components/common/CustomSelectBox.vue';
-import TopBarBack from '../common/TopBarBack.vue';
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import TopBarBack from "../common/TopBarBack.vue";
+import DropDown from "@/components/common/DropDown.vue";
 
 // 게시글 제목, 내용, 태그를 저장할 ref 변수
 const post = ref({
-  title: '',
-  content: '',
+  title: "",
+  content: "",
 });
 const selectedTagIndex = ref(null);
-const message = ref('');
+const message = ref("");
 
 // 태그 옵션 데이터
 const tagOptions = ref([
@@ -65,95 +70,101 @@ const selectedTag = computed(() => {
 
 // authStore에서 사용자 지역구 정보 가져오기
 const authStore = useAuthStore();
-
-const userGu = computed(() => authStore.getGu);
-console.log(userGu);
+// const userGu = authStore.getGul;
+// console.log("userGu", userGu);
 
 // API: 게시글 생성
 const submit = async () => {
+  // 게시글 제목, 내용, 태그가 모두 입력되었는지 확인
+  if (!post.value.title || !post.value.content || !selectedTag.value) {
+    message.value = "제목, 내용, 태그를 모두 입력해주세요.";
+    return;
+  }
+
+  // 게시글 제목, 내용, 태그를 콘솔에 출력
+  // console.log({
+  //   board_title: post.value.title,
+  //   board_content: post.value.content,
+  //   board_tag: selectedTag.value?.value,
+  //   board_gu: userGu.value,
+  // });
+
   try {
-    const response = await axiosInstance.post('/v1/board', {
-      board_title: post.value.title,      // 게시글 제목
-      board_content: post.value.content,  // 게시글 내용
-      board_tag: selectedTag.value.value, // 게시글 태그
-      board_gu: userGu.value,             // 사용자 지역구 정보
+    const response = await axiosInstance.post("/v1/board", {
+      board_title: post.value.title,
+      board_content: post.value.content,
+      board_tag: selectedTag.value?.value,
+      board_gu: "JONGNO", // userGu.value,
     });
 
     if (response.data.success) {
-      message.value = '게시글이 성공적으로 생성되었습니다!';
-      console.log(response.data);
-      router.push('/community');
+      message.value = "게시글이 성공적으로 생성되었습니다!";
+      router.push("/community");
     } else {
-      console.error('Failed:', response.data.message);
       message.value = `Error: ${response.data.message}`;
     }
   } catch (error) {
-    console.error('Error creating post:', error);
-    message.value = '게시글을 생성하는 데 실패했습니다.' + selectedTag.value;
+    console.error("Error creating post:", error);
+    message.value = "게시글을 생성하는 데 실패했습니다.";
   }
-};
-
-const router = useRouter();
-
-// 뒤로가기 버튼 클릭 시 호출되는 함수
-const goToBack = () => {
-  router.go(-1);
 };
 </script>
 
-
 <style scoped lang="scss">
-  .input-container {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    width: 100%;
-    max-width: 600px; 
-    padding: $padding-default;
-    box-sizing: border-box;
-    row-gap: $padding-default;
-  }
+.input-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 600px;
+  padding: $padding-default;
+  box-sizing: border-box;
+  row-gap: $padding-default;
+}
 
-  .input-container .input-item {
-    width: 100%;
-    box-sizing: border-box;
-    background-color: #F2F2F2;
-    border-radius: 14px;
-    border: none;
-    outline: none;
-    @include custom-text($font-size: 14px, $font-color: $text-color-light);
-  }
+.input-item {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  outline: none;
+  // overflow: hidden;
+  @include custom-input-style;
+  @include custom-text($font-size: 14px, $font-color: $text-color-light);
+}
 
-  .input-container input {
-    @include custom-input-style;
-  }
+:deep(.selected-item) {
+  background-color: #ffffff;
+  @include custom-input-style;
+}
 
-  .input-container textarea {
-    height: 283px;
-    padding-left: 16px;
-    padding-top: 16px;
-    @include custom-text;
-  }
+textarea {
+  flex-grow: 1;
+  height: 283px;
+  padding-left: 16px;
+  padding-top: 16px;
+  @include custom-text;
+}
 
-  .post-button {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    justify-content: space-between;
-    padding: $margin-big $margin-default;
-    box-sizing: border-box;
-  }
+.post-button {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  justify-content: space-between;
+  padding: $margin-big $margin-default;
+  box-sizing: border-box;
+}
 
-  .cancle-button,
-  .create-button {
-    flex-basis: 160px;
-    @include custom-text-bold($font-size: 14px)
+.cancle-button,
+.create-button {
+  flex-basis: 160px;
+  @include custom-text-bold($font-size: 14px);
+  height: 48px;
+}
 
-  }
-  
-  .cancle-button:hover,
-  .create-button:hover {
-    background-color: black;
-    color: white;
-  }
+.cancle-button:hover,
+.create-button:hover {
+  background-color: black;
+  color: white;
+}
 </style>

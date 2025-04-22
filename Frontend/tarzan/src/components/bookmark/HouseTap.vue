@@ -3,11 +3,12 @@
     <div class="tag-button-wrapper">
       <TagButtonGroup
         :buttons="tagOptions"
-        v-model:selectedButton="selectedTag"
+        :selectedButton="selectedTag"
         :multiple="false" />
     </div>
+
     <div class="house-content-wrapper">
-      <div class="house-item--add-wrapper">
+      <div class="house-item--add-wrapper" @click="emitOpenModal">
         <div class="house-add-img-wrapper">
           <img :src="houseAddImg" alt="houseAddImg" />
         </div>
@@ -18,7 +19,8 @@
           v-for="(bookmark, index) in bookmarks"
           :key="index"
           @delete="handleDelete(index)"
-          @click="handleCLick(bookmark)">
+          @click="navigateToDetailPage(bookmark)"
+        >
           <div class="house-item-wrapper">
             <HouseItem :house="bookmark" />
           </div>
@@ -32,9 +34,11 @@
 
 <script setup lang="ts">
 /**  */
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, defineProps, defineExpose, defineEmits, watch } from "vue";
 
 /** component load */
+import AddressHouseSearch from "@/components/common/AddressHouseSearch.vue";
+
 import houseAddImg from "@/assets/icons/Plus/Pluse.png";
 import HouseAddSrc from "@/assets/icons/Plus/Style=Outlined.svg";
 import NonContent from "@/components/common/NonContent.vue";
@@ -46,21 +50,32 @@ import SwipeItem from "@/components/common/SwipeItem.vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
+const emit = defineEmits(["openAddressSearch"]);
+
+const emitOpenModal = () => {
+  emit("openAddressSearch");
+};
+
+defineExpose({
+  emitOpenModal,
+});
+
 const router = useRouter();
 
 function navigateToMap() {
   router.push("/bookmark/map");
 }
 
-const navigateToCheckCostPage = (house) => {
+const navigateToDetailPage = (house) => {
   try {
     if (!house.bookmarkIdx) throw new Error("bookmarkIdx 없음");
-    const bookmarkIdx = house.bookmarkIdx;
-    router.push({ name: "CheckCostPage", params: { bookmarkIdx } });
+    router.push({ name: "BookMarkDetail", params: { id: house.bookmarkIdx } });
   } catch (e) {
     console.error("navigate 에러:", e);
   }
 };
+
+
 const handleDelete = async (idx) => {
   console.log("삭제");
   console.log(bookmarks.value[idx]);
@@ -72,6 +87,40 @@ const handleDelete = async (idx) => {
     console.error("잘못된 요청입니다.");
   }
 };
+
+const showAddressSearch = ref(false);
+
+const openAddressSearch = () => {
+  showAddressSearch.value = true;
+};
+
+const closeAddressSearch = () => {
+  showAddressSearch.value = false;
+};
+
+const list = ref([]);
+list.value = [
+  {
+    bookmarkIdx: 1,
+    house_name: "집 이름 1",
+    house_address: "주소 1",
+    house_category: "카테고리 1",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+  {
+    bookmarkIdx: 2,
+    house_name: "집 이름 2",
+    house_address: "주소 2",
+    house_category: "카테고리 2",
+    house_review_score: 4.5,
+    house_latitude: 37.5665,
+    house_longitude: 126.978,
+    created_at: "2025.03.16 10:00:00",
+  },
+];
 
 const handleCLick = (bookmark) => {
   router.push({
@@ -89,7 +138,8 @@ const tagOptions = [
 
 const selectedTag = ref("ALL"); // 단일 선택용
 
-const bookmarks = ref([]);
+const bookmarks = ref<House[]>([]);
+
 const fetchRecentHouses = async () => {
   try {
     const response = await axiosInstance.get(`/v1/bookmark`, {

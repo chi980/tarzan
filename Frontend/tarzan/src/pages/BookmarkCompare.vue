@@ -93,18 +93,21 @@ const isNonContent = computed(
           :house="bookmark.house"
           :checked="bookmark.checked"
           :idx="index"
-          @toggle-check="toggleCheck" />
+          @toggle-check="toggleCheck"
+        />
       </div>
       <Transition name="fade">
         <NonContent
           :value="'점검 완료한 집이 없습니다.'"
-          v-if="isNonContent"></NonContent>
+          v-if="isNonContent"
+        ></NonContent>
       </Transition>
     </div>
     <BottomDefaultButton
       :label="'비교하기'"
       :onClick="compareBookmarks"
-      v-if="!hideUI" />
+      v-if="!hideUI"
+    />
   </div>
 </template>
 
