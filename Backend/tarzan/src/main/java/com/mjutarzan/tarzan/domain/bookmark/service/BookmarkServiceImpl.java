@@ -154,6 +154,7 @@ public class BookmarkServiceImpl implements BookmarkService{
                                 .build())
                         .collect(Collectors.toList())
                 )
+                .isNext(bookmarkPages.hasNext())
                 .build();
     }
 
