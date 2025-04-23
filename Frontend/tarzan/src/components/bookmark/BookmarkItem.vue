@@ -1,50 +1,58 @@
-<script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
-import HouseItem from "@/components/bookmark/HouseItem.vue";
-
-// 부모로부터 상태 props로 받음
-const props = defineProps<{
-  house: Object;
-  checked: boolean;
-  idx: number;
-}>();
-
-// 부모에게 알림
-const emit = defineEmits<{
-  (e: "toggle-check", house: any): void;
-}>();
-
-// 체크박스나 HouseItem 클릭 시
-const toggle = () => {
-  emit("toggle-check", props.idx);
-};
-</script>
-
 <template>
-  <div class="bookmark-item-wrapper">
-    <input type="checkbox" :checked="props.checked" @change="toggle" />
-    <div class="house-item-wrapper">
+  <div class="bookmark-item-container" @click="handleClick">
+    <div class="house-content">
       <div class="house-meta">
-        <h3 id="house_name">{{ house.house_name }}</h3>
-        <p id="house_category">{{ house.house_category }}</p>
+        <h3 id="house_name" style="color: black">
+          {{ props.bookmark.bookmark_house_name }}
+        </h3>
+        <p id="house_category">{{ props.bookmark.bookmark_house_category }}</p>
       </div>
-      <p id="house_address">{{ house.house_address }}</p>
+      <p id="house_address">{{ props.bookmark.bookmark_house_address }}</p>
+      <p id="created_date">
+        {{ formattedDate(props.bookmark?.bookmark_created_at) }}
+      </p>
     </div>
   </div>
 </template>
-<style lang="scss" scoped>
-.bookmark-item-wrapper {
-  @include custom-margin-x;
-  @include custom-padding-y;
-  display: flex;
-  flex-direction: row;
-  gap: $padding-default;
 
-  align-items: center;
+<script setup lang="ts">
+import { defineProps, defineEmits, computed } from "vue";
+import { format } from "date-fns";
+
+const props = defineProps({
+  bookmark: Object, // House object passed from parent
+});
+
+const emit = defineEmits(["navigate"]);
+
+// 날짜 포맷팅된 문자열
+const formattedDate = (rawDate) => {
+  if (!rawDate) return "";
+  const date = new Date(rawDate);
+  return format(date, "yy.MM.dd") + " 추가";
+};
+
+const handleClick = () => {
+  const house = props.house; // Get the house object from props
+  if (house && house.bookmarkIdx) {
+    // navigateToCheckCostPage 호출 등
+    emit("navigate", house); // Emit the 'navigate' event with the house object
+  } else {
+    console.error("bookmarkIdx가 없습니다.");
+  }
+};
+</script>
+
+<style scoped lang="scss">
+.bookmark-item-container {
+  @include custom-padding-y($padding-small);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
-.house-item-wrapper {
-  @include custom-text($font-size: 12px, $font-color: $text-color-light);
-  flex: 1;
+
+.bookmark-item-container .house-content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -53,25 +61,44 @@ const toggle = () => {
   text-align: left;
 }
 
-.house-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap; // 👉 자동 줄바꿈 허용
-  gap: 8px;
-  width: 100%;
-}
-
 #house_name {
   @include custom-text($font-size: 14px);
-  white-space: nowrap; // 줄바꿈 없음
-  flex-shrink: 0; // 줄어들지 않음
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
 }
 
 #house_category {
-  min-width: 0; // 💡 flex-item에서 말줄임 가능하게 해줌
-  flex: 1; // 남는 공간 채움
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 12px;
+  color: #9f9f9f;
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
+}
+
+#house_address {
+  font-size: 12px;
+  color: #9f9f9f;
+  width: 100%;
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
+}
+
+#created_date {
+  font-size: 12px;
+  color: #9f9f9f;
+  width: 100%;
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
+}
+
+.bookmark-item-container .house-meta {
+  align-items: flex-end;
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #9f9f9f;
 }
 </style>

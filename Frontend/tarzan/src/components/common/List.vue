@@ -6,25 +6,45 @@
       v-else-if="!loading && items.length === 0"
       :value="'내용이 없습니다.'" />
     <div v-else>
-      <slot name="item" v-for="item in items" :item="item" :key="item.id" />
+      <slot
+        name="item"
+        v-for="(item, index) in items"
+        :key="index"
+        v-bind="{
+          item,
+          index,
+          onDelete: (itemArg, indexArg) =>
+            props.onDelete?.(itemArg).then(() => {
+              handleDelete(itemArg, indexArg); // 혹은 indexArg 사용
+            }),
+          onClick: (itemArg) => {
+            props.onClick?.(itemArg);
+          },
+        }" />
+
       <InfiniteScrollTrigger @trigger="onScrollBottom" />
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch, defineEmits } from "vue";
 import SkeletonList from "@/components/common/SkeletonList.vue";
 import NonContent from "@/components/common/NonContent.vue";
+import InfiniteScrollTrigger from "@/components/common/InfiniteScrollTrigger.vue";
 
 /**
- * @fetchItems: 데이터를 받아올 함수
- * @condition: 필터 조건
- * @hasMore: 다음 페이지가 있는지 여부
+ * @fetchItems: 데이터를 받아올 함수, 데이터와 다음 페이지 여부를 반환
+ * @params: API 요청에 필요한 파라미터
+ * @onDelete: 삭제 이벤트[선택적]
  */
 const props = defineProps<{
-  fetchItems: (page: number, params: any) => Promise<any[]>;
+  fetchItems: (
+    page: number,
+    params: any
+  ) => Promise<{ items: any[]; isNext: boolean }>;
   params: any;
-  hasMore: boolean;
+  onDelete?: (id: number) => Promise<void>; // 삭제 후 비동기 처리 예상[선택적]
+  onClick?: (item: any) => void; // 클릭 이벤트[선택적]
 }>();
 
 //화면에 그릴 데이터 리스트를 저장할 반응형 배열
@@ -62,6 +82,10 @@ async function loadItems() {
     page.value++;
   }
   loading.value = false;
+}
+// 삭제 이벤트 핸들러
+function handleDelete(item: any, index: number) {
+  items.value.splice(index, 1);
 }
 
 //스크롤 끝에 도달하면 다음 페이지 불러오는 함수
