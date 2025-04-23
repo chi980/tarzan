@@ -33,8 +33,8 @@ const formattedDate = (rawDate) => {
 };
 
 const handleClick = () => {
-  const house = props.house; // Get the house object from props
-  if (house && house.bookmarkIdx) {
+  const house = props.bookmark; // Get the house object from props
+  if (house && house.bookmark_id) {
     // navigateToCheckCostPage 호출 등
     emit("navigate", house); // Emit the 'navigate' event with the house object
   } else {
