@@ -25,7 +25,7 @@
               :key="item.bookmarkIdx"
               @click="onClick(item)"
               @delete="onDelete(item, index)">
-              <div class="house-item-wrapper" style="background-color: aqua">
+              <div class="house-item-wrapper">
                 <BookmarkItem :bookmark="item" />
               </div>
             </SwipeItem>

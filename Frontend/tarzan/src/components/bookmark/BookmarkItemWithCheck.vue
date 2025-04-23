@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from "vue";
-import HouseItem from "@/components/bookmark/HouseItem.vue";
-
 // 부모로부터 상태 props로 받음
 const props = defineProps<{
-  house: Object;
+  bookmark: Object;
   checked: boolean;
-  idx: number;
 }>();
 
 // 부모에게 알림
 const emit = defineEmits<{
-  (e: "toggle-check", house: any): void;
+  (e: "click", item: any): void;
 }>();
 
 // 체크박스나 HouseItem 클릭 시
 const toggle = () => {
-  emit("toggle-check", props.idx);
+  const newBookmark = {
+    ...props.bookmark,
+    checked: !props.checked,
+  };
+  emit("click", newBookmark);
 };
 </script>
 
@@ -25,10 +26,10 @@ const toggle = () => {
     <input type="checkbox" :checked="props.checked" @change="toggle" />
     <div class="house-item-wrapper">
       <div class="house-meta">
-        <h3 id="house_name">{{ house.house_name }}</h3>
-        <p id="house_category">{{ house.house_category }}</p>
+        <h3 id="house_name">{{ props.bookmark.bookmark_house_name }}</h3>
+        <p id="house_category">{{ props.bookmark.bookmark_house_category }}</p>
       </div>
-      <p id="house_address">{{ house.house_address }}</p>
+      <p id="house_address">{{ props.bookmark.bookmark_house_address }}</p>
     </div>
   </div>
 </template>

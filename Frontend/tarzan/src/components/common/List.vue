@@ -1,29 +1,36 @@
 <!-- api 요청을 통해 데이터를 가져오고, 스크롤 이벤트를 감지하여 무한 스크롤을 구현하는 Vue 컴포넌트입니다. -->
 <template>
   <div>
-    <SkeletonList v-if="loading && items.length === 0" />
-    <NonContent
-      v-else-if="!loading && items.length === 0"
-      :value="'내용이 없습니다.'" />
-    <div v-else>
-      <slot
-        name="item"
-        v-for="(item, index) in items"
-        :key="index"
-        v-bind="{
-          item,
-          index,
-          onDelete: (itemArg, indexArg) =>
-            props.onDelete?.(itemArg).then(() => {
-              handleDelete(itemArg, indexArg); // 혹은 indexArg 사용
-            }),
-          onClick: (itemArg) => {
-            props.onClick?.(itemArg);
-          },
-        }" />
+    <Transition name="fade">
+      <SkeletonList v-if="loading && items.length === 0" />
+      <NonContent
+        v-else-if="!loading && items.length === 0"
+        :value="'내용이 없습니다.'" />
+      <div v-else>
+        <slot
+          name="item"
+          v-for="(item, index) in items"
+          :key="index"
+          v-bind="{
+            item,
+            index,
+            onDelete: (itemArg, indexArg) =>
+              props.onDelete?.(itemArg).then(() => {
+                handleDelete(itemArg, indexArg); // 혹은 indexArg 사용
+              }),
+            onClick: (itemArg) => {
+              if (props.isItemChangable) {
+                Object.assign(item, itemArg); // item 객체 내부를 itemArg로 덮어쓰기
+                props.onClick?.(items);
+              } else {
+                props.onClick?.(item);
+              }
+            },
+          }" />
 
-      <InfiniteScrollTrigger @trigger="onScrollBottom" />
-    </div>
+        <InfiniteScrollTrigger @trigger="onScrollBottom" />
+      </div>
+    </Transition>
   </div>
 </template>
 <script setup lang="ts">
@@ -37,15 +44,21 @@ import InfiniteScrollTrigger from "@/components/common/InfiniteScrollTrigger.vue
  * @params: API 요청에 필요한 파라미터
  * @onDelete: 삭제 이벤트[선택적]
  */
-const props = defineProps<{
-  fetchItems: (
-    page: number,
-    params: any
-  ) => Promise<{ items: any[]; isNext: boolean }>;
-  params: any;
-  onDelete?: (id: number) => Promise<void>; // 삭제 후 비동기 처리 예상[선택적]
-  onClick?: (item: any) => void; // 클릭 이벤트[선택적]
-}>();
+const props = withDefaults(
+  defineProps<{
+    fetchItems: (
+      page: number,
+      params: any
+    ) => Promise<{ items: any[]; isNext: boolean }>;
+    params: any;
+    onDelete?: (id: number) => Promise<void>; // 삭제 후 비동기 처리 예상[선택적]
+    onClick?: (item: any) => void; // 클릭 이벤트[선택적]
+    isItemChangable?: boolean; // 아이템 수정 가능 여부
+  }>(),
+  {
+    isItemChangable: false,
+  }
+);
 
 //화면에 그릴 데이터 리스트를 저장할 반응형 배열
 const items = ref<any[]>([]);
