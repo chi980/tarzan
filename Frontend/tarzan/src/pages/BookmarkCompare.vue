@@ -3,79 +3,62 @@ import { ref, computed, onMounted } from "vue";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
-import NonContent from "@/components/common/NonContent.vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
-import BookmarkItem from "@/components/bookmark/BookmarkItem.vue";
+import BookmarkItemWithCheck from "@/components/bookmark/BookmarkItemWithCheck.vue";
+import List from "@/components/common/List.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import CompareHouses from "@/components/bookmark/CompareHouses.vue";
 
-const isLoading = ref(true);
-onMounted(async () => {
+const params = ref({
+  size: 10,
+  status: "ALL", // 나중에 필터링 추가
+  sortBy: "최신순",
+});
+
+const fetchBookmarks = async (page: number, params: any) => {
   try {
     const response = await axiosInstance.get(`/v1/bookmark`, {
       params: {
-        size: 3,
-        page: 0,
-        sortBy: "최신순",
-        status: "ALL",
+        ...params,
+        page: page,
       },
     });
-    const houseList = response.data.data.list;
-    console.log(houseList);
-    if (houseList.length) {
-      // checked 추가해서 list에 저장
-      list.value = houseList.map((item: any) => ({
-        checked: false,
-        house: {
-          bookmarkIdx: item.bookmark_id,
-          house_name: item.bookmark_house_name,
-          house_address: item.bookmark_house_address,
-          house_category: item.bookmark_house_category,
-          create_at: item.bookmark_created_at,
-        },
+
+    if (response.data.success) {
+      return response.data.data.list.map((item) => ({
+        ...item,
+        checked: false, // 체크 상태 초기화
       }));
+    } else {
+      console.error("Failed to fetch data:", response.data.message);
+      return [];
     }
   } catch (error) {
-    console.error("북마크 불러오기 실패:", error);
-  } finally {
-    isLoading.value = false;
+    console.error("API request error:", error);
+    return [];
   }
-});
-const list = ref<
-  {
-    checked: boolean;
-    house: {
-      bookmarkIdx: number;
-      house_name: string;
-      house_address: string;
-      house_category: string;
-      created_at: string;
-    };
-  }[]
->([]);
-
-// 체크 상태 바꿔주는 함수
-const toggleCheck = (idx: number) => {
-  list.value[idx].checked = !list.value[idx].checked;
 };
 
 const hideUI = ref(false);
-const checkedList = computed(() =>
-  list.value
+const checkedList = ref<any[]>([]);
+
+const handleClick = (bookmarks) => {
+  checkedList.value = bookmarks
     .filter((item) => item.checked)
-    .map((item) => item.house.bookmarkIdx)
-);
+    .map((item) => item.bookmark_id);
+};
 
 const compareBookmarks = () => {
   const length = checkedList.value.length;
-  if (length < 2 || length > 3) return;
+  if (length < 2 || length > 3) {
+    alert(
+      "비교할 북마크는 2개 또는 3개만 선택할 수 있습니다. 다시 선택해주세요."
+    );
+    return;
+  }
 
   hideUI.value = true;
 };
-
-const isNonContent = computed(
-  () => !isLoading.value && list.value.length === 0
-);
 </script>
 
 <template>
@@ -87,27 +70,24 @@ const isNonContent = computed(
     <div class="center-container">
       <CompareHouses v-if="hideUI" :list="checkedList" />
       <div class="bookmark-item-list-wrapper" v-if="!hideUI">
-        <BookmarkItem
-          v-for="(bookmark, index) in list"
-          :key="index"
-          :house="bookmark.house"
-          :checked="bookmark.checked"
-          :idx="index"
-          @toggle-check="toggleCheck"
-        />
+        <List
+          :fetchItems="fetchBookmarks"
+          :params="params"
+          :onClick="handleClick"
+          :isItemChangable="true">
+          <template #item="{ item, onClick }">
+            <BookmarkItemWithCheck
+              :bookmark="item"
+              :checked="item.checked"
+              @click="onClick" />
+          </template>
+        </List>
       </div>
-      <Transition name="fade">
-        <NonContent
-          :value="'점검 완료한 집이 없습니다.'"
-          v-if="isNonContent"
-        ></NonContent>
-      </Transition>
     </div>
     <BottomDefaultButton
       :label="'비교하기'"
       :onClick="compareBookmarks"
-      v-if="!hideUI"
-    />
+      v-if="!hideUI" />
   </div>
 </template>
 
@@ -143,12 +123,5 @@ const isNonContent = computed(
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
-}
-
-// scoped
-.bookmark-item-list-wrapper {
-  @include custom-margin-y;
-  display: flex;
-  flex-direction: column;
 }
 </style>

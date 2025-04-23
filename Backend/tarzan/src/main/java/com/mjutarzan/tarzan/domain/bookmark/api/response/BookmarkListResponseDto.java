@@ -12,10 +12,12 @@ public class BookmarkListResponseDto {
 
     private Long count;
     private List<BookmarkListItemResponseDto> list;
+    private Boolean isNext;
 
     @Builder
-    public BookmarkListResponseDto(Long count, List<BookmarkListItemResponseDto> list){
+    public BookmarkListResponseDto(Long count, List<BookmarkListItemResponseDto> list, Boolean isNext){
         this.count = count;
         this.list = list;
+        this.isNext = isNext;
     }
 }

@@ -108,8 +108,8 @@ const updateSeoulDong = (idx: number) => {
 
 // 4. 검색 옵션
 const searchOption: Option[] = [
-  { idx: 1, name: "지번", value: "지번" },
-  { idx: 2, name: "건물명", value: "건물명" },
+  { idx: 1, name: "건물명", value: "건물명" },
+  { idx: 2, name: "지번", value: "지번" },
 ];
 const updateSearchBy = (idx: number) => {
   searchData.value.searchBy = searchOption[idx].value;
@@ -132,6 +132,7 @@ const computedTabs = computed(() =>
     component: SaleRealEstateList,
     props: {
       data: resultList.value,
+      type: tab.name,
     },
   }))
 );
@@ -273,7 +274,6 @@ const goSomewhere = () => {
 
 // content를 구분해주는 회색 긴 선
 .result-wrapper {
-  @include custom-padding-x;
   flex: 1;
   overflow-y: auto;
   /* 스크롤바 전체 영역 */
@@ -306,7 +306,8 @@ const goSomewhere = () => {
   gap: $padding-small !important;
   padding-top: $padding-default;
 }
-.result-wrapper {
-  background-color: red;
+
+.select-container {
+  gap: $padding-small;
 }
 </style>

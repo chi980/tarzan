@@ -13,14 +13,12 @@
       </div>
     </div>
     <!-- 선택된 탭의 컨텐츠 -->
-    <div class=".tab-content-wrapper">
+    <div class="tab-content-wrapper">
       <component
         :is="currentTabComponent"
         v-bind="tabs[selectedTabIdx]?.props ?? {}"
-        v-on="$attrs" 
-          @open-address-search="$emit('open-address-search')"
-        />
-
+        v-on="$attrs"
+        @open-address-search="$emit('open-address-search')" />
     </div>
   </div>
 </template>
