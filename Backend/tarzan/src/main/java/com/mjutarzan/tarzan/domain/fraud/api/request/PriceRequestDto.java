@@ -21,18 +21,18 @@ public class PriceRequestDto {
     private String search;
 
     @NotNull
-    private Integer numOfRows;
+    private Integer size;
     @Min(value = 1, message = "pageNo must be greater than or equal to 1")
     @NotNull
-    private Integer pageNo;
+    private Integer page;
 
 
-    public PriceRequestDto(SiGunGu gu, String dong, String searchBy, String search, Integer pageNo) {
+    public PriceRequestDto(SiGunGu gu, String dong, String searchBy, String search, Integer page, Integer size) {
         this.gu = gu;
         this.dong = dong;
         this.searchBy = searchBy;
         this.search = search;
-        this.numOfRows = 100;
-        this.pageNo = pageNo;
+        this.page = page;
+        this.size = size;
     }
 }
