@@ -39,7 +39,7 @@
 
       <div class="result-wrapper">
         <TabBar
-          :tabs="computedTabs"
+          :tabs="tabs"
           :selectedTabIdx="selectedTabIdx"
           @update:selectedTabIdx="selectTab" />
       </div>
@@ -53,7 +53,8 @@ import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import TabBar from "@/components/common/TabBar.vue";
-import SaleRealEstateList from "@/components/fraud/SaleRealEstateList.vue";
+import SaleRealEstateTap from "@/components/fraud/SaleRealEstateTap.vue";
+import RentRealEstateTap from "@/components/fraud/RentRealEstateTap.vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import { seoulSiGunGu } from "@/data/seoulSiGunGu";
 import seoulDongJson from "@/data/dong.json";
@@ -118,24 +119,18 @@ const updateSearchBy = (idx: number) => {
 // 5. 탭 + 결과 데이터
 const selectedTabIdx = ref(0);
 const resultList = ref<any[]>([]);
-const resultCache = ref<Record<number, any[]>>({});
-
-const tabs = [
-  { name: "매매", apiUrl: "/fraud/price/sale" },
-  { name: "전월세", apiUrl: "/fraud/price/rent" },
-];
-
-const computedTabs = computed(() =>
-  tabs.map((tab, idx) => ({
-    name: tab.name,
-    title: tab.name,
-    component: SaleRealEstateList,
-    props: {
-      data: resultList.value,
-      type: tab.name,
-    },
-  }))
-);
+const tabs = computed(() => [
+  {
+    name: "매매",
+    component: SaleRealEstateTap,
+    props: { params: { ...searchData.value, size: 100 } },
+  },
+  {
+    name: "전월세",
+    component: RentRealEstateTap,
+    props: { params: { ...searchData.value, size: 100 } },
+  },
+]);
 
 const selectTab = (idx: number) => {
   selectedTabIdx.value = idx;
