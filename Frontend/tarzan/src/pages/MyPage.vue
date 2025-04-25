@@ -46,7 +46,7 @@ import iconImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.
 import TabBar from "@/components/common/TabBar.vue";
 import PostList from "@/components/post/PostList.vue";
 import CommentList from "@/components/post/CommentList.vue";
-import ReviewList from "@/components/review/ReviewList.vue";
+import MyPageReviewList from "@/components/member/MyPageReviewList.vue";
 
 import { Tab } from "@/data/tabs";
 
@@ -127,7 +127,7 @@ const tabs: Tab[] = [
   },
   {
     name: "후기",
-    component: ReviewList,
+    component: MyPageReviewList,
   },
 ];
 

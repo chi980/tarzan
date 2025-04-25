@@ -61,6 +61,7 @@ public class ReviewListItemResponseDto {
     @JsonProperty("review_created_at")
     private LocalDateTime createdAt;
 
+
     @Builder
     public ReviewListItemResponseDto(Long id, String imgUrl, Integer score, LeaseType leaseType, Integer deposit,
                                      Integer managementFee, Integer residencePeriod, Integer floor,

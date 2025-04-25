@@ -4,7 +4,6 @@ import com.mjutarzan.tarzan.domain.house.entity.House;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.model.vo.LeaseType;
 import com.mjutarzan.tarzan.domain.review.model.vo.Tag;
-import com.mjutarzan.tarzan.domain.review.util.TagListToArrayConverter;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.global.common.entity.CommonEntity;
 import jakarta.persistence.*;

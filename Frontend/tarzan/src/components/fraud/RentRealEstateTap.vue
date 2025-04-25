@@ -35,15 +35,24 @@ const fetchRentRealEstate = async (page: number, params: any) => {
     });
 
     if (response.data.success) {
-      console.log(response.data.data.list);
-      return response.data.data.list;
+      console.log(response.data.data);
+      return {
+        items: response.data.data.list,
+        isNext: response.data.data.isNext,
+      };
     } else {
       console.error("Failed to fetch data:", response.data.message);
-      return [];
+      return {
+        items: [],
+        isNext: false,
+      };
     }
   } catch (error) {
     console.error("API request error:", error);
-    return [];
+    return {
+      items: [],
+      isNext: false,
+    };
   }
 };
 </script>
