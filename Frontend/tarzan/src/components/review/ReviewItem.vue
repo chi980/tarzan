@@ -117,12 +117,12 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .review-item {
+  @include custom-padding-y;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
 
   padding-bottom: $padding-small;
-  border-bottom: 1px solid #d9d9d9;
 
   .header {
     display: flex;

@@ -79,23 +79,47 @@ watch(
   }
 );
 
+// async function loadItems() {
+//   // 이미 로딩 중이거나 마지막 페이지라면 요청 안 함
+//   if (loading.value || isEnd.value) return;
+
+//   //로딩 상태 true로 바꾸고, API 요청
+//   loading.value = true;
+
+//   //받아온 데이터가 없으면 마지막 페이지로 간주, 아니면 리스트에 추가
+//   const newItems = await props.fetchItems(page.value, props.params);
+//   if (newItems.length === 0) {
+//     isEnd.value = true;
+//   } else {
+//     items.value.push(...newItems);
+//     page.value++;
+//   }
+//   loading.value = false;
+// }
 async function loadItems() {
-  // 이미 로딩 중이거나 마지막 페이지라면 요청 안 함
   if (loading.value || isEnd.value) return;
 
-  //로딩 상태 true로 바꾸고, API 요청
   loading.value = true;
 
-  //받아온 데이터가 없으면 마지막 페이지로 간주, 아니면 리스트에 추가
-  const newItems = await props.fetchItems(page.value, props.params);
-  if (newItems.length === 0) {
-    isEnd.value = true;
-  } else {
+  try {
+    const { items: newItems, isNext } = await props.fetchItems(
+      page.value,
+      props.params
+    );
+
     items.value.push(...newItems);
     page.value++;
+
+    if (!isNext) {
+      isEnd.value = true;
+    }
+  } catch (error) {
+    console.error("데이터 로딩 실패:", error);
+  } finally {
+    loading.value = false;
   }
-  loading.value = false;
 }
+
 // 삭제 이벤트 핸들러
 function handleDelete(item: any, index: number) {
   items.value.splice(index, 1);
