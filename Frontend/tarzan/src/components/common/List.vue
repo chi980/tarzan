@@ -63,7 +63,7 @@ const props = withDefaults(
 //화면에 그릴 데이터 리스트를 저장할 반응형 배열
 const items = ref<any[]>([]);
 //현재 몇 페이지까지 불러왔는지 저장 (무한스크롤에 사용)
-const page = ref(1);
+const page = ref(0);
 const loading = ref(false);
 const isEnd = ref(false);
 
