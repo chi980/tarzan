@@ -12,10 +12,12 @@ public class ReviewListResponseDto {
 
     private Long count;
     private List<ReviewListItemResponseDto> list;
+    private Boolean isNext;
 
     @Builder
-    public ReviewListResponseDto(Long count, List<ReviewListItemResponseDto> list){
+    public ReviewListResponseDto(Long count, List<ReviewListItemResponseDto> list, Boolean isNext){
         this.count = count;
         this.list = list;
+        this.isNext = isNext;
     }
 }

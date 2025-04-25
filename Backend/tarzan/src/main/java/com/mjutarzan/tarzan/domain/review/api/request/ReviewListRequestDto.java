@@ -14,6 +14,7 @@ public class ReviewListRequestDto extends CustomPageable {
     private Long houseIdx;
     private String sortBy;
 
+
     public ReviewListRequestDto(Long houseIdx, int page, int size, String sortBy) {
         super(page, size, null);
 
