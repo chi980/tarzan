@@ -11,10 +11,10 @@ import java.util.List;
 public class PriceListResponseDto {
     private Integer count;
     private List<? extends PriceListItemResponseDto> list;
-    private boolean isNext;
+    private Boolean isNext;
 
     @Builder
-    public PriceListResponseDto(Integer count, List<? extends PriceListItemResponseDto> list, boolean isNext) {
+    public PriceListResponseDto(Integer count, List<? extends PriceListItemResponseDto> list, Boolean isNext) {
         this.count = count;
         this.list = list;
         this.isNext = isNext;
