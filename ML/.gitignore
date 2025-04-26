@@ -28,17 +28,17 @@ build/
 dist/
 *.egg-info/
 
-# Config files (optional)
-config.yaml
+# Config files
+config/config.yaml
 
-# Model files (Optional: Exclude large model files)
+# Model files 
 models/
 
 # Data files
 data/
 
 # Logs
-*.log
+logs/*.log
 
 # .pytest_cache
 .pytest_cache/
