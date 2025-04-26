@@ -1,0 +1,47 @@
+real_estate_price_project/
+│
+├── collectors/                # 외부 데이터 수집 모듈
+│   ├── address_to_coords.py    # 주소 → 위경도 변환기
+│   ├── crime_collector.py      # 동별 범죄 데이터 수집
+│   ├── infra_collector.py      # 주변 인프라(편의점, 병원 등) 수집
+│   ├── population_collector.py # 동별 인구수 수집
+│   ├── school_collector.py     # 주변 학교 등급 수집
+│   ├── real_estate_crawler.py  # 부동산 시세 데이터 수집
+│   ├── subway_collector.py     # 역세권 정보 수집
+│
+├── config/
+│   └── config.yaml             # 설정파일 (경로, 모델파라미터, DB커넥션 등)
+│
+├── data/                       # 수집한 원본 및 전처리된 데이터 저장
+│
+├── docker/
+│   └── Dockerfile              # 도커로 API 서비스 패키징
+│
+├── models/                     # 학습된 모델 저장
+│   └── price_model.pkl
+│
+├── pipeline/                   # 전체 작업 플로우 조합
+│   └── flow.py                 # 수집 → 전처리 → 학습 순서 파이프라인
+│
+├── requirements.txt            # 필요한 Python 패키지
+│
+├── scripts/                    # 스크립트 실행파일
+│   └── run_all.py              # 전체 데이터수집+학습+서빙 자동 실행 스크립트
+│
+├── serving/                    # FastAPI 서버 코드
+│   ├── endpoints/              # 엔드포인트들 모음
+│   │   ├── detect_fraud.py     # 사기 탐지 API
+│   │   ├── predict_price.py    # 시세 예측 API
+│   └── main.py                 # FastAPI 서버 실행 진입점
+│
+├── training/                   # 모델 학습 모듈
+│   ├── train_fraud_detector.py # 사기 탐지 모델 학습
+│   └── train_price_model.py    # 부동산 시세 모델 학습
+│
+├── utils/                      # 공용 유틸리티
+│   ├── logger.py               # 로그 관리
+│   ├── data_cleaning.py        # 데이터 클렌징 모듈
+│   ├── feature_engineering.py  # 파생 피처 생성 모듈
+│   └── scaler.py               # 스케일링, 변환 유틸
+│
+└── README.md                   # 프로젝트 설명서

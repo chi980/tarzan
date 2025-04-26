@@ -1,0 +1,61 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Virtual environment
+venv/
+.env/
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Docker files
+*.dockerfile
+docker-compose.yml
+
+# IDE and text editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Config files (optional)
+config.yaml
+
+# Model files (Optional: Exclude large model files)
+models/
+
+# Data files
+data/
+
+# Logs
+*.log
+
+# .pytest_cache
+.pytest_cache/
+
+# Pipenv
+Pipfile.lock
+
+# Migrations
+migrations/
+
+# VSCode or other editor-specific settings
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other temporary files
+*.bak
+*.tmp

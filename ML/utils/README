@@ -1,0 +1,6 @@
+├── utils/                      # 공용 유틸리티
+│   ├── logger.py               # 로그 관리
+│   ├── data_cleaning.py        # 데이터 클렌징 모듈
+│   ├── feature_engineering.py  # 파생 피처 생성 모듈
+│   └── scaler.py               # 스케일링, 변환 유틸
+│

@@ -1,0 +1,9 @@
+├── collectors/                # 외부 데이터 수집 모듈
+│   ├── address_to_coords.py    # 주소 → 위경도 변환기
+│   ├── crime_collector.py      # 동별 범죄 데이터 수집
+│   ├── infra_collector.py      # 주변 인프라(편의점, 병원 등) 수집
+│   ├── population_collector.py # 동별 인구수 수집
+│   ├── school_collector.py     # 주변 학교 등급 수집
+│   ├── real_estate_crawler.py  # 부동산 시세 데이터 수집
+│   ├── subway_collector.py     # 역세권 정보 수집
+│

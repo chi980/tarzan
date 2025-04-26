@@ -1,0 +1,5 @@
+├── serving/                    # FastAPI 서버 코드
+│   ├── endpoints/              # 엔드포인트들 모음
+│   │   ├── detect_fraud.py     # 사기 탐지 API
+│   │   └── predict_price.py    # 시세 예측 API
+│   └── main.py                 # FastAPI 서버 실행 진입점
