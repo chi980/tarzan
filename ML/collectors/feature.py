@@ -1,108 +1,152 @@
-# 📦 특성 엔지니어링 실전 코드
-import json
-import requests
+# collectors/real_estate_crawler.py
+import sys
+import csv
 import os
-import time
-from datetime import datetime
-from tqdm import tqdm
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-KAKAO_API_KEY = os.getenv("KAKAO_REST_API_KEY")
+import concurrent.futures
+import requests
+import pandas as pd
+import xml.etree.ElementTree as ET
+from utils.logger import setup_logger
+from config.lawd_codes import SEOUL_GU_CODES
+from urllib import parse
 
-def find_nearest_subway(lat, lng, retries=3):
-    url = "https://dapi.kakao.com/v2/local/search/keyword.json"
-    headers = {
-        "Authorization": f"KakaoAK {KAKAO_API_KEY}"
-    }
-    params = {
-        "query": "지하철역",
-        "x": lng,
-        "y": lat,
-        "radius": 2000,  # 2km 반경 검색
-        "sort": "distance"
-    }
-    
-    for attempt in range(retries):
-        try:
-            response = requests.get(url, headers=headers, params=params)
-            if response.status_code == 200:
-                result = response.json()
-                if result['documents']:
-                    nearest = result['documents'][0]
-                    return float(nearest['distance'])
+class RealEstateCrawler:
+    def __init__(self, config):
+        self.api_key = config["public_data_api"]["key"]
+        self.urls = config["public_data_api"]["url"]["trade"]
+        self.raw_data_path = config["data"]["raw_data_path"]
+        self.logger = setup_logger("real_estate_crawler", config["logging"]["log_file"])
+
+        os.makedirs(self.raw_data_path, exist_ok=True)
+
+    def _request_data(self, url):
+        """OpenAPI 요청 + 응답코드 검사"""
+        response = requests.get(url)
+        if response.status_code == 200:
+            # 응답 인코딩에 따라 설정
+            if response.encoding is None:
+                response.encoding = 'utf-8'
+            try:
+                root = ET.fromstring(response.text)
+                result_code = root.find(".//resultCode").text
+
+                if result_code == "000":
+                    return response.text
                 else:
+                    result_msg = root.find(".//resultMsg").text
+                    self.logger.error(f"API 오류 발생: {url} {result_code} - {result_msg}")
                     return None
+            except ET.ParseError:
+                self.logger.error(f"XML 파싱 오류 발생: {url}")
+                return None
+        else:
+            self.logger.error(f"HTTP 오류 발생: {response.status_code} {url}")
+            return None
+
+    def _parse_xml_to_dataframe(self, xml_data):
+        """XML → DataFrame 변환"""
+        root = ET.fromstring(xml_data)
+        items = root.findall(".//item")
+
+        records = []
+        for item in items:
+            record = {}
+            for elem in item:
+                record[elem.tag] = elem.text
+            records.append(record)
+
+        df = pd.DataFrame(records)
+        return df
+
+    def _save_csv(self, df, filename):
+        """CSV 저장"""
+        save_path = os.path.join(self.raw_data_path, filename)
+        df.to_csv(save_path, index=False, encoding="utf-8", quoting=csv.QUOTE_ALL)
+        self.logger.info(f"저장 완료: {save_path}")
+
+    def run(self):
+        self.logger.info("실거래가 데이터 수집 시작")
+
+        building_info = {
+            "apartment": {"url": self.urls["apartment"], "filename": "apartment.csv"},
+            "single_multi_family": {"url": self.urls["single_multi_family"], "filename": "single_multi_family.csv"},
+            "officetel": {"url": self.urls["officetel"], "filename": "officetel.csv"},
+            "multiflex": {"url": self.urls["multiflex"], "filename": "multiflex.csv"},
+        }
+
+        tasks = []
+        year_month_list = self._generate_year_month_list(2023, 1, 2023, 12)
+
+        for building_type, info in building_info.items():
+            for gu_name, lawd_cd in SEOUL_GU_CODES.items():
+                for year_month in year_month_list:
+                    tasks.append((building_type, info, gu_name, lawd_cd, year_month))
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [executor.submit(self._process_task, *task) for task in tasks]
+
+            for future in concurrent.futures.as_completed(futures):
+                if future.exception() is not None:
+                    self.logger.error(f"에러 발생: {future.exception()}")
+
+    def _process_task(self, building_type, info, gu_name, lawd_cd, year_month):
+        """단일 task 처리"""
+        params = f'?{parse.quote_plus("ServiceKey")}={self.api_key}&' + parse.urlencode({
+            "pageNo": '1',
+            "numOfRows": '9999',
+            "LAWD_CD": lawd_cd,
+            "DEAL_YMD": year_month
+        })
+        self.logger.info(f"{building_type} {gu_name} {year_month} 데이터 요청 중...")
+
+        full_url = info["url"] + params
+        xml_data = self._request_data(full_url)
+        if xml_data:
+            df = self._parse_xml_to_dataframe(xml_data)
+            if not df.empty:
+                save_path = os.path.join(self.raw_data_path, info["filename"])
+                if os.path.exists(save_path):
+                    try:
+                        df_existing = pd.read_csv(save_path, encoding="utf-8", quoting=csv.QUOTE_ALL)
+                        all_columns = sorted(set(df_existing.columns) | set(df.columns))  # 컬럼 합집합 정렬
+                        df_existing = df_existing.reindex(columns=all_columns)
+                        df = df.reindex(columns=all_columns)
+                        df = pd.concat([df_existing, df], ignore_index=True)
+                    except Exception as e:
+                        self.logger.error(f"기존 CSV 로드 실패: {e}")
+                else:
+                    all_columns = sorted(df.columns)
+                    df = df.reindex(columns=all_columns)
+
+                self._save_csv(df, info["filename"])
             else:
-                print(f"Error {response.status_code} at ({lat}, {lng})")
-        except Exception as e:
-            print(f"Exception {e} at ({lat}, {lng})")
-        time.sleep(1)
-    return None
-
-def feature_engineering(input_file: str, output_file: str):
-    with open(input_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    
-    now = datetime.now()
-    current_year = now.year
-
-    enriched_data = []
-
-    for item in tqdm(data, desc="특성 엔지니어링 중"):
-        # 거래일자 분해
-        if 'transaction_date' in item and item['transaction_date']:
-            try:
-                transaction_date = datetime.strptime(item['transaction_date'], "%Y.%m.%d")
-                item['transaction_year'] = transaction_date.year
-                item['transaction_month'] = transaction_date.month
-                item['transaction_day'] = transaction_date.day
-            except:
-                item['transaction_year'] = None
-                item['transaction_month'] = None
-                item['transaction_day'] = None
+                self.logger.warning(f"{building_type} {gu_name} {year_month} 데이터가 비어있음.")
         else:
-            item['transaction_year'] = None
-            item['transaction_month'] = None
-            item['transaction_day'] = None
+            self.logger.error(f"{building_type} {gu_name} {year_month} API 요청 실패.")
 
-        # 건물 나이
-        if 'year_built' in item and item['year_built']:
-            try:
-                item['building_age'] = current_year - int(item['year_built'])
-            except:
-                item['building_age'] = None
-        else:
-            item['building_age'] = None
-        
-        # 건물 종류
-        building_name = item.get('building_name', '')
-        if '오피스텔' in building_name:
-            item['is_officetel'] = 1
-        else:
-            item['is_officetel'] = 0
+    def _generate_year_month_list(self, start_year: int, start_month: int, end_year: int, end_month: int):
+        """start_year, start_month부터 end_year, end_month까지 (YYYYMM 리스트 반환)"""
+        from datetime import datetime
+        from dateutil.relativedelta import relativedelta
 
-        if '아파트' in building_name:
-            item['is_apartment'] = 1
-        else:
-            item['is_apartment'] = 0
+        start_date = datetime(year=start_year, month=start_month, day=1)
+        end_date = datetime(year=end_year, month=end_month, day=1)
 
-        # 지하철 거리
-        lat = item.get('latitude')
-        lng = item.get('longitude')
-        if lat and lng:
-            subway_distance = find_nearest_subway(lat, lng)
-            item['subway_distance'] = subway_distance
-        else:
-            item['subway_distance'] = None
+        year_months = []
+        while start_date <= end_date:
+            year_months.append(start_date.strftime("%Y%m"))
+            start_date += relativedelta(months=1)
 
-        enriched_data.append(item)
-    
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(enriched_data, f, ensure_ascii=False, indent=2)
-    
-    print(f"Feature Engineering 완료! 파일 저장: {output_file}")
+        return year_months
 
 if __name__ == "__main__":
-    input_file = "datasets/real_estate_gangnam_with_coords.json"
-    output_file = "datasets/real_estate_gangnam_features.json"
-    
-    feature_engineering(input_file, output_file)
+    import yaml
+    from collectors.real_estate_crawler import RealEstateCrawler
+
+    with open("config/config.yaml", "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+    crawler = RealEstateCrawler(config)
+    crawler.run()
