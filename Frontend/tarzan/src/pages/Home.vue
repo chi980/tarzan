@@ -218,9 +218,8 @@ const fetchBuildings = async (
     const response = await axiosInstance.get<ApiResponse>(
       `/v1/building?${queryParams}`
     );
-
     if (response.data.success && response.data.data) {
-      buildings.value = response.data.data;
+      buildings.value = response.data.data.list;
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];
@@ -263,6 +262,10 @@ const fetchHouses = async (
 ): Promise<void> => {
   if (loading.value) return; // 이미 요청 중이라면 무시
 
+  console.log("latitude: ", latitude);
+  console.log("longitude: " + longitude);
+  console.log("나의 radius: ", radius);
+
   loading.value = true; // 로딩 상태 활성화
 
   // query parameters 생성
@@ -277,7 +280,8 @@ const fetchHouses = async (
     const response = await axiosInstance.get<ApiResponse>(
       `/v1/houses?${queryParams}`
     );
-    console.log("response", response.data);
+
+    console.log(response.data.data);
 
     if (response.data.success && response.data.data) {
       houses.value = response.data.data;
@@ -414,7 +418,7 @@ const loadKakaoMap = (container) => {
   script.onload = () => {
     window.kakao.maps.load(() => {
       const options = {
-        center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도 중심 좌표
+        center: new window.kakao.maps.LatLng(37.5115, 127.0325), // 지도 중심 좌표
         level: 5, // 지도 확대 레벨
       };
 

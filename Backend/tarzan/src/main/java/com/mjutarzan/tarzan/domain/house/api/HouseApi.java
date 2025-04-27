@@ -32,6 +32,7 @@ public class HouseApi {
     public ResponseEntity<?> getHouses(ApiHouseListRequestDto apiHouseListRequestDto) {
 
         List<SimpleHouseListItemResponseDto> list = apiHouseService.getHouses(apiHouseListRequestDto);
+        log.info("{}", list.size());
 
         return ResponseEntity.ok().body(
                 BaseResponseDto
