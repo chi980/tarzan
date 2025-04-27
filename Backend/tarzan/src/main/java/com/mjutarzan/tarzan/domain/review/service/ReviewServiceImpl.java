@@ -4,9 +4,11 @@ import com.mjutarzan.tarzan.domain.house.entity.House;
 import com.mjutarzan.tarzan.domain.house.repository.HouseRepository;
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewListRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewRequestDto;
+import com.mjutarzan.tarzan.domain.review.api.request.ReviewSummaryRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewSummaryResponseDto;
 import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserReviewRequestDto;
@@ -127,6 +129,20 @@ public class ReviewServiceImpl implements ReviewService{
                 .count(reviewPages.getTotalElements())
                 .list(list)
                 .isNext(reviewPages.hasNext())
+                .build();
+    }
+
+    @Override
+    public ReviewSummaryResponseDto getReviewSummary(ReviewSummaryRequestDto requestDto, CustomUserDetails userDto) {
+        Object[] result = reviewRepository.findAverageScoreAndCountByHouseId(requestDto.getHouseId());
+
+        double averageScore = ((Number) result[0]).doubleValue();
+        long reviewCount = ((Number) result[1]).longValue();
+
+
+        return ReviewSummaryResponseDto.builder()
+                .count(reviewCount)
+                .score(averageScore)
                 .build();
     }
 }
