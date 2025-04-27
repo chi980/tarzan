@@ -2,9 +2,11 @@ package com.mjutarzan.tarzan.domain.review.api;
 
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewListRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewRequestDto;
+import com.mjutarzan.tarzan.domain.review.api.request.ReviewSummaryRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewSummaryResponseDto;
 import com.mjutarzan.tarzan.domain.review.service.ReviewService;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
@@ -32,6 +34,22 @@ public class ReviewApi {
                 .data(result)
                 .build());
     }
+
+    @GetMapping("/reviews/summary")
+    public ResponseEntity<?> getReviewSummary(ReviewSummaryRequestDto reviewSummaryRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
+
+        ReviewSummaryResponseDto result = reviewService.getReviewSummary(reviewSummaryRequestDto, userDto);
+
+        return ResponseEntity.ok().body(
+                BaseResponseDto.builder()
+                        .success(true)
+                        .message("완료되었습니다.")
+                        .data(result)
+                        .build()
+        );
+
+    }
+
 
     @GetMapping("/reviews/{reviewIdx}")
     public ResponseEntity<Object> getReview(@PathVariable Long reviewIdx, @AuthenticationPrincipal CustomUserDetails userDto){

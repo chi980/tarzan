@@ -2,9 +2,11 @@ package com.mjutarzan.tarzan.domain.review.service;
 
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewListRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.ReviewRequestDto;
+import com.mjutarzan.tarzan.domain.review.api.request.ReviewSummaryRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewSummaryResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.request.UserReviewRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 
@@ -20,4 +22,6 @@ public interface ReviewService {
     void deleteReview(Long reviewIdx, CustomUserDetails userDto);
 
     ReviewListResponseDto getReviews(UserReviewRequestDto userReviewRequestDto, CustomUserDetails userDto);
+
+    ReviewSummaryResponseDto getReviewSummary(ReviewSummaryRequestDto reviewSummaryRequestDto, CustomUserDetails userDto);
 }

@@ -219,7 +219,8 @@ const fetchBuildings = async (
       `/v1/building?${queryParams}`
     );
     if (response.data.success && response.data.data) {
-      buildings.value = response.data.data.list;
+      buildings.value = response.data.data;
+      console.log(response.data.data);
     } else {
       console.error("API 실패:", response.data.message || "알 수 없는 오류");
       buildings.value = [];

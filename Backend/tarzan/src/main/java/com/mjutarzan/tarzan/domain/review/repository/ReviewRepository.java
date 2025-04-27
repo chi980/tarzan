@@ -30,4 +30,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.writer.id = :writerId ORDER BY r.createdAt DESC")
     Page<Review> findReviewsByWriterId(@Param("writerId") Long writerId, Pageable pageable);
 
+    @Query("SELECT COALESCE(AVG(r.score), 0), COUNT(r) " +
+            "FROM Review r " +
+            "WHERE r.house.id = :houseId")
+    Object[] findAverageScoreAndCountByHouseId(@Param("houseId") Long houseId);
 }
