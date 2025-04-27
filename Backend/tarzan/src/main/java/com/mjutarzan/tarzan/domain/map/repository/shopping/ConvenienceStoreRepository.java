@@ -12,8 +12,10 @@ public interface ConvenienceStoreRepository extends JpaRepository<ConvenienceSto
 
 
 
-    @Query("SELECT b FROM ConvenienceStore b " +
-            "WHERE function('ST_DWithin', b.location, function('ST_SetSRID', function('ST_MakePoint', :longitude, :latitude), 4326), :radius) = true")
+    @Query(value = "SELECT * FROM building b " +
+            "WHERE ST_DistanceSphere(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) <= :radius " +
+            "AND b.building_type = 'convenience_store'",
+            nativeQuery = true)
     List<ConvenienceStore> findAllWithinRadius(@Param("longitude") double longitude,
                                      @Param("latitude") double latitude,
                                      @Param("radius") double radius);
