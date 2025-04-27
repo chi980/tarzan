@@ -5,6 +5,7 @@ import com.mjutarzan.tarzan.domain.review.api.request.ReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.request.UpdateReviewRequestDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UserReviewRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 
 public interface ReviewService {
@@ -17,4 +18,6 @@ public interface ReviewService {
     void updateReview(Long reviewIdx, UpdateReviewRequestDto updateReviewRequestDto, CustomUserDetails userDto);
 
     void deleteReview(Long reviewIdx, CustomUserDetails userDto);
+
+    ReviewListResponseDto getReviews(UserReviewRequestDto userReviewRequestDto, CustomUserDetails userDto);
 }

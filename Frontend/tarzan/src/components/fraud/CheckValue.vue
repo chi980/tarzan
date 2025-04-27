@@ -50,7 +50,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
 import { useRouter } from "vue-router";
-import { axiosInstance } from "@/plugins/axiosPlugin";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 import TabBar from "@/components/common/TabBar.vue";
 import SaleRealEstateTap from "@/components/fraud/SaleRealEstateTap.vue";
@@ -136,39 +135,6 @@ const selectTab = (idx: number) => {
   selectedTabIdx.value = idx;
 };
 
-// 6. 검색 요청
-const handleSearch = async () => {
-  const { gu, dong, searchBy, search } = searchData.value;
-  // if (!gu || !dong || !searchBy || !search.trim()) {
-  //   alert("모든 값을 입력해주세요.");
-  //   return;
-  // }
-
-  const selectedTab = tabs[selectedTabIdx.value];
-
-  try {
-    const response = await axiosInstance.get(selectedTab.apiUrl, {
-      params: {
-        gu,
-        dong,
-        searchBy,
-        search,
-        numOfRows: 100,
-        pageNo: 1,
-      },
-    });
-
-    if (response.data.data.list) {
-      resultList.value = response.data.data.list;
-      console.log("검색 결과", resultList.value);
-    } else {
-      resultList.value = [];
-      alert("검색 결과가 없습니다.");
-    }
-  } catch (e) {
-    console.error("API 호출 실패", e);
-  }
-};
 // 7. 라우팅
 const goSomewhere = () => {
   router.push({ name: "Home" });
