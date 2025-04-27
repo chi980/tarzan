@@ -13,6 +13,7 @@ import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.global.common.service.LocationService;
+import com.mjutarzan.tarzan.global.common.utils.RadiusConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,15 +41,20 @@ public class ApiHouseServiceImpl implements ApiHouseService{
 
     @Override
     public List<SimpleHouseListItemResponseDto> getHouses(ApiHouseListRequestDto requestDto) {
-        List<SimpleHouseListItemResponseDto> list = apiHouseRepository.findAllWithinRadius(requestDto.getLongitude(), requestDto.getLatitude(), requestDto.getRadius()).stream()
+//        double degreeRadius = RadiusConverter.meterToDegree(requestDto.getRadius());
+
+        log.info("longitude: {}", requestDto.getLongitude());
+        log.info("latitude: {}", requestDto.getLatitude());
+        log.info("radius: {}", requestDto.getRadius());
+
+        return apiHouseRepository.findAllWithinRadius(requestDto.getLongitude(), requestDto.getLatitude(), requestDto.getRadius()).stream()
                 .map(apiHouse -> SimpleHouseListItemResponseDto
                         .builder()
                         .id(apiHouse.getId())
-                        .latitude(apiHouse.getLocation().getX())
-                        .longitude(apiHouse.getLocation().getY())
+                        .latitude(apiHouse.getLocation().getY()) // 위도
+                        .longitude(apiHouse.getLocation().getX()) // 경도
                         .build())
                 .collect(Collectors.toList());
-        return list;
     }
 
     @Override

@@ -34,7 +34,7 @@ public class MainController {
     @ResponseBody
     public String storeHouseList(){
         String filePath = "static/data/house.csv";
-        dataService.storeHouseList(filePath, 5, 6);
+        dataService.storeHouseList(filePath, 6, 5);
         return "ok";
     }
 
@@ -148,7 +148,7 @@ public class MainController {
     public String storeAllData() {
         // house data
         String houseFilePath = "static/data/house.csv";
-        dataService.storeHouseList(houseFilePath, 5, 6);
+        dataService.storeHouseList(houseFilePath, 6, 5);
 
         // civic center data
         String civicCenterFilePath = "static/data/civic_center.csv";
