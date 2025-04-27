@@ -9,13 +9,11 @@
           class="my-profile"
           v-for="(profile, index) in profiles"
           :key="index"
-          @click="editProfile"
-        >
+          @click="editProfile">
           <p>{{ profile.name }}</p>
           <p
             class="profile-data"
-            :class="{ 'editable-data': profile.isEditable }"
-          >
+            :class="{ 'editable-data': profile.isEditable }">
             {{ transformData(profile.data) }}
           </p>
           <img :src="iconImgSrc" alt=">" v-if="profile.isEditable" />
@@ -46,11 +44,11 @@ import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import iconImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 import TabBar from "@/components/common/TabBar.vue";
-import PostList from "@/components/post/PostList.vue";
-import CommentList from "@/components/post/CommentList.vue";
+import MyPagePostList from "@/components/member/MyPagePostList.vue";
 import MyPageReviewList from "@/components/member/MyPageReviewList.vue";
 
 import { Tab } from "@/data/tabs";
+import MyPageCommentList from "@/components/member/MyPageCommentList.vue";
 
 const router = useRouter();
 const user = ref(null);
@@ -62,7 +60,6 @@ const userReviews = ref([]);
 
 onMounted(async () => {
   await fetchUser();
-  await fetchUserPosts(); // 첫 번째 탭의 데이터도 함께 로드
 });
 const fetchUser = async () => {
   try {
@@ -121,17 +118,11 @@ const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 const tabs: Tab[] = [
   {
     name: "게시글",
-    component: PostList,
-    props: {
-      posts: posts.value,
-    },
+    component: MyPagePostList,
   },
   {
     name: "댓글",
-    component: CommentList,
-    props: {
-      comments: [],
-    },
+    component: MyPageCommentList,
   },
   {
     name: "후기",
@@ -141,53 +132,6 @@ const tabs: Tab[] = [
 
 const editProfile = () => {
   router.push({ name: "EditProfile" });
-};
-
-// 탭 인덱스 변경 감시
-watch(selectedTabIndex, async (newIndex) => {
-  switch (newIndex) {
-    case 0:
-      if (posts.value.length === 0) {
-        await fetchUserPosts();
-      }
-      break;
-    case 1:
-      if (userComments.value.length === 0) {
-        await fetchUserComments();
-      }
-      break;
-    case 2:
-      if (userReviews.value.length === 0) {
-        await fetchUserReviews();
-      }
-      break;
-  }
-});
-
-const page = ref(1);
-
-const fetchUserPosts = async () => {
-  const queryParams = new URLSearchParams({
-    size: 5,
-    page: page.value,
-    sortBy: "최신순",
-  }).toString();
-
-  try {
-    const response = await axiosInstance.get(`/v1/user/board?${queryParams}`);
-    if (response.data.success) {
-      const newPosts = response.data.data.list;
-      if (page.value === 1) {
-        posts.value = newPosts;
-      } else {
-        posts.value = [...posts.value, ...newPosts];
-      }
-      page.value++;
-      console.log("게시글 데이터 불러오기 성공");
-    }
-  } catch (error) {
-    console.error("게시글 데이터 요청 중 오류 발생:", error.message);
-  }
 };
 </script>
 
