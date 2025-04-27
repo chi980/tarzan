@@ -18,6 +18,7 @@
           v-model:selectedButton="selectedButton"
           :buttons="tagOptions"
           :multiple="false"
+          :readonly="false"
         >
         </TagButtonGroup>
       </div>
@@ -89,7 +90,7 @@ const sortOptions = ref([
   { idx: 2, value: "oldest", name: "오래된순" },
 ]);
 
-const page = ref(1);
+const page = ref(0);
 const posts = ref([]); // 게시물 목록
 const sortBy = ref("최신순"); // 정렬 기준
 const selectedButton = ref(tagOptions.value[0]);
@@ -124,7 +125,7 @@ const fetchPosts = async () => {
     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
     if (response.data.success) {
       const newPosts = response.data.data.list;
-      if (page.value === 1) {
+      if (page.value === 0) {
         posts.value = newPosts;
       } else {
         posts.value = [...posts.value, ...newPosts];

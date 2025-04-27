@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup scoped>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
@@ -50,19 +50,16 @@ import PostList from "@/components/post/PostList.vue";
 import CommentList from "@/components/post/CommentList.vue";
 import MyPageReviewList from "@/components/member/MyPageReviewList.vue";
 
+import List from "@/components/common/List.vue";
+import PostItem from "@/components/post/PostItem.vue";
+
 import { Tab } from "@/data/tabs";
 
 const router = useRouter();
 const user = ref(null);
 
-// 데이터 저장용 변수 추가
-const posts = ref([]);
-const userComments = ref([]);
-const userReviews = ref([]);
-
-onMounted(async () => {
-  await fetchUser();
-  await fetchUserPosts(); // 첫 번째 탭의 데이터도 함께 로드
+onMounted(() => {
+  fetchUser();
 });
 const fetchUser = async () => {
   try {
@@ -117,13 +114,14 @@ function transformData(data: any): string {
 function getGuNameByValue(value: string): string | undefined {
   return seoulSiGunGu.find((item) => item.value === value)?.name;
 }
+
 const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 const tabs: Tab[] = [
   {
     name: "게시글",
     component: PostList,
     props: {
-      posts: posts.value,
+      comments: [],
     },
   },
   {
@@ -141,53 +139,6 @@ const tabs: Tab[] = [
 
 const editProfile = () => {
   router.push({ name: "EditProfile" });
-};
-
-// 탭 인덱스 변경 감시
-watch(selectedTabIndex, async (newIndex) => {
-  switch (newIndex) {
-    case 0:
-      if (posts.value.length === 0) {
-        await fetchUserPosts();
-      }
-      break;
-    case 1:
-      if (userComments.value.length === 0) {
-        await fetchUserComments();
-      }
-      break;
-    case 2:
-      if (userReviews.value.length === 0) {
-        await fetchUserReviews();
-      }
-      break;
-  }
-});
-
-const page = ref(1);
-
-const fetchUserPosts = async () => {
-  const queryParams = new URLSearchParams({
-    size: 5,
-    page: page.value,
-    sortBy: "최신순",
-  }).toString();
-
-  try {
-    const response = await axiosInstance.get(`/v1/user/board?${queryParams}`);
-    if (response.data.success) {
-      const newPosts = response.data.data.list;
-      if (page.value === 1) {
-        posts.value = newPosts;
-      } else {
-        posts.value = [...posts.value, ...newPosts];
-      }
-      page.value++;
-      console.log("게시글 데이터 불러오기 성공");
-    }
-  } catch (error) {
-    console.error("게시글 데이터 요청 중 오류 발생:", error.message);
-  }
 };
 </script>
 
