@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface BicycleRepository extends JpaRepository<Bicycle, Long> {
 
+    @Query(value = "SELECT * FROM building b " +
+            "WHERE ST_DistanceSphere(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) <= :radius " +
+            "AND b.building_type = 'bicycle'",
+            nativeQuery = true)
 
-    @Query("SELECT b FROM Bicycle b " +
-            "WHERE function('ST_DWithin', b.location, function('ST_SetSRID', function('ST_MakePoint', :longitude, :latitude), 4326), :radius) = true")
     List<Bicycle> findAllWithinRadius(@Param("longitude") double longitude,
                                   @Param("latitude") double latitude,
                                   @Param("radius") double radius);
