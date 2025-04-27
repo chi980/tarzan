@@ -70,7 +70,7 @@ const tagMap = {
   "D-DAY": "move_day_before_ddays",
 } as const;
 const filteredCheckList = computed(() => {
-  if (selectedTag.value?.value === "ALL") {
+  if (selectedTag.value === "ALL") {
     return [
       ...checkListData.move_day_before_30days.map((item) => ({
         ...item,
@@ -91,7 +91,7 @@ const filteredCheckList = computed(() => {
     ];
   }
 
-  const category = tagMap[selectedTag.value?.value as keyof typeof tagMap];
+  const category = tagMap[selectedTag.value as keyof typeof tagMap];
   return category
     ? checkListData[category].map((item) => ({ ...item, category }))
     : [];

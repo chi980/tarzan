@@ -92,8 +92,8 @@ const saveChecklistToStorage = (main: string, sub: string) => {
 
 // 체크리스트 필터링
 const filteredChecklist = computed(() => {
-  const main = selectedMainTag.value?.value;
-  const sub = selectedSubTag.value?.value;
+  const main = selectedMainTag.value;
+  const sub = selectedSubTag.value;
 
   if (sub === "ALL") {
     return [

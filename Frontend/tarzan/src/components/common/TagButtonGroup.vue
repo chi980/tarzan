@@ -19,8 +19,8 @@
 import { defineProps, defineEmits } from "vue";
 
 const props = defineProps({
-  selectedButton: Object, // 단일 선택일 때 선택된 버튼 객체
-  selectedButtons: Array, // 다중 선택일 때 선택된 버튼 객체 배열
+  selectedButton: [String, Number], // 단일 선택일 때 선택된 버튼
+  selectedButtons: Array, // 다중 선택일 때 선택된 버튼 배열
   buttons: Array, // 버튼 내용 목록
   multiple: Boolean, // 다중 선택 여부
   readonly: Boolean, // 읽기 전용 모드 여부
@@ -34,38 +34,30 @@ const props = defineProps({
 
 const emit = defineEmits(["update:selectedButton", "update:selectedButtons"]);
 
-// 버튼이 선택되었는지 여부 확인
+// 버튼 선택 여부 체크 함수
 const isSelected = (button) => {
   if (props.multiple) {
-    return props.selectedButtons.some(
-      (selectedButton) => selectedButton.value === button.value
-    );
+    return props.selectedButtons.includes(button.value);
   } else {
-    return props.selectedButton && props.selectedButton.value === button.value;
+    return props.selectedButton === button.value;
   }
 };
 
 // 버튼을 클릭했을 때 선택 상태를 토글(켜고 끄는) 하는 함수
 const toggleSelection = (button) => {
+  if (props.readonly) return;
+
   if (props.multiple) {
-    // 다중 선택 모드
-    const isAlreadySelected = props.selectedButtons.some(
-      (selectedButton) => selectedButton.value === button.value
-    );
+    const isAlreadySelected = props.selectedButtons.includes(button.value);
 
     if (isAlreadySelected) {
-      // 이미 선택된 버튼이면 제거
-      const updated = props.selectedButtons.filter(
-        (selectedButton) => selectedButton.value !== button.value
-      );
+      const updated = props.selectedButtons.filter((v) => v !== button.value);
       emit("update:selectedButtons", updated);
     } else {
-      // 선택되지 않은 버튼이면 추가
-      emit("update:selectedButtons", [...props.selectedButtons, button]);
+      emit("update:selectedButtons", [...props.selectedButtons, button.value]);
     }
   } else {
-    // 단일 선택 모드
-    emit("update:selectedButton", button);
+    emit("update:selectedButton", button.value);
   }
 };
 </script>

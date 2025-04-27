@@ -11,7 +11,9 @@
             v-for="(item, index) in checkItemsInKitchen"
             :key="index"
             :checkItem="item"
-            @update:checkItem="updateCheckItem(checkItemsInKitchen, index, $event)"
+            @update:checkItem="
+              updateCheckItem(checkItemsInKitchen, index, $event)
+            "
           />
         </div>
       </div>
@@ -22,7 +24,9 @@
             v-for="(item, index) in checkItemsInLivingRoom"
             :key="index"
             :checkItem="item"
-            @update:checkItem="updateCheckItem(checkItemsInLivingRoom, index, $event)"
+            @update:checkItem="
+              updateCheckItem(checkItemsInLivingRoom, index, $event)
+            "
           />
         </div>
       </div>
@@ -44,7 +48,9 @@
             v-for="(item, index) in checkItemsInBathRoom"
             :key="index"
             :checkItem="item"
-            @update:checkItem="updateCheckItem(checkItemsInBathRoom, index, $event)"
+            @update:checkItem="
+              updateCheckItem(checkItemsInBathRoom, index, $event)
+            "
           />
         </div>
       </div>
@@ -174,7 +180,6 @@ const updateCheckItem = (array: Check[], index: number, updatedItem: Check) => {
   console.log(array[index]);
 };
 </script>
-
 
 <style lang="scss" scoped>
 // 공통
