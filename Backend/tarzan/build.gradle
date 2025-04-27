@@ -54,10 +54,14 @@ dependencies {
 	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
-	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
+
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	//QueryDSL 추가
 	// queryDsl 관련 코드생성 기능 제공
@@ -76,7 +80,9 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs << "-parameters"
+}
 clean {
 	delete file('src/main/generated')
 }

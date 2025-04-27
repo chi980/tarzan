@@ -12,11 +12,13 @@ public class BoardListResponseDto {
 
     private Long count;
     private List<BoardListItemResponseDto> list;
+    private Boolean isNext;
 
     @Builder
-    public BoardListResponseDto(Long count, List<BoardListItemResponseDto> list){
+    public BoardListResponseDto(Long count, List<BoardListItemResponseDto> list, Boolean isNext){
         this.count = count;
         this.list = list;
+        this.isNext = isNext;
 
     }
 }

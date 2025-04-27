@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.fraud.api.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +14,7 @@ import lombok.ToString;
 @ToString
 public class RealEstateRequestDto{
 
+    @JsonProperty("gu")
     @NotNull
     private SiGunGu gu;
     private String searchBy;
