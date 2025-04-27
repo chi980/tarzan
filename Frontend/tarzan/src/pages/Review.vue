@@ -22,7 +22,9 @@
         <div class="tag">
           <TagButtonGroup
             v-model:selectedButton="selectedButton"
-            :buttons="buttons">
+            :buttons="buttons"
+            :readonly="true"
+          >
             <template v-slot:default="{ button }">
               <span>{{ button.label }}</span>
             </template>
@@ -41,7 +43,8 @@
             <ReviewItem
               v-for="(review, index) in reviews"
               :key="index"
-              :review="review" />
+              :review="review"
+            />
           </div>
         </div>
       </div>
@@ -87,7 +90,7 @@ const buttons = ref([
   { label: "🧹 건물 관리", value: "BUILDING_MANAGEMENT" },
   { label: "🚘 주차", value: "PARKING" },
   { label: "🔇 방음", value: "SOUND_PROOF" },
-  { label: "🚨 치안 3", value: "SECURITY" },
+  { label: "🚨 치안", value: "SECURITY" },
   { label: "👮🏻 경비실", value: "SECURITY_GUARD" },
   { label: "🌳 산책로", value: "TRAIL" },
   { label: "🪟 환기", value: "VENTILATION" },
