@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup scoped>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
@@ -46,6 +46,9 @@ import iconImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.
 import TabBar from "@/components/common/TabBar.vue";
 import MyPagePostList from "@/components/member/MyPagePostList.vue";
 import MyPageReviewList from "@/components/member/MyPageReviewList.vue";
+
+import List from "@/components/common/List.vue";
+import PostItem from "@/components/post/PostItem.vue";
 
 import { Tab } from "@/data/tabs";
 import MyPageCommentList from "@/components/member/MyPageCommentList.vue";
@@ -114,6 +117,7 @@ function transformData(data: any): string {
 function getGuNameByValue(value: string): string | undefined {
   return seoulSiGunGu.find((item) => item.value === value)?.name;
 }
+
 const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 const tabs: Tab[] = [
   {
