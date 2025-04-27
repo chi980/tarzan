@@ -67,10 +67,10 @@ const step = ref(0);
 const prev = () => {
   if (step.value > 0) step.value--;
 };
-const next = () => {
+const next = async () => {
   steps[step.value].onClick();
   if (step.value < steps.length - 1) step.value++;
-  else router.push("/bookmark");
+  else saveBookmark(bookmarkData);
 };
 
 const bookmarkData = reactive({});
@@ -84,10 +84,24 @@ const fetchBookmark = async (bookmarkIdx: number) => {
     );
     if (response.data && response.data.data) {
       bookmarkData.value = response.data.data;
-      // console.log("서버에서 받아온 bookmarkData:", response.data.data);
+      console.log("서버에서 받아온 bookmarkData:", response.data.data);
     } else {
       new Error("잘못된 요청입니다.");
     }
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const saveBookmark = async (bookmarkData) => {
+  console.log("저장합니다." + bookmarkIdx.value);
+  console.log(bookmarkData.value);
+  try {
+    const response = await axiosInstance.put(
+      `/v1/bookmark/${bookmarkIdx.value}`,
+      bookmarkData.value
+    );
+    router.push("/bookmark");
   } catch (error) {
     console.error(error.message);
   }
@@ -96,7 +110,7 @@ const fetchBookmark = async (bookmarkIdx: number) => {
 
 <template>
   <div class="sub-container">
-    <TopBarBackBookmark :title="'점검하기'"/>
+    <TopBarBackBookmark :title="'점검하기'" />
     <div class="center-container">
       <div class="address-card-wrapper">
         <AddressCard v-if="bookmarkHouse" :houseOverview="bookmarkHouse" />
@@ -105,14 +119,12 @@ const fetchBookmark = async (bookmarkIdx: number) => {
         <component
           :is="steps[step].component"
           :bookmarkIdx="bookmarkIdx"
-          v-model:bookmarkData="bookmarkData"
-        />
+          v-model:bookmarkData="bookmarkData" />
       </div>
     </div>
     <BottomDefaultButton
       :label="step < steps.length - 1 ? '다음' : '제출'"
-      :onClick="next"
-    />
+      :onClick="next" />
   </div>
 </template>
 
