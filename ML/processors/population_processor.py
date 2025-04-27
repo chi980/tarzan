@@ -75,15 +75,6 @@ class PopulationProcessor:
         output_file = os.path.join(self.processed_data_path, file_name)
         df.to_csv(output_file, index=False, encoding="utf-8")
         self.logger.info(f"전처리된 데이터 저장 완료: {output_file}")
-        
-class CrimRatioProcessor: 
-    def __init__(self, config):
-        self.processed_data_path = config["data"]["processed_data_path"]
-        self.logger = setup_logger("population_processor", config["logging"]["log_file"])
-        os.makedirs(self.raw_data_path, exist_ok=True)
-    
-    def run(crime_input_file, population_input_file, )
-
 
 if __name__ == "__main__":
     import yaml
