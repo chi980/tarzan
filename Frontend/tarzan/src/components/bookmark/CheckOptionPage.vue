@@ -80,15 +80,40 @@ console.log(bookmarkData.value);
 
 onMounted(() => {
   checkItemsInKitchen.value =
-    bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM;
+    bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.map(
+      (item) => ({
+        label: item.label,
+        value: item.label, // 선택 비교할 수 있도록 label을 value로 씀
+      })
+    );
+
   checkItemsInLivingRoom.value =
-    bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM;
+    bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM.map(
+      (item) => ({
+        label: item.label,
+        value: item.label,
+      })
+    );
+
   checkItemsInRoom.value =
-    bookmarkData.value.value.bookmark_checklist.OPTION_ROOM;
+    bookmarkData.value.value.bookmark_checklist.OPTION_ROOM.map((item) => ({
+      label: item.label,
+      value: item.label,
+    }));
+
   checkItemsInBathRoom.value =
-    bookmarkData.value.value.bookmark_checklist.OPTION_BATH_ROOM;
+    bookmarkData.value.value.bookmark_checklist.OPTION_BATH_ROOM.map(
+      (item) => ({
+        label: item.label,
+        value: item.label,
+      })
+    );
+
   checkItemsInEtc.value =
-    bookmarkData.value.value.bookmark_checklist.OPTION_SECURITY;
+    bookmarkData.value.value.bookmark_checklist.OPTION_SECURITY.map((item) => ({
+      label: item.label,
+      value: item.label,
+    }));
 });
 </script>
 
