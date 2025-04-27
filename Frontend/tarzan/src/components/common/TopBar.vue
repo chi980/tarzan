@@ -4,7 +4,8 @@
       <CustomSelectBox
         :options="seoulDistrictOptions"
         :parentStyle="topBarStyle"
-        @update:selected="handleDistrictSelect" />
+        @update:selected="handleDistrictSelect"
+      />
     </div>
   </div>
 </template>
@@ -55,7 +56,7 @@ const handleDistrictSelect = (idx: number) => {
   );
   selectedDistrict.value = selectedOption?.value || null;
   // console.log(`선택된 옵션의 인덱스: ${idx}`);
-  console.log(`탑바: ${selectedDistrict.value}`);
+  // console.log(`탑바: ${selectedDistrict.value}`);
   emit("update:selected", selectedDistrict.value);
 };
 

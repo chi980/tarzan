@@ -9,7 +9,7 @@
     </div>
     <div class="post-meta">
       <div class="time-views">
-        <span id="time">{{ post.board_created_at }} · </span>
+        <span id="time">{{ formatSmartTime(post.board_created_at) }} · </span>
         <span id="views"> 조회 {{ post.board_read_count }}</span>
       </div>
       <div class="comment">
@@ -20,12 +20,15 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    post: Object,
+<script setup>
+import { defineProps } from "vue";
+import { formatSmartTime } from "@/utils/formatTime";
+
+const props = defineProps({
+  post: {
+    type: Object,
   },
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -36,11 +39,10 @@ export default {
   // @include custom-margin-x;
   // @include custom-margin-y($margin-size: 12px);
   gap: 8px;
-  
 }
 
 .post-item-container .post-tag {
-  background-color: #F2F3F9;
+  background-color: #f2f3f9;
   @include custom-padding($margin-small);
   border-radius: 10px;
   font-size: 10px;
@@ -57,26 +59,26 @@ export default {
 
 #post-title {
   @include custom-text($font-size: 14px);
-  width:100%;
-  white-space: nowrap;  /* 텍스트를 한 줄로 유지 */
-  overflow: hidden;  /* 내용이 넘치면 숨김 */
-  text-overflow: ellipsis;  /* 넘치는 텍스트를 말줄임표로 표시 */
+  width: 100%;
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
 }
 
 #post-content {
   font-size: 12px;
-  color: #9F9F9F;
-  width:100%;
-  white-space: nowrap;  /* 텍스트를 한 줄로 유지 */
-  overflow: hidden;  /* 내용이 넘치면 숨김 */
-  text-overflow: ellipsis;  /* 넘치는 텍스트를 말줄임표로 표시 */
+  color: #9f9f9f;
+  width: 100%;
+  white-space: nowrap; /* 텍스트를 한 줄로 유지 */
+  overflow: hidden; /* 내용이 넘치면 숨김 */
+  text-overflow: ellipsis; /* 넘치는 텍스트를 말줄임표로 표시 */
 }
 
 .post-item-container .post-meta {
-  display:flex;
+  display: flex;
   width: 100%;
   justify-content: space-between;
   font-size: 12px;
-  color: #9F9F9F;
+  color: #9f9f9f;
 }
 </style>

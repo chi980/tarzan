@@ -3,8 +3,9 @@
     <div class="tag-button-wrapper">
       <TagButtonGroup
         :buttons="tagOptions"
-        :selectedButton="selectedTag"
-        :multiple="false" />
+        v-model:selectedButton="selectedTag"
+        :multiple="false"
+      />
     </div>
 
     <div class="house-content-wrapper">
@@ -19,12 +20,14 @@
           :fetchItems="fetchBookmarks"
           :params="params"
           :onDelete="handleDelete"
-          :onClick="handleCLick">
+          :onClick="handleCLick"
+        >
           <template #item="{ item, index, onClick, onDelete }">
             <SwipeItem
               :key="item.bookmarkIdx"
               @click="onClick(item)"
-              @delete="onDelete(item, index)">
+              @delete="onDelete(item, index)"
+            >
               <div class="house-item-wrapper">
                 <BookmarkItem :bookmark="item" />
               </div>
@@ -110,11 +113,11 @@ const tagOptions = [
   { label: "점검 완료", value: "CHECK_COMPLETED" },
 ];
 
-const selectedTag = ref("ALL"); // 단일 선택용
+const selectedTag = ref({ label: "전체", value: "ALL" });
 
 /** bookmark item 관련 */
-watch(selectedTag, (newSeletedTag) => {
-  params.value.status = newSeletedTag;
+watch(selectedTag, (newSelectedTag) => {
+  params.value.status = newSelectedTag?.value || "ALL";
 });
 
 const params = ref({
