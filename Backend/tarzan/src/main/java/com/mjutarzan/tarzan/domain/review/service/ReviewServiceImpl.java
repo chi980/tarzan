@@ -9,10 +9,12 @@ import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
 import com.mjutarzan.tarzan.domain.review.entity.Review;
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.UserReviewRequestDto;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
 import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,15 +43,14 @@ public class ReviewServiceImpl implements ReviewService{
 
         Page<Review> reviewPages = reviewRepository.findReviewsByHouseId(requestDto.getHouseIdx(), pageable);
 
-        List<ReviewListItemResponseDto> list = reviewPages.stream()
-                .map(review -> {
-                    return new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail()));
-                })
-                .collect(Collectors.toList());
+        List<ReviewListItemResponseDto> list =reviewPages.getContent().stream()
+                        .map(review -> new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail())))
+                                .collect(Collectors.toList());
 
         return ReviewListResponseDto.builder()
                 .count(reviewPages.getTotalElements())
                 .list(list)
+                .isNext(reviewPages.hasNext())
                 .build();
     }
 
@@ -107,5 +108,25 @@ public class ReviewServiceImpl implements ReviewService{
         }
 
         reviewRepository.delete(review);
+    }
+
+    @Override
+    public ReviewListResponseDto getReviews(UserReviewRequestDto requestDto, CustomUserDetails loginedUserDto)throws EntityNotFoundException {
+        Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("없는 사용자입니다."));
+
+
+        Page<Review> reviewPages = reviewRepository.findReviewsByWriterId(loginedUser.getId(), pageable);
+
+        List<ReviewListItemResponseDto> list =reviewPages.getContent().stream()
+                .map(review -> new ReviewListItemResponseDto(review, review.getWriter().getEmail().equals(loginedUserDto.getEmail())))
+                .collect(Collectors.toList());
+
+        return ReviewListResponseDto.builder()
+                .count(reviewPages.getTotalElements())
+                .list(list)
+                .isNext(reviewPages.hasNext())
+                .build();
     }
 }

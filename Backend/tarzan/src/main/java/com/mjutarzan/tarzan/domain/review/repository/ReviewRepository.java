@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -25,5 +26,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     ORDER BY r.createdAt DESC
     """)
     Page<Review> findReviewsByHouseId(@Param("houseId") Long houseId, Pageable pageable);
+
+    @Query("SELECT r FROM Review r WHERE r.writer.id = :writerId ORDER BY r.createdAt DESC")
+    Page<Review> findReviewsByWriterId(@Param("writerId") Long writerId, Pageable pageable);
 
 }

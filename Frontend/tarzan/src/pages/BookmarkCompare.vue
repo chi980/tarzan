@@ -25,17 +25,26 @@ const fetchBookmarks = async (page: number, params: any) => {
     });
 
     if (response.data.success) {
-      return response.data.data.list.map((item) => ({
-        ...item,
-        checked: false, // 체크 상태 초기화
-      }));
+      return {
+        items: response.data.data.list.map((item) => ({
+          ...item,
+          checked: false, // 체크 상태 초기화
+        })),
+        isNext: response.data.data.isNext,
+      };
     } else {
       console.error("Failed to fetch data:", response.data.message);
-      return [];
+      return {
+        items: [],
+        isNext: false,
+      };
     }
   } catch (error) {
     console.error("API request error:", error);
-    return [];
+    return {
+      items: [],
+      isNext: false,
+    };
   }
 };
 

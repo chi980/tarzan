@@ -31,35 +31,31 @@
           </TagButtonGroup>
         </div>
       </div>
-      <div>
-        <!-- <div class="center-container-content" id="review-photo-wrapper">
+      <!-- <div class="center-container-content" id="review-photo-wrapper">
           <div v-for="n in 4" :key="n" class="box"></div>
         </div> -->
 
-        <div class="center-container-content">
-          <ResultBar resultTitle="전체 후기" :sortOptions="sortOptions" />
-
-          <div class="reivew-content">
-            <ReviewItem
-              v-for="(review, index) in reviews"
-              :key="index"
-              :review="review"
-            />
-          </div>
-        </div>
+      <div class="center-container-content">
+        <ResultBar resultTitle="전체 후기" :sortOptions="sortOptions" />
+        <List :fetchItems="fetchReviews" :params="params">
+          <template #item="{ item }">
+            <ReviewItem :review="item" />
+          </template>
+        </List>
       </div>
     </div>
 
     <BottomDefaultButton :label="'후기 작성하기'" :onClick="buttonHandler" />
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRoute, useRouter } from "vue-router";
 
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
+import List from "@/components/common/List.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -71,15 +67,12 @@ onMounted(() => {
     alert("잘못된 접근입니다.");
     router.replace("/");
   }
-
-  fetchReviews();
 });
 
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
 
 import PhotoUpload from "@/components/review/PhotoUpload.vue";
-import Divider from "@/components/common/Divider.vue";
 import ReviewItem from "@/components/review/ReviewItem.vue";
 import StarRating from "@/components/review/StarRating.vue";
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
@@ -124,29 +117,43 @@ const sortOptions = ref([
 
 const rating = ref(3); // 초기 별점 값
 
-const reviews = ref([]); // 게시글 목록
-// API : 리뷰 목록 호출
-const fetchReviews = async () => {
-  const queryParams = new URLSearchParams({
-    houseIdx: 1,
-    size: 3,
-    page: 0,
-    sortBy: "최신순",
-  }).toString();
+// 리뷰 목록
+const params = ref({
+  houseIdx: houseIdx,
+  size: 10,
+  sortBy: selectedButton.value,
+});
 
+// API : 리뷰 목록 호출
+const fetchReviews = async (page, params) => {
+  console.log("params:", params);
   try {
-    const response = await axiosInstance.get(`/v1/reviews?${queryParams}`);
+    const response = await axiosInstance.get(`/v1/reviews`, {
+      params: {
+        ...params,
+        page: page,
+      },
+    });
 
     if (response.data.success) {
-      reviews.value = response.data.data.list;
-      console.log(reviews.value);
+      console.log("리뷰 목록:", response.data);
+      return {
+        items: response.data.data.list,
+        isNext: response.data.data.isNext,
+      };
     } else {
-      console.error("Failed:", response.data.message);
-      alert(`Error: ${response.data.message}`);
+      console.error("Failed to fetch data:", response.data.message);
+      return {
+        items: [],
+        isNext: false,
+      };
     }
   } catch (error) {
-    console.error("Error fetching posts:", error);
-    alert("후기를 불러오는 데 실패했습니다.");
+    console.error("API request error:", error);
+    return {
+      items: [],
+      isNext: false,
+    };
   }
 };
 

@@ -4,10 +4,10 @@ import com.mjutarzan.tarzan.domain.board.api.response.BoardListResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.CommentListResponseDto;
 import com.mjutarzan.tarzan.domain.board.service.BoardService;
 import com.mjutarzan.tarzan.domain.board.service.CommentService;
-import com.mjutarzan.tarzan.domain.user.api.dto.request.RegisterUserRequestDto;
-import com.mjutarzan.tarzan.domain.user.api.dto.request.UpdateUserRequestDto;
-import com.mjutarzan.tarzan.domain.user.api.dto.request.UserBoardRequestDto;
-import com.mjutarzan.tarzan.domain.user.api.dto.request.UserCommentRequestDto;
+import com.mjutarzan.tarzan.domain.review.api.request.ReviewListRequestDto;
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewListResponseDto;
+import com.mjutarzan.tarzan.domain.review.service.ReviewService;
+import com.mjutarzan.tarzan.domain.user.api.dto.request.*;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.RegisterUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.SimpleUserResponseDto;
 import com.mjutarzan.tarzan.domain.user.api.dto.response.UserResponseDto;
@@ -32,6 +32,7 @@ public class UserApi {
     private final UserService userService;
     private final BoardService boardService;
     private final CommentService commentService;
+    private final ReviewService reviewService;
 
     @GetMapping("/user/simple")
     public ResponseEntity<?> getSimpleUser(@AuthenticationPrincipal CustomUserDetails userDto){
@@ -132,4 +133,17 @@ public class UserApi {
                 .data(result)
                 .build());
     }
+
+    @GetMapping("/user/reviews")
+    public ResponseEntity<?> getUserReviews(UserReviewRequestDto userReviewRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
+        ReviewListResponseDto result = reviewService.getReviews(userReviewRequestDto, userDto);
+
+        return ResponseEntity.ok().body(BaseResponseDto.builder()
+                        .success(true)
+                        .message("완료되었습니다.")
+                        .data(result)
+                        .build());
+
+    }
+
 }

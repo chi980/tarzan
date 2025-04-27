@@ -6,40 +6,67 @@ import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import PostList from "@/components/post/PostList.vue";
+import InfiniteScrollTrigger from "@/components/common/InfiniteScrollTrigger.vue"; // 추가
 
 const emit = defineEmits(["close"]);
 
 const searchQuery = ref("");
 const searchResults = ref([]);
+const page = ref(0);
+const size = 8;
+const isEnd = ref(false);
+const loading = ref(false);
 
-const searchPosts = async () => {
+const searchPosts = async (isNewSearch = false) => {
   if (!searchQuery.value.trim()) return;
-  searchResults.value = [];
+  if (loading.value) return;
+  if (!isNewSearch && isEnd.value) return;
+
+  loading.value = true;
 
   try {
     const { data } = await axiosInstance.get(`/v1/board/search`, {
       params: {
-        size: 5,
-        page: 0,
+        size,
+        page: page.value,
         sortBy: "최신순",
         gu: "JONGNO",
         search: searchQuery.value.trim(),
       },
     });
 
-    // console.log("search 응답 전체:", JSON.stringify(data, null, 2));  // 데이터 출력 추가
-
     if (data.success) {
-      searchResults.value = data.data.list;
+      const newItems = data.data.list;
+      if (isNewSearch) {
+        searchResults.value = newItems;
+      } else {
+        searchResults.value.push(...newItems);
+      }
+      if (newItems.length < size) {
+        isEnd.value = true;
+      } else {
+        page.value++;
+      }
     } else {
       console.error("검색 실패:", data.message);
     }
   } catch (error) {
     console.error("검색 중 오류 발생:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
-const debouncedSearch = debounce(searchPosts, 500);
+const debouncedSearch = debounce(() => {
+  resetAndSearch();
+}, 500);
+
+const resetAndSearch = () => {
+  page.value = 0;
+  isEnd.value = false;
+  searchResults.value = [];
+  searchPosts(true);
+};
 
 const closeModal = () => {
   emit("close");
@@ -57,17 +84,20 @@ watch(searchQuery, debouncedSearch);
 
       <div class="search-container">
         <img :src="searchIconImg" alt="search icon" class="icon-search" />
-        <input v-model="searchQuery" placeholder="검색어를 입력하세요" @keyup.enter="searchPosts" />
+        <input v-model="searchQuery" placeholder="검색어를 입력하세요" @keyup.enter="resetAndSearch" />
       </div>
 
       <div class="modal-content">
-        <div v-if="searchResults.length === 0">
+        <div v-if="searchResults.length === 0 && !loading">
           <p>검색 결과가 없습니다.</p>
         </div>
-        <PostList v-else :posts="searchResults" />
+        <div v-else>
+          <PostList :posts="searchResults" />
+          <InfiniteScrollTrigger v-if="!isEnd" @trigger="() => searchPosts()" />
+        </div>
       </div>
 
-      <BottomDefaultButton label="검색" :onClick="searchPosts" />
+      <BottomDefaultButton label="검색" :onClick="resetAndSearch" />
     </div>
   </div>
 </template>
