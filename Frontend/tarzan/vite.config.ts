@@ -1,13 +1,15 @@
 import { defineConfig, loadEnv } from "vite";
 import path from "path";
 import vue from "@vitejs/plugin-vue";
+import { createHtmlPlugin } from "vite-plugin-html";
+import vueDevTools from "vite-plugin-vue-devtools";
 // defineConfig에서 mode에 맞게 환경 변수 로드
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd()); // 개발/배포 환경에 맞는 .env 파일 로드
   console.log("API Base URL:", env.VITE_API_BASE_URL); // 확인용
 
   return {
-    plugins: [vue()],
+    plugins: [vue(), vueDevTools(), createHtmlPlugin({})],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

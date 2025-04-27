@@ -1,27 +1,33 @@
-import { ref, watchEffect, onMounted, onUnmounted } from "vue";
+import { ref, onUnmounted } from "vue";
 
-export function useInfiniteScroll(fetchMore) {
+export function useInfiniteScroll(fetchCallback, options = { threshold: 0.5 }) {
   const target = ref(null);
+  const observer = ref(null);
   const isLoading = ref(false);
 
-  const observer = new IntersectionObserver(
-    async ([entry]) => {
+  const setupObserver = () => {
+    observer.value = new IntersectionObserver(async ([entry]) => {
       if (entry.isIntersecting && !isLoading.value) {
         isLoading.value = true;
-        await fetchMore();
+        await fetchCallback();
         isLoading.value = false;
       }
-    },
-    { rootMargin: "100px" }
-  );
+    }, options);
 
-  watchEffect(() => {
-    if (target.value) observer.observe(target.value);
-  });
+    if (target.value) {
+      observer.value.observe(target.value);
+    }
+  };
+
+  const stopObserver = () => {
+    if (observer.value) {
+      observer.value.disconnect();
+    }
+  };
 
   onUnmounted(() => {
-    if (target.value) observer.unobserve(target.value);
+    stopObserver();
   });
 
-  return { target, isLoading };
+  return { target, setupObserver, stopObserver };
 }

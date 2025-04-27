@@ -32,12 +32,6 @@ const props = defineProps({
 
 const emit = defineEmits(["update:selectedButton", "update:selectedButtons"]);
 
-// const isSelected = (label) => {
-//   return props.multiple
-//     ? props.selectedButtons.includes(label)
-//     : props.selectedButton === label;
-// };
-
 // 버튼이 선택되었는지 여부 확인
 const isSelected = (button) => {
   if (props.multiple) {
@@ -48,17 +42,6 @@ const isSelected = (button) => {
     return props.selectedButton && props.selectedButton.value === button.value;
   }
 };
-
-// const toggleSelection = (value) => {
-//   if (props.multiple) {
-//     const updated = props.selectedButtons.includes(value)
-//       ? props.selectedButtons.filter((v) => v !== value)
-//       : [...props.selectedButtons, value];
-//     emit("update:selectedButtons", updated);
-//   } else {
-//     emit("update:selectedButton", value);
-//   }
-// };
 
 // 버튼을 클릭했을 때 선택 상태를 토글(켜고 끄는) 하는 함수
 const toggleSelection = (button) => {

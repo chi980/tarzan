@@ -31,13 +31,10 @@
       <div class="comment-container">
         <div class="comment-list">
           <CommentList :comments="comments" />
+          <div ref="target" style="height: 1px"></div>
         </div>
-        <CommentInput
-          class="comment-input"
-          :boardIdx="boardIdx"
-          @commentSubmitted="onNewComment"
-        />
-        <div ref="commentTarget" class="loading-trigger"></div>
+
+        <CommentInput class="comment-input" :boardIdx="boardIdx" />
       </div>
     </div>
 
@@ -64,11 +61,6 @@ const post = ref({}); // 게시글
 const comments = ref([]); // 댓글 목록
 const boardIdx = route.params.id; // 게시글 ID
 
-// 댓글 추가 후 댓글 목록 갱신
-const onNewComment = (newComment) => {
-  comments.value.unshift(newComment); // 앞에 추가
-};
-
 // API: 게시글 상세 정보 가져오기
 const fetchPostDetail = async () => {
   try {
@@ -86,11 +78,45 @@ const fetchPostDetail = async () => {
 
 // API: 해당 게시글의 댓글 목록 가져오기
 const commentPage = ref(0);
-const commentSize = 5;
+const commentSize = 7;
 const isLastPage = ref(false);
+const isLoading = ref(false); // ✅ 추가
 
+// const fetchComments = async () => {
+//   if (isLastPage.value) return;
+
+//   const queryParams = new URLSearchParams({
+//     size: commentSize,
+//     page: commentPage.value,
+//     sortBy: "최신순",
+//     boardIdx: boardIdx,
+//   }).toString();
+
+//   try {
+//     const response = await axiosInstance.get(`/v1/comments?${queryParams}`);
+//     if (response.data.success) {
+//       // 댓글 목록을 기존 댓글 목록에 추가
+//       const list = response.data.data.list;
+//       comments.value.push(...list);
+//       commentPage.value++;
+//       isLastPage.value = list.length < commentSize; // 마지막 페이지인지 확인
+
+//       console.log("댓글 목록 성공:", comments.value);
+//     } else {
+//       console.error("댓글 목록 실패:", response.data.message);
+//       alert(`Error: ${response.data.message}`);
+//     }
+//   } catch (error) {
+//     console.error("댓글 목록 오류:", error);
+//     alert("댓글을 불러오는 중 오류가 발생했습니다.");
+//   }
+// };
+
+// API: 게시글 댓글 가져오기(useInfiniteScroll 사용)
 const fetchComments = async () => {
-  if (isLastPage.value) return;
+  if (isLoading.value || isLastPage.value) return; // ✅ 로딩 중이면 return
+
+  isLoading.value = true; //
 
   const queryParams = new URLSearchParams({
     size: commentSize,
@@ -102,27 +128,37 @@ const fetchComments = async () => {
   try {
     const response = await axiosInstance.get(`/v1/comments?${queryParams}`);
     if (response.data.success) {
-      // 댓글 목록을 기존 댓글 목록에 추가
-      const list = response.data.data.list;
-      comments.value.push(...list);
-      commentPage.value++;
-      isLastPage.value = list.length < commentSize; // 마지막 페이지인지 확인
+      const newComment = response.data.data.list;
+      if (commentPage.value === 0) {
+        // ✅ 첫 페이지는 덮어쓰기
+        comments.value = newComment;
+      } else {
+        comments.value = [...comments.value, ...newComment];
+      }
 
-      console.log("댓글 목록 성공:", comments.value);
-    } else {
-      console.error("댓글 목록 실패:", response.data.message);
-      alert(`Error: ${response.data.message}`);
+      // 다음 페이지로 넘기기
+      commentPage.value++;
+
+      // 받아온 데이터 개수가 commentSize보다 작으면 마지막 페이지
+      if (newComment.length < commentSize) {
+        isLastPage.value = true;
+      }
+
+      console.log("댓글 무한스크롤 성공:", comments.value);
     }
   } catch (error) {
-    console.error("댓글 목록 오류:", error);
-    alert("댓글을 불러오는 중 오류가 발생했습니다.");
+    console.error("댓글 데이터 요청 중 오류 발생:", error.message);
+  } finally {
+    isLoading.value = false;
   }
 };
 
-const { target: commentTarget } = useInfiniteScroll(fetchComments);
+// ✨ 여기!! fetchComments를 넘겨서 세팅
+const { target, setupObserver } = useInfiniteScroll(fetchComments);
 
 onMounted(async () => {
   await Promise.all([fetchPostDetail(), fetchComments()]);
+  setupObserver();
 });
 </script>
 

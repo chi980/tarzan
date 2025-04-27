@@ -31,9 +31,7 @@
       </div>
 
       <PostList :posts="posts" />
-
-      <!-- 감시할 요소 -->
-      <div ref="target" class="loading-trigger">무한스크롤</div>
+      <div ref="target" style="height: 1px"></div>
 
       <div class="write-post-button" @click="goToPostCreate">
         <img :src="writeIconImg" alt="refresh icon" />
@@ -48,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from "vue";
+import { ref, reactive, onMounted, watch, onUnmounted } from "vue";
 import router from "@/router";
 import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
@@ -97,7 +95,7 @@ const sortBy = ref("최신순"); // 정렬 기준
 const selectedButton = ref(tagOptions.value[0]);
 const selectedDistrict = ref("JONGNO"); // 지역구
 
-// 정렬 기준 변경 시 목록 업데이트
+// 정렬 기준 변경
 const updateSortBy = (selectedIndex) => {
   const selectedOption = sortOptions.value.find(
     (option) => option.idx === selectedIndex
@@ -107,19 +105,12 @@ const updateSortBy = (selectedIndex) => {
   }
 };
 
-// // 지역구 변경 시 목록 업데이트
+// 지역구 변경
 const updateDistrict = (district) => {
   selectedDistrict.value = district; // 변경되면 자동으로 fetchPosts() 호출됨
 };
 
-// 정렬 기준(정렬 기준, 태그, 지역구) 변화 감지시 재로딩
-watch([sortBy, selectedButton, selectedDistrict], () => {
-  posts.value = [];
-  page.value = 1;
-  fetchPosts();
-});
-
-// API: 게시글 데이터 불러오기
+// 📌 useInfiniteScroll 사용
 const fetchPosts = async () => {
   const queryParams = new URLSearchParams({
     size: 5,
@@ -128,24 +119,41 @@ const fetchPosts = async () => {
     tag: selectedButton.value.value,
     gu: selectedDistrict.value,
   }).toString();
+
   try {
     const response = await axiosInstance.get(`/v1/board?${queryParams}`);
-
-    if (response.data.success && response.data.data.list.length) {
-      posts.value.push(...response.data.data.list); // 기존 데이터에 추가
+    if (response.data.success) {
+      const newPosts = response.data.data.list;
+      if (page.value === 1) {
+        posts.value = newPosts;
+      } else {
+        posts.value = [...posts.value, ...newPosts];
+      }
       page.value++;
       console.log("게시글 데이터 불러오기 성공");
-      console.log(response.data);
     }
   } catch (error) {
     console.error("게시글 데이터 요청 중 오류 발생:", error.message);
   }
 };
 
-// IntersectionObserver 사용
-const { target } = useInfiniteScroll(fetchPosts);
+// ✨ 여기!! fetchPosts를 넘겨서 세팅
+const { target, setupObserver } = useInfiniteScroll(fetchPosts);
 
-// 글쓰기 페이지로 이동
+// watch - 정렬, 태그, 지역구 변경되면 초기화
+watch([sortBy, selectedButton, selectedDistrict], async () => {
+  posts.value = [];
+  page.value = 1;
+  await fetchPosts();
+});
+
+// 마운트될 때 fetch + 옵저버 시작
+onMounted(async () => {
+  await fetchPosts();
+  setupObserver();
+});
+
+// // 글쓰기 페이지로 이동
 const goToPostCreate = () => {
   router.push({ name: "PostCreate" });
 };
