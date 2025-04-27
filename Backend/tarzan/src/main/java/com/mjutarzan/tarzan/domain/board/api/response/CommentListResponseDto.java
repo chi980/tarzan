@@ -11,11 +11,13 @@ import java.util.List;
 public class CommentListResponseDto {
     private Long count;
     private List<CommentListItemResponseDto> list;
+    private Boolean isNext;
 
     @Builder
-    public CommentListResponseDto(Long count, List<CommentListItemResponseDto> list){
+    public CommentListResponseDto(Long count, List<CommentListItemResponseDto> list, Boolean isNext){
         this.count = count;
         this.list = list;
+        this.isNext = isNext;
 
     }
 }

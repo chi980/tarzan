@@ -94,7 +94,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardListResponseDto getBoards(UserBoardRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getPageSize(), requestDto.getSort());
-        User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
+        User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
 
         Page<Board> boardPages = boardRepository.findByWriter(loginedUser, pageable);
         List<BoardListItemResponseDto> list = boardPages
@@ -106,6 +106,7 @@ public class BoardServiceImpl implements BoardService {
         return BoardListResponseDto.builder()
                 .count(boardPages.getTotalElements())
                 .list(list)
+                .isNext(boardPages.hasNext())
                 .build();
     }
 

@@ -107,6 +107,7 @@ public class CommentServiceImpl implements CommentService{
         return CommentListResponseDto.builder()
                 .count(commentPage.getTotalElements())
                 .list(list)
+                .isNext(commentPage.hasNext())
                 .build();
     }
 }
