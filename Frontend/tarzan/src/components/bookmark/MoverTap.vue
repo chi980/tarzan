@@ -4,13 +4,15 @@
       <TagButtonGroup
         :buttons="tagOptions"
         v-model:selectedButton="selectedTag"
-        :multiple="false" />
+        :multiple="false"
+      />
     </div>
     <CheckListItem
       v-for="checkItem in filteredCheckList"
       :key="checkItem.idx + checkItem.category"
       :checkListItem="checkItem"
-      @change="updateCheckItem(checkItem.category, checkItem.idx)" />
+      @change="updateCheckItem(checkItem.category, checkItem.idx)"
+    />
   </div>
 </template>
 
@@ -68,7 +70,7 @@ const tagMap = {
   "D-DAY": "move_day_before_ddays",
 } as const;
 const filteredCheckList = computed(() => {
-  if (selectedTag.value === "ALL") {
+  if (selectedTag.value?.value === "ALL") {
     return [
       ...checkListData.move_day_before_30days.map((item) => ({
         ...item,
@@ -89,7 +91,7 @@ const filteredCheckList = computed(() => {
     ];
   }
 
-  const category = tagMap[selectedTag.value as keyof typeof tagMap];
+  const category = tagMap[selectedTag.value?.value as keyof typeof tagMap];
   return category
     ? checkListData[category].map((item) => ({ ...item, category }))
     : [];

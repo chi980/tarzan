@@ -7,8 +7,9 @@
       :class="{ [activeClass]: isSelected(button) }"
       role="button"
       tabindex="0"
-      @click="toggleSelection(button)"
+      @click="readonly ? null : toggleSelection(button)"
     >
+      <!-- @click="toggleSelection(button)" -->
       <slot :button="button">{{ button.label }}</slot>
     </div>
   </div>
@@ -22,6 +23,7 @@ const props = defineProps({
   selectedButtons: Array, // 다중 선택일 때 선택된 버튼 객체 배열
   buttons: Array, // 버튼 내용 목록
   multiple: Boolean, // 다중 선택 여부
+  readonly: Boolean, // 읽기 전용 모드 여부
 
   // 활성화 클래스 (기본: "active")
   activeClass: {
