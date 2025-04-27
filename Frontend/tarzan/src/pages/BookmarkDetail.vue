@@ -4,7 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 
 import { HouseOverview } from "@/data/house";
 
-import TopBarBack from "@/components/common/TopBarBack.vue";
+import TopBarBackBookmark from "@/components/common/TopBarBackBookmark.vue";
 import AddressCard from "@/components/common/\bAddressCard.vue";
 import Step1 from "@/components/bookmark/CheckCostPage.vue";
 import Step2 from "@/components/bookmark/CheckOptionPage.vue";
@@ -39,7 +39,7 @@ onMounted(() => {
     }
   }
 
-  fetachBookmark(bookmarkIdx);
+  fetchBookmark(bookmarkIdx);
 });
 
 // 리뷰 작성 컴포넌트들
@@ -77,7 +77,7 @@ const bookmarkData = reactive({});
 watch(bookmarkData, (newBookmarkData) => {
   console.log("변경됨", newBookmarkData.value);
 });
-const fetachBookmark = async (bookmarkIdx: number) => {
+const fetchBookmark = async (bookmarkIdx: number) => {
   try {
     const response = await axiosInstance.get(
       `/v1/bookmark/${bookmarkIdx.value}`
@@ -96,7 +96,7 @@ const fetachBookmark = async (bookmarkIdx: number) => {
 
 <template>
   <div class="sub-container">
-    <TopBarBack :title="'점검하기'" @back="topBarHandler" />
+    <TopBarBackBookmark :title="'점검하기'"/>
     <div class="center-container">
       <div class="address-card-wrapper">
         <AddressCard v-if="bookmarkHouse" :houseOverview="bookmarkHouse" />

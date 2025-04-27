@@ -4,7 +4,8 @@
       <TagButtonGroup
         :buttons="mainTagOptions"
         v-model:selectedButton="selectedMainTag"
-        :multiple="false" />
+        :multiple="false"
+      />
     </div>
     <Transition name="slide-fade">
       <div v-if="showSubTags" class="tag-button-wrapper sub scroll-hidden-box">
@@ -12,7 +13,8 @@
           :buttons="subTagOptions"
           v-model:selectedButton="selectedSubTag"
           activeClass="sub-active"
-          :multiple="false" />
+          :multiple="false"
+        />
       </div>
     </Transition>
     <!-- 필터링된 체크리스트 항목 -->
@@ -20,7 +22,8 @@
       v-for="item in filteredChecklist"
       :key="`${selectedMainTag}-${item.subKey}-${item.idx}`"
       :checkListItem="item"
-      @change="onChange(item)" />
+      @change="onChange(item)"
+    />
   </div>
 </template>
 
@@ -89,8 +92,8 @@ const saveChecklistToStorage = (main: string, sub: string) => {
 
 // 체크리스트 필터링
 const filteredChecklist = computed(() => {
-  const main = selectedMainTag.value;
-  const sub = selectedSubTag.value;
+  const main = selectedMainTag.value?.value;
+  const sub = selectedSubTag.value?.value;
 
   if (sub === "ALL") {
     return [

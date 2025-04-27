@@ -5,13 +5,22 @@
       <form class="input-form">
         <div class="input-group">
           <h2 class="input-title">건물 종류</h2>
-            <CustomSelectBox
-              :options="HouseCategoryOptions"
-              @update:selected="handleBuildingCategorySelected"
-            />
-        </div>
+            <div class="select-wrapper">
+              <CustomSelectBox
+                :options="HouseCategoryOptions"
+                :parentStyle="{
+                  backgroundColor: 'white',
+                  fontWeight: 400,
+                  justifyContent: `space-between`,
+                  border: '1px solid #e7e7e7',
+                }"
+                @update:selected="handleBuildingCategorySelected"
+              />
+            </div>
+          </div>
+
         <div class="input-group">
-          <h2 class="input-title">건물명</h2>
+          <h2 class="input-title">건물 이름</h2>
           <div class="input-content" :class="{'error': !house_name && showError}">
             <input
               type="text"
@@ -22,7 +31,7 @@
         <div v-if="!house_name || !house_name.trim() || showError" class="input-description error-message">
           <p>
             <i class="bi bi-info-circle"></i>
-            건물 명은 필수 정보입니다.
+            건물 이름은 필수 정보입니다.
           </p>
         </div>
         </div>
@@ -118,7 +127,11 @@ const handleAddHouseClick = async () => {
   try {
     const response = await axiosInstance.post("/v1/bookmark/user", newHouse);
     list.value.push(newHouse);
-    router.push({ name: "BookMark", query: { list: JSON.stringify(list.value) } });
+
+    router.push({ name: "BookMark", query: { list: JSON.stringify(list.value) } }).then(() => {
+      window.location.reload();
+    });
+
     console.log("Response:", response.data);
   } catch (error) {
     console.error("저장 실패:", error);
@@ -184,7 +197,17 @@ onMounted(() => {
       @include custom-input-style;
       flex: 1;
     }
+
+    .select-wrapper {
+      @include custom-input-style;
+      width: 100%; // select 박스가 꽉 차게
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer; // 클릭 가능한 느낌
+    }
   }
+
 
   .input-description {
     @include custom-text($font-size: 12px, $font-color: $text-color-light);

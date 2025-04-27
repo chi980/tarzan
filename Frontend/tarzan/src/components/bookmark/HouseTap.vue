@@ -29,7 +29,7 @@
               @delete="onDelete(item, index)"
             >
               <div class="house-item-wrapper">
-                <BookmarkItem :bookmark="item" />
+                <BookmarkItem :bookmark="item" @navigate="handleCLick" />
               </div>
             </SwipeItem>
           </template>
@@ -103,7 +103,12 @@ const handleCLick = (bookmark) => {
   router.push({
     name: "BookMarkDetail",
     params: { id: bookmark.bookmark_id },
-    query: { bookmarkObj: JSON.stringify(bookmark) },
+    query: {
+      bookmarkObj: JSON.stringify({
+        house_name: bookmark.bookmark_house_name,
+        house_address: bookmark.bookmark_house_address,
+      }),
+    },
   });
 };
 /** tag button 관련 */

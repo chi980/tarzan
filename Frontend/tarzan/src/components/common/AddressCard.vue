@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { HouseOverview } from "@/data/house";
-
 import { defineProps } from "vue";
 
 const props = defineProps<{
