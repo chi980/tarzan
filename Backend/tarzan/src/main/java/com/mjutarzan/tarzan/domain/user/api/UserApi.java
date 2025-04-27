@@ -112,7 +112,7 @@ public class UserApi {
                 .build());
     }
 
-    @GetMapping("/user/board")
+    @GetMapping("/user/boards")
     public ResponseEntity<?> getUserBoards(UserBoardRequestDto userBoardRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
         BoardListResponseDto result = boardService.getBoards(userBoardRequestDto, userDto);
 

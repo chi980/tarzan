@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.fraud.api.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.global.common.vo.SiGunGu;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class PriceRequestDto {
+
+    @JsonProperty("gu")
     @NotBlank
     private SiGunGu gu; // 자치구
     @NotBlank

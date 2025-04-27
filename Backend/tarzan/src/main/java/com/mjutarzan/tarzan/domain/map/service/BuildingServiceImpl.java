@@ -83,90 +83,38 @@ public class BuildingServiceImpl implements BuildingService{
     );
 
     @Override
-    public List<BuildingListItemResponseDto> getBuildings(BuildingRequestDto buildingListRequestDto) {
-        Point location = locationService.createPoint(buildingListRequestDto.getLatitude(), buildingListRequestDto.getLongitude());
-        Double latitude = buildingListRequestDto.getLatitude();
-        Double longitude = buildingListRequestDto.getLongitude();
+    public List<BuildingListItemResponseDto> getBuildings(BuildingRequestDto requestDto) {
+        double latitude = requestDto.getLatitude();
+        double longitude = requestDto.getLongitude();
+        double radius = requestDto.getRadius();
+
         log.info("latitude: {}", latitude);
         log.info("longitude: {}", longitude);
-        double radius = buildingListRequestDto.getRadius();
-        List<BuildingListItemResponseDto> list;
 
-        switch (buildingListRequestDto.getType()) {
-            case ALL -> {
-                list = buildingRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(building -> mapToDto(building, getBuildingType(building)))
-                        .collect(Collectors.toList());
-            }
-            case CIVIC_CENTER -> {
-                list = civicCenterRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(civicCenter -> mapToDto(civicCenter, BuildingType.CIVIC_CENTER))
-                        .collect(Collectors.toList());
-            }
-            case GYM -> {
-                list = gymRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(gym -> mapToDto(gym, BuildingType.GYM))
-                        .collect(Collectors.toList());
-            }
-            case PARK -> {
-                list = parkRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(park -> mapToDto(park, BuildingType.PARK))
-                        .collect(Collectors.toList());
-            }
-            case HOSPITAL -> {
-                list = hospitalRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(hospital -> mapToDto(hospital, BuildingType.HOSPITAL))
-                        .collect(Collectors.toList());
-            }
-            case PHARMACY -> {
-                list = pharmacyRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(pharmacy -> mapToDto(pharmacy, BuildingType.PHARMACY))
-                        .collect(Collectors.toList());
-            }
-            case MEDICAL_CLINIC -> {
-                list = medicalClinicRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(clinic -> mapToDto(clinic, BuildingType.MEDICAL_CLINIC))
-                        .collect(Collectors.toList());
-            }
-            case CCTV -> {
-                list = cctvRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(cctv -> mapToDto(cctv, BuildingType.CCTV))
-                        .collect(Collectors.toList());
-            }
-            case POLICE -> {
-                list = policeRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(police -> mapToDto(police, BuildingType.POLICE))
-                        .collect(Collectors.toList());
-            }
-            case CONVENIENCE_STORE -> {
-                list = convenienceStoreRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(store -> mapToDto(store, BuildingType.CONVENIENCE_STORE))
-                        .collect(Collectors.toList());
-            }
-            case MART -> {
-                list = martRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(mart -> mapToDto(mart, BuildingType.MART))
-                        .collect(Collectors.toList());
-            }
-            case SUBWAY -> {
-                list = subwayRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(subway -> mapToDto(subway, BuildingType.SUBWAY))
-                        .collect(Collectors.toList());
-            }
-            case BUS -> {
-                list = busRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(bus -> mapToDto(bus, BuildingType.BUS))
-                        .collect(Collectors.toList());
-            }
-            case BICYCLE -> {
-                list = bicycleRepository.findAllWithinRadius(longitude, latitude, radius).stream()
-                        .map(bicycle -> mapToDto(bicycle, BuildingType.BICYCLE))
-                        .collect(Collectors.toList());
-            }
-            default -> throw new IllegalArgumentException("Invalid building type: " + buildingListRequestDto.getType());
+        List<? extends Building> buildings;
+
+
+        switch (requestDto.getType()) {
+            case ALL -> buildings = buildingRepository.findAllWithinRadius(longitude, latitude, radius);
+            case CIVIC_CENTER -> buildings = civicCenterRepository.findAllWithinRadius(longitude, latitude, radius);
+            case GYM -> buildings = gymRepository.findAllWithinRadius(longitude, latitude, radius);
+            case PARK -> buildings = parkRepository.findAllWithinRadius(longitude, latitude, radius);
+            case HOSPITAL -> buildings = hospitalRepository.findAllWithinRadius(longitude, latitude, radius);
+            case PHARMACY -> buildings = pharmacyRepository.findAllWithinRadius(longitude, latitude, radius);
+            case MEDICAL_CLINIC -> buildings = medicalClinicRepository.findAllWithinRadius(longitude, latitude, radius);
+            case CCTV -> buildings = cctvRepository.findAllWithinRadius(longitude, latitude, radius);
+            case POLICE -> buildings = policeRepository.findAllWithinRadius(longitude, latitude, radius);
+            case CONVENIENCE_STORE -> buildings = convenienceStoreRepository.findAllWithinRadius(longitude, latitude, radius);
+            case MART -> buildings = martRepository.findAllWithinRadius(longitude, latitude, radius);
+            case SUBWAY -> buildings = subwayRepository.findAllWithinRadius(longitude, latitude, radius);
+            case BUS -> buildings = busRepository.findAllWithinRadius(longitude, latitude, radius);
+            case BICYCLE -> buildings = bicycleRepository.findAllWithinRadius(longitude, latitude, radius);
+            default -> throw new IllegalArgumentException("Invalid building type: " + requestDto.getType());
         }
 
-        return list;
+        return buildings.stream()
+                .map(building -> mapToDto(building, getBuildingType(building)))
+                .collect(Collectors.toList());
     }
 
     private BuildingListItemResponseDto mapToDto(Building building, BuildingType type) {
@@ -174,8 +122,8 @@ public class BuildingServiceImpl implements BuildingService{
                 .name(building.getName())
                 .category(building.getCategory())
                 .address(building.getAddress())
-                .latitude(building.getLocation().getX())
-                .longitude(building.getLocation().getY())
+                .latitude(building.getLocation().getY())  // 위도 (Latitude)
+                .longitude(building.getLocation().getX()) // 경도 (Longitude)
                 .type(type)
                 .build();
     }

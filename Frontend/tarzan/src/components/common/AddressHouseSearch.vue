@@ -4,7 +4,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { useRouter } from "vue-router";
 import searchIconImg from "@/assets/icons/Magnifier.png";
-import TopBarBack from "@/components/common/TopBarBack.vue";
+import TopBarBackBookmark from "@/components/common/TopBarBackBookmark.vue";
 import AddressHouseSearchResult from "./AddressHouseSearchResult.vue"; // 재사용
 import AddressSearchResult from "./AddressSearchResult.vue"; // ✅ 수정된 부분
 
@@ -151,7 +151,7 @@ watch(searchQuery, debouncedSearch);
 <template>
   <div class="modal-container" @click.self="closeModal">
     <div class="modal-wrapper">
-      <TopBarBack title="주소 검색" @back="closeModal" />
+      <TopBarBackBookmark title="주소 검색" @back="closeModal" />
 
       <div class="search-container">
         <input

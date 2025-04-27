@@ -9,13 +9,11 @@
           class="my-profile"
           v-for="(profile, index) in profiles"
           :key="index"
-          @click="editProfile"
-        >
+          @click="editProfile">
           <p>{{ profile.name }}</p>
           <p
             class="profile-data"
-            :class="{ 'editable-data': profile.isEditable }"
-          >
+            :class="{ 'editable-data': profile.isEditable }">
             {{ transformData(profile.data) }}
           </p>
           <img :src="iconImgSrc" alt=">" v-if="profile.isEditable" />
@@ -46,20 +44,25 @@ import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
 import iconImgSrc from "@/assets/icons/Arrows-chevron/Arrow-Down/Style=Outlined.svg";
 import TabBar from "@/components/common/TabBar.vue";
-import PostList from "@/components/post/PostList.vue";
-import CommentList from "@/components/post/CommentList.vue";
+import MyPagePostList from "@/components/member/MyPagePostList.vue";
 import MyPageReviewList from "@/components/member/MyPageReviewList.vue";
 
 import List from "@/components/common/List.vue";
 import PostItem from "@/components/post/PostItem.vue";
 
 import { Tab } from "@/data/tabs";
+import MyPageCommentList from "@/components/member/MyPageCommentList.vue";
 
 const router = useRouter();
 const user = ref(null);
 
-onMounted(() => {
-  fetchUser();
+// 데이터 저장용 변수 추가
+const posts = ref([]);
+const userComments = ref([]);
+const userReviews = ref([]);
+
+onMounted(async () => {
+  await fetchUser();
 });
 const fetchUser = async () => {
   try {
@@ -119,17 +122,11 @@ const selectedTabIndex = ref(0); // 선택된 탭 인덱스 추적
 const tabs: Tab[] = [
   {
     name: "게시글",
-    component: PostList,
-    props: {
-      comments: [],
-    },
+    component: MyPagePostList,
   },
   {
     name: "댓글",
-    component: CommentList,
-    props: {
-      comments: [],
-    },
+    component: MyPageCommentList,
   },
   {
     name: "후기",

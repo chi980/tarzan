@@ -6,8 +6,7 @@
         <TagButtonGroup
           :buttons="checkItemsInKitchen"
           :multiple="true"
-          v-model:selectedButtons="selectedCheckItemsInKitchen"
-        >
+          v-model:selectedButtons="selectedCheckItemsInKitchen">
         </TagButtonGroup>
       </div>
     </div>

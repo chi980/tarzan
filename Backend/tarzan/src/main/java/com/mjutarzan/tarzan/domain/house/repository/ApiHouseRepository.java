@@ -12,11 +12,15 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ApiHouseRepository extends JpaRepository<ApiHouse, Long> {
-    @Query("SELECT h FROM ApiHouse h " +
-            "WHERE function('ST_DWithin', h.location, function('ST_SetSRID', function('ST_MakePoint', :longitude, :latitude), 4326), :radius) = true")
+
+    @Query(value = "SELECT * FROM house h " +
+            "WHERE ST_DistanceSphere(h.house_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) <= :radius",
+            nativeQuery = true)
     List<ApiHouse> findAllWithinRadius(@Param("longitude") double longitude,
-                                      @Param("latitude") double latitude,
-                                      @Param("radius") double radius);
+                                       @Param("latitude") double latitude,
+                                       @Param("radius") double radius);
+
+
     @Query("SELECT ah FROM ApiHouse ah WHERE LOWER(ah.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<ApiHouse> findByNameContaining(@Param("search") String search, Pageable pageable);
 }

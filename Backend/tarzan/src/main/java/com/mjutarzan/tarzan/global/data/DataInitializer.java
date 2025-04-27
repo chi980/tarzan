@@ -54,19 +54,19 @@ public class DataInitializer {
         }
 
         initializeData(isDataLoadHouse,"house data", "static/data/house.csv", (filePath) -> dataService.storeHouseList(filePath, 5, 6));
-        initializeData(isDataLoadCivicCenter,"civic center data", "static/data/civic_center.csv", (filePath) -> dataService.storeCivicCenterList(filePath, 4, 5));
-        initializeData(isDataLoadGym,"gym data", "static/data/gym.csv", (filePath) -> dataService.storeGymList(filePath, 4, 5));
-        initializeData(isDataLoadPark,"park data", "static/data/park.csv", (filePath) -> dataService.storeParkList(filePath, 4, 5));
-        initializeData(isDataLoadHospital,"hospital data", "static/data/hospital.csv", (filePath) -> dataService.storeHospitalList(filePath, 3, 4));
-        initializeData(isDataLoadMedicalClinic,"medical clinic data", "static/data/medical_clinic.csv", (filePath) -> dataService.storeMedicalClinicList(filePath, 3, 4));
-        initializeData(isDataLoadPharmacy,"pharmacy data", "static/data/pharmacy.csv", (filePath) -> dataService.storePharmacyList(filePath, 3, 4));
-        initializeData(isDataLoadCctv,"cctv data", "static/data/cctv.csv", (filePath) -> dataService.storeCctvList(filePath, 2, 3));
-        initializeData(isDataLoadPolice,"police data", "static/data/police.csv", (filePath) -> dataService.storePoliceList(filePath, 6, 7));
-        initializeData(isDataLoadConvenienceStore,"convenience store data", "static/data/convenience_store.csv", (filePath) -> dataService.storeConvenienceStoreList(filePath, 13, 14));
-        initializeData(isDataLoadMart,"mart data", "static/data/mart.csv", (filePath) -> dataService.storeMartList(filePath, 8, 9));
-        initializeData(isDataLoadSubway,"subway data", "static/data/subway.csv", (filePath) -> dataService.storeSubwayList(filePath, 5, 6));
-        initializeData(isDataLoadBusStop,"bus data", "static/data/bus_stop.csv", (filePath) -> dataService.storeBusList(filePath, 2, 3));
-        initializeData(isDataLoadBicycle,"bicycle data", "static/data/bicycle.csv", (filePath) -> dataService.storeBicycleList(filePath, 4, 5));
+        initializeData(isDataLoadCivicCenter,"civic center data", "static/data/civic_center.csv", (filePath) -> dataService.storeCivicCenterList(filePath, 5, 4));
+        initializeData(isDataLoadGym,"gym data", "static/data/gym.csv", (filePath) -> dataService.storeGymList(filePath, 5, 4));
+        initializeData(isDataLoadPark,"park data", "static/data/park.csv", (filePath) -> dataService.storeParkList(filePath, 5, 4));
+        initializeData(isDataLoadHospital,"hospital data", "static/data/hospital.csv", (filePath) -> dataService.storeHospitalList(filePath, 4, 3));
+        initializeData(isDataLoadMedicalClinic,"medical clinic data", "static/data/medical_clinic.csv", (filePath) -> dataService.storeMedicalClinicList(filePath, 4, 3));
+        initializeData(isDataLoadPharmacy,"pharmacy data", "static/data/pharmacy.csv", (filePath) -> dataService.storePharmacyList(filePath, 4, 3));
+        initializeData(isDataLoadCctv,"cctv data", "static/data/cctv.csv", (filePath) -> dataService.storeCctvList(filePath, 3, 2));
+        initializeData(isDataLoadPolice,"police data", "static/data/police.csv", (filePath) -> dataService.storePoliceList(filePath, 7, 6));
+        initializeData(isDataLoadConvenienceStore,"convenience store data", "static/data/convenience_store.csv", (filePath) -> dataService.storeConvenienceStoreList(filePath, 14, 13));
+        initializeData(isDataLoadMart,"mart data", "static/data/mart.csv", (filePath) -> dataService.storeMartList(filePath, 9, 8));
+        initializeData(isDataLoadSubway,"subway data", "static/data/subway.csv", (filePath) -> dataService.storeSubwayList(filePath, 6, 5));
+        initializeData(isDataLoadBusStop,"bus data", "static/data/bus_stop.csv", (filePath) -> dataService.storeBusList(filePath, 3, 2));
+        initializeData(isDataLoadBicycle,"bicycle data", "static/data/bicycle.csv", (filePath) -> dataService.storeBicycleList(filePath, 5, 4));
 
         log.info("data 초기화 끝");
     }

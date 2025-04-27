@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface PoliceRepository extends JpaRepository<Police, Long> {
 
-
-
-    @Query("SELECT b FROM Police b " +
-            "WHERE function('ST_DWithin', b.location, function('ST_SetSRID', function('ST_MakePoint', :longitude, :latitude), 4326), :radius) = true")
-    List<Police> findAllWithinRadius(@Param("longitude") double longitude,
+    @Query(value = "SELECT * FROM building b " +
+            "WHERE ST_DistanceSphere(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) <= :radius " +
+            "AND b.building_type = 'police'",
+            nativeQuery = true)
+   List<Police> findAllWithinRadius(@Param("longitude") double longitude,
                                    @Param("latitude") double latitude,
                                    @Param("radius") double radius);
 //    @Query(value = "SELECT * FROM building b WHERE ST_DWithin(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326), :radius) = true AND b.building_type = 'police'", nativeQuery = true)

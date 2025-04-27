@@ -34,7 +34,7 @@ public class MainController {
     @ResponseBody
     public String storeHouseList(){
         String filePath = "static/data/house.csv";
-        dataService.storeHouseList(filePath, 5, 6);
+        dataService.storeHouseList(filePath, 6, 5);
         return "ok";
     }
 
@@ -44,7 +44,7 @@ public class MainController {
     @ResponseBody
     public String storeCivicCenterList(){
         String filePath = "static/data/civic_center.csv";
-        dataService.storeCivicCenterList(filePath, 4, 5);
+        dataService.storeCivicCenterList(filePath, 5, 4);
 
         return "ok";
     }
@@ -53,7 +53,7 @@ public class MainController {
     @ResponseBody
     public String storeGymList(){
         String filePath = "static/data/gym.csv";
-        dataService.storeGymList(filePath, 4, 5);
+        dataService.storeGymList(filePath, 5, 4);
         return "ok";
     }
 
@@ -61,7 +61,7 @@ public class MainController {
     @ResponseBody
     public String storeParkList(){
         String filePath = "static/data/park.csv";
-        dataService.storeParkList(filePath, 4, 5);
+        dataService.storeParkList(filePath, 5, 4);
         return "ok";
     }
 
@@ -69,7 +69,7 @@ public class MainController {
     @ResponseBody
     public String storeHospitalList(){
         String filePath = "static/data/hospital.csv";
-        dataService.storeHospitalList(filePath, 3, 4);
+        dataService.storeHospitalList(filePath, 4, 3);
         return "ok";
     }
 
@@ -77,7 +77,7 @@ public class MainController {
     @ResponseBody
     public String storeMedicalClinicList(){
         String filePath = "static/data/medical_clinic.csv";
-        dataService.storeMedicalClinicList(filePath, 3, 4);
+        dataService.storeMedicalClinicList(filePath, 4, 3);
         return "ok";
     }
 
@@ -85,7 +85,7 @@ public class MainController {
     @ResponseBody
     public String storePharmacyList(){
         String filePath = "static/data/pharmacy.csv";
-        dataService.storePharmacyList(filePath, 3, 4);
+        dataService.storePharmacyList(filePath, 4, 3);
         return "ok";
     }
 
@@ -93,7 +93,7 @@ public class MainController {
     @ResponseBody
     public String storeCctvList(){
         String filePath = "static/data/cctv.csv";
-        dataService.storeCctvList(filePath, 2, 3);
+        dataService.storeCctvList(filePath, 3, 2);
         return "ok";
     }
 
@@ -101,7 +101,7 @@ public class MainController {
     @ResponseBody
     public String storePoliceList(){
         String filePath = "static/data/police.csv";
-        dataService.storePoliceList(filePath, 6, 7);
+        dataService.storePoliceList(filePath, 7, 6);
         return "ok";
     }
 
@@ -109,21 +109,21 @@ public class MainController {
     @ResponseBody
     public String storeConvenienceStoreList(){
         String filePath = "static/data/convenience_store.csv";
-        dataService.storeConvenienceStoreList(filePath, 13, 14);
+        dataService.storeConvenienceStoreList(filePath, 14, 13);
         return "ok";
     }
     @GetMapping("/api/data/mart")
     @ResponseBody
     public String storeMartList(){
         String filePath = "static/data/mart.csv";
-        dataService.storeMartList(filePath, 8, 9);
+        dataService.storeMartList(filePath, 9, 8);
         return "ok";
     }
     @GetMapping("/api/data/subway")
     @ResponseBody
     public String storeSubwayList(){
         String filePath = "static/data/subway.csv";
-        dataService.storeSubwayList(filePath, 5, 6);
+        dataService.storeSubwayList(filePath, 6, 5);
         return "ok";
     }
 
@@ -131,7 +131,7 @@ public class MainController {
     @ResponseBody
     public String storeBusList(){
         String filePath = "static/data/bus_stop.csv";
-        dataService.storeBusList(filePath, 2, 3);
+        dataService.storeBusList(filePath, 3, 2);
         return "ok";
     }
 //수정 필
@@ -139,7 +139,7 @@ public class MainController {
     @ResponseBody
     public String storeBicycleList(){
         String filePath = "static/data/bicycle.csv";
-        dataService.storeBicycleList(filePath, 4, 5);
+        dataService.storeBicycleList(filePath, 5, 4);
         return "ok";
     }
 
@@ -148,7 +148,7 @@ public class MainController {
     public String storeAllData() {
         // house data
         String houseFilePath = "static/data/house.csv";
-        dataService.storeHouseList(houseFilePath, 5, 6);
+        dataService.storeHouseList(houseFilePath, 6, 5);
 
         // civic center data
         String civicCenterFilePath = "static/data/civic_center.csv";
