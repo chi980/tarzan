@@ -263,10 +263,6 @@ const fetchHouses = async (
 ): Promise<void> => {
   if (loading.value) return; // 이미 요청 중이라면 무시
 
-  console.log("latitude: ", latitude);
-  console.log("longitude: " + longitude);
-  console.log("나의 radius: ", radius);
-
   loading.value = true; // 로딩 상태 활성화
 
   // query parameters 생성
@@ -366,7 +362,6 @@ const initHeights = () => {
 
   initialHeight.value = 0;
   maxHeight.value = 0;
-  overlayType.value = "small";
 };
 watch(
   () => buildingContent.value, // 여기!
@@ -393,7 +388,7 @@ watch(
       maxHeight.value = BOTTOM_OVERLAY_MAX_HEIGHT.value;
       overlayType.value = "full";
     } else {
-      overlayType.value = "full";
+      overlayType.value = "small";
       initHeights();
     }
   }
@@ -552,7 +547,6 @@ const addMarker = (mapInstance, latitude, longitude, type, content) => {
       houseContent.value = null;
       buildingContent.value = content;
     }
-    overlayType.value = "full";
     isStretch.value = true;
   });
 
