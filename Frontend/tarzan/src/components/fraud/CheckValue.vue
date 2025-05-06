@@ -55,7 +55,7 @@ import TabBar from "@/components/common/TabBar.vue";
 import SaleRealEstateTap from "@/components/fraud/SaleRealEstateTap.vue";
 import RentRealEstateTap from "@/components/fraud/RentRealEstateTap.vue";
 import TopBarBack from "@/components/common/TopBarBack.vue";
-import { seoulSiGunGu } from "@/data/seoulSiGunGu.js";
+import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 import seoulDongJson from "@/data/dong.json";
 import { Option } from "@/data/options";
 
