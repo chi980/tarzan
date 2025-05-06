@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Set<String> NO_CHECK_URLS = Set.of(
             "/favicon.ico",
-//            "/login",
+            "/login",
             "/oauth2/authorization", "/api/auth",
             "/api/test", "/api/data");
 
