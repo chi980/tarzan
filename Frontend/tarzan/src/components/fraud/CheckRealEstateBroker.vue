@@ -93,7 +93,7 @@ import { useRouter } from "vue-router";
 
 import { RealEstate } from "@/data/fraud";
 import { Option } from "@/data/options";
-import { seoulSiGunGu } from "@/data/seoulSiGunGu";
+import { seoulSiGunGu } from "@/data/seoulsigungu.js";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
