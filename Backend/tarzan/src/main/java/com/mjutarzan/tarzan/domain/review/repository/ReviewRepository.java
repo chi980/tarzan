@@ -33,5 +33,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT COALESCE(AVG(r.score), 0), COUNT(r) " +
             "FROM Review r " +
             "WHERE r.house.id = :houseId")
-    Object[] findAverageScoreAndCountByHouseId(@Param("houseId") Long houseId);
+    Object findAverageScoreAndCountByHouseId(@Param("houseId") Long houseId);
 }

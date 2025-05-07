@@ -29,8 +29,11 @@ const { building } = defineProps<{ building: Building }>();
   .building-detail-header {
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    flex-wrap: wrap;
+    align-items: flex-start;
     gap: $padding-small;
+
+    text-align: left;
 
     .building-name {
       @include custom-text(

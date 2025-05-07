@@ -134,15 +134,15 @@ public class ReviewServiceImpl implements ReviewService{
 
     @Override
     public ReviewSummaryResponseDto getReviewSummary(ReviewSummaryRequestDto requestDto, CustomUserDetails userDto) {
-        Object[] result = reviewRepository.findAverageScoreAndCountByHouseId(requestDto.getHouseId());
+        Object[] result = (Object[]) reviewRepository.findAverageScoreAndCountByHouseId(requestDto.getHouseId());
+        Double avgScore = ((Number) result[0]).doubleValue();
+        Long count = ((Number) result[1]).longValue();
 
-        double averageScore = ((Number) result[0]).doubleValue();
-        long reviewCount = ((Number) result[1]).longValue();
 
 
         return ReviewSummaryResponseDto.builder()
-                .count(reviewCount)
-                .score(averageScore)
+                .count(count)
+                .score(avgScore)
                 .build();
     }
 }

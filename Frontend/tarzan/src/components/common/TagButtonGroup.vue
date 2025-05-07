@@ -7,8 +7,7 @@
       :class="{ [activeClass]: isSelected(button) }"
       role="button"
       tabindex="0"
-      @click="readonly ? null : toggleSelection(button)"
-    >
+      @click="readonly ? null : toggleSelection(button)">
       <!-- @click="toggleSelection(button)" -->
       <slot :button="button">{{ button.label }}</slot>
     </div>
@@ -32,7 +31,11 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update:selectedButton", "update:selectedButtons"]);
+const emit = defineEmits([
+  "update:selectedButton",
+  "update:selectedButtons",
+  "tag-click",
+]);
 
 // 버튼 선택 여부 체크 함수
 const isSelected = (button) => {
@@ -58,6 +61,7 @@ const toggleSelection = (button) => {
     }
   } else {
     emit("update:selectedButton", button.value);
+    emit("tag-click", button); // 👈 클릭되었다는 이벤트를 부모에 알림
   }
 };
 </script>
