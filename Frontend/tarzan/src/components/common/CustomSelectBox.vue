@@ -142,7 +142,6 @@ watch(
   align-items: center; /* 수직 가운데 정렬 */
 }
 .selected-item span {
-  margin-right: $input-margin-default;
   text-align: left;
   white-space: nowrap;
 }

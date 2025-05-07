@@ -43,7 +43,6 @@ watch(
   () => props.house,
   async (newHouse) => {
     if (newHouse?.house_id) {
-      console.log("houseId", newHouse.house_id);
       await fetchHouseDetail(newHouse.house_id);
     }
   },
@@ -79,8 +78,6 @@ const bookmarkThis = async () => {
     const response = await axiosInstance.post("/v1/bookmark", {
       house_id: houseDetail.value.house_id,
     });
-
-    console.log("북마크 등록 성공!");
   } catch (error) {
     if (error.response && error.response.status === 400) {
       console.error("잘못된 요청입니다.");

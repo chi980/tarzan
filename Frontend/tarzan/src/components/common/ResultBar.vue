@@ -6,8 +6,7 @@
     <div class="post-sort">
       <CustomSelectBox
         :options="sortOptions"
-        @update:selected="handleSortSelectedIdx"
-      />
+        @update:selected="handleSortSelectedIdx" />
     </div>
   </div>
 </template>
@@ -44,6 +43,7 @@ const handleSortSelectedIdx = (idx) => {
 .resultbar {
   display: flex;
   align-items: center;
+  padding-left: $padding-default;
 }
 
 .resultbar-text {

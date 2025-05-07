@@ -13,7 +13,7 @@
   <div class="sub-container">
     <TopBarBack title="실거주 후기" />
     <div class="center-container">
-      <div class="center-container-content">
+      <div class="column review-summary">
         <StarRating v-model="reviewSummary.review_score" :readonly="true" />
         <div class="rating-description">
           <span id="average">{{ reviewSummary.review_score.toFixed(1) }}</span>
@@ -34,8 +34,11 @@
           <div v-for="n in 4" :key="n" class="box"></div>
         </div> -->
 
-      <div class="center-container-content">
-        <ResultBar resultTitle="전체 후기" :sortOptions="sortOptions" />
+      <ResultBar
+        resultTitle="전체 후기"
+        :sortOptions="sortOptions"
+        class="result-bar" />
+      <div class="column">
         <List :fetchItems="fetchReviews" :params="params">
           <template #item="{ item }">
             <ReviewItem :review="item" />
@@ -218,13 +221,11 @@ const buttonHandler = () => {
   display: flex;
   flex-direction: column;
 
-  .center-container-content {
-    @include custom-margin-y;
+  .column {
     @include custom-margin-x;
 
     display: flex;
     flex-direction: column;
-    gap: $padding-default;
   }
 }
 
@@ -262,5 +263,11 @@ const buttonHandler = () => {
     border-radius: $border-radius-default;
     background-color: #efefef;
   }
+}
+
+.review-summary {
+  @include custom-margin-y;
+
+  gap: 16px;
 }
 </style>
