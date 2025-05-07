@@ -29,7 +29,10 @@ const props = defineProps({
   midHeight: { type: Number, required: true },
   maxHeight: { type: Number, required: true },
   initialHeight: { type: Number, required: true },
-  type: { type: String as PropType<"full" | "small">, default: "full" },
+  type: {
+    type: String as PropType<"full" | "small" | "none">,
+    default: "none",
+  },
   isStretch: { type: Boolean, default: false }, // 부모로부터 isStretch 받기
 });
 const emit = defineEmits<{
@@ -60,7 +63,7 @@ const startDrag = (e: MouseEvent) => {
   window.addEventListener("mouseup", stopDrag);
 };
 const onDrag = (e: MouseEvent) => {
-  if (!isDragging.value) return;
+  if (!isDragging.value || props.type == "none") return;
 
   const diff = e.clientY - startY.value;
 
@@ -177,7 +180,6 @@ watch(
   () => props.isStretch,
   (val) => {
     nextTick(() => {
-      console.log(props.type);
       if (val) {
         if (props.type === "full") {
           baseHeight.value = props.midHeight;
