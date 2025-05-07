@@ -1,30 +1,32 @@
 <template>
   <div class="comment-container">
     <div class="comment-header">
-        <span id="comment-writer">{{ comment.comment_writer_nickname }}</span>
-        <EditButton 
-          :isAuthor="comment.comment_is_writer" 
-          :targetId="comment.comment_id"  
-          :type="'comment'" 
-        />
+      <span id="comment-writer">{{ comment.comment_writer_nickname }}</span>
+      <EditButton
+        :isAuthor="comment.comment_is_writer"
+        :targetId="comment.comment_id"
+        :type="'comment'"
+      />
     </div>
     <div class="comment-content">
       <p>{{ comment.comment_content }}</p>
     </div>
     <div class="comment-time">
-      <span>{{ comment.comment_created_at }}</span>
+      <!-- <span>{{ comment.comment_created_at }}</span> -->
+      <span>{{ formatSmartTime(comment.comment_created_at) }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import EditButton from './EditButton.vue';
+import EditButton from "./EditButton.vue";
+import { formatSmartTime } from "@/utils/formatTime";
 
 const props = defineProps({
   comment: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 });
 </script>
 
@@ -34,7 +36,6 @@ const props = defineProps({
   flex-direction: column;
   gap: 8px;
   text-align: left;
-  // @include custom-padding-x($padding-size: $padding-default);
 }
 
 .comment-container .comment-header {
@@ -58,7 +59,7 @@ const props = defineProps({
 
 .comment-container .comment-time {
   font-size: 12px;
-  color: #9F9F9F;
+  color: #9f9f9f;
   padding-top: 5px;
 }
 </style>
