@@ -23,7 +23,8 @@
           <p>{{ post.board_content }}</p>
         </div>
         <div class="post-time">
-          <span>{{ post.board_created_at }}</span>
+          <!-- <span>{{ post.board_created_at }}</span> -->
+          <span>{{ formatSmartTime(post.board_created_at) }} · </span>
         </div>
       </div>
 
@@ -53,6 +54,7 @@ import CommentInput from "./CommentInput.vue";
 import CommentList from "./CommentList.vue";
 
 import { useInfiniteScroll } from "@/composables/useInfiniteScroll";
+import { formatSmartTime } from "@/utils/formatTime";
 
 const route = useRoute();
 
