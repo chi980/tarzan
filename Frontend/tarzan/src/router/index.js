@@ -57,7 +57,7 @@ const routes = [
     children: [
       {
         path: "",
-        component: () => import("@/pages/Fraud.vue"),
+        component: () => import("@/pages/Fraud2.vue"),
       },
       {
         path: "landlord",
