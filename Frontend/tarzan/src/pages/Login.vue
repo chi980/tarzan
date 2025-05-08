@@ -3,7 +3,7 @@
     <div class="back-img"></div>
     <div class="center-container">
       <p id="logo_desc_text">정글같은 서울 도심 속 터전 찾기</p>
-      <p id="logo_text">TARZAN</p>
+      <p id="logo_text">{{ displayedText }}</p>
 
       <!-- <img :src="logoImage" alt="Logo" id="logo" /> -->
     </div>
@@ -41,11 +41,24 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
 import logoImage from "@/assets/etc/map.png";
 import kakaoImage from "@/assets/icons/kakao_login_logo.png";
 import googleImage from "@/assets/icons/google_login_logo.png";
 import naverImage from "@/assets/icons/naver_login_logo.png";
 import loginDescImage from "@/assets/login_desc.png";
+
+const fullText = "TARZAN";
+const displayedText = ref(""); // 화면에 보일 텍스트
+const typingSpeed = 150; // 한 글자당 딜레이(ms)
+
+onMounted(() => {
+  fullText.split("").forEach((char, i) => {
+    setTimeout(() => {
+      displayedText.value += char;
+    }, typingSpeed * i);
+  });
+});
 
 const clickKakaoBtn = () => {
   const kakaoLoginUrl = import.meta.env.VITE_API_KAKAO_URL;
@@ -142,8 +155,24 @@ const checkBack = async () => {
   font-size: 48px;
   color: #000000;
   margin-bottom: 30px;
+  /* 커서처럼 보이게 border-right 사용 */
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid $primary-color-default;
+  /* 아래 애니메이션으로 깜빡임 효과 */
+  animation: blink 0.8s steps(1) infinite;
 }
-
+/* 커서 깜빡임 */
+@keyframes blink {
+  0%,
+  100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #32d583;
+  }
+}
 #logo {
   @include custom-none-select-basic;
   height: 180px;
