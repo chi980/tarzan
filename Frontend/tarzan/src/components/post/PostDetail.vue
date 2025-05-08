@@ -185,6 +185,7 @@ onMounted(async () => {
   height: 100%;
   gap: 10px;
   overflow-y: auto;
+  @include custom-text();
 }
 
 .post-detail-container {

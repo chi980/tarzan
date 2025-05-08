@@ -6,13 +6,15 @@
     <div
       class="scrollable-container dropdown-content"
       :class="['dropdown-content', { show: isDropDownOpen }]"
-      @click="controllDropDown">
+      @click="controllDropDown"
+    >
       <div class="scrollable-list">
         <ul>
           <li
             v-for="option in filteredOptions"
             :key="option.idx"
-            @click="selectOption(option)">
+            @click="selectOption(option)"
+          >
             {{ option.name }}
           </li>
         </ul>
@@ -157,6 +159,7 @@ const deleteComment = async () => {
 
 .scrollable-list li {
   padding: 14px 30px; /* 리스트 아이템의 내부 패딩 설정 */
+  @include custom-text();
 }
 
 .dropdown-exterior {

@@ -10,14 +10,16 @@
         descriptionImgSrc="/src/assets/etc/Saly-25.png"
         descriptionTitle="동네주민과<br/>얘기해보세요!"
         descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
-        backgroundColor="#FFF7D9" />
+        backgroundColor="#FFF7D9"
+      />
 
       <div class="tag-button-container-wrapper">
         <TagButtonGroup
-          v-model:selectedButton="selectedButton"
+          v-model:selectedButton="selectedTag"
           :buttons="tagOptions"
           :multiple="false"
-          :readonly="false">
+          :readonly="false"
+        >
         </TagButtonGroup>
       </div>
 
@@ -92,7 +94,7 @@ const sortOptions = ref([
 const page = ref(0);
 const posts = ref([]); // 게시물 목록
 const sortBy = ref("최신순"); // 정렬 기준
-const selectedButton = ref(tagOptions.value[0]);
+const selectedTag = ref(tagOptions.value[0].value); // 선택된 태그
 const selectedDistrict = ref("JONGNO"); // 지역구
 
 // 정렬 기준 변경
@@ -116,7 +118,7 @@ const fetchPosts = async () => {
     size: 5,
     page: page.value,
     sortBy: sortBy.value,
-    tag: selectedButton.value.value,
+    tag: selectedTag.value,
     gu: selectedDistrict.value,
   }).toString();
 
@@ -137,13 +139,15 @@ const fetchPosts = async () => {
   }
 };
 
+console.log("posts", posts.value);
+
 // ✨ 여기!! fetchPosts를 넘겨서 세팅
 const { target, setupObserver } = useInfiniteScroll(fetchPosts);
 
 // watch - 정렬, 태그, 지역구 변경되면 초기화
-watch([sortBy, selectedButton, selectedDistrict], async () => {
+watch([sortBy, selectedTag, selectedDistrict], async () => {
   posts.value = [];
-  page.value = 1;
+  page.value = 0;
   await fetchPosts();
 });
 
