@@ -1,19 +1,18 @@
 <template>
   <div class="edit">
-  <div class="edit-button">
-    <img :src="settingIcon" alt="setting-icon" @click="controllDropDown">
-  </div>
-    <div class="scrollable-container dropdown-content"
+    <div class="edit-button">
+      <img :src="settingIcon" alt="setting-icon" @click="controllDropDown" />
+    </div>
+    <div
+      class="scrollable-container dropdown-content"
       :class="['dropdown-content', { show: isDropDownOpen }]"
-      @click="controllDropDown"
-    >
+      @click="controllDropDown">
       <div class="scrollable-list">
         <ul>
           <li
             v-for="option in filteredOptions"
             :key="option.idx"
-            @click="selectOption(option)"
-          >
+            @click="selectOption(option)">
             {{ option.name }}
           </li>
         </ul>
@@ -23,10 +22,10 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps, defineEmits } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, defineProps, defineEmits } from "vue";
+import { useRouter } from "vue-router";
 import { axiosInstance } from "@/plugins/axiosPlugin";
-import settingIcon from '@/assets/icons/topbar/icon-setting.png';
+import settingIcon from "@/assets/icons/topbar/icon-setting.png";
 
 const router = useRouter();
 
@@ -36,41 +35,44 @@ const controllDropDown = () => {
 };
 
 const props = defineProps({
-  isAuthor: Boolean,    // 작성자 여부
-  targetId: String | Number,     // 게시글 또는 댓글의 ID
-  type: {               // 'post' 또는 'comment'
+  isAuthor: Boolean, // 작성자 여부
+  targetId: String | Number, // 게시글 또는 댓글의 ID
+  type: {
+    // 'post' 또는 'comment'
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const emit = defineEmits(); // emit 정의 추가
 
 const options = ref([
-  { idx: 1, name: '수정' },
-  { idx: 2, name: '삭제' },
-  { idx: 3, name: '신고하기' }
+  { idx: 1, name: "수정" },
+  { idx: 2, name: "삭제" },
+  { idx: 3, name: "신고하기" },
 ]);
 
 // `isAuthor` 값에 따라 옵션을 필터링하는 computed 속성
 const filteredOptions = computed(() => {
   return props.isAuthor
-    ? options.value.filter(option => option.idx !== 3) // 작성자인 경우 '수정'과 '삭제'만
-    : options.value.filter(option => option.idx === 3); // 작성자가 아닌 경우 '신고하기'만
+    ? options.value.filter((option) => option.idx !== 3) // 작성자인 경우 '수정'과 '삭제'만
+    : options.value.filter((option) => option.idx === 3); // 작성자가 아닌 경우 '신고하기'만
 });
 
 const selectOption = (option) => {
-  if (option.idx === 1) { // 수정
-    if (props.type === 'post') {
+  if (option.idx === 1) {
+    // 수정
+    if (props.type === "post") {
       router.push(`/community/${props.targetId}/edit`);
-    } else if (props.type === 'comment') {
+    } else if (props.type === "comment") {
       // router.push(`/edit-comment/${props.commentId}`); // 댓글 수정 페이지로 이동
     }
-  } else if (option.idx === 2) { // 삭제
-    if (confirm('정말로 삭제하시겠습니까?')) {
-      if (props.type === 'post') {
-        deletePost();   // 게시글 삭제
-      } else if (props.type === 'comment') {
+  } else if (option.idx === 2) {
+    // 삭제
+    if (confirm("정말로 삭제하시겠습니까?")) {
+      if (props.type === "post") {
+        deletePost(); // 게시글 삭제
+      } else if (props.type === "comment") {
         deleteComment(); // 댓글 삭제
       }
     }
@@ -84,34 +86,36 @@ const deletePost = async () => {
   try {
     const response = await axiosInstance.delete(`/v1/board/${props.targetId}`);
     console.log("게시글/댓글 ID:", props.targetId); // 값을 확인
-    
+
     if (response.data.success) {
-      console.log('게시글 삭제 성공:', response.data);
-      alert('게시글이 성공적으로 삭제되었습니다.');
-      router.push('/community'); // 삭제 후 이동
+      console.log("게시글 삭제 성공:", response.data);
+      alert("게시글이 성공적으로 삭제되었습니다.");
+      router.push("/community"); // 삭제 후 이동
     } else {
-      console.error('Failed:', response.data.message);
-      alert('게시글 삭제에 실패했습니다.');
+      console.error("Failed:", response.data.message);
+      alert("게시글 삭제에 실패했습니다.");
     }
   } catch (error) {
-    console.error('Error fetching posts:', error);
-    alert('게시글 삭제에 실패했습니다.');
+    console.error("Error fetching posts:", error);
+    alert("게시글 삭제에 실패했습니다.");
   }
 };
 
 // API: 댓글 삭제
 const deleteComment = async () => {
   try {
-    const response = await axiosInstance.delete(`/v1/comments/${props.targetId}`);
+    const response = await axiosInstance.delete(
+      `/v1/comments/${props.targetId}`
+    );
     if (response.data.success) {
-      alert('댓글이 삭제되었습니다.');
-      emit('deleteItem', props.targetId, 'comment'); // 삭제 후 처리
+      alert("댓글이 삭제되었습니다.");
+      emit("deleteItem", props.targetId, "comment"); // 삭제 후 처리
     } else {
-      alert('댓글 삭제에 실패했습니다.');
+      alert("댓글 삭제에 실패했습니다.");
     }
   } catch (error) {
-    console.error('댓글 삭제 오류:', error);
-    alert('댓글 삭제에 실패했습니다.');
+    console.error("댓글 삭제 오류:", error);
+    alert("댓글 삭제에 실패했습니다.");
   }
 };
 </script>
@@ -122,11 +126,10 @@ const deleteComment = async () => {
 }
 
 .edit img {
-  width: 24px;
-  height: 24px;
+  @include custom-icon-style(16px);
 }
 
-.edit-button{
+.edit-button {
   height: 100%;
   width: 100%;
 }

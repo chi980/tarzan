@@ -117,12 +117,9 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .review-item {
-  @include custom-padding-y;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
-
-  padding-bottom: $padding-small;
 
   .header {
     display: flex;
@@ -130,7 +127,7 @@ onUnmounted(() => {
     justify-content: space-between;
 
     #nickname {
-      @include custom-text($font-weight: 600, $font-size: 16px);
+      @include custom-text($font-size: 14px);
       text-align: left;
     }
 

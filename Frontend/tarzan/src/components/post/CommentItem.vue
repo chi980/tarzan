@@ -5,8 +5,7 @@
       <EditButton
         :isAuthor="comment.comment_is_writer"
         :targetId="comment.comment_id"
-        :type="'comment'"
-      />
+        :type="'comment'" />
     </div>
     <div class="comment-content">
       <p>{{ comment.comment_content }}</p>
@@ -39,27 +38,20 @@ const props = defineProps({
 }
 
 .comment-container .comment-header {
-  // background-color: yellow;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 #comment-writer {
-  @include custom-text-bold($font-color: $text-color-default, $font-size: 12px);
-}
-
-#comment-edit-icon {
-  width: 24px;
+  @include custom-text($font-size: 14px);
 }
 
 .comment-container .comment-content {
-  font-size: 13px;
+  @include custom-text($font-size: 13px);
 }
 
 .comment-container .comment-time {
-  font-size: 12px;
-  color: #9f9f9f;
-  padding-top: 5px;
+  @include custom-text($font-size: 12px, $font-color: $text-color-light);
 }
 </style>
