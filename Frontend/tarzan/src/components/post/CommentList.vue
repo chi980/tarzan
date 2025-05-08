@@ -4,8 +4,7 @@
       <CommentItem
         v-for="comment in comments"
         :key="comment.comment_id"
-        :comment="comment"
-      />
+        :comment="comment" />
     </div>
 
     <!-- <div class="comment-more-container">
@@ -45,7 +44,6 @@ const props = defineProps({
 .comment-list-container .comment-items-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
 }
 
 #comment-more-button {

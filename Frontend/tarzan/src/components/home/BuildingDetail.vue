@@ -11,7 +11,7 @@ const { building } = defineProps<{ building: Building }>();
       <p class="building-name">{{ building.building_name }}</p>
       <p class="building-category">{{ building.building_category }}</p>
     </div>
-    <p>{{ building.building_address }}</p>
+    <p class="building-address">{{ building.building_address }}</p>
   </div>
 </template>
 
@@ -19,6 +19,7 @@ const { building } = defineProps<{ building: Building }>();
 .building-detail-wrapper {
   @include custom-padding;
   @include custom-text($font-color: $text-color-light, $font-size: 12px);
+  text-align: left;
   flex: 1;
 
   display: flex;
@@ -30,7 +31,7 @@ const { building } = defineProps<{ building: Building }>();
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: flex-end;
     gap: $padding-small;
 
     text-align: left;
@@ -42,6 +43,10 @@ const { building } = defineProps<{ building: Building }>();
         $font-weight: 500
       );
     }
+  }
+
+  .building-address {
+    line-height: 1.2;
   }
 }
 </style>
