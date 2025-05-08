@@ -10,14 +10,16 @@
         descriptionImgSrc="/src/assets/etc/Saly-25.png"
         descriptionTitle="동네주민과<br/>얘기해보세요!"
         descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
-        backgroundColor="#FFF7D9" />
+        backgroundColor="#FFF7D9"
+      />
 
       <div class="tag-button-container-wrapper">
         <TagButtonGroup
           v-model:selectedButton="selectedButton"
           :buttons="tagOptions"
           :multiple="false"
-          :readonly="false">
+          :readonly="false"
+        >
         </TagButtonGroup>
       </div>
 
@@ -143,7 +145,7 @@ const { target, setupObserver } = useInfiniteScroll(fetchPosts);
 // watch - 정렬, 태그, 지역구 변경되면 초기화
 watch([sortBy, selectedButton, selectedDistrict], async () => {
   posts.value = [];
-  page.value = 1;
+  page.value = 0;
   await fetchPosts();
 });
 
