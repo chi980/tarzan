@@ -3,6 +3,7 @@ package com.mjutarzan.tarzan.domain.bookmark.api.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.BookmarkChecklistType;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.HouseIndexType;
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingCategory;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +39,7 @@ public class CompareBookmarkDetailResponseDto {
     Map<String, String> details;
 
     @JsonProperty("house_indexes")
-    Map<HouseIndexType, Long> indexes;
+    Map<BuildingCategory, Long> indexes;
 
     @JsonProperty("house_checks")
     Map<BookmarkChecklistType, Long> checks;
@@ -48,7 +49,7 @@ public class CompareBookmarkDetailResponseDto {
     private LocalDateTime bookmarkCreatedAt;
 
     @Builder
-    public CompareBookmarkDetailResponseDto(Long id, Long houseId, String name, String address, String category, Integer score, Map<String, String> costs, Map<String, String> details, Map<HouseIndexType, Long> indexes, Map<BookmarkChecklistType, Long> checks, LocalDateTime bookmarkCreatedAt) {
+    public CompareBookmarkDetailResponseDto(Long id, Long houseId, String name, String address, String category, Integer score, Map<String, String> costs, Map<String, String> details, Map<BuildingCategory, Long> indexes, Map<BookmarkChecklistType, Long> checks, LocalDateTime bookmarkCreatedAt) {
         this.id = id;
         this.houseId = houseId;
         this.name = name;

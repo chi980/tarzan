@@ -4,10 +4,10 @@ import axios from "axios";
 import { debounce } from "lodash";
 import { useRouter } from "vue-router";
 import searchIconImg from "@/assets/icons/Magnifier.png";
-import TopBarBackBookmark from "@/components/common/TopBarBackBookmark.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
+import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import AddressHouseSearchResult from "./AddressHouseSearchResult.vue"; // 재사용
 import AddressSearchResult from "./AddressSearchResult.vue"; // ✅ 수정된 부분
-
 
 const emit = defineEmits(["close", "selectAddress"]);
 
@@ -90,40 +90,41 @@ const searchAddress = async () => {
       }
     );
 
-    searchResults.value = data.documents.map(({ address, road_address, x, y }) => {
-      const mainAddress = road_address?.address_name || address?.address_name || "주소 없음";
-      const subAddress = address?.address_name || "";
-      const type = road_address ? "도로명" : "지번";
+    searchResults.value = data.documents.map(
+      ({ address, road_address, x, y }) => {
+        const mainAddress =
+          road_address?.address_name || address?.address_name || "주소 없음";
+        const subAddress = address?.address_name || "";
+        const type = road_address ? "도로명" : "지번";
 
-      // ✅ 거리 계산 여부 체크
-      const distance =
-        userLocation.value.latitude !== null && userLocation.value.longitude !== null
-          ? calculateDistance(
-              userLocation.value.latitude,
-              userLocation.value.longitude,
-              parseFloat(y),
-              parseFloat(x)
-            )
-          : "거리 계산 불가";
+        // ✅ 거리 계산 여부 체크
+        const distance =
+          userLocation.value.latitude !== null &&
+          userLocation.value.longitude !== null
+            ? calculateDistance(
+                userLocation.value.latitude,
+                userLocation.value.longitude,
+                parseFloat(y),
+                parseFloat(x)
+              )
+            : "거리 계산 불가";
 
-      return {
-        mainAddress,
-        subAddress,
-        buildingName: "", // 주소 검색 결과에 건물명 없음
-        x,
-        y,
-        distance,
-        type,
-      };
-    });
-
+        return {
+          mainAddress,
+          subAddress,
+          buildingName: "", // 주소 검색 결과에 건물명 없음
+          x,
+          y,
+          distance,
+          type,
+        };
+      }
+    );
   } catch (error) {
     console.error("주소 검색 중 오류:", error);
     searchResults.value = [];
   }
 };
-
-
 
 const debouncedSearch = debounce(searchAddress, 500);
 
@@ -141,9 +142,7 @@ const selectAddress = (selectedAddress) => {
   }
 };
 
-
 const closeModal = () => emit("close");
-
 
 watch(searchQuery, debouncedSearch);
 </script>
@@ -151,49 +150,50 @@ watch(searchQuery, debouncedSearch);
 <template>
   <div class="modal-container" @click.self="closeModal">
     <div class="modal-wrapper">
-      <TopBarBackBookmark title="주소 검색" @back="closeModal" />
+      <!-- 모달 제목 -->
+      <div class="modal-title">
+        <TopBarBack title="주소 검색" @back="closeModal" />
+      </div>
 
       <div class="search-container">
+        <img :src="searchIconImg" alt="search icon" class="icon-search" />
         <input
           v-model="searchQuery"
           @keyup.enter="searchAddress"
           type="text"
-          placeholder="주소를 입력해 주세요"
+          placeholder="찾고 싶은 주소를 입력해주세요."
           class="search-input"
-        />
+          aria-label="주소 검색" />
       </div>
-
       <div class="modal-content">
         <AddressHouseSearchResult
           :addresses="searchResults"
-          @selectAddress="selectAddress"
-        />
+          @selectAddress="selectAddress" />
       </div>
 
-      <div class="button-wrapper">
-        <button class="button-default" @click="searchAddress">검색</button>
-      </div>
+      <BottomDefaultButton :label="'검색'" :onClick="searchAddress" />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-// @import "@/styles/mixins.scss"; // 스타일 믹스인 사용하는 경우
-
-.modal-container {
-  @include custom-modal;
-}
-
 .modal-wrapper {
   display: flex;
   flex-direction: column;
+
   height: 100%;
 
   .modal-content {
+    display: flex;
+    flex-direction: column;
+
     height: 100%;
-    overflow-y: auto;
-    @include custom-scrollbar-style;
+    overflow-y: auto; /* 세로 스크롤을 추가 */
+    @include custom-scrollbar-style; /* 스크롤바 스타일 적용 */
   }
+}
+.modal-container {
+  @include custom-modal;
 }
 
 .search-container {
@@ -215,17 +215,41 @@ watch(searchQuery, debouncedSearch);
   }
 }
 
-.button-wrapper {
-  @include custom-padding-y;
-  display: flex;
-  justify-content: center;
+.search-input {
+  @include custom-input-style;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  // @include custom-shadow-style;
+}
 
-  .button-default {
-    @include custom-button-style(
-      $bg-color: $secondary-color-default,
-      $font-color: white
-    );
-    width: 90%;
+.search-container {
+  @include custom-margin-x;
+  @include custom-margin-y;
+  @include custom-padding-x;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $padding-default;
+
+  height: 48px;
+
+  border-radius: $border-radius-default;
+
+  background: white;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+
+  img {
+    @include custom-icon-style;
+  }
+
+  input[type="text"] {
+    padding: 0;
+    margin: 0;
+    border: none;
+    height: 100%;
   }
 }
 </style>
