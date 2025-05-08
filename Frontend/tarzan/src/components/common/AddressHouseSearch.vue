@@ -196,25 +196,6 @@ watch(searchQuery, debouncedSearch);
   @include custom-modal;
 }
 
-.search-container {
-  @include custom-margin-x;
-  @include custom-margin-y;
-  @include custom-padding-x;
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: $border-radius-default;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-
-  input {
-    width: 100%;
-    height: 48px;
-    border: none;
-    font-size: 16px;
-    padding: 0 10px;
-  }
-}
-
 .search-input {
   @include custom-input-style;
   position: sticky;
@@ -251,5 +232,10 @@ watch(searchQuery, debouncedSearch);
     border: none;
     height: 100%;
   }
+}
+.non-content-sub-desc {
+  @include custom-text($font-size: 12px);
+  line-height: 100%;
+  text-decoration-line: underline;
 }
 </style>
