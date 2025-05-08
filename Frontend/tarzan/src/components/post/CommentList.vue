@@ -4,19 +4,9 @@
       <CommentItem
         v-for="comment in comments"
         :key="comment.comment_id"
-        :comment="comment" />
+        :comment="comment"
+      />
     </div>
-
-    <!-- <div class="comment-more-container">
-      <button id="comment-more-button" @click="loadMoreComments">
-        <span>더보기</span>
-        <img 
-          id="comment-more-icon"
-          src="@/assets/icons/Arrows-chevron/Arrow-Down/Arrow-Down.png"
-          alt="arrowDown"
-        />
-      </button>
-    </div> -->
   </div>
 </template>
 
