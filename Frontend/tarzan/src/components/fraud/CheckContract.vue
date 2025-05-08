@@ -114,13 +114,16 @@ import TopBarBack from "@/components/common/TopBarBack.vue";
     gap: $padding-small;
     border-radius: $border-radius-default;
     border: $border-color-unactive 1px solid;
+    background-color: #f8f8f8;
 
     p {
-      @include custom-text($font-weight: 300, $font-color: $text-color-light);
+      @include custom-text($text-color-light, 12px, 500);
+      line-height: 1.5;
       text-align: left;
       line-height: 1.2;
       &.card-content-title {
         @include custom-text(
+          $font-size: 14px,
           $font-weight: 600,
           $font-color: $text-color-default
         );
