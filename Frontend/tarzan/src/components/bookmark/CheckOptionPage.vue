@@ -16,8 +16,7 @@
         <TagButtonGroup
           :buttons="checkItemsInLivingRoom"
           :multiple="true"
-          v-model:selectedButtons="selectedCheckItemsInLivingRoom"
-        >
+          v-model:selectedButtons="selectedCheckItemsInLivingRoom">
         </TagButtonGroup>
       </div>
     </div>
@@ -27,8 +26,7 @@
         <TagButtonGroup
           :buttons="checkItemsInRoom"
           :multiple="true"
-          v-model:selectedButtons="selectedCheckItemsInRoom"
-        >
+          v-model:selectedButtons="selectedCheckItemsInRoom">
         </TagButtonGroup>
       </div>
     </div>
@@ -38,8 +36,7 @@
         <TagButtonGroup
           :buttons="checkItemsInBathRoom"
           :multiple="true"
-          v-model:selectedButtons="selectedCheckItemsInBathRoom"
-        >
+          v-model:selectedButtons="selectedCheckItemsInBathRoom">
         </TagButtonGroup>
       </div>
     </div>
@@ -49,8 +46,7 @@
         <TagButtonGroup
           :buttons="checkItemsInEtc"
           :multiple="true"
-          v-model:selectedButtons="selectedCheckItemsInEtc"
-        >
+          v-model:selectedButtons="selectedCheckItemsInEtc">
         </TagButtonGroup>
       </div>
     </div>
@@ -58,7 +54,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineModel, onMounted } from "vue";
+import { ref, defineProps, defineModel, onMounted, watch } from "vue";
 
 import TagButtonGroup from "@/components/common/TagButtonGroup.vue";
 
@@ -83,37 +79,74 @@ onMounted(() => {
     bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.map(
       (item) => ({
         label: item.label,
-        value: item.label, // 선택 비교할 수 있도록 label을 value로 씀
+        value: item.value,
       })
     );
+
+  selectedCheckItemsInKitchen.value =
+    bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.filter(
+      (item) => item.value
+    );
+  console.log(selectedCheckItemsInKitchen.value);
 
   checkItemsInLivingRoom.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM.map(
       (item) => ({
         label: item.label,
-        value: item.label,
+        value: item.value,
       })
     );
 
   checkItemsInRoom.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_ROOM.map((item) => ({
       label: item.label,
-      value: item.label,
+      value: item.value,
     }));
 
   checkItemsInBathRoom.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_BATH_ROOM.map(
       (item) => ({
         label: item.label,
-        value: item.label,
+        value: item.value,
       })
     );
 
   checkItemsInEtc.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_SECURITY.map((item) => ({
       label: item.label,
-      value: item.label,
+      value: item.value,
     }));
+});
+
+watch(selectedCheckItemsInKitchen, (labels) => {
+  const arr = bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM;
+  arr.forEach((item) => {
+    item.value = labels.includes(item.label);
+  });
+});
+watch(selectedCheckItemsInLivingRoom, (labels) => {
+  const arr = bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM;
+  arr.forEach((item) => {
+    item.value = labels.includes(item.label);
+  });
+});
+watch(selectedCheckItemsInRoom, (labels) => {
+  const arr = bookmarkData.value.value.bookmark_checklist.OPTION_ROOM;
+  arr.forEach((item) => {
+    item.value = labels.includes(item.label);
+  });
+});
+watch(selectedCheckItemsInBathRoom, (labels) => {
+  const arr = bookmarkData.value.value.bookmark_checklist.OPTION_BATH_ROOM;
+  arr.forEach((item) => {
+    item.value = labels.includes(item.label);
+  });
+});
+watch(selectedCheckItemsInEtc, (labels) => {
+  const arr = bookmarkData.value.value.bookmark_checklist.OPTION_SECURITY;
+  arr.forEach((item) => {
+    item.value = labels.includes(item.label);
+  });
 });
 </script>
 

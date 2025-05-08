@@ -11,6 +11,7 @@ import Step2 from "@/components/bookmark/CheckOptionPage.vue";
 import Step3 from "@/components/bookmark/CheckCheckListPage.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 const router = useRouter();
 const route = useRoute();
 
@@ -117,7 +118,7 @@ const saveBookmark = async (bookmarkData) => {
 <template>
   <div class="sub-container">
     <div class="top-bar-wrapper">
-      <TopBarBackBookmark :title="'점검하기'" />
+      <TopBarBack :title="'점검하기'" @back="topBarHandler" />
     </div>
     <div class="center-container">
       <div class="address-card-wrapper">
