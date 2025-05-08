@@ -1,7 +1,7 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div class="top-bar-back">
-      <p>주택소유자 확인</p>
+    <div class="top-bar-wrapper">
+      <TopBarBack title="주택 소유자 확인" />
     </div>
     <div class="center-container">
       <div class="accordion-wrapper">
@@ -109,15 +109,14 @@
 
 <script setup lang="ts">
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
+
+import TopBarBack from "@/components/common/TopBarBack.vue";
 </script>
 
 <style lang="scss" scoped>
 // 공통
-.top-bar-back {
-  @include custom-bar-style(
-    $height: $height-top-bar,
-    $z-index: $z-index-top-bar
-  );
+.top-bar-wrapper {
+  width: 100%;
 }
 
 .center-container {
