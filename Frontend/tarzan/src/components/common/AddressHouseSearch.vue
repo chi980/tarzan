@@ -155,15 +155,17 @@ watch(searchQuery, debouncedSearch);
         <TopBarBack title="주소 검색" @back="closeModal" />
       </div>
 
-      <div class="search-container">
-        <img :src="searchIconImg" alt="search icon" class="icon-search" />
-        <input
-          v-model="searchQuery"
-          @keyup.enter="searchAddress"
-          type="text"
-          placeholder="찾고 싶은 주소를 입력해주세요."
-          class="search-input"
-          aria-label="주소 검색" />
+      <div class="searchbar">
+        <div class="input-icon-wrap">
+          <img :src="searchIconImg" alt="search icon" class="icon-search" />
+          <input
+            v-model="searchQuery"
+            @keyup.enter="searchAddress"
+            type="text"
+            placeholder="찾고 싶은 주소를 입력해주세요."
+            class="search-input"
+            aria-label="주소 검색" />
+        </div>
       </div>
       <div class="modal-content">
         <AddressHouseSearchResult
@@ -196,60 +198,49 @@ watch(searchQuery, debouncedSearch);
   @include custom-modal;
 }
 
-.search-container {
-  @include custom-margin-x;
-  @include custom-margin-y;
-  @include custom-padding-x;
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: $border-radius-default;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+.non-content-sub-desc {
+  @include custom-text($font-size: 12px);
+  line-height: 100%;
+  text-decoration-line: underline;
+}
 
-  input {
+.searchbar {
+  @include custom-margin-y;
+}
+.searchbar {
+  @include custom-margin-x;
+  display: flex;
+  cursor: pointer;
+  .input-icon-wrap {
+    @include custom-padding-x;
+    display: flex;
+    gap: $padding-default;
+    align-items: center;
     width: 100%;
     height: 48px;
-    border: none;
-    font-size: 16px;
-    padding: 0 10px;
-  }
-}
+    border-radius: 13px;
+    background-color: white;
+    padding-right: $padding-default;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 5; /* Higher than overlay */
+    cursor: pointer;
 
-.search-input {
-  @include custom-input-style;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  width: 100%;
-  // @include custom-shadow-style;
-}
+    .icon-search {
+      @include custom-icon-style;
+      color: $input-placeholder-color;
+    }
 
-.search-container {
-  @include custom-margin-x;
-  @include custom-margin-y;
-  @include custom-padding-x;
+    p {
+      @include custom-text($font-size: 14px, $font-color: $text-color-light);
+    }
 
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: $padding-default;
-
-  height: 48px;
-
-  border-radius: $border-radius-default;
-
-  background: white;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-
-  img {
-    @include custom-icon-style;
-  }
-
-  input[type="text"] {
-    padding: 0;
-    margin: 0;
-    border: none;
-    height: 100%;
+    input {
+      @include custom-text($font-size: 14px, $font-color: $text-color-light);
+      background-color: white;
+      border: none;
+      flex: 1;
+      padding: 0;
+    }
   }
 }
 </style>

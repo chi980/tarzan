@@ -1,12 +1,12 @@
 <template>
   <div class="sub-container non-input-sub-container">
-    <div class="top-bar-back">
-      <p>주택소유자 확인</p>
+    <div class="top-bar-wrapper">
+      <TopBarBack title="주택 소유자 확인" />
     </div>
     <div class="center-container">
       <div class="accordion-wrapper">
         <BasicAccordion accordionTitle="임대인이 개인인 경우">
-          <div class="homeowner-content-wrapper">
+          <div class="homeowner-content-wrapper content-container">
             <div class="homeowner-content">
               <p class="homeowner-content-title">
                 눈 앞에 있는 사람과 계약서에 도장 찍는 임대인과 등기부 등본에
@@ -43,7 +43,7 @@
           </div>
         </BasicAccordion>
         <BasicAccordion accordionTitle="임대인이 법인인 경우">
-          <div class="homeowner-content-wrapper">
+          <div class="homeowner-content-wrapper content-container">
             <div class="homeowner-content">
               <p class="homeowner-content-title">
                 등기부등본을 확인하여 해당 법인이 이 집을 임대할 자격이 있는지만
@@ -65,7 +65,7 @@
           </div>
         </BasicAccordion>
         <BasicAccordion accordionTitle="임대인이 대리인인 경우">
-          <div class="homeowner-content-wrapper">
+          <div class="homeowner-content-wrapper content-container">
             <div class="homeowner-content">
               <p class="homeowner-content-title" style="line-height: 1.4">
                 대리인과 계약 맺는 경우 <br />위임장 확인 사항
@@ -109,15 +109,14 @@
 
 <script setup lang="ts">
 import BasicAccordion from "@/components/common/BasicAccordion.vue";
+
+import TopBarBack from "@/components/common/TopBarBack.vue";
 </script>
 
 <style lang="scss" scoped>
 // 공통
-.top-bar-back {
-  @include custom-bar-style(
-    $height: $height-top-bar,
-    $z-index: $z-index-top-bar
-  );
+.top-bar-wrapper {
+  width: 100%;
 }
 
 .center-container {
@@ -155,6 +154,9 @@ import BasicAccordion from "@/components/common/BasicAccordion.vue";
 }
 
 // scoped
+.content-container {
+  background-color: #f8f8f8;
+}
 .homeowner-content-wrapper {
   padding: $padding-default;
   display: flex;
@@ -169,11 +171,12 @@ import BasicAccordion from "@/components/common/BasicAccordion.vue";
     gap: $padding-small;
 
     p {
-      @include custom-text($font-weight: 300, $font-color: $text-color-light);
+      @include custom-text($text-color-light, 12px, 500);
       text-align: left;
       line-height: 1.2;
       &.homeowner-content-title {
         @include custom-text(
+          $font-size: 14px,
           $font-weight: 600,
           $font-color: $text-color-default
         );
