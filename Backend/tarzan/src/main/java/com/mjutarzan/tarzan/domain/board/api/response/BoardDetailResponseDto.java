@@ -18,6 +18,8 @@ public class BoardDetailResponseDto {
     private String content;
     @JsonProperty("board_tag")
     private BoardTag tag;
+    @JsonProperty("board_tag_kor")
+    private String tagKor;
     @JsonProperty("board_read_count")
     private Long readCount;
     @JsonProperty("board_writer_id")
@@ -30,10 +32,11 @@ public class BoardDetailResponseDto {
     private Boolean isWriter;
 
     @Builder
-    public BoardDetailResponseDto(String title, String content, BoardTag tag, Long readCount, Long writerId, String writerNickname, LocalDateTime createdAt, Boolean isWriter) {
+    public BoardDetailResponseDto(String title, String content, BoardTag tag,String tagKor, Long readCount, Long writerId, String writerNickname, LocalDateTime createdAt, Boolean isWriter) {
         this.title = title;
         this.content = content;
         this.tag = tag;
+        this.tagKor = tagKor;
         this.readCount = readCount;
         this.writerId = writerId;
         this.writerNickname = writerNickname;
