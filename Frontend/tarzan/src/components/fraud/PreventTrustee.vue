@@ -96,6 +96,9 @@ export default {
   gap: $padding-small;
 }
 
+.content-container {
+  background-color: #f8f8f8;
+}
 .accordian-section .content-container {
   padding: $padding-default;
   display: flex;

@@ -12,7 +12,7 @@
       </div>
 
       <BasicAccordion accordionTitle="가짜 임대인과의 계약">
-        <div class="accordion-content">
+        <div class="accordion-content content-container">
           <div class="content-wapper">
             <img
               class="content-img"
@@ -45,7 +45,7 @@
       </BasicAccordion>
 
       <BasicAccordion accordionTitle="신탁회사의 동의 없는 계약">
-        <div class="accordion-content">
+        <div class="accordion-content content-container">
           <div class="content-wapper">
             <img
               class="content-img"
@@ -139,7 +139,9 @@ export default {
 .title-section span {
   @include custom-text($text-color-default, 16px, 500);
 }
-
+.content-container {
+  background-color: #f8f8f8;
+}
 .accordion-content {
   display: flex;
   flex-direction: column;
