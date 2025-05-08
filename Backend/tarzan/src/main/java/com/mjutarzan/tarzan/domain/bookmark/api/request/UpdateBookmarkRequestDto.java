@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.domain.bookmark.api.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mjutarzan.tarzan.domain.bookmark.api.response.BookmarkChecklistResponseDto2;
 import com.mjutarzan.tarzan.domain.bookmark.model.vo.HouseDirection;
 import com.mjutarzan.tarzan.domain.review.model.vo.LeaseType;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -61,4 +63,6 @@ public class UpdateBookmarkRequestDto {
     @JsonProperty("bookmark_direction")
     private HouseDirection direction;
 
+    @JsonProperty("bookmark_checklist")
+    private Map<String, List<BookmarkChecklistResponseDto2>> checklist;
 }

@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 // @Transactional(readOnly = true)
 public class BookmarkServiceImpl implements BookmarkService{
 
@@ -227,6 +228,7 @@ public class BookmarkServiceImpl implements BookmarkService{
 
     @Override
     public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto requestDto, CustomUserDetails loginedUserDto) {
+        // 1) 권한 및 엔티티 조회
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
@@ -234,8 +236,33 @@ public class BookmarkServiceImpl implements BookmarkService{
             throw new UnauthorizedException("북마크의 등록자만 수정할 수 있습니다.");
         }
 
+        // 2) 기본 북마크 필드 업데이트
         bookmark.update(requestDto);
 
+        // 3) checklist 가 넘어왔으면 한 번에 flatten → 업데이트
+        Map<String, List<BookmarkChecklistResponseDto2>> groups
+                = requestDto.getChecklist();
+        if (groups != null && !groups.isEmpty()) {
+            // 3-1) Map<String, List<Dto>> → Stream<Dto> → Map<id, value>
+            Map<Long, Boolean> flat = groups.values().stream()
+                    .flatMap(List::stream)
+                    .collect(Collectors.toMap(
+                            BookmarkChecklistResponseDto2::getId,
+                            BookmarkChecklistResponseDto2::getValue
+                    ));
+
+            // 3-2) DB 에서 해당 ID 목록만 조회
+            List<BookmarkChecklistItem> items
+                    = bookmarkChecklistItemRepository.findAllById(flat.keySet());
+
+            // 3-3) 각 엔티티의 값만 update() 호출
+            items.forEach(item -> {
+                Boolean newVal = flat.get(item.getId());
+                if (newVal != null) {
+                    item.update(newVal);
+                }
+            });
+        }
     }
 
 

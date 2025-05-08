@@ -45,7 +45,7 @@ const rate = (n) => {
 
 .star {
   cursor: pointer; /* 클릭 가능한 커서로 변경 (추가됨) */
-  margin-right: 5px;
+  // margin-right: 5px;
 }
 
 .star svg {

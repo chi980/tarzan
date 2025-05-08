@@ -16,15 +16,17 @@
           <div class="input-content select-container">
             <div style="width: max-content; min-width: 100px">
               <CustomSelectBox
-                v-model="bookmark"
                 :options="rentalOptions"
+                :initial-selected="bookmarkData.value.bookmark_lease_type"
                 :parent-style="{
                   backgroundColor: 'white',
                   fontWeight: 400,
                   justifyContent: `space-between`,
                   border: '1px solid #e7e7e7',
                 }"
-                @update:selected="handleSelectLeaseType" />
+                @update:selected="
+                  (idx) => selectOption(rentalOptions, idx, changeLeaseType)
+                " />
             </div>
             <input
               v-model.number="bookmarkData.value.bookmark_rent"
@@ -91,7 +93,6 @@
         <div class="input-content">
           <div class="select-content">
             <CustomSelectBox
-              v-model="bookmarkData.value.bookmark_direction"
               :options="directionOptions"
               :parent-style="{
                 backgroundColor: 'white',
@@ -99,7 +100,10 @@
                 justifyContent: `space-between`,
                 border: '1px solid #e7e7e7',
               }"
-              @update:selected="handleSelectDirection" />
+              :initial-selected="bookmarkData.value.bookmark_direction"
+              @update:selected="
+                (idx) => selectOption(directionOptions, idx, changeDirection)
+              " />
           </div>
         </div>
       </div>
@@ -108,9 +112,9 @@
       <div class="input-group">
         <h2 class="input-title">주차장 대수</h2>
         <div class="input-content">
-          <div class="select-content">
+          <!-- <div class="select-content">
             <CustomSelectBox
-              v-model="bookmarkData.value.bookmark_parking_lot_coverage"
+              v-model=""
               :options="carOptions"
               :parent-style="{
                 backgroundColor: 'white',
@@ -118,7 +122,11 @@
                 justifyContent: `space-between`,
                 border: '1px solid #e7e7e7',
               }" />
-          </div>
+          </div> -->
+          <input
+            v-model.number="bookmarkData.value.bookmark_parking_lot_coverage"
+            type="number"
+            placeholder="방수를 입력해주세요." />
         </div>
       </div>
 
@@ -167,20 +175,28 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, watch, reactive, defineModel, computed } from "vue";
-import { Option } from "@/data/options";
+import {
+  defineProps,
+  ref,
+  defineModel,
+  computed,
+  onMounted,
+  nextTick,
+} from "vue";
+import type { Option } from "@/data/options";
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
 
 const props = defineProps<{ bookmarkIdx: number }>();
 const bookmarkData = defineModel<Object>("bookmarkData");
 
-watch(
-  () => bookmarkData.value,
-  (newVal) => {
-    console.log("깊은 변경 감지됨", newVal);
-  },
-  { deep: true }
-);
+onMounted(() => {
+  const selectedPetIdx = petOptions.value.findIndex(
+    (option) => option.value === bookmarkData.value.value.bookmark_can_animal
+  );
+  if (selectedPetIdx !== -1) {
+    petOptions.value[selectedPetIdx].isSelected = true;
+  }
+});
 
 const selectOption = (
   options: Option[] | undefined,
@@ -203,7 +219,12 @@ const selectOption = (
     console.warn("잘못된 인덱스:", idx);
   }
 };
-
+const changeLeaseType = (options: Option[], idx: number) => {
+  bookmarkData.value.value.bookmark_lease_type = options[idx].value as string;
+};
+const changeDirection = (options: Option[], idx: number) => {
+  bookmarkData.value.value.bookmark_direction = options[idx].value as string;
+};
 const isDisabled = computed(
   () => bookmarkData.value.value.bookmark_lease_type !== "MONTHLY"
 );
@@ -211,13 +232,11 @@ const changePetData = (options, idx: number) => {
   bookmarkData.value.value.bookmark_can_animal = options[idx].value;
 };
 
-watch(()=>bookmarkData.value.)
-
 // 부모 컴포넌트의 배열 데이터 정의
 const rentalOptions: Option[] = [
   { idx: 1, name: "월세", value: "MONTHLY" },
-  { idx: 2, name: "전세", value: "JEONSE" },
-  { idx: 3, name: "매매", value: "PROPERTY" },
+  { idx: 2, name: "전세", value: "KEY_MONEY" },
+  // { idx: 3, name: "매매", value: "PROPERTY" },
 ];
 
 const petOptions = ref<Option[]>([
@@ -240,8 +259,8 @@ const carOptions: Option[] = [
 ];
 
 const directionOptions: Option[] = [
-  { idx: 1, name: "모름", value: "NULL" },
-  { idx: 2, name: "동", value: "EARTH" },
+  { idx: 1, name: "모름", value: "NONE" },
+  { idx: 2, name: "동", value: "EAST" },
   { idx: 3, name: "서", value: "WEST" },
   { idx: 4, name: "남", value: "SOUTH" },
   { idx: 5, name: "북", value: "NORTH" },

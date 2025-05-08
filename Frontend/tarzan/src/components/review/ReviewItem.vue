@@ -7,14 +7,14 @@
           <StarRating v-model="props.review.review_score" :readonly="true" />
           <p>{{ formatDateWithoutTime(props.review.review_created_at) }}</p>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="tag" v-if="props.review.review_residence_period">
             {{ props.review.review_residence_period }} 거주
           </div>
           <div class="tag" v-if="props.review.review_floo">
             {{ props.review.review_floo }} 층
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="dropdown" @click="toggleDropdown">
         <img :src="menuButtonImgSrc" alt="..." />
@@ -130,8 +130,7 @@ onUnmounted(() => {
     justify-content: space-between;
 
     #nickname {
-      @include custom-text($font-weight: 600);
-      font-weight: bold;
+      @include custom-text($font-weight: 600, $font-size: 16px);
       text-align: left;
     }
 
@@ -165,7 +164,7 @@ onUnmounted(() => {
     @include custom-text($font-size: 12px, $font-color: $text-color-light);
   }
   img {
-    @include custom-icon-style(36px);
+    @include custom-icon-style(26px);
   }
 }
 :deep(.star svg) {
