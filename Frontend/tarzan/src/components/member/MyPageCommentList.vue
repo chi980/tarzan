@@ -53,6 +53,6 @@ const fetchComments = async (page, params) => {
 
 <style scoped lang="scss">
 .my-page-comment-list {
-  @include custom-margin;
+  @include custom-margin-x;
 }
 </style>

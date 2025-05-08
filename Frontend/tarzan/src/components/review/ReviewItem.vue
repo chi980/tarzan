@@ -120,7 +120,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: $padding-small;
-
+  @include custom-padding-y($padding-small);
   .header {
     display: flex;
     flex-direction: row;

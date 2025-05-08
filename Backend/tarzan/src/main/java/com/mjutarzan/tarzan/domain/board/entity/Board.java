@@ -38,6 +38,8 @@ public class Board extends CommonEntity {
     @Enumerated(EnumType.STRING)
     private BoardTag tag;
 
+
+
     @Column(name = "board_read_count")
     @ColumnDefault("0")
     private Long readCount;

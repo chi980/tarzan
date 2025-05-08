@@ -54,6 +54,6 @@ const fetchBoards = async (page, params) => {
 
 <style scoped lang="scss">
 .my-page-board-list {
-  @include custom-margin;
+  @include custom-margin-x;
 }
 </style>

@@ -157,6 +157,7 @@ public class BoardServiceImpl implements BoardService {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .tag(board.getTag())
+                .tagKor(board.getTag().getKor())
                 .readCount(board.getReadCount())
                 .writerId(board.getWriter().getId())
                 .writerNickname(board.getWriter().getNickname())
