@@ -118,7 +118,6 @@ import TopBarBack from "@/components/common/TopBarBack.vue";
 
     p {
       @include custom-text($text-color-light, 12px, 500);
-      line-height: 1.5;
       text-align: left;
       line-height: 1.2;
       &.card-content-title {
