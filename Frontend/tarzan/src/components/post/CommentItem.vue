@@ -31,6 +31,7 @@ const props = defineProps({
 
 <style scoped lang="scss">
 .comment-container {
+  @include custom-padding-y($padding-small);
   display: flex;
   flex-direction: column;
   gap: 8px;
