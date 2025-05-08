@@ -1,5 +1,6 @@
 <template>
-  <div class="sub-container">
+  <div class="sub-container login-main">
+    <div class="back-img"></div>
     <div class="center-container">
       <p id="logo_desc_text">정글같은 서울 도심 속 터전 찾기</p>
       <p id="logo_text">TARZAN</p>
@@ -198,5 +199,20 @@ const checkBack = async () => {
     $font-color: white
   );
 }
+.center-container {
+  background: none !important;
+}
+.login-main {
+  /* 1) 위에서 아래로 동일하게 흰 반투명 레이어 */
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.7),
+      rgba(255, 255, 255, 0.7)
+    ),
+    url("@/assets/seoul_city_with_background.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
 /**https://w-world.tistory.com/232 참고해보자 */
 </style>
