@@ -26,7 +26,7 @@
     <div v-if="message">{{ message }}</div>
 
     <div class="post-button">
-      <button @click="goToBack" class="cancle-button">취소</button>
+      <button @click="cancle" class="cancle-button">취소</button>
       <button @click="editPost" class="create-button">수정하기</button>
     </div>
   </div>

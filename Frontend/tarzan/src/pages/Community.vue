@@ -139,6 +139,8 @@ const fetchPosts = async () => {
   }
 };
 
+console.log("posts", posts.value);
+
 // ✨ 여기!! fetchPosts를 넘겨서 세팅
 const { target, setupObserver } = useInfiniteScroll(fetchPosts);
 
