@@ -2,11 +2,11 @@
   <div class="sub-container non-input-sub-container">
     <TopBarBack title="계약 내용 확인하기" />
     <div class="center-container">
+      <div class="title-section">
+        <img :src="CheckIcon" />
+        <span>임대차 계약시 확인사항</span>
+      </div>
       <div class="card-wrapper">
-        <div class="card-title">
-          <img :src="CheckIcon" />
-          <p>임대차 계약시 확인사항</p>
-        </div>
         <div class="card-content">
           <p class="card-content-title">1. 임대차 대상 부동산</p>
           <p>
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import CheckIcon from "@/assets/icons/Check/Check.svg";
-import TopBarBack from "../common/TopBarBack.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 </script>
 
 <style lang="scss" scoped>
@@ -88,24 +88,22 @@ import TopBarBack from "../common/TopBarBack.vue";
   flex-direction: column;
   gap: $padding-small;
 }
-.card-wrapper {
+
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: $padding-small;
   padding: $padding-default;
+}
+
+.title-section span {
+  @include custom-text($font-color: $text-color-default, $font-size: 16pxs);
+}
+.card-wrapper {
+  @include custom-padding-x;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
-
-  .card-title {
-    padding: $padding-default;
-    display: flex;
-    gap: $padding-small;
-    background-color: #f8f8f8;
-    align-items: center;
-    border-radius: $border-radius-default;
-
-    p {
-      @include custom-text;
-    }
-  }
 
   .card-content {
     padding: $padding-default;
