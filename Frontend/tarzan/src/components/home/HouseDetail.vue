@@ -84,7 +84,44 @@ const bookmarkThis = async () => {
     }
   }
 };
-const shareThis = () => {};
+
+/**
+ * 웹 공유 API 지원 시 네이티브 공유 다이얼로그를,
+ * 아니면 클립보드 복사(또는 prompt)로 폴백합니다.
+ */
+const shareThis = async () => {
+  // 1) Web Share API 지원하는지 체크
+  const shareUrl = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: building.value.building_name,
+        text: building.value.building_address,
+        url: shareUrl,
+      });
+      console.log("공유 완료");
+    } catch (err) {
+      console.error("공유 실패 또는 취소됨", err);
+    }
+    return;
+  }
+
+  // 2) Web Share 미지원 시: 클립보드에 복사 시도
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      alert("링크가 복사되었습니다. 원하는 곳에 붙여넣기 해보세요.");
+    } catch {
+      // 복사 실패 시 prompt 폴백
+      const fallback = window.prompt("이 링크를 복사하세요", shareUrl);
+      console.log("Fallback prompt:", fallback);
+    }
+    return;
+  }
+
+  // 3) 클립보드도 없으면 prompt만 띄우기
+  window.prompt("이 링크를 복사하세요", shareUrl);
+};
 </script>
 
 <template>

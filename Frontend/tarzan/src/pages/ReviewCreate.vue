@@ -12,6 +12,7 @@ import AddressCard from "@/components/common/\bAddressCard.vue";
 import Step1 from "@/components/review/CreateReview1.vue";
 import Step2 from "@/components/review/CreateReview2.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
+import { AxiosError } from "axios";
 
 const route = useRoute();
 const router = useRouter();
@@ -27,10 +28,26 @@ onMounted(() => {
     alert("잘못된 접근입니다.");
     router.replace("/");
   }
-
+  fetchHouse(houseIdx);
   // houseIdx가 있을 경우 처리
   console.log("houseIdx:", houseIdx);
 });
+
+const fetchHouse = async (houseIdx: number) => {
+  try {
+    const response = await axiosInstance.get(`/v1/houses/${houseIdx}`);
+    if (response.data && response.data.data) {
+      console.log(response.data);
+      const raw = response.data.data;
+      houseOverview.value.house_name = raw.house_name;
+      houseOverview.value.house_address = raw.house_address;
+    } else {
+      throw new AxiosError("잘못된 응답입니다.");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const topBarHandler = () => {
   if (step.value > 0) {
@@ -47,17 +64,17 @@ const step = ref(0);
 const reviewData = reactive<ReviewRequest>({
   review_house_id: houseIdx,
   review_img_url: null,
-  review_score: 4,
+  review_score: 0,
   review_lease_type: "MONTHLY" as LeaseType,
-  review_rent: 0,
-  review_deposit: 20000,
-  review_management_fee: 10,
-  review_residence_period: 24,
-  review_floor: 3,
-  review_advantage: "역세권이라 교통이 편리하고, 환기가 잘 됨",
-  review_advantage_tags: ["VENTILATION", "TRAIL", "QUITE"],
-  review_disadvantage: "벌레가 자주 나옴",
-  review_disadvantage_tags: ["BUG"],
+  review_rent: null,
+  review_deposit: null,
+  review_management_fee: null,
+  review_residence_period: null,
+  review_floor: null,
+  review_advantage: null,
+  review_advantage_tags: [],
+  review_disadvantage: null,
+  review_disadvantage_tags: [],
 });
 watch(
   () => reviewData,
