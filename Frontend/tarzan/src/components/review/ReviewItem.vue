@@ -141,7 +141,7 @@ onUnmounted(() => {
     flex-direction: row;
     gap: 8px;
 
-    align-items: center;
+    align-items: flex-start;
   }
 
   .column {
@@ -159,6 +159,8 @@ onUnmounted(() => {
 
   .content {
     @include custom-text($font-size: 12px, $font-color: $text-color-light);
+    text-align: left;
+    line-height: 1.2;
   }
   img {
     @include custom-icon-style(26px);
