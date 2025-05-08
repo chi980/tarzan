@@ -26,7 +26,7 @@
         <TabBar :tabs="tabs" v-model:selectedTabIdx="selectedTabIndex"></TabBar>
       </div>
     </div>
-    <div>
+    <div class="bottom-bar-wrapper">
       <BottomBar class="bottom-bar" />
     </div>
   </div>
@@ -224,5 +224,13 @@ const editProfile = () => {
     border-radius: calc($border-radius-default * 2);
     background: #f2f2f2;
   }
+}
+.bottom-bar-wrapper {
+  display: flex;
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  // height: 100px;
+  width: 100%;
+  z-index: $z-index-bottom-bar-wrapper;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

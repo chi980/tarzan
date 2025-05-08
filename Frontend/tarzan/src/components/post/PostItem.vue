@@ -1,7 +1,7 @@
 <template>
   <div class="post-item-container" @click="handleClick">
     <div class="post-tag">
-      <span>{{ post.board_tag }}</span>
+      <span>{{ post.board_tag_kor }}</span>
     </div>
     <div class="post-content">
       <h3 id="post-title">{{ post.board_title }}</h3>
@@ -37,7 +37,7 @@ const props = defineProps({
   flex-direction: column;
   align-items: flex-start;
   // @include custom-margin-x;
-  // @include custom-margin-y($margin-size: 12px);
+  @include custom-padding-y($padding-default);
   gap: 8px;
 }
 
@@ -45,7 +45,7 @@ const props = defineProps({
   background-color: #f2f3f9;
   @include custom-padding($margin-small);
   border-radius: 10px;
-  font-size: 10px;
+  @include custom-text($font-size: 10px, $font-color: $text-color-default);
 }
 
 .post-item-container .post-content {

@@ -23,18 +23,17 @@
         </TagButtonGroup>
       </div>
 
-      <div class="result-bar-container">
+      <!-- <div class="result-bar-container">
         <ResultBar
           resultTitle="전체 게시물"
           :sortOptions="sortOptions"
-          @updateSortBy="updateSortBy"
-        />
-      </div>
+          @updateSortBy="updateSortBy" />
+      </div> -->
 
       <PostList :posts="posts" />
       <div ref="target" style="height: 1px"></div>
 
-      <div class="write-post-button" @click="goToPostCreate">
+      <div class="center-container-fix-button" @click="goToPostCreate">
         <img :src="writeIconImg" alt="refresh icon" />
         <p>글쓰기</p>
       </div>
@@ -42,7 +41,9 @@
 
     <PostSearch v-if="isPostSearchModalOpen" @close="closeSearchModal" />
 
-    <BottomBar class="bottom-bar" />
+    <div class="bottom-bar-wrapper">
+      <BottomBar class="bottom-bar" />
+    </div>
   </div>
 </template>
 
@@ -190,7 +191,7 @@ const goToPostCreate = () => {
 
 .tag-button-container-wrapper {
   @include custom-padding-x;
-  @include custom-padding-y;
+  padding-top: $padding-default;
 }
 
 .result-bar-container {
@@ -215,9 +216,9 @@ const goToPostCreate = () => {
   gap: 6px;
   padding: 12px;
   margin-bottom: $margin-small;
-  background-color: white;
   border-radius: 30px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 
   img {
@@ -228,5 +229,37 @@ const goToPostCreate = () => {
   p {
     @include custom-text($font-size: 12px);
   }
+}
+
+.center-container-fix-button {
+  @include custom-padding(12px);
+  @include custom-text($font-size: 12px);
+  position: sticky;
+  bottom: $padding-default;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: $padding-small;
+
+  width: fit-content;
+
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  z-index: 30;
+
+  img {
+    @include custom-icon-style(12px);
+  }
+}
+.bottom-bar-wrapper {
+  display: flex;
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  // height: 100px;
+  width: 100%;
+  z-index: $z-index-bottom-bar-wrapper;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
