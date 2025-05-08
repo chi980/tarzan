@@ -16,8 +16,7 @@
       id="back-button"
       src="@/assets/icons/Filter/back-icon.png"
       alt="back-button"
-      @click="onBackClick"
-    />
+      @click="onBackClick" />
     <div class="title">{{ title }}</div>
     <slot></slot>
   </div>
@@ -52,7 +51,7 @@ function onBackClick() {
 
 <style lang="scss" scoped>
 .topbar {
-  background-color: yellowgreen;
+  background-color: white;
   display: flex;
   align-items: center;
   width: 100%;
@@ -63,10 +62,10 @@ function onBackClick() {
 }
 
 .title {
+  @include custom-text($font-size: 15px);
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 18px;
   font-weight: bold;
 }
 

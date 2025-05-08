@@ -118,7 +118,7 @@ const saveBookmark = async (bookmarkData) => {
 <template>
   <div class="sub-container">
     <div class="top-bar-wrapper">
-      <TopBarBack :title="'점검하기'" @back="topBarHandler" />
+      <TopBarBack :title="'내 북마크'" @back="topBarHandler" />
     </div>
     <div class="center-container">
       <div class="address-card-wrapper">
