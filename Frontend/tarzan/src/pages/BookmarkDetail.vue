@@ -74,9 +74,15 @@ const next = async () => {
 };
 
 const bookmarkData = reactive({});
-watch(bookmarkData, (newBookmarkData) => {
-  console.log("변경됨", newBookmarkData.value);
-});
+watch(
+  bookmarkData,
+  (newBookmarkData) => {
+    console.log("변경됨", newBookmarkData.value);
+  },
+  {
+    deep: true,
+  }
+);
 const fetchBookmark = async (bookmarkIdx: number) => {
   try {
     const response = await axiosInstance.get(
@@ -110,7 +116,9 @@ const saveBookmark = async (bookmarkData) => {
 
 <template>
   <div class="sub-container">
-    <TopBarBackBookmark :title="'점검하기'" />
+    <div class="top-bar-wrapper">
+      <TopBarBackBookmark :title="'점검하기'" />
+    </div>
     <div class="center-container">
       <div class="address-card-wrapper">
         <AddressCard v-if="bookmarkHouse" :houseOverview="bookmarkHouse" />
@@ -129,6 +137,9 @@ const saveBookmark = async (bookmarkData) => {
 </template>
 
 <style scoped lang="scss">
+.top-bar-wrapper {
+  width: 100%;
+}
 .center-container {
   flex: 1;
   width: 100%;

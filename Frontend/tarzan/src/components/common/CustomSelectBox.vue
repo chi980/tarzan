@@ -43,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, watch } from "vue";
+import { ref, onMounted, defineEmits, watch, nextTick } from "vue";
 
-import { Option } from "@/data/options";
+import type { Option } from "@/data/options";
 
 import { SelectStyle } from "@/data/selectStyle";
 
@@ -57,6 +57,10 @@ const props = defineProps({
     type: Array as () => Option[],
     required: true,
     default: () => [],
+  },
+  initialSelected: {
+    required: false,
+    default: undefined, // 넘어오지 않으면 undefined
   },
   parentStyle: {
     type: Object as () => SelectStyle,
@@ -89,14 +93,29 @@ const controllDropDown = () => {
 };
 
 // 초기 선택 옵션 설정
+// 초기 선택 옵션 설정
 onMounted(() => {
-  if (props.options.length > 0) {
-    selectedOption.value = props.options[0]; // options 배열의 첫 번째 항목을 선택된 옵션으로 설정
-    selectedIdx.value = 0;
-    emit("update:selected", 0);
+  // 1) 옵션 배열이 비어 있으면 아무것도 선택하지 않음
+  if (props.options.length === 0) {
+    selectedIdx.value = -1;
+    selectedOption.value = null;
+    return;
   }
-});
 
+  // 2) initialSelected 이 들어왔다면, .value 로 비교 -> 인덱스 찾기
+  let idx = 0;
+  if (props.initialSelected) {
+    const found = props.options.findIndex(
+      (opt) => opt.value == props.initialSelected
+    );
+    idx = found >= 0 ? found : 0;
+  }
+
+  // 3) 최종 인덱스/옵션 세팅 및 emit
+  selectedIdx.value = idx;
+  selectedOption.value = props.options[idx];
+  emit("update:selected", idx);
+});
 // 옵션 클릭 핸들러
 
 // @ts-ignore
@@ -106,20 +125,23 @@ const selectOption = (option: Option, index: number) => {
   emit("update:selected", selectedIdx.value); // 선택한 옵션의 idx emit
   // console.log("커스텀박스: ",selectedOption.value.value);
 }; // options가 바뀔 때마다 selectedOption도 초기화
-watch(
-  () => props.options,
-  (newOptions) => {
-    if (newOptions.length > 0) {
-      selectedOption.value = newOptions[0];
-      selectedIdx.value = 0;
-      emit("update:selected", 0);
-    } else {
-      selectedOption.value = null;
-      selectedIdx.value = null;
-    }
-  },
-  { immediate: true, deep: true } // 컴포넌트 마운트될 때도 실행되게 함
-);
+// watch(
+//   () => props.options,
+//   (newOptions) => {
+//     if (newOptions.length > 0) {
+//       const index = newOptions.findIndex(
+//         (option) => option.value == selectedOption
+//       );
+//       selectedIdx.value = index;
+//       selectedOption.value = newOptions[selectedIdx.value];
+//       emit("update:selected", 0);
+//     } else {
+//       selectedOption.value = null;
+//       selectedIdx.value = null;
+//     }
+//   },
+//   { immediate: true, deep: true } // 컴포넌트 마운트될 때도 실행되게 함
+// );
 </script>
 
 <style lang="scss" scoped>
