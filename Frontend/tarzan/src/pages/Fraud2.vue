@@ -118,7 +118,7 @@ interface Card {
 const cards: Card[] = ref([
   {
     img: Img1,
-    title: "임대인 확인",
+    title: "임대인<br>확인",
     onClick: () => {
       router.push({ name: "CheckLandlord" });
     },
@@ -297,7 +297,7 @@ const cards: Card[] = ref([
       left: $padding-big;
       top: $padding-big;
       text-align: left;
-      line-height: 120%;
+      line-height: 150%;
       letter-spacing: -0.024em;
     }
     .card-image {
