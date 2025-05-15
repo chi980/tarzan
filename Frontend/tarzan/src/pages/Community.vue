@@ -7,19 +7,17 @@
 
       <DescriptionComponent
         class="description-component"
-        descriptionImgSrc="/src/assets/etc/Saly-25.png"
+        descriptionImgSrc="/assets/etc/Saly-25.png"
         descriptionTitle="동네주민과<br/>얘기해보세요!"
         descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
-        backgroundColor="#FFF7D9"
-      />
+        backgroundColor="#FFF7D9" />
 
       <div class="tag-button-container-wrapper">
         <TagButtonGroup
           v-model:selectedButton="selectedButton"
           :buttons="tagOptions"
           :multiple="false"
-          :readonly="false"
-        >
+          :readonly="false">
         </TagButtonGroup>
       </div>
 
@@ -27,8 +25,7 @@
         <ResultBar
           resultTitle="전체 게시물"
           :sortOptions="sortOptions"
-          @updateSortBy="updateSortBy"
-        />
+          @updateSortBy="updateSortBy" />
       </div>
 
       <PostList :posts="posts" />
