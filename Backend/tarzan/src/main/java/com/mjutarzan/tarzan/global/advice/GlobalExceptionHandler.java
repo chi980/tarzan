@@ -2,9 +2,7 @@ package com.mjutarzan.tarzan.global.advice;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.mjutarzan.tarzan.global.common.entity.BaseResponseDto;
-import com.mjutarzan.tarzan.global.common.exception.RequiredParameterMissingException;
-import com.mjutarzan.tarzan.global.common.exception.ResourceNotFoundException;
-import com.mjutarzan.tarzan.global.common.exception.UnauthorizedException;
+import com.mjutarzan.tarzan.global.common.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,6 +42,27 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<?> handleDuplicateResourceException(DuplicateResourceException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                BaseResponseDto.builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(TimeExpiredException.class)
+    public ResponseEntity<?> handleTimeExpired(TimeExpiredException ex) {
+        return ResponseEntity
+                .status(HttpStatus.GONE)
+                .body( BaseResponseDto.builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .build());
+    }
+
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex){
