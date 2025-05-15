@@ -13,30 +13,32 @@
   <div class="sub-container">
     <TopBarBack title="실거주 후기" />
     <div class="center-container">
-      <div class="center-container-content">
-        <StarRating v-model="rating" :readonly="true" />
+      <div class="column review-summary">
+        <StarRating v-model="reviewSummary.review_score" :readonly="true" />
         <div class="rating-description">
-          <span id="average">4.0</span>
-          <span id="count">(45)</span>
+          <span id="average">{{ reviewSummary.review_score.toFixed(1) }}</span>
+          <span id="count">({{ reviewSummary.review_count }})</span>
         </div>
-        <div class="tag">
+        <!-- <div class="tag">
           <TagButtonGroup
             v-model:selectedButton="selectedButton"
             :buttons="buttons"
-            :readonly="true"
-          >
+            :readonly="true">
             <template v-slot:default="{ button }">
               <span>{{ button.label }}</span>
             </template>
           </TagButtonGroup>
-        </div>
+        </div> -->
       </div>
       <!-- <div class="center-container-content" id="review-photo-wrapper">
           <div v-for="n in 4" :key="n" class="box"></div>
         </div> -->
 
-      <div class="center-container-content">
-        <ResultBar resultTitle="전체 후기" :sortOptions="sortOptions" />
+      <ResultBar
+        resultTitle="전체 후기"
+        :sortOptions="sortOptions"
+        class="result-bar" />
+      <div class="column">
         <List :fetchItems="fetchReviews" :params="params">
           <template #item="{ item }">
             <ReviewItem :review="item" />
@@ -67,7 +69,27 @@ onMounted(() => {
     alert("잘못된 접근입니다.");
     router.replace("/");
   }
+
+  fetchReviewSummary(houseIdx);
 });
+
+const reviewSummary = ref({
+  review_score: 0,
+  review_count: 0,
+});
+const fetchReviewSummary = async (houseIdx: number) => {
+  try {
+    const response = await axiosInstance.get(`/v1/reviews/summary`, {
+      params: {
+        house_id: houseIdx,
+      },
+    });
+
+    console.log(response.data);
+  } catch (error) {
+    console.error("API request error:", error);
+  }
+};
 
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
@@ -114,8 +136,6 @@ const sortOptions = ref([
     value: "혹평순",
   },
 ]);
-
-const rating = ref(3); // 초기 별점 값
 
 // 리뷰 목록
 const params = ref({
@@ -201,13 +221,11 @@ const buttonHandler = () => {
   display: flex;
   flex-direction: column;
 
-  .center-container-content {
-    @include custom-margin-y;
+  .column {
     @include custom-margin-x;
 
     display: flex;
     flex-direction: column;
-    gap: $padding-default;
   }
 }
 
@@ -245,5 +263,11 @@ const buttonHandler = () => {
     border-radius: $border-radius-default;
     background-color: #efefef;
   }
+}
+
+.review-summary {
+  @include custom-margin-y;
+
+  gap: 16px;
 }
 </style>

@@ -9,6 +9,9 @@ import com.mjutarzan.tarzan.domain.house.api.response.SimpleHouseListItemRespons
 import com.mjutarzan.tarzan.domain.house.entity.ApiHouse;
 import com.mjutarzan.tarzan.domain.house.model.dto.HouseIndexes;
 import com.mjutarzan.tarzan.domain.house.repository.ApiHouseRepository;
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingCategory;
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingType;
+import com.mjutarzan.tarzan.domain.map.service.IndexService;
 import com.mjutarzan.tarzan.domain.review.api.response.ReviewListItemResponseDto;
 import com.mjutarzan.tarzan.domain.review.repository.ReviewRepository;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
@@ -22,7 +25,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +37,10 @@ import java.util.stream.Collectors;
 public class ApiHouseServiceImpl implements ApiHouseService{
 
     private final LocationService locationService;
+    private final IndexService indexService;
     private final ApiHouseRepository apiHouseRepository;
     private final ReviewRepository reviewRepository;
+
     @Override
     public void saveApiHouses(List<ApiHouse> apiHouseList){
         apiHouseRepository.saveAll(apiHouseList);
@@ -63,6 +70,13 @@ public class ApiHouseServiceImpl implements ApiHouseService{
 
 //        index 처리하는 로직 추가
 
+        Double longitude = house.getLocation().getX();  // Longitude (x)
+        Double latitude = house.getLocation().getY();   // Latitude (y)
+        Map<BuildingCategory, Double> radiuses = indexService.getRadius();
+
+        Map<BuildingCategory, Long> indices = indexService.getIndex(longitude, latitude, radiuses);
+
+
         List<ReviewListItemResponseDto> houseReviewList = reviewRepository.findByHouseLimit3(houseIdx).stream()
                 .map(review -> ReviewListItemResponseDto
                         .builder()
@@ -91,11 +105,11 @@ public class ApiHouseServiceImpl implements ApiHouseService{
                 .latitude(house.getLocation().getX())
                 .longitude(house.getLocation().getY())
                 .indexes(HouseIndexes.builder()
-                        .indexAmenity(0)
-                        .indexClinic(0)
-                        .indexSecurity(0)
-                        .indexShopping(0)
-                        .indexTransportation(0)
+                        .indexAmenity(indices.get(BuildingCategory.AMENITY).intValue())
+                        .indexClinic(indices.get(BuildingCategory.CLINIC).intValue())
+                        .indexSecurity(indices.get(BuildingCategory.SECURITY).intValue())
+                        .indexShopping(indices.get(BuildingCategory.SHOPPING).intValue())
+                        .indexTransportation(indices.get(BuildingCategory.TRANSPORTATION).intValue())
                         .build())
                 .reviewImageList(houseReviewList.stream().map(review -> review.getImgUrl()).collect(Collectors.toList()))
                 .reviewList(houseReviewList)

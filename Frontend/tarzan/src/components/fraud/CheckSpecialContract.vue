@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-  import TopBarBack from '../common/TopBarBack.vue';
+import TopBarBack from "../common/TopBarBack.vue";
 </script>
 
 <style lang="scss" scoped>
@@ -85,34 +85,15 @@
   flex-direction: column;
   gap: $padding-small;
 }
+
 .card-wrapper {
-  padding: $padding-default;
+  @include custom-padding-x;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
-
-  p {
-    @include custom-text(
-      $font-weight: 300,
-      $font-color: $text-color-light,
-      $font-size: 14px
-    );
-    text-align: left;
-    line-height: 1.2;
-  }
-
-  .card-title {
-    padding: $padding-default;
-    display: flex;
-    gap: $padding-small;
-    background-color: #f8f8f8;
-    align-items: center;
-    border-radius: $border-radius-default;
-
-    p {
-      @include custom-text;
-    }
-  }
+  @include custom-text($text-color-light, 12px, 500);
+  text-align: left;
+  line-height: 1.5;
 
   .card-content {
     padding: $padding-default;
@@ -123,13 +104,16 @@
     gap: $padding-small;
     border-radius: $border-radius-default;
     border: $border-color-unactive 1px solid;
+    background-color: #f8f8f8;
 
     p {
-      @include custom-text($font-weight: 300, $font-color: $text-color-light);
+      @include custom-text($text-color-light, 12px, 500);
+      line-height: 1.5;
       text-align: left;
       line-height: 1.2;
       &.card-content-title {
         @include custom-text(
+          $font-size: 14px,
           $font-weight: 600,
           $font-color: $text-color-default
         );

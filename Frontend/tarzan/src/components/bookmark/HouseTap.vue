@@ -3,9 +3,8 @@
     <div class="tag-button-wrapper">
       <TagButtonGroup
         :buttons="tagOptions"
-        v-model:selectedButton="selectedTag"
-        :multiple="false"
-      />
+        v-model:selectedButton="selectedTag.value"
+        :multiple="false" />
     </div>
 
     <div class="house-content-wrapper">
@@ -20,14 +19,12 @@
           :fetchItems="fetchBookmarks"
           :params="params"
           :onDelete="handleDelete"
-          :onClick="handleCLick"
-        >
+          :onClick="handleCLick">
           <template #item="{ item, index, onClick, onDelete }">
             <SwipeItem
               :key="item.bookmarkIdx"
               @click="onClick(item)"
-              @delete="onDelete(item, index)"
-            >
+              @delete="onDelete(item, index)">
               <div class="house-item-wrapper">
                 <BookmarkItem :bookmark="item" @navigate="handleCLick" />
               </div>
@@ -41,17 +38,9 @@
 
 <script setup lang="ts">
 /**  */
-import {
-  ref,
-  onMounted,
-  defineProps,
-  defineExpose,
-  defineEmits,
-  watch,
-} from "vue";
+import { ref, defineExpose, defineEmits, watch, computed } from "vue";
 
 /** component load */
-import AddressHouseSearch from "@/components/common/AddressHouseSearch.vue";
 
 import houseAddImg from "@/assets/icons/Plus/Pluse.png";
 import BookmarkItem from "@/components/bookmark/BookmarkItem.vue";
@@ -88,16 +77,6 @@ const handleDelete = async (bookmark: any) => {
   }
 };
 
-const showAddressSearch = ref(false);
-
-const openAddressSearch = () => {
-  showAddressSearch.value = true;
-};
-
-const closeAddressSearch = () => {
-  showAddressSearch.value = false;
-};
-
 const handleCLick = (bookmark) => {
   console.log(bookmark);
   router.push({
@@ -121,14 +100,17 @@ const tagOptions = [
 const selectedTag = ref({ label: "전체", value: "ALL" });
 
 /** bookmark item 관련 */
-watch(selectedTag, (newSelectedTag) => {
-  params.value.status = newSelectedTag?.value || "ALL";
+
+const params = computed(() => {
+  return {
+    size: 10,
+    status: selectedTag.value.value,
+    sortBy: "최신순",
+  };
 });
 
-const params = ref({
-  size: 10,
-  status: "ALL", // 나중에 필터링 추가
-  sortBy: "최신순",
+watch(params, (newparam) => {
+  console.log(newparam);
 });
 
 const fetchBookmarks = async (page: number, params: any) => {

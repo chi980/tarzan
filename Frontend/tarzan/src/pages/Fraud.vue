@@ -8,23 +8,21 @@
           descriptionImgSrc="/etc/Fire_perspective.png"
           descriptionTitle="사기를 당할까봐<br/>걱정이신가요?"
           descriptionContent="점검한 집에 대해 사기 여부를<br/>확인할 수 있어요!"
-          backgroundColor="#FFEDED"
-        />
+          backgroundColor="#FFEDED" />
 
         <div class="content-wrapper">
           <div
             class="content-container"
             v-for="content in contents"
             :key="content.idx"
-            @click="navigateToPage(content.idx)"
-          >
+            @click="navigateToPage(content.idx)">
             <p class="content-title" v-html="content.title"></p>
             <p class="content-description" v-html="content.description"></p>
           </div>
         </div>
       </div>
     </div>
-    <div>
+    <div class="bottom-bar-wrapper">
       <BottomBar></BottomBar>
     </div>
   </div>
@@ -152,5 +150,13 @@ const navigateToPage = (idx: number) => {
   .content-description {
     @include custom-text($font-size: 12px);
   }
+}
+.bottom-bar-wrapper {
+  display: flex;
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  // height: 100px;
+  width: 100%;
+  z-index: $z-index-bottom-bar-wrapper;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

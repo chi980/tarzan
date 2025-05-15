@@ -122,61 +122,27 @@ public class Bookmark extends CommonEntity {
     public void update(UpdateBookmarkRequestDto requestDto) {
         this.status = BookmarkStatus.CHECK_COMPLETED;
 
-        if(requestDto.getLeaseType() != null){
-            this.leaseType = requestDto.getLeaseType();
-        }
+        this.leaseType = requestDto.getLeaseType();
 
-        if(requestDto.getRent() != null){
-            this.rent = requestDto.getRent();
-        }
+        this.rent = requestDto.getRent();
 
-        if(requestDto.getDeposit() != null){
-            this.deposit = requestDto.getDeposit();
-        }
+        this.deposit = requestDto.getDeposit();
 
-        if(requestDto.getCommissionFee() != null){
-            this.commissionFee = requestDto.getCommissionFee();
-        }
+        this.commissionFee = requestDto.getCommissionFee();
+        this.managementFee = requestDto.getManagementFee();
+        this.realEstate = requestDto.getRealEstate();
+        this.realEstatePhoneNumber = requestDto.getRealEstatePhoneNumber();
 
-        if(requestDto.getManagementFee() != null){
-            this.managementFee = requestDto.getManagementFee();
-        }
+        this.canAnimal = requestDto.getCanAnimal();
+        this.parkingLotCoverage = requestDto.getParkingLogCoverage();
 
-        if(requestDto.getRealEstate() != null){
-            this.realEstate = requestDto.getRealEstate();
-        }
+        this.roomCnt = requestDto.getRoomCnt();
 
-        if(requestDto.getRealEstatePhoneNumber() != null){
-            this.realEstatePhoneNumber = requestDto.getRealEstatePhoneNumber();
-        }
+        this.bathRoomCnt = requestDto.getBathRoomCnt();
 
-        if(requestDto.getCanAnimal() != null){
-            this.canAnimal = requestDto.getCanAnimal();
-        }
+        this.availableMoveInDate = requestDto.getAvailableMoveInDate();
+        this.floor = requestDto.getFloor();
 
-        if(requestDto.getParkingLogCoverage() != null){
-            this.parkingLotCoverage = requestDto.getParkingLogCoverage();
-        }
-
-        if(requestDto.getRoomCnt() != null){
-            this.roomCnt = requestDto.getRoomCnt();
-        }
-
-        if(requestDto.getBathRoomCnt() != null){
-            this.bathRoomCnt = requestDto.getBathRoomCnt();
-        }
-
-        if(requestDto.getAvailableMoveInDate() != null){
-            this.availableMoveInDate = requestDto.getAvailableMoveInDate();
-        }
-
-        if(requestDto.getFloor() != null){
-            this.floor = requestDto.getFloor();
-        }
-
-        if(requestDto.getDirection() != null){
-            this.direction = requestDto.getDirection();
-        }
-
+        this.direction = requestDto.getDirection();
     }
 }

@@ -11,10 +11,24 @@ public interface AmenityRepository extends JpaRepository<Amenity, Long> {
 
     @Query(value = "SELECT * FROM building b " +
             "WHERE ST_DistanceSphere(b.building_location, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)) <= :radius " +
-            "AND b.building_type = 'amenity'",
+            "AND b.building_type in ('civic_center', 'gym','park' )",
             nativeQuery = true)
     List<Amenity> findAllWithinRadius(@Param("longitude") double longitude,
                                       @Param("latitude") double latitude,
                                       @Param("radius") double radius);
 
+    @Query(value =
+            "SELECT COUNT(*) " +
+                    "FROM building b " +
+                    "WHERE ST_DistanceSphere(" +
+                    "        b.building_location, " +
+                    "        ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)" +
+                    "      ) <= :radius " +
+                    "  AND b.building_type in ('civic_center', 'gym','park' )",
+            nativeQuery = true)
+    Long countAllWithinRadius(
+            @Param("longitude") double longitude,
+            @Param("latitude")  double latitude,
+            @Param("radius")    double radius
+    );
 }

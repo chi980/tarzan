@@ -14,24 +14,24 @@
 
       <div class="tag-button-container-wrapper">
         <TagButtonGroup
-          v-model:selectedButton="selectedButton"
+          v-model:selectedButton="selectedTag"
           :buttons="tagOptions"
           :multiple="false"
           :readonly="false">
         </TagButtonGroup>
       </div>
 
-      <div class="result-bar-container">
+      <!-- <div class="result-bar-container">
         <ResultBar
           resultTitle="전체 게시물"
           :sortOptions="sortOptions"
           @updateSortBy="updateSortBy" />
-      </div>
+      </div> -->
 
       <PostList :posts="posts" />
       <div ref="target" style="height: 1px"></div>
 
-      <div class="write-post-button" @click="goToPostCreate">
+      <div class="center-container-fix-button" @click="goToPostCreate">
         <img :src="writeIconImg" alt="refresh icon" />
         <p>글쓰기</p>
       </div>
@@ -39,7 +39,9 @@
 
     <PostSearch v-if="isPostSearchModalOpen" @close="closeSearchModal" />
 
-    <BottomBar class="bottom-bar" />
+    <div class="bottom-bar-wrapper">
+      <BottomBar class="bottom-bar" />
+    </div>
   </div>
 </template>
 
@@ -90,7 +92,7 @@ const sortOptions = ref([
 const page = ref(0);
 const posts = ref([]); // 게시물 목록
 const sortBy = ref("최신순"); // 정렬 기준
-const selectedButton = ref(tagOptions.value[0]);
+const selectedTag = ref(tagOptions.value[0].value); // 선택된 태그
 const selectedDistrict = ref("JONGNO"); // 지역구
 
 // 정렬 기준 변경
@@ -114,7 +116,7 @@ const fetchPosts = async () => {
     size: 5,
     page: page.value,
     sortBy: sortBy.value,
-    tag: selectedButton.value.value,
+    tag: selectedTag.value,
     gu: selectedDistrict.value,
   }).toString();
 
@@ -135,13 +137,15 @@ const fetchPosts = async () => {
   }
 };
 
+console.log("posts", posts.value);
+
 // ✨ 여기!! fetchPosts를 넘겨서 세팅
 const { target, setupObserver } = useInfiniteScroll(fetchPosts);
 
 // watch - 정렬, 태그, 지역구 변경되면 초기화
-watch([sortBy, selectedButton, selectedDistrict], async () => {
+watch([sortBy, selectedTag, selectedDistrict], async () => {
   posts.value = [];
-  page.value = 1;
+  page.value = 0;
   await fetchPosts();
 });
 
@@ -187,11 +191,10 @@ const goToPostCreate = () => {
 
 .tag-button-container-wrapper {
   @include custom-padding-x;
-  @include custom-padding-y;
+  padding-top: $padding-default;
 }
 
 .result-bar-container {
-  @include custom-margin-x;
 }
 
 .post-list-container {
@@ -213,9 +216,9 @@ const goToPostCreate = () => {
   gap: 6px;
   padding: 12px;
   margin-bottom: $margin-small;
-  background-color: white;
   border-radius: 30px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   cursor: pointer;
 
   img {
@@ -226,5 +229,37 @@ const goToPostCreate = () => {
   p {
     @include custom-text($font-size: 12px);
   }
+}
+
+.center-container-fix-button {
+  @include custom-padding(12px);
+  @include custom-text($font-size: 12px);
+  position: sticky;
+  bottom: $padding-default;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: $padding-small;
+
+  width: fit-content;
+
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  z-index: 30;
+
+  img {
+    @include custom-icon-style(12px);
+  }
+}
+.bottom-bar-wrapper {
+  display: flex;
+  justify-content: center; /* 가로 방향 중앙 정렬 */
+  // height: 100px;
+  width: 100%;
+  z-index: $z-index-bottom-bar-wrapper;
+  box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

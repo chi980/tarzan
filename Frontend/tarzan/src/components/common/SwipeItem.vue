@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="wrapperRef"
     class="swipe-wrapper"
     @mousedown="onMouseDown"
     @mousemove="onMouseMove"
@@ -11,7 +12,10 @@
     <div class="delete-button" @click.stop="deleteThis">🗑</div>
     <div
       class="item-content"
-      :style="{ transform: `translateX(${translateX}px)` }"
+      :style="{
+        transform: `translateX(${translateX}px)`,
+        pointerEvents: translateX !== 0 ? 'none' : 'auto',
+      }"
       @click="onClick">
       <slot></slot>
     </div>
@@ -19,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, onMounted, onBeforeUnmount } from "vue";
 
 const emit = defineEmits(["delete", "click"]);
 
@@ -29,6 +33,8 @@ const isDragging = ref(false);
 const moved = ref(false);
 const preventClick = ref(false);
 const threshold = 40;
+
+const wrapperRef = ref<HTMLElement | null>(null);
 
 // PC 이벤트
 const onMouseDown = (e: MouseEvent) => {
@@ -86,12 +92,13 @@ const onTouchEnd = () => {
 const onClick = () => {
   if (preventClick.value) return;
 
-  if (translateX.value === 0) {
-    emit("click");
-  } else {
-    // 이미 스와이프되어 있던 상태라면 복귀
+  if (translateX.value < -threshold) {
     translateX.value = 0;
+    return;
   }
+
+  // 3) 정상 클릭 시 부모로 emit
+  emit("click");
 };
 
 // 삭제 버튼 클릭
@@ -99,6 +106,23 @@ const deleteThis = () => {
   translateX.value = 0;
   emit("delete");
 };
+// 4) 전역 클릭 리스너: 다른 곳 클릭 시 닫기
+const onDocumentClick = (e: MouseEvent) => {
+  // 컴포넌트 내부 클릭은 무시
+  if (wrapperRef.value?.contains(e.target as Node)) return;
+  // 스와이프 열려있으면 닫기
+  if (translateX.value < -threshold) {
+    translateX.value = 0;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", onDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", onDocumentClick);
+});
 </script>
 
 <style scoped>

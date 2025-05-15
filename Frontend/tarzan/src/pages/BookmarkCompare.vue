@@ -11,7 +11,7 @@ import CompareHouses from "@/components/bookmark/CompareHouses.vue";
 
 const params = ref({
   size: 10,
-  status: "ALL", // 나중에 필터링 추가
+  status: "CHECK_COMPLETED", // 나중에 필터링 추가
   sortBy: "최신순",
 });
 

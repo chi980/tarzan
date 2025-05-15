@@ -7,17 +7,6 @@
         :comment="comment"
       />
     </div>
-
-    <!-- <div class="comment-more-container">
-      <button id="comment-more-button" @click="loadMoreComments">
-        <span>더보기</span>
-        <img 
-          id="comment-more-icon"
-          src="@/assets/icons/Arrows-chevron/Arrow-Down/Arrow-Down.png"
-          alt="arrowDown"
-        />
-      </button>
-    </div> -->
   </div>
 </template>
 
@@ -45,7 +34,6 @@ const props = defineProps({
 .comment-list-container .comment-items-container {
   display: flex;
   flex-direction: column;
-  gap: 15px;
 }
 
 #comment-more-button {

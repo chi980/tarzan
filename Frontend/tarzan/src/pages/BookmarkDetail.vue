@@ -11,6 +11,7 @@ import Step2 from "@/components/bookmark/CheckOptionPage.vue";
 import Step3 from "@/components/bookmark/CheckCheckListPage.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import { axiosInstance } from "@/plugins/axiosPlugin";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 const router = useRouter();
 const route = useRoute();
 
@@ -74,9 +75,15 @@ const next = async () => {
 };
 
 const bookmarkData = reactive({});
-watch(bookmarkData, (newBookmarkData) => {
-  console.log("변경됨", newBookmarkData.value);
-});
+watch(
+  bookmarkData,
+  (newBookmarkData) => {
+    console.log("변경됨", newBookmarkData.value);
+  },
+  {
+    deep: true,
+  }
+);
 const fetchBookmark = async (bookmarkIdx: number) => {
   try {
     const response = await axiosInstance.get(
@@ -110,7 +117,9 @@ const saveBookmark = async (bookmarkData) => {
 
 <template>
   <div class="sub-container">
-    <TopBarBackBookmark :title="'점검하기'" />
+    <div class="top-bar-wrapper">
+      <TopBarBack :title="'내 북마크'" @back="topBarHandler" />
+    </div>
     <div class="center-container">
       <div class="address-card-wrapper">
         <AddressCard v-if="bookmarkHouse" :houseOverview="bookmarkHouse" />
@@ -129,6 +138,9 @@ const saveBookmark = async (bookmarkData) => {
 </template>
 
 <style scoped lang="scss">
+.top-bar-wrapper {
+  width: 100%;
+}
 .center-container {
   flex: 1;
   width: 100%;

@@ -7,14 +7,14 @@
           <StarRating v-model="props.review.review_score" :readonly="true" />
           <p>{{ formatDateWithoutTime(props.review.review_created_at) }}</p>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <div class="tag" v-if="props.review.review_residence_period">
             {{ props.review.review_residence_period }} 거주
           </div>
           <div class="tag" v-if="props.review.review_floo">
             {{ props.review.review_floo }} 층
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="dropdown" @click="toggleDropdown">
         <img :src="menuButtonImgSrc" alt="..." />
@@ -117,21 +117,17 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .review-item {
-  @include custom-padding-y;
   display: flex;
   flex-direction: column;
   gap: $padding-small;
-
-  padding-bottom: $padding-small;
-
+  @include custom-padding-y($padding-small);
   .header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 
     #nickname {
-      @include custom-text($font-weight: 600);
-      font-weight: bold;
+      @include custom-text($font-size: 14px);
       text-align: left;
     }
 
@@ -145,7 +141,7 @@ onUnmounted(() => {
     flex-direction: row;
     gap: 8px;
 
-    align-items: center;
+    align-items: flex-start;
   }
 
   .column {
@@ -163,9 +159,11 @@ onUnmounted(() => {
 
   .content {
     @include custom-text($font-size: 12px, $font-color: $text-color-light);
+    text-align: left;
+    line-height: 1.2;
   }
   img {
-    @include custom-icon-style(36px);
+    @include custom-icon-style(26px);
   }
 }
 :deep(.star svg) {

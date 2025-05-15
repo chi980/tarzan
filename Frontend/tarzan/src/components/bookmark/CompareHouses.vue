@@ -237,6 +237,7 @@ const fetchCompareBookmark = async () => {
     const response = await axiosInstance.get(`/v1/bookmark/compare?${params}`);
 
     if (response.data && response.data.data) {
+      console.log(response.data);
       const data = response.data.data.list;
       housesToCompare.value = data;
 
@@ -281,10 +282,10 @@ const detailList: rowInfo[] = [
   { idx: 1, eng: "pet", kor: "반려동물<br>가능여부" },
   { idx: 2, eng: "parking", kor: "주차장 대수" },
   { idx: 3, eng: "roomCnt", kor: "방수" },
-  { idx: 4, eng: "bathroomCnt,", kor: "화장실수" },
-  { idx: 5, eng: "movingDay,", kor: "입주가능일" },
-  { idx: 6, eng: "floor,", kor: "층수" },
-  { idx: 7, eng: "direction,", kor: "방향" },
+  { idx: 4, eng: "bathroomCnt", kor: "화장실수" },
+  { idx: 5, eng: "movingDay", kor: "입주가능일" },
+  { idx: 6, eng: "floor", kor: "층수" },
+  { idx: 7, eng: "direction", kor: "방향" },
 ];
 
 const optionList: rowInfo[] = [

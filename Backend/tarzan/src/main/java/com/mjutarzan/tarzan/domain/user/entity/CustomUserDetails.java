@@ -15,6 +15,7 @@ import java.util.Collection;
 @Builder
 @ToString(of = {"email", "role", "nickname","gu"})
 public class CustomUserDetails implements UserDetails {
+    private Long id;
     private String email; // 사용자 이름
     private String password; // 비밀번호
     private Role role;
@@ -67,6 +68,7 @@ public class CustomUserDetails implements UserDetails {
 
     public static CustomUserDetails getInstance(User user, String password){
         return CustomUserDetails.builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .password(password)
                 .role(user.getRole())

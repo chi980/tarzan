@@ -4,8 +4,7 @@
       v-for="post in posts"
       :key="post.board_id"
       :post="post"
-      @click="goToPostDetail(post.board_id)"
-    />
+      @click="goToPostDetail(post.board_id)" />
   </div>
 
   <div v-else class="post-list-container">
@@ -38,9 +37,8 @@ export default {
 .post-list-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 
-  background-color: aliceblue;
+  background-color: white;
 }
 
 .post-list-container > p {

@@ -97,6 +97,7 @@ const handleClick = () => {
 .bookmark-item-container .house-meta {
   align-items: flex-end;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   font-size: 12px;
   color: #9f9f9f;

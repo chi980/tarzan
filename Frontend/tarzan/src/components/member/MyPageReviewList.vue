@@ -54,6 +54,6 @@ const fetchReviews = async (page, params) => {
 
 <style scoped lang="scss">
 .my-page-review-list {
-  @include custom-margin;
+  @include custom-margin-x;
 }
 </style>

@@ -20,7 +20,9 @@ import com.mjutarzan.tarzan.domain.map.entity.clinic.Clinic;
 import com.mjutarzan.tarzan.domain.map.entity.security.Security;
 import com.mjutarzan.tarzan.domain.map.entity.shopping.Shopping;
 import com.mjutarzan.tarzan.domain.map.entity.transportation.Transportation;
+import com.mjutarzan.tarzan.domain.map.model.vo.BuildingCategory;
 import com.mjutarzan.tarzan.domain.map.repository.BuildingRepository;
+import com.mjutarzan.tarzan.domain.map.service.IndexService;
 import com.mjutarzan.tarzan.domain.user.entity.User;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
 import com.mjutarzan.tarzan.domain.user.repository.UserRepository;
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 // @Transactional(readOnly = true)
 public class BookmarkServiceImpl implements BookmarkService{
 
@@ -57,6 +60,7 @@ public class BookmarkServiceImpl implements BookmarkService{
     private static final Double radiusHaveToCheck = 0.05;
 
     private final LocationService locationService;
+    private final IndexService indexService;
 
 
     @Override
@@ -227,6 +231,7 @@ public class BookmarkServiceImpl implements BookmarkService{
 
     @Override
     public void updateBookmark(Long bookmarkIdx, UpdateBookmarkRequestDto requestDto, CustomUserDetails loginedUserDto) {
+        // 1) 권한 및 엔티티 조회
         User loginedUser = userRepository.findByEmail(loginedUserDto.getEmail()).orElseThrow();
         Bookmark bookmark = bookmarkRepository.findById(bookmarkIdx).orElseThrow();
 
@@ -234,8 +239,33 @@ public class BookmarkServiceImpl implements BookmarkService{
             throw new UnauthorizedException("북마크의 등록자만 수정할 수 있습니다.");
         }
 
+        // 2) 기본 북마크 필드 업데이트
         bookmark.update(requestDto);
 
+        // 3) checklist 가 넘어왔으면 한 번에 flatten → 업데이트
+        Map<String, List<BookmarkChecklistResponseDto2>> groups
+                = requestDto.getChecklist();
+        if (groups != null && !groups.isEmpty()) {
+            // 3-1) Map<String, List<Dto>> → Stream<Dto> → Map<id, value>
+            Map<Long, Boolean> flat = groups.values().stream()
+                    .flatMap(List::stream)
+                    .collect(Collectors.toMap(
+                            BookmarkChecklistResponseDto2::getId,
+                            BookmarkChecklistResponseDto2::getValue
+                    ));
+
+            // 3-2) DB 에서 해당 ID 목록만 조회
+            List<BookmarkChecklistItem> items
+                    = bookmarkChecklistItemRepository.findAllById(flat.keySet());
+
+            // 3-3) 각 엔티티의 값만 update() 호출
+            items.forEach(item -> {
+                Boolean newVal = flat.get(item.getId());
+                if (newVal != null) {
+                    item.update(newVal);
+                }
+            });
+        }
     }
 
 
@@ -339,7 +369,11 @@ public class BookmarkServiceImpl implements BookmarkService{
             House house = bookmark.getHouse();
             
             // index 구하는 과정
-            Map<HouseIndexType, Long> indexes = getHouseIndexesScore(bookmark.getHouse());
+            Double longitude = house.getLocation().getX();  // Longitude (x)
+            Double latitude = house.getLocation().getY();   // Latitude (y)
+            Map<BuildingCategory, Double> radiuses = indexService.getRadius();
+            Map<BuildingCategory, Long> indices = indexService.getIndex(longitude, latitude, radiuses);
+
             log.info("checklist 갯수:{}",bookmark.getCheckListItemList().size());
             Map<BookmarkChecklistType, Long> checks = getCheckListScore(bookmark.getCheckListItemList());
 
@@ -364,10 +398,10 @@ public class BookmarkServiceImpl implements BookmarkService{
                     .name(house.getName())
                     .address(house.getAddress())
                     .category(house.getCategory())
-                    .score(getScore(indexes, checks))  // 항상 100점
+                    .score(getScore(indices, checks))  // 항상 100점
                     .costs(costs)
                     .details(details)
-                    .indexes(indexes)
+                    .indexes(indices)
                     .checks(checks)
                     .bookmarkCreatedAt(bookmark.getCreatedAt())
                     .build();
@@ -378,9 +412,67 @@ public class BookmarkServiceImpl implements BookmarkService{
                 .build();
     }
 
+    private Integer getScore(Map<BuildingCategory, Long> indexes, Map<BookmarkChecklistType, Long> checks) {
+        // 각 카테고리의 비율 (총합이 100%가 되도록 설정)
+        Map<BuildingCategory, Double> categoryWeights = new HashMap<>();
+        categoryWeights.put(BuildingCategory.AMENITY, 0.25);  // 25% (상업시설)
+        categoryWeights.put(BuildingCategory.CLINIC, 0.2);    // 20% (의료시설)
+        categoryWeights.put(BuildingCategory.SECURITY, 0.2);  // 20% (보안)
+        categoryWeights.put(BuildingCategory.SHOPPING, 0.15); // 15% (쇼핑)
+        categoryWeights.put(BuildingCategory.TRANSPORTATION, 0.2); // 20% (교통)
+// 각 체크리스트 항목의 비율 (각 카테고리 내에서 총합이 100%가 되도록 설정)
+        Map<BookmarkChecklistType, Double> checklistWeights = new HashMap<>();
+        checklistWeights.put(BookmarkChecklistType.OPTION_UTILITY_ROOM, 0.12);  // 12%
+        checklistWeights.put(BookmarkChecklistType.OPTION_LIVING_ROOM, 0.1);     // 10%
+        checklistWeights.put(BookmarkChecklistType.OPTION_ROOM, 0.1);           // 10%
+        checklistWeights.put(BookmarkChecklistType.OPTION_BATH_ROOM, 0.1);      // 10%
+        checklistWeights.put(BookmarkChecklistType.OPTION_SECURITY, 0.15);      // 15%
+        checklistWeights.put(BookmarkChecklistType.CHECK_WATER, 0.1);           // 10%
+        checklistWeights.put(BookmarkChecklistType.CHECK_WINDOW, 0.1);          // 10%
+        checklistWeights.put(BookmarkChecklistType.CHECK_BATHROOM, 0.1);        // 10%
+        checklistWeights.put(BookmarkChecklistType.CHECK_SURROUNDINGS, 0.1);    // 10%
+        checklistWeights.put(BookmarkChecklistType.CHECK_OPTION, 0.05);         // 5%
+        checklistWeights.put(BookmarkChecklistType.CHECK_DETAIL, 0.05);         // 5%
+        checklistWeights.put(BookmarkChecklistType.CHECK_SECURITY, 0.1);        // 10%
+        checklistWeights.put(BookmarkChecklistType.CHECK_ETC, 0.05);            // 5%
 
-    private Integer getScore(Map<HouseIndexType, Long> indexes, Map<BookmarkChecklistType, Long> checks) {
-        return 80;
+        // 점수 초기화
+        double totalScore = 0;
+        double totalWeight = 0;
+
+        // BuildingCategory에 대한 점수 계산 (카테고리 비율 반영)
+        for (Map.Entry<BuildingCategory, Long> entry : indexes.entrySet()) {
+            BuildingCategory category = entry.getKey();
+            Long count = entry.getValue();
+
+            // 카테고리별 비율
+            double categoryWeight = categoryWeights.getOrDefault(category, 0.0);
+
+            // 해당 카테고리의 비율에 따라 점수 계산
+            double categoryScore = (count > 0) ? categoryWeight : 0;  // 항목이 있으면 비율을 반영하여 점수 부여
+            totalScore += categoryScore;
+            totalWeight += categoryWeight;  // 전체 가중치 더하기
+        }
+
+        // BookmarkChecklistType에 대한 점수 계산 (체크리스트 비율 반영)
+        for (Map.Entry<BookmarkChecklistType, Long> entry : checks.entrySet()) {
+            BookmarkChecklistType checklistType = entry.getKey();
+            Long checkedCount = entry.getValue();
+
+            // 체크리스트 항목별 비율
+            double checklistWeight = checklistWeights.getOrDefault(checklistType, 0.0);
+
+            // 체크된 항목에 비례한 점수 계산
+            double checklistScore = (checkedCount > 0) ? checklistWeight : 0;
+            totalScore += checklistScore;
+            totalWeight += checklistWeight;  // 전체 가중치 더하기
+        }
+
+        // 비율로 계산한 점수 평균
+        double finalScore = (totalWeight > 0) ? (totalScore / totalWeight) * 100 : 0;
+
+        // 최종 점수를 0~100 범위로 제한
+        return Math.max(0, Math.min(100, (int) finalScore));
     }
 
     private Map<BookmarkChecklistType, Long> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {
@@ -408,38 +500,4 @@ public class BookmarkServiceImpl implements BookmarkService{
 
     }
 
-    private Map<HouseIndexType, Long> getHouseIndexesScore(House house) {
-        Point location = house.getLocation();
-        double latitude = location.getY();  // 위도
-        double longitude = location.getX();  // 경도
-        List<Building> buildingList = buildingRepository.findAllWithinRadius(longitude, latitude, radiusHaveToCheck);
-
-        // 기본 맵: 모든 타입을 0으로 초기화
-        Map<HouseIndexType, Long> result = new EnumMap<>(HouseIndexType.class);
-        for (HouseIndexType type : HouseIndexType.values()) {
-            result.put(type, 0L);
-        }
-
-        // 실제 데이터 기반 집계
-        Map<HouseIndexType, Long> actual = buildingList.stream()
-                .map(this::getHouseIndexTypeFromBuilding)
-                .collect(Collectors.groupingBy(
-                        type -> type,
-                        Collectors.counting()
-                ));
-
-        // 실제 값으로 덮어쓰기
-        actual.forEach(result::put);
-
-        return result;
-    }
-
-    private HouseIndexType getHouseIndexTypeFromBuilding(Building building) {
-        if(building instanceof Amenity) return HouseIndexType.AMENITY;
-        else if(building instanceof Clinic) return HouseIndexType.CLINIC;
-        else if(building instanceof Security) return HouseIndexType.SECURITY;
-        else if(building instanceof Shopping) return HouseIndexType.SHOPPING;
-        else if(building instanceof Transportation) return HouseIndexType.TRANSPORTATION;
-        else throw new ResourceNotFoundException("지원하지 않는 타입입니다.");
-    }
 }
