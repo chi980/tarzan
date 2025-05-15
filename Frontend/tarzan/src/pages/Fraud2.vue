@@ -4,36 +4,19 @@
       <TopBar></TopBar>
     </div>
     <div class="center-container">
-      <!-- <div>
+      <div>
         <DescriptionComponent
           descriptionImgSrc="/etc/Fire_perspective.png"
           descriptionTitle="사기를 당할까봐<br/>걱정이신가요?"
           descriptionContent="점검한 집에 대해 사기 여부를<br/>확인할 수 있어요!"
           backgroundColor="#FFEDED" />
-      </div> -->
+      </div>
       <div class="content-wrapper">
         <div class="content-header">
           <p class="content-title">오늘의 퀴즈</p>
           <p>전세 계약 전, 사기 예방을 위한 체크리스트! 퀴즈로 점검해보세요</p>
         </div>
-        <div class="quiz-card">
-          <div class="quiz-time">{{ timeLeft }} 뒤에 끝나요</div>
-
-          <div class="quiz-content">
-            전세 계약 시, 계약서에 명시된 보증금이 실제 집주인의 계좌로 입금되지
-            않으면, 사기일 가능성이 높다.
-          </div>
-          <div class="quiz-answer-wrapper">
-            <div class="correct" @click="clickCorrect">
-              <img :src="CorrectImgSrc" alt="o" />
-              <p>그렇다</p>
-            </div>
-            <div class="wrong" @click="clickWrong">
-              <img :src="WrongImgSrc" alt="x" />
-              <p>아니다</p>
-            </div>
-          </div>
-        </div>
+        <QuizCard :fetchQuiz="fetchQuiz" />
       </div>
       <div class="content-wrapper">
         <div class="content-header">
@@ -59,13 +42,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { axiosInstance } from "@/plugins/axiosPlugin";
 import TopBar from "@/components/common/TopBar.vue";
 import BottomBar from "@/components/common/BottomBar.vue";
-// import DescriptionComponent from "@/components/common/Description.vue";
-import CorrectImgSrc from "@/assets/icons/fraud/F-Tick Square.png";
-import WrongImgSrc from "@/assets/icons/fraud/F-Close Square.png";
+import DescriptionComponent from "@/components/common/Description.vue";
+import QuizCard from "@/components/fraud/QuizCard.vue";
 import Img1 from "@/assets/icons/fraud/F-User.png";
 import Img2 from "@/assets/icons/fraud/F-Building Library.png";
 import Img3 from "@/assets/icons/fraud/F-Graph Up.png";
@@ -74,41 +57,39 @@ import Img5 from "@/assets/icons/fraud/F-Star.png";
 
 const router = useRouter();
 
-const answer = ref(true);
-const clickCorrect = () => {
-  if (answer) alert("정답입니다.");
-  else alert("아쉽지만 틀렸습니다! 다시 도전해보세요");
+const fetchQuiz = async () => {
+  try {
+    const response = await axiosInstance.get(`/v1/quiz/today`);
+
+    if (response.data.success) {
+      return {
+        item: {
+          id: response.data.data.quiz_id,
+          question: response.data.data.quiz_question,
+          explanation: response.data.data.quiz_explanation,
+          answer: response.data.data.quiz_answer,
+        },
+        alreadySolved: response.data.data.quiz_already_solved,
+      };
+    } else {
+      throw new Error("Failed to fetch data");
+    }
+  } catch (error) {
+    console.error("API request error:", error);
+    return {
+      item: {
+        id: -1,
+        question:
+          "전세 계약 시, 계약서에 명시된 보증금이 실제 집주인의 계좌로 입금되지 않으면, 사기일 가능성이 높다.",
+        explanation:
+          "전세 보증금은 반드시 계약서에 기재된 임대인의 명의 계좌로 송금해야, 계약의 진위 여부를 증명하고 법적 보호를 온전히 받을 수 있습니다.",
+        answer: true,
+      },
+      alreadySolved: false,
+    };
+  }
 };
 
-const clickWrong = () => {
-  if (!answer) alert("정답입니다.");
-  else alert("아쉽지만 틀렸습니다! 다시 도전해보세요");
-};
-
-// 1초마다 갱신될 현재 시각
-const now = ref(Date.now());
-
-// 자정까지 남은 시간을 계산하는 computed
-const timeLeft = computed(() => {
-  const midnight = new Date();
-  midnight.setHours(24, 0, 0, 0);
-  const diff = midnight.getTime() - now.value;
-
-  const h = String(Math.floor(diff / 3_600_000)).padStart(2, "0");
-  const m = String(Math.floor((diff % 3_600_000) / 60_000)).padStart(2, "0");
-  const s = String(Math.floor((diff % 60_000) / 1000)).padStart(2, "0");
-  return `${h}:${m}:${s}`;
-});
-
-let timer: number;
-onMounted(() => {
-  timer = window.setInterval(() => {
-    now.value = Date.now();
-  }, 1000);
-});
-onUnmounted(() => {
-  clearInterval(timer);
-});
 interface Card {
   img: string;
   title: string;
@@ -214,69 +195,6 @@ const cards: Card[] = ref([
 
     .content-title {
       @include custom-text($font-size: 16px, $font-weight: 700);
-    }
-  }
-}
-
-.quiz-card {
-  @include custom-padding-x;
-  @include custom-padding-y(24px);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-
-  .quiz-time {
-    @include custom-padding($padding-small);
-    @include custom-text(
-      $font-size: 12px,
-      $font-color: #f97979,
-      $font-weight: 600
-    );
-    width: fit-content;
-    display: flex;
-    background-color: #f8f8f8;
-    border: 1px solid #d9d9d9;
-    border-radius: 30px;
-  }
-  .quiz-content {
-    @include custom-text($font-size: 16px, $font-weight: 700);
-    text-align: left;
-
-    line-height: 150%;
-    letter-spacing: -0.024em;
-  }
-
-  .quiz-answer-wrapper {
-    display: flex;
-    flex-direction: row;
-    gap: $padding-default;
-    div {
-      @include custom-padding-y;
-      @include custom-text($font-size: 16px, $font-weight: 600);
-      flex: 1;
-      border-radius: 20px;
-
-      display: flex;
-      flex-direction: column;
-      gap: $padding-small;
-      justify-content: center; /* 세로 방향 가운데 정렬 */
-      align-items: center; /* 가로 방향 가운데 정렬 */
-      img {
-        width: 30px;
-        height: 30px;
-      }
-    }
-
-    .correct {
-      background-color: #e9f3ff;
-      color: #338af9 !important;
-    }
-
-    .wrong {
-      background-color: #feeeee;
-      color: #f14352 !important;
     }
   }
 }
