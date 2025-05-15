@@ -70,6 +70,7 @@ const fetchQuiz = async () => {
           answer: response.data.data.quiz_answer,
         },
         alreadySolved: response.data.data.quiz_already_solved,
+        solvedCorrect: response.data.data.quiz_solved_correct,
       };
     } else {
       throw new Error("Failed to fetch data");

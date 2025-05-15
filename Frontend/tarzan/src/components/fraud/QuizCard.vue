@@ -15,7 +15,7 @@
           </div>
         </div>
       </div>
-      <div class="quiz-back" @click="isFlipped = false">
+      <div class="quiz-back">
         <div class="result" v-if="isCorrect">
           <p class="title">정답입니다!</p>
           <p>내일 또 만나요! 😊</p>
@@ -43,6 +43,7 @@ interface QuizItem {
 interface FetchResult {
   item: QuizItem;
   alreadySolved: boolean;
+  solvedCorrect: boolean;
 }
 
 interface SubmitQuizRequest {
@@ -62,10 +63,13 @@ const quiz = ref<QuizItem>({
 });
 
 onMounted(async () => {
-  const { item, alreadySolved } = await props.fetchQuiz();
+  const { item, alreadySolved, solvedCorrect } = await props.fetchQuiz();
   quiz.value = item;
 
   isFlipped.value = alreadySolved;
+  if (alreadySolved) {
+    isCorrect.value = solvedCorrect;
+  }
 });
 
 const isFlipped = ref(false);
