@@ -16,7 +16,7 @@
           <p class="content-title">오늘의 퀴즈</p>
           <p>전세 계약 전, 사기 예방을 위한 체크리스트! 퀴즈로 점검해보세요</p>
         </div>
-        <QuizCard :fetchQuiz="fetchQuiz" />
+        <QuizCard :fetchQuiz="fetchQuiz" :fetchSubmitQuiz="fetchSubmitQuiz" />
       </div>
       <div class="content-wrapper">
         <div class="content-header">
@@ -87,6 +87,22 @@ const fetchQuiz = async () => {
       },
       alreadySolved: false,
     };
+  }
+};
+
+const fetchSubmitQuiz = async (request: {
+  quizId: number;
+  isCorrect: boolean;
+}) => {
+  const response = await axiosInstance.post(`/v1/quiz`, {
+    quiz_id: request.quizId,
+    user_answer: request.isCorrect,
+  });
+
+  if (response.data.success) {
+    return;
+  } else {
+    throw new Error("Failed to submit quiz");
   }
 };
 

@@ -45,8 +45,14 @@ interface FetchResult {
   alreadySolved: boolean;
 }
 
+interface SubmitQuizRequest {
+  quizId: number;
+  isCorrect: boolean;
+}
+
 const props = defineProps<{
   fetchQuiz: () => Promise<FetchResult>;
+  fetchSubmitQuiz: (SubmitQuizRequest) => Promise<void>;
 }>();
 const quiz = ref<QuizItem>({
   id: -1,
@@ -65,9 +71,18 @@ onMounted(async () => {
 const isFlipped = ref(false);
 const isCorrect = ref(null);
 
-const selectAnswer = (userAnswer) => {
+const selectAnswer = async (userAnswer) => {
   isCorrect.value = userAnswer === quiz.value.answer;
   isFlipped.value = true;
+
+  try {
+    await props.fetchSubmitQuiz({
+      quizId: quiz.value.id,
+      isCorrect: userAnswer,
+    });
+  } catch (error) {
+    console.error("API request error:", error);
+  }
 };
 
 // 1초마다 갱신될 현재 시각
