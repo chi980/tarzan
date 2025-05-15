@@ -8,4 +8,6 @@ import java.time.LocalDate;
 public interface QuizHistoryRepository extends JpaRepository<QuizHistory, Long> {
 
     Boolean existsByUserIdAndSolvedDate(Long id, LocalDate now);
+
+    QuizHistory findOneByUserIdAndSolvedDate(Long id, LocalDate now);
 }

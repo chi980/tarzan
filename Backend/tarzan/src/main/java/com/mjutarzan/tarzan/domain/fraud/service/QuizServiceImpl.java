@@ -39,9 +39,13 @@ public class QuizServiceImpl implements QuizService{
     public TodayQuizResponseDto getTodayQuiz(CustomUserDetails userDto) {
 
         Quiz quiz = findTodayQuizEntity();
-        Boolean alreadySolved = quizHistoryRepository
-                .existsByUserIdAndSolvedDate(userDto.getId(), LocalDate.now());
 
+        // 2) 오늘 풀었는지, 맞혔는지 기록 조회
+        QuizHistory history = quizHistoryRepository
+                .findOneByUserIdAndSolvedDate(userDto.getId(), LocalDate.now());
+
+        boolean alreadySolved  = history != null;
+        Boolean solvedCorrect  = alreadySolved ? history.getIsCorrect() : null;
 
         return TodayQuizResponseDto
                 .builder()
@@ -49,6 +53,8 @@ public class QuizServiceImpl implements QuizService{
                     .question(quiz.getQuestion())
                     .answer(quiz.getAnswer())
                     .explanation(quiz.getExplanation())
+                    .alreadySolved(alreadySolved)
+                    .solvedCorrect(solvedCorrect)
                 .build();
     }
 

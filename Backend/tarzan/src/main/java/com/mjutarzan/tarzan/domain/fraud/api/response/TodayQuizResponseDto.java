@@ -24,13 +24,17 @@ public class TodayQuizResponseDto {
     @JsonProperty("quiz_already_solved")
     private Boolean alreadySolved;
 
+    @JsonProperty("quiz_solved_correct")
+    private Boolean solvedCorrect;
+
 
     @Builder
-    public TodayQuizResponseDto(Long id, String question, Boolean answer, String explanation, Boolean alreadySolved) {
+    public TodayQuizResponseDto(Long id, String question, Boolean answer, String explanation, Boolean alreadySolved, Boolean solvedCorrect) {
         this.id = id;
         this.question = question;
         this.answer = answer;
         this.explanation = explanation;
         this.alreadySolved = alreadySolved;
+        this.solvedCorrect = solvedCorrect;
     }
 }
