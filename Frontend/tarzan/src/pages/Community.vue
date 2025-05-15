@@ -7,7 +7,7 @@
 
       <DescriptionComponent
         class="description-component"
-        descriptionImgSrc="/assets/etc/Saly-25.png"
+        descriptionImgSrc="/etc/Saly-25.png"
         descriptionTitle="동네주민과<br/>얘기해보세요!"
         descriptionContent="여러 정보를 얻어보세요<br/>모임도 참여할 수 있어요!"
         backgroundColor="#FFF7D9" />
