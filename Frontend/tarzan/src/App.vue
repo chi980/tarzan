@@ -2,6 +2,7 @@
   <div id="main-container">
     <router-view />
     <div id="modal-root"></div>
+    <GlobalLoading />
   </div>
 </template>
 
@@ -21,9 +22,13 @@ div#main-container {
 import { useAuthStore } from "@/stores/authStore"; // authStore import
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { Role } from "@/data/userRole"; // Role enum import
+import GlobalLoading from "@/components/common/GlobalLoading.vue";
 
 export default {
   name: "App", // 컴포넌트 이름을 추가
+  components: {
+    GlobalLoading,
+  },
   data() {
     return {
       userStore: useAuthStore(),
