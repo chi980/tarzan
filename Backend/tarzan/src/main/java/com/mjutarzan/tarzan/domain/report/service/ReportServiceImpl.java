@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -32,6 +33,7 @@ public class ReportServiceImpl implements ReportService{
     public void report(ReportRequestDto requestDto, CustomUserDetails userDto) throws MessagingException {
 
         // 1) Thymeleaf 컨텍스트에 변수 바인딩
+        LocalDateTime reportedAt = LocalDateTime.now();
         Context ctx = new Context();
         ctx.setVariable("targetType", requestDto.getReportTargetType());
         ctx.setVariable("targetId", requestDto.getReportTargetId());
@@ -41,7 +43,7 @@ public class ReportServiceImpl implements ReportService{
         ctx.setVariable("reporterId", userDto.getId());
         ctx.setVariable("reporterEmail",userDto.getEmail());
         ctx.setVariable("reportedAt",
-                requestDto.getReportedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                reportedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         );
 
         // 2) 템플릿 프로세스 → HTML 문자열 생성
