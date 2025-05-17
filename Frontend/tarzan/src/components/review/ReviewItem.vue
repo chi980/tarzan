@@ -39,6 +39,12 @@
       <img :src="disadvantageImgSrc" alt="단점" />
       <p>{{ props.review.review_disadvantage }}</p>
     </div>
+
+    <Modal v-model="show">
+      <ReportComponent
+        :reportTargetType="'REVIEW'"
+        :reportTargetId="props.review.review_id" />
+    </Modal>
   </div>
 </template>
 
@@ -48,21 +54,17 @@ import advantageImgSrc from "@/assets/emoji/advantage.png";
 import disadvantageImgSrc from "@/assets/emoji/disadvantage.png";
 import menuButtonImgSrc from "@/assets/icons/menu.png";
 
+import { Review } from "@/data/review";
 import { formatDateWithoutTime } from "@/utils/date";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
 
 import StarRating from "@/components/review/StarRating.vue";
+import Modal from "@/components/common/Modal.vue";
+import ReportComponent from "@/components/common/ReportComponent.vue";
 
 const props = defineProps<{
-  review: {
-    review_score: number;
-    review_advantage: string;
-    review_disadvantage: string;
-    review_writer_nickname: string;
-    review_is_writer: boolean;
-    review_created_at: string;
-  };
+  review: Review;
 }>();
 
 const showMenu = ref(false);
@@ -94,15 +96,25 @@ const deleteReview = async () => {
     const response = await axiosInstance.delete(
       `/v1/reviews/${props.review.review_id}`
     );
-    console.log("리뷰 삭제 성공", response.data);
+    alert("리뷰 삭제 성공");
   } catch (error) {
     console.error("리뷰 삭제 실패", error);
   }
 };
 
+const show = ref(false);
 const onReport = () => {
-  console.log("신고 클릭");
   closeDropdown();
+  show.value = true;
+
+  // try {
+  //   const response = await axiosInstance.post(
+  //     `/v1/reviews/${props.review.review_id}/report`
+  //   );
+  //   console.log("리뷰 신고 성공", response.data);
+  // } catch (error) {
+  //   console.error("리뷰 신고 실패", error);
+  // }
 };
 
 // 외부 클릭 시 드롭다운을 닫도록 이벤트 리스너 추가

@@ -195,14 +195,14 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  const isAuthenticated = authStore.isAuthenticated;
+  const isAuthenticated = authStore.isLoggedIn;
 
   const publicPages = ["/login-processing", "/login-failure", "/login"];
   const isPublicPage = publicPages.includes(to.path);
 
   // 인증된 상태이거나 모두에게 공개된 페이지의 경우 통과
   // 인증이 필요 없는 페이지인 경우
-  if (true) {
+  if (isPublicPage) {
     next();
   } else if (isAuthenticated) {
     // 인증된 사용자일 경우

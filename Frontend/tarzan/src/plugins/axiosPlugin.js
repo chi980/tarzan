@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useLoadingStore } from "@/stores/loadingStore";
 import router from "@/router/index";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -11,11 +12,40 @@ const axiosInstance = axios.create({
   },
 });
 
+// ✅ Pinia 로딩 스토어 가져오는 헬퍼
+function startLoading() {
+  try {
+    useLoadingStore().start();
+  } catch {}
+}
+function finishLoading() {
+  try {
+    useLoadingStore().finish();
+  } catch {}
+}
+
+// ✅ 요청 인터셉터: 로딩 시작
+axiosInstance.interceptors.request.use(
+  (config) => {
+    startLoading();
+    return config;
+  },
+  (err) => {
+    finishLoading();
+    return Promise.reject(err);
+  }
+);
+
 // ✅ 응답 인터셉터 설정 (401 처리 + 토큰 자동 갱신)
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    finishLoading();
+    return response;
+  },
   (error) => {
-    console.log("error발생!");
+    finishLoading();
+    // 응답이 401 Unauthorized인 경우
+    // 토큰 갱신 로직을 추가합니다.
     if (error.response && error.response.status === 401) {
       return refreshTokenAndRetry(error);
     }
@@ -40,7 +70,7 @@ function refreshTokenAndRetry(error) {
     axiosNewInstance
       .post("/auth/refresh")
       .then((res) => {
-        console.log("access token을 새로 발급받았씁니다.");
+        console.log("access token을 새로 발급받았습니다.");
 
         resolve(axios(error.config)); // 실패한 요청을 재시도
       })
@@ -67,6 +97,7 @@ function refreshTokenAndRetry(error) {
 export default {
   install: (app) => {
     // 전역 프로퍼티에 axios 인스턴스를 추가
+    // Options API 에서 this.$axios 로 접근 가능
     app.config.globalProperties.$axios = axiosInstance;
   },
 };

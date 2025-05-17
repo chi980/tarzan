@@ -5,13 +5,12 @@
       :isAuthor="post.board_is_writer"
       :boardIdx="boardIdx"
       type="'post'"
-      class="top-bar"
-    />
+      class="top-bar" />
     <div class="center-container">
       <!-- 게시글 상세 내용 -->
       <div class="post-detail-container">
         <div class="post-tag">
-          <span>{{ post.board_tag }}</span>
+          <span>{{ post.board_tag_kor }}</span>
         </div>
         <div class="post-writer">
           <span clas>{{ post.board_writer_nickname }}</span>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>신고 접수 안내</title>
+</head>
+<body>
+<h2>🚨 새 신고가 접수되었습니다!</h2>
+<p><strong>신고 대상:</strong> <span th:text="${targetType}"></span> (ID: <span th:text="${targetId}"></span>)</p>
+<p>
+    <strong>사유:</strong>
+    <span th:text="${reasonType}"></span>
+</p>
+<p th:if="${reasonType eq 'ETC'}">
+    <strong>상세 사유:</strong>
+    <span th:text="${reasonContent}"></span>
+</p>
+<hr/>
+<p><strong>신고자 ID:</strong><span th:text="${reporterId}"></span></p>
+<p><strong>신고자 이메일:</strong> <span th:text="${reporterEmail}"></span></p>
+
+<p><strong>신고 시각:</strong> <span th:text="${reportedAt}"></span></p>
+</body>
+</html>

@@ -190,7 +190,6 @@ const handleInput = debounce(() => {
 const selectedSeoulSiGunGuIdx = ref<number | null>(null);
 const handleSeoulDistrictSelectedIdx = (idx: number) => {
   selectedSeoulSiGunGuIdx.value = idx;
-  console.log("Selected idx:", selectedSeoulSiGunGuIdx.value);
 };
 
 /** petOption, carOption check */
@@ -226,7 +225,6 @@ const closeAddressSearch = (selectedAddress: string) => {
 
 // 부모로부터 전달받은 주소를 저장하는 메소드
 const setAddress = (selectedAddress) => {
-  console.log(selectedAddress); // selectedAddress가 무엇인지 확인
   isAddressSearchOpen.value = false; // 모달 닫기
   if (selectedAddress && selectedAddress.place_name) {
     address.value = `${selectedAddress.place_name} - ${
@@ -235,7 +233,6 @@ const setAddress = (selectedAddress) => {
 
     longitude.value = selectedAddress.x;
     latitude.value = selectedAddress.y;
-    console.log(`경도: ${longitude.value},위도: ${latitude.value}`);
   } else {
     console.error("선택된 주소에 place_name이 없습니다:", selectedAddress);
   }
@@ -352,7 +349,6 @@ const fetachMyProfile = async () => {
           );
 
     selectedSeoulSiGunGuIdx.value = selectedIndex === -1 ? 0 : selectedIndex;
-    console.log(user.value);
     address.value = user.value.user_job_address;
     latitude.value = user.value.user_latitude;
     longitude.value = user.value.user_longitude;

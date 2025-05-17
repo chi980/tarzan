@@ -78,6 +78,8 @@ const bookmarkThis = async () => {
     const response = await axiosInstance.post("/v1/bookmark", {
       house_id: houseDetail.value.house_id,
     });
+    alert("북마크에 추가되었습니다.");
+    console.log("북마크 추가 성공", response.data);
   } catch (error) {
     if (error.response && error.response.status === 400) {
       console.error("잘못된 요청입니다.");
@@ -128,7 +130,7 @@ const shareThis = async () => {
   <div v-if="props.house" class="house-detail-wrapper">
     <div>
       <BuildingDetail v-if="building" :building="building" />
-      <div class="house-detail-buttons">
+      <div class="house-detail-buttons" v-if="building">
         <div class="button">
           <img :src="bookmarkIconImg" alt="button" @click="bookmarkThis" />
         </div>

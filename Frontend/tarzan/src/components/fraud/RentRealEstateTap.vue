@@ -26,7 +26,6 @@ const props = defineProps({
 
 const fetchRentRealEstate = async (page: number, params: any) => {
   try {
-    console.log(params);
     const response = await axiosInstance.get(`/fraud/price/rent`, {
       params: {
         ...params,
@@ -35,7 +34,6 @@ const fetchRentRealEstate = async (page: number, params: any) => {
     });
 
     if (response.data.success) {
-      console.log(response.data.data);
       return {
         items: response.data.data.list,
         isNext: response.data.data.isNext,
