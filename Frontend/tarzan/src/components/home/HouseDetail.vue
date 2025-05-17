@@ -130,7 +130,7 @@ const shareThis = async () => {
   <div v-if="props.house" class="house-detail-wrapper">
     <div>
       <BuildingDetail v-if="building" :building="building" />
-      <div class="house-detail-buttons">
+      <div class="house-detail-buttons" v-if="building">
         <div class="button">
           <img :src="bookmarkIconImg" alt="button" @click="bookmarkThis" />
         </div>

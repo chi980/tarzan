@@ -10,8 +10,10 @@
 <p>
     <strong>사유:</strong>
     <span th:text="${reasonType}"></span>
-    <span th:if="${reasonType == 'ETC'}"
-          th:text="${reasonContent}"></span>
+</p>
+<p th:if="${reasonType eq 'ETC'}">
+    <strong>상세 사유:</strong>
+    <span th:text="${reasonContent}"></span>
 </p>
 <hr/>
 <p><strong>신고자 ID:</strong><span th:text="${reporterId}"></span></p>
