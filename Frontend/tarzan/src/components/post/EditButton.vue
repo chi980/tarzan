@@ -6,15 +6,13 @@
     <div
       class="scrollable-container dropdown-content"
       :class="['dropdown-content', { show: isDropDownOpen }]"
-      @click="controllDropDown"
-    >
+      @click="controllDropDown">
       <div class="scrollable-list">
         <ul>
           <li
             v-for="option in filteredOptions"
             :key="option.idx"
-            @click="selectOption(option)"
-          >
+            @click="selectOption(option)">
             {{ option.name }}
           </li>
         </ul>
@@ -139,17 +137,17 @@ const deleteComment = async () => {
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f9f9f9;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  transform: translateX(-70%); /* 드랍 다운 목록 위치 조절 */
+  right: 0;
+  background-color: white;
+  box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.05);
 }
 
 .dropdown-content.show {
   display: block;
-  min-width: max-content;
-  margin-top: $margin-small;
+  // min-width: max-content;
+  // margin-top: $margin-small;
   z-index: $z-index-dropdown;
-  width: inherit;
+  width: max-content;
 }
 
 .scrollable-container {
@@ -158,8 +156,8 @@ const deleteComment = async () => {
 }
 
 .scrollable-list li {
-  padding: 14px 30px; /* 리스트 아이템의 내부 패딩 설정 */
-  @include custom-text();
+  @include custom-padding(16px);
+  @include custom-text($font-size: 12px);
 }
 
 .dropdown-exterior {

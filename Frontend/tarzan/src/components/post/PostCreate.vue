@@ -6,28 +6,25 @@
         class="input-item"
         type="text"
         placeholder="제목을 입력해주세요"
-        v-model="post.title"
-      />
+        v-model="post.title" />
       <div class="tag-select-wrapper">
         <CustomSelectBox
           :options="tagOptions"
-          v-model:selected="selectedTagIndex"
-        />
+          v-model:selected="selectedTagIndex" />
       </div>
 
       <textarea
         class="input-item"
         placeholder="내용을 입력해주세요"
-        v-model="post.content"
-      >
+        v-model="post.content">
       </textarea>
     </div>
 
     <div v-if="message">{{ message }}</div>
 
     <div class="post-button">
-      <button @click="goToBack" class="cancle-button">취소</button>
-      <button @click="submit" class="create-button">글쓰기</button>
+      <button @click="goToBack" class="inactive">취소</button>
+      <button @click="submit" class="active">글쓰기</button>
     </div>
   </div>
 </template>
@@ -39,7 +36,7 @@ import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useAuthStore } from "@/stores/authStore";
 
 import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
-import TopBarBack from "../common/TopBarBack.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 import DropDown from "@/components/common/DropDown.vue";
 
 // 게시글 제목, 내용, 태그를 저장할 ref 변수
