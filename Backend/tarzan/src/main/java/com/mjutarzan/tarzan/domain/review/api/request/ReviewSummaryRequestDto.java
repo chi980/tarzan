@@ -1,6 +1,7 @@
 package com.mjutarzan.tarzan.domain.review.api.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class ReviewSummaryRequestDto {
 
-    @JsonProperty("house_id")
+    @NotNull
     private Long houseId;
 
 

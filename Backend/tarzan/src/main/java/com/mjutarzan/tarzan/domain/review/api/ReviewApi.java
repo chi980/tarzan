@@ -37,7 +37,7 @@ public class ReviewApi {
 
     @GetMapping("/reviews/summary")
     public ResponseEntity<?> getReviewSummary(ReviewSummaryRequestDto reviewSummaryRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
-
+        log.info("getReviewSummary의 house_id: {}", reviewSummaryRequestDto.getHouseId());
         ReviewSummaryResponseDto result = reviewService.getReviewSummary(reviewSummaryRequestDto, userDto);
 
         return ResponseEntity.ok().body(
