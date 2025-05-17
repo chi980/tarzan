@@ -7,7 +7,8 @@
   $bg-color: $secondary-color-default,
   $height: 56px,
   $icon-size: 24px,
-  $font-color: $text-color-default
+  $font-color: $text-color-default,
+  $bottom: $margin-default
 ) {
   @include custom-none-select-basic;
   display: flex;
@@ -18,7 +19,7 @@
   gap: $padding-small;
   background-color: $bg-color;
   border-radius: 10px;
-  margin-bottom: $margin-default;
+  margin-bottom: $bottom;
 
   img {
     @include custom-icon-style($size: $icon-size);
