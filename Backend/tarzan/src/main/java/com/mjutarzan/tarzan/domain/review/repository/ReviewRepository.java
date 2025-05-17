@@ -1,5 +1,6 @@
 package com.mjutarzan.tarzan.domain.review.repository;
 
+import com.mjutarzan.tarzan.domain.review.api.response.ReviewSummaryResponseDto;
 import com.mjutarzan.tarzan.domain.review.entity.Review;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
@@ -30,8 +31,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("SELECT r FROM Review r WHERE r.writer.id = :writerId ORDER BY r.createdAt DESC")
     Page<Review> findReviewsByWriterId(@Param("writerId") Long writerId, Pageable pageable);
 
-    @Query("SELECT COALESCE(AVG(r.score), 0), COUNT(r) " +
-            "FROM Review r " +
-            "WHERE r.house.id = :houseId")
-    Object findAverageScoreAndCountByHouseId(@Param("houseId") Long houseId);
+    @Query("""
+        SELECT new com.mjutarzan.tarzan.domain.review.api.response.ReviewSummaryResponseDto(
+            COALESCE(AVG(r.score), 0.0),
+            COUNT(r)
+        )
+        FROM Review r
+        WHERE r.house.id = :houseId
+    """)
+    ReviewSummaryResponseDto findAverageScoreAndCountByHouseId(@Param("houseId") Long houseId);
+
 }
