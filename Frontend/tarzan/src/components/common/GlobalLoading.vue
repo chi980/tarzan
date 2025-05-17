@@ -13,12 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useLoadingStore } from "@/stores/loadingStore";
-onMounted(() => {
-  console.log("GlobalLoading component mounted");
-});
-console.log("GlobalLoading component loaded");
 const loading = useLoadingStore();
 const isLoading = computed(() => loading.isLoading);
 </script>

@@ -20,7 +20,6 @@ const fetchBoards = async (page, params) => {
     });
 
     if (response.data.success) {
-      console.log("나의 게시글 목록: ", response.data);
       return {
         items: response.data.data.list,
         isNext: response.data.data.isNext,

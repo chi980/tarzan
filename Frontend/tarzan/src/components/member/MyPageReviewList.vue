@@ -20,7 +20,6 @@ const fetchReviews = async (page, params) => {
     });
 
     if (response.data.success) {
-      console.log("리뷰 목록:", response.data);
       return {
         items: response.data.data.list,
         isNext: response.data.data.isNext,

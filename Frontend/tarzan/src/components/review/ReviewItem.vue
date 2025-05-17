@@ -96,7 +96,7 @@ const deleteReview = async () => {
     const response = await axiosInstance.delete(
       `/v1/reviews/${props.review.review_id}`
     );
-    console.log("리뷰 삭제 성공", response.data);
+    alert("리뷰 삭제 성공");
   } catch (error) {
     console.error("리뷰 삭제 실패", error);
   }
@@ -106,7 +106,6 @@ const show = ref(false);
 const onReport = () => {
   closeDropdown();
   show.value = true;
-  console.log("신고하기 클릭");
 
   // try {
   //   const response = await axiosInstance.post(
