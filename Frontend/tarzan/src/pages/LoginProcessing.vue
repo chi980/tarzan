@@ -14,7 +14,6 @@ const authStore = useAuthStore();
 onMounted(() => {
   try {
     const { gu, email, nickname, role } = route.query || {};
-    alert(route.query);
     if (!email) {
       console.error("로그인 정보가 없습니다.");
       router.replace("/login");
@@ -23,7 +22,6 @@ onMounted(() => {
 
     // 로그인 성공 시 데이터 저장
     authStore.setUser({ email, gu, nickname, role });
-    alert(authStore.getUser);
 
     // 역할에 따른 페이지 이동
     if (role === Role.USER) {

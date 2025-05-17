@@ -70,13 +70,13 @@ function refreshTokenAndRetry(error) {
     axiosNewInstance
       .post("/auth/refresh")
       .then((res) => {
-        console.log("access token을 새로 발급받았씁니다.");
+        console.log("access token을 새로 발급받았습니다.");
 
         resolve(axios(error.config)); // 실패한 요청을 재시도
       })
       .catch((err) => {
         if (authStore.getEmail) console.error("발급받지 못했씁니다");
-        alert("발급받지 못해서 재로그인합니다.");
+        alert("재로그인합니다.");
 
         axiosNewInstance
           .post("/auth/logout", {
