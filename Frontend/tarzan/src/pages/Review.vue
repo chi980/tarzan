@@ -78,14 +78,20 @@ const reviewSummary = ref({
   review_count: 0,
 });
 const fetchReviewSummary = async (houseIdx: number) => {
+  console.log("houseIdx:", houseIdx);
   try {
     const response = await axiosInstance.get(`/v1/reviews/summary`, {
-      params: {
-        house_id: houseIdx,
-      },
+      params: { houseId: houseIdx },
     });
-
-    console.log(response.data);
+    if (response.data.success) {
+      console.log("리뷰 요약:", response.data);
+      reviewSummary.value = {
+        review_score: response.data.data.review_score,
+        review_count: response.data.data.review_count,
+      };
+    } else {
+      throw new Error("Failed to fetch review summary");
+    }
   } catch (error) {
     console.error("API request error:", error);
   }
