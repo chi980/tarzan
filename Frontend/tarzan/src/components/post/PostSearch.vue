@@ -81,10 +81,25 @@ watch(searchQuery, debouncedSearch);
       <div class="modal-title">
         <TopBarBack title="게시글 검색" @back="closeModal" />
       </div>
-
+      <!-- 
       <div class="search-container">
         <img :src="searchIconImg" alt="search icon" class="icon-search" />
-        <input v-model="searchQuery" placeholder="검색어를 입력하세요" @keyup.enter="resetAndSearch" />
+        <input
+          v-model="searchQuery"
+          placeholder="검색어를 입력하세요"
+          @keyup.enter="resetAndSearch" />
+      </div> -->
+
+      <div class="searchbar">
+        <div class="input-icon-wrap">
+          <img :src="searchIconImg" alt="search icon" class="icon-search" />
+          <input
+            v-model="searchQuery"
+            @keyup.enter="resetAndSearch"
+            type="text"
+            placeholder="검색어를 입력해주세요."
+            class="search-input" />
+        </div>
       </div>
 
       <div class="modal-content">
@@ -108,33 +123,52 @@ watch(searchQuery, debouncedSearch);
   flex-direction: column;
   height: 100%;
   .modal-content {
+    @include custom-padding-x;
     flex-grow: 1;
     overflow-y: auto;
     @include custom-scrollbar-style;
-    padding: 16px;
   }
 }
 .modal-container {
   @include custom-modal;
 }
-.search-container {
-  @include custom-margin-x;
+.searchbar {
   @include custom-margin-y;
-  @include custom-padding-x;
+}
+.searchbar {
+  @include custom-margin-x;
   display: flex;
-  align-items: center;
-  gap: $padding-default;
-  height: 48px;
-  border-radius: $border-radius-default;
-  background: white;
-  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-  img {
-    @include custom-icon-style;
-  }
-  input {
-    flex: 1;
-    border: none;
-    height: 100%;
+  cursor: pointer;
+  .input-icon-wrap {
+    @include custom-padding-x;
+    display: flex;
+    gap: $padding-default;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    border-radius: 13px;
+    background-color: white;
+    padding-right: $padding-default;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 5; /* Higher than overlay */
+    cursor: pointer;
+
+    .icon-search {
+      @include custom-icon-style;
+      color: $input-placeholder-color;
+    }
+
+    p {
+      @include custom-text($font-size: 14px, $font-color: $text-color-light);
+    }
+
+    input {
+      @include custom-text($font-size: 14px, $font-color: $text-color-light);
+      background-color: white;
+      border: none;
+      flex: 1;
+      padding: 0;
+    }
   }
 }
 </style>

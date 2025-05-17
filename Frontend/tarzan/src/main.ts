@@ -9,7 +9,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 // 내부 파일 import
 import App from "./App.vue";
 import router from "@/router/index.js";
-import { axiosInstance } from "@/plugins/axiosPlugin";
+import { axiosInstance } from "@/plugins/axiosPlugin"; // 항상 pinia를 등록 후 axios를 등록해야 합니다.
 import "./style.css";
 
 // 아이콘 등록 (외부 설정)

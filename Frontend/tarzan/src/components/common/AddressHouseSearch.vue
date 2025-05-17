@@ -6,8 +6,8 @@ import { useRouter } from "vue-router";
 import searchIconImg from "@/assets/icons/Magnifier.png";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
-import AddressHouseSearchResult from "./AddressHouseSearchResult.vue"; // 재사용
-import AddressSearchResult from "./AddressSearchResult.vue"; // ✅ 수정된 부분
+import AddressHouseSearchResult from "@/components/common/AddressHouseSearchResult.vue"; // 재사용
+import AddressSearchResult from "@/components/common/AddressSearchResult.vue"; // ✅ 수정된 부분
 
 const emit = defineEmits(["close", "selectAddress"]);
 
