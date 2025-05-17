@@ -24,7 +24,7 @@ public class ReportApi {
 
     private final ReportService reportService;
 
-    @PostMapping
+    @PostMapping("/report")
     public ResponseEntity<?> report(
             @RequestBody @Valid ReportRequestDto requestDto,
             @AuthenticationPrincipal CustomUserDetails userDto) {

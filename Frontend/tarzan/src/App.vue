@@ -1,6 +1,7 @@
 <template>
   <div id="main-container">
     <router-view />
+    <div id="modal-root"></div>
   </div>
 </template>
 
