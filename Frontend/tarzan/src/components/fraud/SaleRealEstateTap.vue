@@ -26,7 +26,6 @@ const props = defineProps({
 
 const fetchSaleRealEstate = async (page: number, params: any) => {
   try {
-    console.log(params);
     const response = await axiosInstance.get(`/fraud/price/sale`, {
       params: {
         ...params,

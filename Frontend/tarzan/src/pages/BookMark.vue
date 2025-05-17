@@ -9,16 +9,13 @@
           descriptionImgSrc="/etc/Saly-26.png"
           descriptionTitle="타잔이와 함께 체크해봐요!"
           descriptionContent="집/이사업체/자취필수품<br/>이사에 대한 모든 것을 체크할 수 있어요!"
-
-
           backgroundColor="#f2ecff" />
       </div>
 
       <TabBar
         :tabs="tabs"
         v-model:selectedTabIdx="selectedTabIndex"
-        @open-address-search="openAddressSearchModal"
-      />
+        @open-address-search="openAddressSearchModal" />
       <div
         class="center-container-fix-button"
         @click="tabs[selectedTabIndex].onClick">
@@ -30,8 +27,7 @@
     <!-- 모달: 전체 화면을 덮는 AddressHouseSearch -->
     <AddressHouseSearch
       v-if="showAddressSearchModal"
-      @close="closeAddressSearchModal"
-    />
+      @close="closeAddressSearchModal" />
 
     <div class="bottom-bar-wrapper">
       <BottomBar></BottomBar>
@@ -74,7 +70,6 @@ const list = ref([]);
 watch(
   () => route.query.list,
   (newHouses) => {
-    console.log("북마크한 집 목록: ", newHouses);
     if (newHouses) {
       list.value = JSON.parse(newHouses as string);
     }

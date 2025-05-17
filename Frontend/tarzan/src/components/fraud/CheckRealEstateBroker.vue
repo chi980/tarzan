@@ -146,7 +146,6 @@ const submitData = async () => {
         pageNo: 1,
       },
     });
-    console.log("response", response.data);
     if (response.data.data.list) {
       realEstates.value = response.data.data.list;
     } else {

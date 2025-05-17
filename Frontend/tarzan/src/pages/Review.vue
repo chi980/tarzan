@@ -78,13 +78,11 @@ const reviewSummary = ref({
   review_count: 0,
 });
 const fetchReviewSummary = async (houseIdx: number) => {
-  console.log("houseIdx:", houseIdx);
   try {
     const response = await axiosInstance.get(`/v1/reviews/summary`, {
       params: { houseId: houseIdx },
     });
     if (response.data.success) {
-      console.log("리뷰 요약:", response.data);
       reviewSummary.value = {
         review_score: response.data.data.review_score,
         review_count: response.data.data.review_count,
@@ -152,7 +150,6 @@ const params = ref({
 
 // API : 리뷰 목록 호출
 const fetchReviews = async (page, params) => {
-  console.log("params:", params);
   try {
     const response = await axiosInstance.get(`/v1/reviews`, {
       params: {
@@ -162,7 +159,6 @@ const fetchReviews = async (page, params) => {
     });
 
     if (response.data.success) {
-      console.log("리뷰 목록:", response.data);
       return {
         items: response.data.data.list,
         isNext: response.data.data.isNext,
