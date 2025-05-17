@@ -37,7 +37,7 @@ const props = defineProps({
   flex-direction: column;
   align-items: flex-start;
   // @include custom-margin-x;
-  @include custom-padding-y($padding-default);
+  @include custom-padding-y($padding-small);
   gap: 8px;
 }
 

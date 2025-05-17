@@ -123,10 +123,10 @@ watch(searchQuery, debouncedSearch);
   flex-direction: column;
   height: 100%;
   .modal-content {
+    @include custom-padding-x;
     flex-grow: 1;
     overflow-y: auto;
     @include custom-scrollbar-style;
-    padding: 16px;
   }
 }
 .modal-container {
