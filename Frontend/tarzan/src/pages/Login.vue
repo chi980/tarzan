@@ -10,9 +10,9 @@
 
     <div class="custom-button-group">
       <div id="recommended-login-group" class="custom-button-item">
-        <div class="custom-button-kakao" @click="clickKakaoBtn">
-          <img :src="kakaoImage" alt="kakaoLogo" class="button-item-image" />
-          <p>카카오로 계속하기</p>
+        <div class="custom-button-google" @click="clickGoogleBtn">
+          <img :src="googleImage" alt="googleLogo" class="button-item-image" />
+          <p class="button-item-content">구글로 계속하기</p>
         </div>
         <img
           :src="loginDescImage"
@@ -20,9 +20,9 @@
           id="recommended-login-desc" />
       </div>
       <div class="custom-button-item">
-        <div class="custom-button-google" @click="clickGoogleBtn">
-          <img :src="googleImage" alt="googleLogo" class="button-item-image" />
-          <p class="button-item-content">구글로 계속하기</p>
+        <div class="custom-button-kakao" @click="clickKakaoBtn">
+          <img :src="kakaoImage" alt="kakaoLogo" class="button-item-image" />
+          <p>카카오로 계속하기</p>
         </div>
       </div>
 
@@ -193,6 +193,10 @@ const checkBack = async () => {
   height: 100px;
   position: relative;
   display: flex;
+
+  div {
+    margin-top: auto;
+  }
 }
 
 #recommended-login-desc {
@@ -212,7 +216,6 @@ const checkBack = async () => {
 
 .custom-button-kakao {
   @include custom-button-style($bg-color: $kakao-color, $height: 56px);
-  margin-top: auto;
 }
 
 // 그 외 sns login
