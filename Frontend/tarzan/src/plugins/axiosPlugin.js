@@ -77,6 +77,7 @@ function refreshTokenAndRetry(error) {
       .catch((err) => {
         if (authStore.getEmail) console.error("발급받지 못했씁니다");
         alert("재로그인합니다.");
+        router.push({ path: "/login" });
 
         axiosNewInstance
           .post("/auth/logout", {
