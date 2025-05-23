@@ -1,6 +1,6 @@
 <template>
   <div class="sub-container">
-    <TopBarBack :title="'정보 수정'" />
+    <TopBarBack :title="'정보 수정'" @back="back" />
     <div class="center-container">
       <form class="input-form" @submit.prevent="submitForm">
         <!-- 닉네임 입력 -->
