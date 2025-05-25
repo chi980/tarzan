@@ -235,7 +235,8 @@ onMounted(async () => {
 }
 
 .comment-list-container {
-  @include custom-margin($margin-small);
+  @include custom-margin-x($margin-small);
+  margin-bottom: $margin-small;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
