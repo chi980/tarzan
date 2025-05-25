@@ -195,6 +195,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+  console.log("authStore", authStore.user);
   const isAuthenticated = authStore.isLoggedIn;
 
   const publicPages = ["/login-processing", "/login-failure", "/login"];

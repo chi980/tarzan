@@ -25,6 +25,7 @@ export const useAuthStore = defineStore("auth", {
   },
   getters: {
     isLoggedIn: (state) => !!state.user, // ✅ 로그인 여부 쉽게 확인 가능
+    isGuest: (state) => state.user && state.user.role === Role.GUEST, // ✅ GUEST 여부 확인
     getUser: (state) => {
       return state.user ? JSON.stringify(state.user) : "없음"; // user를 JSON 문자열로 변환하여 반환
     },

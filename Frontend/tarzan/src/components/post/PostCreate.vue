@@ -18,10 +18,14 @@
         placeholder="내용을 입력해주세요"
         v-model="post.content">
       </textarea>
+      <div class="description">
+        <p>
+          <i class="bi bi-info-circle"> </i>
+          회원가입 시 입력한 지역구가 자동으로 설정됩니다.
+        </p>
+      </div>
     </div>
-
     <div v-if="message">{{ message }}</div>
-
     <div style="width: 100%">
       <div class="post-button">
         <button @click="goToBack" class="inactive">취소</button>
@@ -162,6 +166,15 @@ textarea {
       background-color: transparent !important;
       color: $text-color-light !important;
     }
+  }
+}
+
+.description {
+  p {
+    @include custom-text($font-size: 12px, $font-color: $text-color-light);
+    display: block;
+    text-align: left;
+    line-height: 1.2;
   }
 }
 </style>
