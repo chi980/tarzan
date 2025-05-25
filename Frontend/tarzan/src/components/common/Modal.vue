@@ -4,7 +4,7 @@
     <transition name="fade">
       <div v-if="modelValue" class="backdrop" @click.self="close">
         <div class="modal-content">
-          <slot />
+          <slot :close="close" />
         </div>
       </div>
     </transition>

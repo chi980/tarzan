@@ -16,18 +16,18 @@
           </div>
         </div> -->
       </div>
-      <div class="dropdown" @click="toggleDropdown">
+      <!-- <div class="dropdown" @click="toggleDropdown">
         <img :src="menuButtonImgSrc" alt="..." />
         <div v-if="showMenu" class="dropdown-content">
           <div v-if="props.review.review_is_writer">
-            <!-- <div @click="onEdit">수정</div> -->
             <div @click="onDelete">삭제</div>
           </div>
           <div v-else>
             <div @click="onReport">신고</div>
           </div>
         </div>
-      </div>
+      </div> -->
+      <EditButton :options="options" />
     </div>
 
     <div class="row content" v-if="props.review.review_advantage">
@@ -41,18 +41,21 @@
     </div>
 
     <Modal v-model="show">
-      <ReportComponent
-        :reportTargetType="'REVIEW'"
-        :reportTargetId="props.review.review_id" />
+      <template #default="{ close }">
+        <ReportComponent
+          :reportTargetType="'REVIEW'"
+          :reportTargetId="props.review.review_id"
+          @close="close" />
+      </template>
     </Modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, computed } from "vue";
 import advantageImgSrc from "@/assets/emoji/advantage.png";
 import disadvantageImgSrc from "@/assets/emoji/disadvantage.png";
-import menuButtonImgSrc from "@/assets/icons/menu.png";
+import EditButton from "@/components/common/EditButton.vue";
 
 import { Review } from "@/data/review";
 import { formatDateWithoutTime } from "@/utils/date";
@@ -70,27 +73,26 @@ const emit = defineEmits<{
   (e: "delete"): void;
 }>();
 
-const showMenu = ref(false);
-
-// 드롭다운 열고 닫는 함수
-const toggleDropdown = (event: Event) => {
-  showMenu.value = !showMenu.value;
-  event.stopPropagation(); // 클릭 이벤트 전파 방지
-};
-
-// 외부 클릭 시 드롭다운 닫기
-const closeDropdown = () => {
-  showMenu.value = false;
-};
-
 // 수정, 삭제, 신고 클릭 시 처리
-const onEdit = () => {
-  closeDropdown();
-};
+const options = computed(() => {
+  if (props.review.review_is_writer) {
+    return [
+      {
+        name: "삭제",
+        onClick: onDelete,
+      },
+    ];
+  } else {
+    return [
+      {
+        name: "신고하기",
+        onClick: onReport,
+      },
+    ];
+  }
+});
 
 const onDelete = () => {
-  closeDropdown();
-
   deleteReview();
   emit("delete");
 };
@@ -108,27 +110,8 @@ const deleteReview = async () => {
 
 const show = ref(false);
 const onReport = async () => {
-  closeDropdown();
   show.value = true;
-
-  try {
-    const response = await axiosInstance.post(
-      `/v1/reviews/${props.review.review_id}/report`
-    );
-    console.log("리뷰 신고 성공", response.data);
-  } catch (error) {
-    console.error("리뷰 신고 실패", error);
-  }
 };
-
-// 외부 클릭 시 드롭다운을 닫도록 이벤트 리스너 추가
-onMounted(() => {
-  document.addEventListener("click", closeDropdown);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("click", closeDropdown);
-});
 </script>
 
 <style scoped lang="scss">
@@ -185,28 +168,5 @@ onUnmounted(() => {
 :deep(.star svg) {
   width: 18px;
   height: 18px;
-}
-
-.dropdown {
-  position: relative;
-
-  .dropdown-content {
-    @include custom-padding(16px);
-    @include custom-text($font-size: 12px);
-    position: absolute;
-    right: 0;
-
-    width: max-content;
-
-    border-radius: 10px;
-    background-color: white;
-    box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.05);
-
-    div {
-      display: flex;
-      flex-direction: column;
-      gap: $padding-default;
-    }
-  }
 }
 </style>
