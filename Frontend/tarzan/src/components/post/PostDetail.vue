@@ -63,7 +63,7 @@ const route = useRoute();
 // 게시글 상세 정보
 const post = ref({}); // 게시글
 const comments = ref([]); // 댓글 목록
-const boardIdx = route.params.id; // 게시글 ID
+const boardIdx = Number(route.params.id);
 
 // API: 게시글 상세 정보 가져오기
 const fetchPostDetail = async () => {

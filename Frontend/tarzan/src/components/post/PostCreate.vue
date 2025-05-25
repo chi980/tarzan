@@ -10,7 +10,7 @@
       <div class="tag-select-wrapper">
         <CustomSelectBox
           :options="tagOptions"
-          v-model:selected="selectedTagIndex" />
+          @update:selected="handleTagIdx" />
       </div>
 
       <textarea
@@ -45,6 +45,7 @@ import DropDown from "@/components/common/DropDown.vue";
 const post = ref({
   title: "",
   content: "",
+  tag: "",
 });
 const selectedTagIndex = ref(null);
 const message = ref("");
@@ -60,22 +61,20 @@ const tagOptions = ref([
 ]);
 
 // 선택된 태그 객체 계산 속성 추가
-const selectedTag = computed(() => {
-  if (selectedTagIndex.value !== null) {
-    return tagOptions.value[selectedTagIndex.value];
-  }
-  return null;
-});
+const handleTagIdx = (idx) => {
+  selectedTagIndex.value = idx;
+  post.value.tag = tagOptions.value[idx].value;
+};
 
 // authStore에서 사용자 지역구 정보 가져오기
 const authStore = useAuthStore();
-// const userGu = authStore.getGul;
+const userGu = authStore.getGu;
 // console.log("userGu", userGu);
 
 // API: 게시글 생성
 const submit = async () => {
   // 게시글 제목, 내용, 태그가 모두 입력되었는지 확인
-  if (!post.value.title || !post.value.content || !selectedTag.value) {
+  if (!post.value.title || !post.value.content || !selectedTagIndex.value) {
     message.value = "제목, 내용, 태그를 모두 입력해주세요.";
     return;
   }
@@ -92,7 +91,7 @@ const submit = async () => {
     const response = await axiosInstance.post("/v1/board", {
       board_title: post.value.title,
       board_content: post.value.content,
-      board_tag: selectedTag.value?.value,
+      board_tag: post.value.tag,
       board_gu: "JONGNO", // userGu.value,
     });
 

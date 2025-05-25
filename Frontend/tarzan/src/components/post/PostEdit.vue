@@ -10,7 +10,7 @@
       <div class="tag-select-wrapper">
         <CustomSelectBox
           :options="tagOptions"
-          v-model:selected="selectedTagIndex" />
+          @update:selected="handleTagIdx" />
       </div>
 
       <textarea
@@ -32,15 +32,15 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import CustomSelectBox from "../common/CustomSelectBox.vue";
-import TopBarBack from "../common/TopBarBack.vue";
+import CustomSelectBox from "@/components/common/CustomSelectBox.vue";
+import TopBarBack from "@/components/common/TopBarBack.vue";
 import { useAuthStore } from "@/stores/authStore";
 import { axiosInstance } from "@/plugins/axiosPlugin";
 import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
-const boardIdx = route.params.id;
+const boardIdx = Number(route.params.id);
 
 const post = ref({
   title: "",
@@ -49,8 +49,7 @@ const post = ref({
 });
 
 // selectedTag ref로 초기화
-const selectedTag = ref(null);
-
+const selectedTagIndex = ref(null);
 const message = ref("");
 
 // 옵션 변수
@@ -62,11 +61,10 @@ const tagOptions = [
   { idx: 5, name: "모임", value: "MEETING" },
   { idx: 6, name: "기타", value: "ETC" },
 ];
-
-// authStore에서 사용자 정보 가져오기
-const authStore = useAuthStore();
-const userGu = computed(() => authStore.gu);
-
+const handleTagIdx = (idx) => {
+  selectedTagIndex.value = idx;
+  post.value.tag = tagOptions[idx].value;
+};
 // API: 게시글 상세 정보 가져오기
 const fetchPostDetail = async () => {
   try {
@@ -75,10 +73,12 @@ const fetchPostDetail = async () => {
     if (response.data.success) {
       post.value.title = response.data.data.board_title;
       post.value.content = response.data.data.board_content;
+      selectedTagIndex.value = tagOptions.findIndex(
+        (tag) => tag.value === response.data.data.board_tag
+      );
       post.value.tag = response.data.data.board_tag;
 
-      console.log("게시물 상세 가져오기 성공");
-      console.log(post.value);
+      console.log("게시글 상세 정보:", response.data.data);
     } else {
       console.error("Failed:", response.data.message);
     }
@@ -93,15 +93,12 @@ const editPost = async () => {
     const response = await axiosInstance.put(`/v1/board/${boardIdx}`, {
       board_title: post.value.title,
       board_content: post.value.content,
-      board_tag: selectedTag.value,
+      board_tag: post.value.tag,
     });
-
-    console.log(userGu.value);
 
     if (response.data.success) {
       message.value = "게시글이 성공적으로 수정되었습니다!";
-      console.log(response.data);
-      router.push("/community");
+      router.push(`/community/${boardIdx}`);
     } else {
       console.error("Failed:", response.data.message);
       message.value = `Error: ${response.data.message}`;

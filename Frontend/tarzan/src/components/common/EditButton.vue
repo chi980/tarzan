@@ -1,6 +1,9 @@
 <template>
   <div class="dropdown" ref="dropdownRef" @click="toggleDropdown">
-    <img :src="settingIcon" alt="..." />
+    <img
+      :src="settingIcon"
+      alt="..."
+      :style="{ width: props.width, height: props.height }" />
     <div class="dropdown-content" v-if="isDropDownOpen">
       <div
         v-for="(option, index) in props.options"
@@ -13,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, onMounted, onUnmounted } from "vue";
+import { ref, defineProps, onMounted, onUnmounted, withDefaults } from "vue";
 import settingIcon from "@/assets/icons/topbar/icon-setting.png";
 
 const isDropDownOpen = ref(false);
@@ -45,13 +48,20 @@ onUnmounted(() => {
   window.removeEventListener("close-all-dropdowns", handleCloseEvent);
   document.removeEventListener("click", handleClickOutside);
 });
-
-const props = defineProps<{
-  options: {
-    name: string;
-    onClick: () => void | Promise<void>;
-  }[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    options: {
+      name: string;
+      onClick: () => void | Promise<void>;
+    }[];
+    width?: string;
+    height?: string;
+  }>(),
+  {
+    width: "16px",
+    height: "16px",
+  }
+);
 
 const handleClick = (option: {
   name: string;
@@ -76,7 +86,7 @@ const handleClick = (option: {
   }
 
   .dropdown-content {
-    @include custom-padding(16px);
+    @include custom-padding(4px);
     @include custom-text($font-size: 12px);
     position: absolute;
     right: 0;
@@ -87,10 +97,10 @@ const handleClick = (option: {
     background-color: white;
     box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.05);
 
+    display: flex;
+    flex-direction: column;
     div {
-      display: flex;
-      flex-direction: column;
-      gap: $padding-default;
+      @include custom-padding;
     }
   }
 }
