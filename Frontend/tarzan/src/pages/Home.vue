@@ -382,22 +382,78 @@ onMounted(() => {
   loadKakaoMap(mapContainer.value);
 });
 
+// const loadKakaoMap = (container) => {
+//   const script = document.createElement("script");
+//   script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${
+//     import.meta.env.VITE_KAKAO_MAP_KEY
+//   }&libraries=services,clusterer&autoload=false`; // libraries 추가
+//   document.head.appendChild(script);
+
+//   script.onload = () => {
+//     window.kakao.maps.load(() => {
+
+//       const options = {
+//         center: new window.kakao.maps.LatLng(37.5115, 127.0325), // 지도 중심 좌표
+//         level: 5, // 지도 확대 레벨
+//       };
+
+//       mapInstance = new window.kakao.maps.Map(container, options); // 지도 생성
+//       markerManager = useKakaoMarkerManager(mapInstance);
+//     });
+//   };
+// };
+/**
+ * container: 지도가 붙을 DOM 엘리먼트
+ */
 const loadKakaoMap = (container) => {
+  // 1) SDK 스크립트 동적 로드
   const script = document.createElement("script");
-  script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${
-    import.meta.env.VITE_KAKAO_MAP_KEY
-  }&libraries=services,clusterer&autoload=false`; // libraries 추가
+  script.src = [
+    "https://dapi.kakao.com/v2/maps/sdk.js",
+    `?appkey=${import.meta.env.VITE_KAKAO_MAP_KEY}`,
+    "&libraries=services,clusterer",
+    "&autoload=false",
+  ].join("");
   document.head.appendChild(script);
 
   script.onload = () => {
     window.kakao.maps.load(() => {
-      const options = {
-        center: new window.kakao.maps.LatLng(37.5115, 127.0325), // 지도 중심 좌표
-        level: 5, // 지도 확대 레벨
-      };
+      // 2) 기본 센터 좌표 정의
+      const defaultCenter = new window.kakao.maps.LatLng(37.5115, 127.0325);
+      const options = { center: defaultCenter, level: 5 };
 
-      mapInstance = new window.kakao.maps.Map(container, options); // 지도 생성
-      markerManager = useKakaoMarkerManager(mapInstance);
+      // 3) Geolocation 지원하면 현재 위치 시도
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => {
+            // 성공 시
+            options.center = new window.kakao.maps.LatLng(
+              coords.latitude,
+              coords.longitude
+            );
+            initializeMap();
+          },
+          (err) => {
+            // 실패 시 (권한 거부, 타임아웃 등)
+            console.warn("현재 위치 가져오기 실패:", err.message);
+            initializeMap();
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+          }
+        );
+      } else {
+        // Geolocation 미지원 브라우저
+        initializeMap();
+      }
+
+      // 4) 지도 생성 + 마커 매니저 초기화
+      function initializeMap() {
+        mapInstance = new window.kakao.maps.Map(container, options);
+        markerManager = useKakaoMarkerManager(mapInstance);
+      }
     });
   };
 };
