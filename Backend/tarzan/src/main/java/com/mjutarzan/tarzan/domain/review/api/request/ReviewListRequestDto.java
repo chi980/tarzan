@@ -27,7 +27,11 @@ public class ReviewListRequestDto extends CustomPageable {
     private Sort convertToSort(String sortBy) {
         if (sortBy.equals("최신순")) {
             return Sort.by(Sort.Direction.DESC, "createdAt");  // 최신순 정렬: createdAt 필드 기준으로 내림차순
-        } else {
+        } else if(sortBy.equals("호평순")){
+            return Sort.by(Sort.Direction.DESC, "score");
+        }else if(sortBy.equals("혹평순")){
+            return Sort.by(Sort.Direction.ASC, "score");
+        }else {
             return Sort.unsorted(); // 기본값: 정렬하지 않음
         }
     }

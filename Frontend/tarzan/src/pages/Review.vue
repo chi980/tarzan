@@ -37,6 +37,7 @@
       <ResultBar
         resultTitle="전체 후기"
         :sortOptions="sortOptions"
+        @update-sort-by="changeSortBy"
         class="result-bar" />
       <div class="column">
         <List :fetchItems="fetchReviews" :params="params">
@@ -120,7 +121,7 @@ const buttons = ref([
   { label: "🦠 곰팡이", value: "MOLD" },
   { label: "👟 평지", value: "FLAT" },
 ]);
-const selectedButton = ref("ALL");
+const selectedButton = ref("최신순");
 
 // 정렬 옵션
 const sortOptions = ref([
@@ -147,6 +148,16 @@ const params = ref({
   size: 10,
   sortBy: selectedButton.value,
 });
+const changeSortBy = (selectedIndex) => {
+  const selectedOption = sortOptions.value.find(
+    (option) => option.idx === selectedIndex
+  );
+  if (selectedOption) {
+    selectedButton.value = selectedOption.value;
+    params.value.sortBy = selectedButton.value; // 파라미터 업데이트
+    console.log("정렬 기준 변경:", selectedButton.value);
+  }
+};
 
 // API : 리뷰 목록 호출
 const fetchReviews = async (page, params) => {

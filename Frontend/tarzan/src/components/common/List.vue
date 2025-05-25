@@ -75,12 +75,13 @@ watch(
     page.value = 0;
     items.value = [];
     isEnd.value = false;
+    console.log("params changed, reloading items");
     await loadItems();
+  },
+  {
+    deep: true, // ← 객체 내부 속성 변경까지 감지
+    immediate: true, // ← 마운트 직후에도 실행하고 싶다면
   }
-  // {
-  //   deep: true, // ← 객체 내부 속성 변경까지 감지
-  //   immediate: true, // ← 마운트 직후에도 실행하고 싶다면
-  // }
 );
 
 // async function loadItems() {
