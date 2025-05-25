@@ -26,13 +26,13 @@
           <span>{{ formatSmartTime(post.board_created_at) }} · </span>
         </div>
       </div>
-      <div class="content-indicator"></div>
+      <div>
+        <div class="content-indicator"></div>
+      </div>
       <!-- 댓글 영역 -->
-      <div class="comment-container">
-        <div class="comment-list">
-          <CommentList :comments="comments" />
-          <div ref="target" style="height: 1px"></div>
-        </div>
+      <div class="comment-list-container">
+        <CommentList :comments="comments" />
+        <div ref="target" style="height: 1px"></div>
       </div>
       <div class="center-container-fix-button">
         <CommentInput class="comment-input" :boardIdx="boardIdx" />
@@ -233,6 +233,14 @@ onMounted(async () => {
   position: relative;
   flex: 1;
 }
+
+.comment-list-container {
+  @include custom-margin($margin-small);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 .center-container-fix-button {
   @include custom-padding-x;
   position: sticky;
