@@ -3,13 +3,11 @@
     <input
       v-model="commentText"
       type="text"
-      placeholder="댓글을 입력해주세요."
-    />
+      placeholder="댓글을 입력해주세요." />
     <button @click="createComment" class="create-button">
       <img
         src="@/assets/icons/Filter/comment-input-icon.png"
-        alt="comment-input-icon"
-      />
+        alt="comment-input-icon" />
     </button>
   </div>
 </template>
@@ -59,19 +57,22 @@ const createComment = async () => {
 <style lang="scss" scoped>
 .comment-input {
   display: flex;
+  flex-direction: row;
+  gap: $padding-small;
   align-items: center;
   width: 100%;
 }
 
 .comment-input input {
-  @include custom-margin-x($margin-small);
   @include custom-padding-x;
   flex-grow: 1;
   height: 48px;
   appearance: none;
   border: none;
   outline: none;
-  background-color: $input-color;
+  background-color: white;
+
+  border: 1px solid #e7e7e7;
   border-radius: 13px;
   font-size: 16px;
   font-weight: 400;
@@ -79,11 +80,10 @@ const createComment = async () => {
 }
 
 .comment-input button {
-  background-color: $primary-color-default;
-  @include custom-margin-x($margin-small);
+  background-color: $secondary-color-default;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
