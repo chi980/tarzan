@@ -146,7 +146,7 @@ const deleteComment = async () => {
   display: block;
   // min-width: max-content;
   // margin-top: $margin-small;
-  z-index: $z-index-dropdown;
+  // z-index: $z-index-dropdown;
   width: max-content;
 }
 

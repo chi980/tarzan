@@ -61,6 +61,7 @@ const createComment = async () => {
   gap: $padding-small;
   align-items: center;
   width: 100%;
+  z-index: $z-index-fixed-button;
 }
 
 .comment-input input {
