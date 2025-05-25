@@ -44,8 +44,11 @@ const goToReviewCreatePage = () => {
   });
 };
 
-const handleDelete = (index: number) => {
-  localReviews.value.splice(index, 1);
+const handleDelete = (review: Review) => {
+  const key = "review_id";
+  localReviews.value = localReviews.value.filter(
+    (i) => i[key] !== localReviews[key]
+  );
 };
 </script>
 
@@ -57,7 +60,7 @@ const handleDelete = (index: number) => {
           v-for="(review, index) in localReviews"
           :key="index"
           :review="review"
-          @delete="handleDelete(index)" />
+          @delete="handleDelete(review)" />
       </div>
       <div class="more-button" @click="showMoreReviews">
         <p>더보기</p>

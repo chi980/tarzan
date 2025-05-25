@@ -49,7 +49,8 @@ const handleDeleteComment = async (item) => {
     <List
       :fetchItems="fetchComments"
       :params="params"
-      :onDelete="handleDeleteComment">
+      :onDelete="handleDeleteComment"
+      :item-key="'comment_id'">
       <template #item="{ item, index, onDelete }">
         <CommentItem
           :comment="item"

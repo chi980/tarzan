@@ -43,7 +43,8 @@
         <List
           :fetchItems="fetchReviews"
           :params="params"
-          :onDelete="handleDeleteReview">
+          :onDelete="handleDeleteReview"
+          :item-key="'review_id'">
           <template #item="{ item, index, onDelete }">
             <ReviewItem
               :review="item"
