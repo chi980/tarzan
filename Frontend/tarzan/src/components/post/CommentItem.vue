@@ -2,10 +2,7 @@
   <div class="comment-container">
     <div class="comment-header">
       <span id="comment-writer">{{ comment.comment_writer_nickname }}</span>
-      <EditButton
-        :isAuthor="comment.comment_is_writer"
-        :targetId="comment.comment_id"
-        :type="'comment'" />
+      <EditButton :options="options" />
     </div>
     <div class="comment-content">
       <p>{{ comment.comment_content }}</p>
@@ -14,12 +11,25 @@
       <!-- <span>{{ comment.comment_created_at }}</span> -->
       <span>{{ formatSmartTime(comment.comment_created_at) }}</span>
     </div>
+
+    <Modal v-model="show">
+      <template #default="{ close }">
+        <ReportComponent
+          :reportTargetType="'COMMENT'"
+          :reportTargetId="props.comment.comment_id"
+          @close="close" />
+      </template>
+    </Modal>
   </div>
 </template>
 
 <script setup>
-import EditButton from "./EditButton.vue";
+import { ref, computed, defineProps, defineEmits } from "vue";
+import EditButton from "@/components/common/EditButton.vue";
+import Modal from "@/components/common/Modal.vue";
+import ReportComponent from "@/components/common/ReportComponent.vue";
 import { formatSmartTime } from "@/utils/formatTime";
+import { axiosInstance } from "@/plugins/axiosPlugin";
 
 const props = defineProps({
   comment: {
@@ -27,6 +37,51 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(["delete"]);
+
+// 수정, 삭제, 신고 클릭 시 처리
+const options = computed(() => {
+  if (props.comment.comment_is_writer) {
+    return [
+      {
+        name: "삭제하기",
+        onClick: onDelete,
+      },
+    ];
+  } else {
+    return [
+      {
+        name: "신고하기",
+        onClick: onReport,
+      },
+    ];
+  }
+});
+
+const onDelete = () => {
+  deleteComment();
+  emit("delete");
+};
+const deleteComment = async () => {
+  try {
+    const response = await axiosInstance.delete(
+      `/v1/comments/${props.comment.comment_id}` // 댓글 삭제 API 호출
+    );
+    if (response.data.success) {
+      alert("댓글이 삭제되었습니다.");
+    } else {
+      new Error("댓글 삭제 실패: " + response.data.message);
+    }
+  } catch (error) {
+    console.error("댓글 삭제 오류:", error.message);
+    alert("댓글 삭제에 실패했습니다.");
+  }
+};
+const show = ref(false);
+const onReport = async () => {
+  show.value = true;
+};
 </script>
 
 <style scoped lang="scss">

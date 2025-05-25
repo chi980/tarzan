@@ -120,7 +120,7 @@ const routes = [
       {
         path: ":id",
         name: "PostDetail",
-        component: () => import("@/components/post/PostDetail.vue"),
+        component: () => import("@/pages/PostDetail.vue"),
       },
       {
         path: ":id/edit",

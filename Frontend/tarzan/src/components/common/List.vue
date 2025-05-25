@@ -34,7 +34,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch, defineEmits } from "vue";
+import { onMounted, ref, watch, defineEmits, defineExpose } from "vue";
 import SkeletonList from "@/components/common/SkeletonList.vue";
 import NonContent from "@/components/common/NonContent.vue";
 import InfiniteScrollTrigger from "@/components/common/InfiniteScrollTrigger.vue";
@@ -59,6 +59,14 @@ const props = withDefaults(
     isItemChangable: false,
   }
 );
+
+// 1) 리스트 앞에 아이템을 추가하는 메서드
+function addItem(item: any) {
+  items.value.unshift(item);
+}
+
+// 2) 부모가 호출할 수 있도록 공개
+defineExpose({ addItem });
 
 //화면에 그릴 데이터 리스트를 저장할 반응형 배열
 const items = ref<any[]>([]);

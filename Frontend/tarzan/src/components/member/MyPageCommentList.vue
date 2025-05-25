@@ -38,13 +38,26 @@ const fetchComments = async (page, params) => {
     };
   }
 };
+
+const handleDeleteComment = async (item) => {
+  return Promise.resolve();
+};
 </script>
 
 <template>
   <div class="my-page-comment-list">
-    <List :fetchItems="fetchComments" :params="params">
-      <template #item="{ item }">
-        <CommentItem :comment="item" />
+    <List
+      :fetchItems="fetchComments"
+      :params="params"
+      :onDelete="handleDeleteComment">
+      <template #item="{ item, index, onDelete }">
+        <CommentItem
+          :comment="item"
+          @delete="
+            () => {
+              onDelete(item, index);
+            }
+          " />
       </template>
     </List>
   </div>

@@ -16,17 +16,6 @@
           </div>
         </div> -->
       </div>
-      <!-- <div class="dropdown" @click="toggleDropdown">
-        <img :src="menuButtonImgSrc" alt="..." />
-        <div v-if="showMenu" class="dropdown-content">
-          <div v-if="props.review.review_is_writer">
-            <div @click="onDelete">삭제</div>
-          </div>
-          <div v-else>
-            <div @click="onReport">신고</div>
-          </div>
-        </div>
-      </div> -->
       <EditButton :options="options" />
     </div>
 
@@ -78,7 +67,7 @@ const options = computed(() => {
   if (props.review.review_is_writer) {
     return [
       {
-        name: "삭제",
+        name: "삭제하기",
         onClick: onDelete,
       },
     ];

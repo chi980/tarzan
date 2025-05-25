@@ -68,8 +68,8 @@ const handleTagIdx = (idx) => {
 
 // authStore에서 사용자 지역구 정보 가져오기
 const authStore = useAuthStore();
-const userGu = authStore.getGu;
-// console.log("userGu", userGu);
+const userGu = authStore.user;
+console.log("userGu", userGu);
 
 // API: 게시글 생성
 const submit = async () => {

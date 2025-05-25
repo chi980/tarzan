@@ -140,6 +140,7 @@ const deleteComment = async () => {
   right: 0;
   background-color: white;
   box-shadow: 0px -1px 10px rgba(0, 0, 0, 0.05);
+  z-index: $z-index-dropdown;
 }
 
 .dropdown-content.show {
