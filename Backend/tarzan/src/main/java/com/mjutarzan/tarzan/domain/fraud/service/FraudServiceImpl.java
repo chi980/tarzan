@@ -85,17 +85,17 @@ public class FraudServiceImpl implements FraudService{
      * @return
      */
     public PriceListResponseDto getRentPrice(PriceRequestDto priceRequestDto) {
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
-//                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRentV",
-//                        String.valueOf(priceRequestDto.getPageNo()),
-//                        String.valueOf(priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1))
-//                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
-
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
                 .pathSegment(dataSeoulKey, "json", "tbLnOpendataRentV",
                         String.valueOf(priceRequestDto.getPage()),
                         String.valueOf(priceRequestDto.getPage() + priceRequestDto.getSize() - 1))
-                .path("/ /"+11530+"/ /"+10200+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
+                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
+
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
+//                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRentV",
+//                        String.valueOf(priceRequestDto.getPage()),
+//                        String.valueOf(priceRequestDto.getPage() + priceRequestDto.getSize() - 1))
+//                .path("/ /"+11530+"/ /"+10200+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
 
 
 
@@ -112,8 +112,8 @@ public class FraudServiceImpl implements FraudService{
         }
         builder.encode();
 
-//        String uri = builder.toUriString();
-        String uri = "http://openapi.seoul.go.kr:8088/655351685763686938367558756e6f/json/tbLnOpendataRentV/1/100/%20/11530/%20/10200/%20/%20/%20/%20";
+        String uri = builder.toUriString();
+//        String uri = "http://openapi.seoul.go.kr:8088/655351685763686938367558756e6f/json/tbLnOpendataRentV/1/100/%20/11530/%20/10200/%20/%20/%20/%20";
         log.info("url: {}", uri);
         TbLnOpendataRentVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataRentVResponseWrapper.class);
         log.info("res: {}", response);
@@ -142,16 +142,16 @@ public class FraudServiceImpl implements FraudService{
      */
     public PriceListResponseDto getSalePrice(PriceRequestDto priceRequestDto) {
         log.info(priceRequestDto.getDong());
-//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
-//                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRtmsV",
-//                        String.valueOf(priceRequestDto.getPageNo()),
-//                        String.valueOf(priceRequestDto.getPageNo() + priceRequestDto.getNumOfRows() - 1))
-//                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ / "); // 접수연도, 지번구분, 지번구분명 고려X
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
-                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRentV",
+                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRtmsV",
                         String.valueOf(priceRequestDto.getPage()),
                         String.valueOf(priceRequestDto.getPage() + priceRequestDto.getSize() - 1))
-                .path("/ /"+11530+"/ /"+10200+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
+                .path("/ /"+priceRequestDto.getGu().getCode()+"/ /"+priceRequestDto.getDong()+"/ / "); // 접수연도, 지번구분, 지번구분명 고려X
+//        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(dataSeoulUrl)
+//                .pathSegment(dataSeoulKey, "json", "tbLnOpendataRentV",
+//                        String.valueOf(priceRequestDto.getPage()),
+//                        String.valueOf(priceRequestDto.getPage() + priceRequestDto.getSize() - 1))
+//                .path("/ /"+11530+"/ /"+10200+"/ "); // 접수연도, 지번구분, 지번구분명 고려X
 
         String search = priceRequestDto.getSearch();
         String searchBy = priceRequestDto.getSearchBy();
@@ -166,8 +166,8 @@ public class FraudServiceImpl implements FraudService{
         }
         builder.encode();
 
-//        String uri = builder.toUriString();
-        String uri = "http://openapi.seoul.go.kr:8088/655351685763686938367558756e6f/json/tbLnOpendataRtmsV/1/100/%20/11530/%20/10200/%20/%20/%20/%20";
+        String uri = builder.toUriString();
+//        String uri = "http://openapi.seoul.go.kr:8088/655351685763686938367558756e6f/json/tbLnOpendataRtmsV/1/100/%20/11530/%20/10200/%20/%20/%20/%20";
         log.info("url: {}", uri);
         TbLnOpendataSaleVResponseWrapper response = restTemplate.getForObject(uri, TbLnOpendataSaleVResponseWrapper.class);
         log.info("res: {}", response);

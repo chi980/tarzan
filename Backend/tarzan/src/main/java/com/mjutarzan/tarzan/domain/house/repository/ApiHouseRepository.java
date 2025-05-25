@@ -21,6 +21,6 @@ public interface ApiHouseRepository extends JpaRepository<ApiHouse, Long> {
                                        @Param("radius") double radius);
 
 
-    @Query("SELECT ah FROM ApiHouse ah WHERE LOWER(ah.name) LIKE LOWER(CONCAT('%', :search, '%'))")
+    @Query("SELECT ah FROM ApiHouse ah WHERE LOWER(ah.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(ah.address) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<ApiHouse> findByNameContaining(@Param("search") String search, Pageable pageable);
 }
