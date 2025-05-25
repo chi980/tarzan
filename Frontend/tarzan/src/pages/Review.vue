@@ -40,9 +40,18 @@
         @update-sort-by="changeSortBy"
         class="result-bar" />
       <div class="column">
-        <List :fetchItems="fetchReviews" :params="params">
-          <template #item="{ item }">
-            <ReviewItem :review="item" />
+        <List
+          :fetchItems="fetchReviews"
+          :params="params"
+          :onDelete="handleDeleteReview">
+          <template #item="{ item, index, onDelete }">
+            <ReviewItem
+              :review="item"
+              @delete="
+                () => {
+                  onDelete(item, index);
+                }
+              " />
           </template>
         </List>
       </div>
@@ -94,6 +103,11 @@ const fetchReviewSummary = async (houseIdx: number) => {
   } catch (error) {
     console.error("API request error:", error);
   }
+};
+
+const handleDeleteReview = async (item) => {
+  // 여긴 이미 삭제된 상태라고 가정하니 API 안 해도 됨
+  return Promise.resolve(); // 반드시 Promise 리턴! (.then 쓰니까)
 };
 
 import TopBarBack from "@/components/common/TopBarBack.vue";
@@ -155,7 +169,6 @@ const changeSortBy = (selectedIndex) => {
   if (selectedOption) {
     selectedButton.value = selectedOption.value;
     params.value.sortBy = selectedButton.value; // 파라미터 업데이트
-    console.log("정렬 기준 변경:", selectedButton.value);
   }
 };
 

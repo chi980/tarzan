@@ -39,13 +39,27 @@ const fetchReviews = async (page, params) => {
     };
   }
 };
+
+const handleDeleteReview = async (item) => {
+  // 여긴 이미 삭제된 상태라고 가정하니 API 안 해도 됨
+  return Promise.resolve(); // 반드시 Promise 리턴! (.then 쓰니까)
+};
 </script>
 
 <template>
   <div class="my-page-review-list">
-    <List :fetchItems="fetchReviews" :params="params">
-      <template #item="{ item }">
-        <ReviewItem :review="item" />
+    <List
+      :fetchItems="fetchReviews"
+      :params="params"
+      :onDelete="handleDeleteReview">
+      <template #item="{ item, index, onDelete }">
+        <ReviewItem
+          :review="item"
+          @delete="
+            () => {
+              onDelete(item, index);
+            }
+          " />
       </template>
     </List>
   </div>

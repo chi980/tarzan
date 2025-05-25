@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, defineProps, defineEmits } from "vue";
 import advantageImgSrc from "@/assets/emoji/advantage.png";
 import disadvantageImgSrc from "@/assets/emoji/disadvantage.png";
 import menuButtonImgSrc from "@/assets/icons/menu.png";
@@ -65,6 +65,9 @@ import ReportComponent from "@/components/common/ReportComponent.vue";
 
 const props = defineProps<{
   review: Review;
+}>();
+const emit = defineEmits<{
+  (e: "delete"): void;
 }>();
 
 const showMenu = ref(false);
@@ -89,6 +92,7 @@ const onDelete = () => {
   closeDropdown();
 
   deleteReview();
+  emit("delete");
 };
 
 const deleteReview = async () => {
@@ -103,18 +107,18 @@ const deleteReview = async () => {
 };
 
 const show = ref(false);
-const onReport = () => {
+const onReport = async () => {
   closeDropdown();
   show.value = true;
 
-  // try {
-  //   const response = await axiosInstance.post(
-  //     `/v1/reviews/${props.review.review_id}/report`
-  //   );
-  //   console.log("리뷰 신고 성공", response.data);
-  // } catch (error) {
-  //   console.error("리뷰 신고 실패", error);
-  // }
+  try {
+    const response = await axiosInstance.post(
+      `/v1/reviews/${props.review.review_id}/report`
+    );
+    console.log("리뷰 신고 성공", response.data);
+  } catch (error) {
+    console.error("리뷰 신고 실패", error);
+  }
 };
 
 // 외부 클릭 시 드롭다운을 닫도록 이벤트 리스너 추가

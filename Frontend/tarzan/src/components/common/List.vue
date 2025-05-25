@@ -75,7 +75,6 @@ watch(
     page.value = 0;
     items.value = [];
     isEnd.value = false;
-    console.log("params changed, reloading items");
     await loadItems();
   },
   {
@@ -127,7 +126,14 @@ async function loadItems() {
 
 // 삭제 이벤트 핸들러
 function handleDelete(item: any, index: number) {
+  console.log("삭제 요청된 index:", index);
+  console.log("삭제 요청된 item.id:", item.id);
+  console.log(
+    "현재 items:",
+    items.value.map((i) => i.id)
+  ); // 또는 i.review_id
   items.value.splice(index, 1);
+  console.log("아이템 삭제됨:", item);
 }
 
 //스크롤 끝에 도달하면 다음 페이지 불러오는 함수
