@@ -26,19 +26,22 @@
           <span>{{ formatSmartTime(post.board_created_at) }} · </span>
         </div>
       </div>
-
+      <div class="content-indicator"></div>
       <!-- 댓글 영역 -->
       <div class="comment-container">
         <div class="comment-list">
           <CommentList :comments="comments" />
           <div ref="target" style="height: 1px"></div>
         </div>
-
+      </div>
+      <div class="center-container-fix-button">
         <CommentInput class="comment-input" :boardIdx="boardIdx" />
       </div>
     </div>
 
-    <BottomBar class="bottom-bar" />
+    <div class="bottom-bar-wrapper">
+      <BottomBar class="bottom-bar" />
+    </div>
   </div>
 </template>
 
@@ -178,11 +181,11 @@ onMounted(async () => {
 .center-container {
   display: flex;
   flex-direction: column;
-  background-color: #ededed;
+  // background-color: #ededed;
+  background-color: white;
   flex-grow: 1;
   width: 100%;
   height: 100%;
-  gap: 10px;
   overflow-y: auto;
   @include custom-text();
 }
@@ -226,20 +229,16 @@ onMounted(async () => {
 }
 
 .comment-container {
-  // position: relative;
-  flex-grow: 1;
-  padding-top: 15px;
-  padding-bottom: 80px;
   background-color: white;
+  position: relative;
+  flex: 1;
+}
+.center-container-fix-button {
   @include custom-padding-x;
-
-  .comment-input {
-    position: fixed;
-    bottom: 80px;
-    z-index: 10;
-    left: 50%;
-    transform: translateX(-50%);
-    max-width: 355px;
-  }
+  position: sticky;
+  bottom: $padding-default;
+}
+.bottom-bar-wrapper {
+  width: 100%;
 }
 </style>

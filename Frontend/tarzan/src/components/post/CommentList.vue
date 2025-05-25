@@ -4,8 +4,8 @@
       <CommentItem
         v-for="comment in comments"
         :key="comment.comment_id"
-        :comment="comment"
-      />
+        :comment="comment" />
+      <NonContent v-if="comments.length === 0" :value="'댓글이 없습니다.'" />
     </div>
   </div>
 </template>
@@ -13,6 +13,7 @@
 <script setup>
 import { defineProps, defineEmits } from "vue";
 import CommentItem from "@/components/post/CommentItem.vue";
+import NonContent from "@/components/common/NonContent.vue";
 
 const props = defineProps({
   comments: {

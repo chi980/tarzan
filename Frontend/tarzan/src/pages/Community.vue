@@ -203,34 +203,6 @@ const goToPostCreate = () => {
   flex-grow: 1;
 }
 
-.write-post-button {
-  position: fixed;
-  bottom: 70px;
-  left: 50%; // 💡 가로 중앙 기준
-  transform: translateX(-50%); // 💡 정확히 가운데 정렬
-  z-index: 5;
-
-  width: fit-content;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px;
-  margin-bottom: $margin-small;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-
-  img {
-    @include custom-icon-style(12px);
-    color: $input-placeholder-color;
-  }
-
-  p {
-    @include custom-text($font-size: 12px);
-  }
-}
-
 .center-container-fix-button {
   @include custom-padding(12px);
   @include custom-text($font-size: 12px);
