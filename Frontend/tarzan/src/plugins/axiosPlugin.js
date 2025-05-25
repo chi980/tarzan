@@ -75,9 +75,7 @@ function refreshTokenAndRetry(error) {
         resolve(axios(error.config)); // 실패한 요청을 재시도
       })
       .catch((err) => {
-        if (authStore.getEmail) console.error("발급받지 못했씁니다");
-        alert("재로그인합니다.");
-        router.push({ path: "/login" });
+        if (authStore.getEmail) console.error("발급받지 못했습니다.");
 
         axiosNewInstance
           .post("/auth/logout", {
@@ -91,6 +89,9 @@ function refreshTokenAndRetry(error) {
           .catch((logoutErr) => {
             reject(logoutErr); // 로그아웃 오류 처리
           });
+
+        // alert("재로그인합니다.");
+        router.push({ path: "/login" });
       });
   });
 }

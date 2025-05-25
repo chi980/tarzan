@@ -80,6 +80,7 @@ const searchAddress = async () => {
   searchResults.value = []; // 이전 검색 결과 지우기
 
   try {
+    console.log(`${import.meta.env.VITE_KAKAO_REST_KEY}`);
     const { data } = await axios.get(
       "https://dapi.kakao.com/v2/local/search/address.json",
       {
