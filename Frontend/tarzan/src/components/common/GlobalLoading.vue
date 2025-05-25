@@ -28,6 +28,9 @@ const isLoading = computed(() => loading.isLoading);
   align-items: center;
   justify-content: center;
   z-index: 9999;
+
+  pointer-events: all; /* 클릭 막기 */
+  cursor: not-allowed; /* ⛔️ 커서로도 표현 */
 }
 .wave-loader {
   display: flex;
