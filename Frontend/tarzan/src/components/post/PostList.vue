@@ -8,16 +8,18 @@
   </div>
 
   <div v-else class="post-list-container">
-    <p>아직 게시물이 없습니다.</p>
+    <NonContent :value="'내용이 없습니다.'" />
   </div>
 </template>
 
 <script>
 import PostItem from "@/components/post/PostItem.vue";
+import NonContent from "@/components/common/NonContent.vue";
 
 export default {
   components: {
     PostItem,
+    NonContent,
   },
   props: {
     posts: {

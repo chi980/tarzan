@@ -76,11 +76,11 @@ watch(
     items.value = [];
     isEnd.value = false;
     await loadItems();
+  },
+  {
+    deep: true, // ← 객체 내부 속성 변경까지 감지
+    immediate: true, // ← 마운트 직후에도 실행하고 싶다면
   }
-  // {
-  //   deep: true, // ← 객체 내부 속성 변경까지 감지
-  //   immediate: true, // ← 마운트 직후에도 실행하고 싶다면
-  // }
 );
 
 // async function loadItems() {
@@ -126,7 +126,14 @@ async function loadItems() {
 
 // 삭제 이벤트 핸들러
 function handleDelete(item: any, index: number) {
+  console.log("삭제 요청된 index:", index);
+  console.log("삭제 요청된 item.id:", item.id);
+  console.log(
+    "현재 items:",
+    items.value.map((i) => i.id)
+  ); // 또는 i.review_id
   items.value.splice(index, 1);
+  console.log("아이템 삭제됨:", item);
 }
 
 //스크롤 끝에 도달하면 다음 페이지 불러오는 함수

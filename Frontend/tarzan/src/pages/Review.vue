@@ -37,11 +37,21 @@
       <ResultBar
         resultTitle="전체 후기"
         :sortOptions="sortOptions"
+        @update-sort-by="changeSortBy"
         class="result-bar" />
       <div class="column">
-        <List :fetchItems="fetchReviews" :params="params">
-          <template #item="{ item }">
-            <ReviewItem :review="item" />
+        <List
+          :fetchItems="fetchReviews"
+          :params="params"
+          :onDelete="handleDeleteReview">
+          <template #item="{ item, index, onDelete }">
+            <ReviewItem
+              :review="item"
+              @delete="
+                () => {
+                  onDelete(item, index);
+                }
+              " />
           </template>
         </List>
       </div>
@@ -95,6 +105,11 @@ const fetchReviewSummary = async (houseIdx: number) => {
   }
 };
 
+const handleDeleteReview = async (item) => {
+  // 여긴 이미 삭제된 상태라고 가정하니 API 안 해도 됨
+  return Promise.resolve(); // 반드시 Promise 리턴! (.then 쓰니까)
+};
+
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import ResultBar from "@/components/common/ResultBar.vue";
 
@@ -120,7 +135,7 @@ const buttons = ref([
   { label: "🦠 곰팡이", value: "MOLD" },
   { label: "👟 평지", value: "FLAT" },
 ]);
-const selectedButton = ref("ALL");
+const selectedButton = ref("최신순");
 
 // 정렬 옵션
 const sortOptions = ref([
@@ -147,6 +162,15 @@ const params = ref({
   size: 10,
   sortBy: selectedButton.value,
 });
+const changeSortBy = (selectedIndex) => {
+  const selectedOption = sortOptions.value.find(
+    (option) => option.idx === selectedIndex
+  );
+  if (selectedOption) {
+    selectedButton.value = selectedOption.value;
+    params.value.sortBy = selectedButton.value; // 파라미터 업데이트
+  }
+};
 
 // API : 리뷰 목록 호출
 const fetchReviews = async (page, params) => {

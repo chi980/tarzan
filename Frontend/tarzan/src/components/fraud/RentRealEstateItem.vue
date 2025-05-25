@@ -41,7 +41,9 @@ const props = defineProps<{
 <template>
   <div class="sale-real-estate-item-container">
     <div class="desc-tag-button-contianer">
-      <div>{{ props.data.contractDateRange }}</div>
+      <div v-if="props.data.contractDateRange">
+        {{ props.data.contractDateRange }}
+      </div>
       <div>{{ props.data.rentType }}</div>
     </div>
     <div class="building-content">

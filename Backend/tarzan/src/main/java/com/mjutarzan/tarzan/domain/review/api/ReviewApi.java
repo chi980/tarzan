@@ -28,6 +28,7 @@ public class ReviewApi {
     @GetMapping("/reviews")
     public ResponseEntity<Object> getReviews(ReviewListRequestDto reviewListRequestDto, @AuthenticationPrincipal CustomUserDetails userDto){
         ReviewListResponseDto result = reviewService.getReviews(reviewListRequestDto, userDto);
+        log.info("{}", reviewListRequestDto.getSortBy());
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("완료되었습니다.")

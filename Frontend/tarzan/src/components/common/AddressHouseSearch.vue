@@ -7,7 +7,6 @@ import searchIconImg from "@/assets/icons/Magnifier.png";
 import TopBarBack from "@/components/common/TopBarBack.vue";
 import BottomDefaultButton from "@/components/common/BottomDefaultButton.vue";
 import AddressHouseSearchResult from "@/components/common/AddressHouseSearchResult.vue"; // 재사용
-import AddressSearchResult from "@/components/common/AddressSearchResult.vue"; // ✅ 수정된 부분
 
 const emit = defineEmits(["close", "selectAddress"]);
 
@@ -80,6 +79,7 @@ const searchAddress = async () => {
   searchResults.value = []; // 이전 검색 결과 지우기
 
   try {
+    console.log(`${import.meta.env.VITE_KAKAO_REST_KEY}`);
     const { data } = await axios.get(
       "https://dapi.kakao.com/v2/local/search/address.json",
       {

@@ -22,9 +22,11 @@
 
     <div v-if="message">{{ message }}</div>
 
-    <div class="post-button">
-      <button @click="goToBack" class="inactive">취소</button>
-      <button @click="submit" class="active">글쓰기</button>
+    <div style="width: 100%">
+      <div class="post-button">
+        <button @click="goToBack" class="inactive">취소</button>
+        <button @click="submit" class="active">글쓰기</button>
+      </div>
     </div>
   </div>
 </template>
@@ -144,24 +146,23 @@ textarea {
 }
 
 .post-button {
+  @include custom-margin-x;
   display: flex;
-  justify-content: center;
-  width: 100%;
-  justify-content: space-between;
-  padding: $margin-big $margin-default;
-  box-sizing: border-box;
-}
+  flex-direction: row;
+  gap: $padding-small;
 
-.cancle-button,
-.create-button {
-  flex-basis: 160px;
-  @include custom-text-bold($font-size: 14px);
-  height: 48px;
-}
+  button {
+    all: unset;
+    flex: 1;
+    @include custom-button-style(
+      $bg-color: $secondary-color-default,
+      $font-color: white
+    );
 
-.cancle-button:hover,
-.create-button:hover {
-  background-color: black;
-  color: white;
+    &.inactive {
+      background-color: transparent !important;
+      color: $text-color-light !important;
+    }
+  }
 }
 </style>

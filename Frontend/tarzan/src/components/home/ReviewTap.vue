@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
-
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import { Review } from "@/data/review";
@@ -14,6 +13,18 @@ const props = defineProps<{
   houseId: number;
   reviews: Review[];
 }>();
+
+// ✅ props.reviews를 복사해서 내부 상태로 관리
+const localReviews = ref<Review[]>([...props.reviews]);
+
+// ✅ props.reviews가 바뀌면 localReviews도 반영
+watch(
+  () => props.reviews,
+  (newReviews) => {
+    localReviews.value = [...newReviews];
+  },
+  { deep: true, immediate: true }
+);
 
 const showMoreReviews = () => {
   router.push({
@@ -32,23 +43,28 @@ const goToReviewCreatePage = () => {
     },
   });
 };
+
+const handleDelete = (index: number) => {
+  localReviews.value.splice(index, 1);
+};
 </script>
 
 <template>
   <div class="review-tap-wrapper">
-    <div v-if="props.reviews.length > 0">
+    <div v-if="localReviews.length > 0">
       <div class="review-item-wrapper">
         <ReviewItem
-          v-for="(review, index) in props.reviews"
+          v-for="(review, index) in localReviews"
           :key="index"
-          :review="review" />
+          :review="review"
+          @delete="handleDelete(index)" />
       </div>
       <div class="more-button" @click="showMoreReviews">
         <p>더보기</p>
         <img :src="arrowRightImgSrc" alt=">" />
       </div>
     </div>
-    <div v-if="!props.reviews || props.reviews == 0">
+    <div v-if="!localReviews || localReviews.length == 0">
       <NonContent :value="'리뷰가 없습니다.'">
         <p class="non-content-sub-desc" @click="goToReviewCreatePage">
           리뷰를 추가할까요?
