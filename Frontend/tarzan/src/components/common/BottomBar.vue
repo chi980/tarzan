@@ -12,16 +12,10 @@
 </template>
 
 <script lang="ts" setup>
-// @ts-ignore
 import { ref } from "vue";
-// @ts-ignore
 import { useRouter } from "vue-router";
-// @ts-ignore
 import homeIcon from "@/assets/icons/bottombar/home.svg";
-// @ts-ignore
 import checklistIcon from "@/assets/icons/bottombar/checklist.svg";
-
-// @ts-ignore
 import preventionIcon from "@/assets/icons/bottombar/prevention.svg";
 import communityIcon from "@/assets/icons/bottombar/community.svg";
 import mypageIcon from "@/assets/icons/bottombar/mypage.svg";

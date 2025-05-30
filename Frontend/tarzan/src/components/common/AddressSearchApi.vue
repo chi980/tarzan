@@ -124,10 +124,6 @@ onMounted(getCurrentLocation);
 
 // 검색어가 변경될 때마다 디바운스된 검색 함수 호출
 watch(searchQuery, debouncedSearch);
-
-const goToAddBookmarkByUser = () => {
-  router.push("/bookmark/create");
-};
 </script>
 
 <template>
@@ -159,9 +155,6 @@ const goToAddBookmarkByUser = () => {
           <NonContent
             v-if="searchResults.length === 0"
             :value="'검색 결과가 없습니다'">
-            <p class="non-content-sub-desc" @click="goToAddBookmarkByUser">
-              직접 추가할까요?
-            </p>
           </NonContent>
         </Transition>
       </div>

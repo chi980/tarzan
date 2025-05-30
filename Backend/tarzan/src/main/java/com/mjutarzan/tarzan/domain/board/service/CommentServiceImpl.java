@@ -35,17 +35,18 @@ public class CommentServiceImpl implements CommentService{
     private final UserRepository userRepository;
 
     @Override
-    public void createComment(CommentRequestDto requestDto, CustomUserDetails loginedUserDto) {
+    public CommentListItemResponseDto createComment(CommentRequestDto requestDto, CustomUserDetails loginedUserDto) {
         Board board = boardRepository.findById(requestDto.getBoardIdx()).orElseThrow();
         User loginedUser = userRepository.findByNickname(loginedUserDto.getNickname()).orElseThrow();
 
-        commentRepository.save(
+        Comment comment = commentRepository.save(
                 Comment.builder()
                         .content(requestDto.getContent())
                         .writer(loginedUser)
                         .board(board)
                         .build()
         );
+        return new CommentListItemResponseDto(comment, true);
     }
 
     @Override

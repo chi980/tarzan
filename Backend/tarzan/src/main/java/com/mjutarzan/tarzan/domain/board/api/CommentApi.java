@@ -3,6 +3,7 @@ package com.mjutarzan.tarzan.domain.board.api;
 import com.mjutarzan.tarzan.domain.board.api.request.CommentListRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.CommentRequestDto;
 import com.mjutarzan.tarzan.domain.board.api.request.UpdateCommentRequestDto;
+import com.mjutarzan.tarzan.domain.board.api.response.CommentListItemResponseDto;
 import com.mjutarzan.tarzan.domain.board.api.response.CommentListResponseDto;
 import com.mjutarzan.tarzan.domain.board.service.CommentService;
 import com.mjutarzan.tarzan.domain.user.entity.CustomUserDetails;
@@ -44,11 +45,12 @@ public class CommentApi {
                     .build());
         }
 
-        commentService.createComment(commentRequestDto, userDto);
+        CommentListItemResponseDto result = commentService.createComment(commentRequestDto, userDto);
 
         return ResponseEntity.ok().body(BaseResponseDto.builder()
                 .success(true)
                 .message("댓글이 성공적으로 등록되었습니다.")
+                .data(result)
                 .build());
     }
 

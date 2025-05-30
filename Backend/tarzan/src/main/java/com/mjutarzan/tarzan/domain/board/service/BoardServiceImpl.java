@@ -44,7 +44,7 @@ public class BoardServiceImpl implements BoardService {
                 .title(boardDto.getTitle())
                 .content(boardDto.getContent())
                 .tag(boardDto.getTag())
-                .gu(boardDto.getGu())
+                .gu(loginedUser.getGu())
                 .writer(loginedUser)
                 .build());
     }
@@ -141,7 +141,6 @@ public class BoardServiceImpl implements BoardService {
 
         board.update(requestDto.getTitle(), requestDto.getContent(), requestDto.getTag());
 
-        boardRepository.deleteById(boardIdx);
     }
 
     @Override
