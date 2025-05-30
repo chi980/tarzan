@@ -2,9 +2,11 @@
 import { ref } from "vue";
 
 import { axiosInstance } from "@/plugins/axiosPlugin";
+import { useRouter } from "vue-router";
 import List from "@/components/common/List.vue";
 import PostItem from "@/components/post/PostItem.vue";
 
+const router = useRouter();
 const params = ref({
   size: 4,
   sortBy: "최신순",
@@ -39,13 +41,17 @@ const fetchBoards = async (page, params) => {
     };
   }
 };
+
+const goToPostDetail = (boardId) => {
+  router.push({ name: "PostDetail", params: { id: boardId } });
+};
 </script>
 
 <template>
   <div class="my-page-board-list">
     <List :fetchItems="fetchBoards" :params="params">
       <template #item="{ item }">
-        <PostItem :post="item" />
+        <PostItem :post="item" @click="goToPostDetail(item.board_id)" />
       </template>
     </List>
   </div>
