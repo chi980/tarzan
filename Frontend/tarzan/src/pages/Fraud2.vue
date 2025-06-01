@@ -192,7 +192,7 @@ const cards: Card[] = ref([
 }
 // scoped
 .center-container {
-  @include custom-padding-y;
+  padding-bottom: $padding-default;
   gap: 24px;
 }
 

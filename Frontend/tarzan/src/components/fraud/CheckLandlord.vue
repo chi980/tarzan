@@ -1,7 +1,8 @@
 <template>
   <div class="sub-container">
-    <TopBarBack title="임대인 확인" />
-
+    <div class="top-bar-wrapper">
+      <TopBarBack title="임대인 확인" />
+    </div>
     <div class="center-container">
       <div class="title-section">
         <img
@@ -109,6 +110,9 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.top-bar-wrapper {
+  width: 100%;
+}
 .content-img {
   width: 100%;
 }
