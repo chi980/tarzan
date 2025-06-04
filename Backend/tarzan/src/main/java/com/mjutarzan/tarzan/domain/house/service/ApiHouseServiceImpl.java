@@ -74,7 +74,7 @@ public class ApiHouseServiceImpl implements ApiHouseService{
         Double latitude = house.getLocation().getY();   // Latitude (y)
         Map<BuildingCategory, Double> radiuses = indexService.getRadius();
 
-        Map<BuildingCategory, Long> indices = indexService.getIndex(longitude, latitude, radiuses);
+        Map<BuildingCategory, Double> indices = indexService.getIndex(longitude, latitude, radiuses);
 
 
         List<ReviewListItemResponseDto> houseReviewList = reviewRepository.findByHouseLimit3(houseIdx).stream()
@@ -105,11 +105,11 @@ public class ApiHouseServiceImpl implements ApiHouseService{
                 .latitude(house.getLocation().getX())
                 .longitude(house.getLocation().getY())
                 .indexes(HouseIndexes.builder()
-                        .indexAmenity(indices.get(BuildingCategory.AMENITY).intValue())
-                        .indexClinic(indices.get(BuildingCategory.CLINIC).intValue())
-                        .indexSecurity(indices.get(BuildingCategory.SECURITY).intValue())
-                        .indexShopping(indices.get(BuildingCategory.SHOPPING).intValue())
-                        .indexTransportation(indices.get(BuildingCategory.TRANSPORTATION).intValue())
+                        .indexAmenity(indices.get(BuildingCategory.AMENITY))
+                        .indexClinic(indices.get(BuildingCategory.CLINIC))
+                        .indexSecurity(indices.get(BuildingCategory.SECURITY))
+                        .indexShopping(indices.get(BuildingCategory.SHOPPING))
+                        .indexTransportation(indices.get(BuildingCategory.TRANSPORTATION))
                         .build())
                 .reviewImageList(houseReviewList.stream().map(review -> review.getImgUrl()).collect(Collectors.toList()))
                 .reviewList(houseReviewList)

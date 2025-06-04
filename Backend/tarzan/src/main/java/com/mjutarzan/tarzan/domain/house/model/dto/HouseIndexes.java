@@ -13,17 +13,17 @@ import lombok.NoArgsConstructor;
 public class HouseIndexes {
 
     @JsonProperty("house_index_amenity")
-    private Integer indexAmenity;
+    private Double indexAmenity;
 
     @JsonProperty("house_index_clinic")
-    private Integer indexClinic;
+    private Double indexClinic;
 
     @JsonProperty("house_index_security")
-    private Integer indexSecurity;
+    private Double indexSecurity;
 
     @JsonProperty("house_index_shopping")
-    private Integer indexShopping;
+    private Double indexShopping;
 
     @JsonProperty("house_index_transportation")
-    private Integer indexTransportation;
+    private Double indexTransportation;
 }

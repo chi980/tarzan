@@ -372,7 +372,7 @@ public class BookmarkServiceImpl implements BookmarkService{
             Double longitude = house.getLocation().getX();  // Longitude (x)
             Double latitude = house.getLocation().getY();   // Latitude (y)
             Map<BuildingCategory, Double> radiuses = indexService.getRadius();
-            Map<BuildingCategory, Long> indices = indexService.getIndex(longitude, latitude, radiuses);
+            Map<BuildingCategory, Double> indices = indexService.getIndex(longitude, latitude, radiuses);
 
             log.info("checklist 갯수:{}",bookmark.getCheckListItemList().size());
             Map<BookmarkChecklistType, Long> checks = getCheckListScore(bookmark.getCheckListItemList());
@@ -405,74 +405,60 @@ public class BookmarkServiceImpl implements BookmarkService{
                     .checks(checks)
                     .bookmarkCreatedAt(bookmark.getCreatedAt())
                     .build();
-        }).collect(Collectors.toList());
-
+        }) .sorted(Comparator.comparingDouble(CompareBookmarkDetailResponseDto::getScore).reversed())  // 점수 내림차순
+                .collect(Collectors.toList());
         return CompareBookmarkResponseDto.builder()
                 .list(list)
                 .build();
     }
 
-    private Integer getScore(Map<BuildingCategory, Long> indexes, Map<BookmarkChecklistType, Long> checks) {
-        // 각 카테고리의 비율 (총합이 100%가 되도록 설정)
-        Map<BuildingCategory, Double> categoryWeights = new HashMap<>();
-        categoryWeights.put(BuildingCategory.AMENITY, 0.25);  // 25% (상업시설)
-        categoryWeights.put(BuildingCategory.CLINIC, 0.2);    // 20% (의료시설)
-        categoryWeights.put(BuildingCategory.SECURITY, 0.2);  // 20% (보안)
-        categoryWeights.put(BuildingCategory.SHOPPING, 0.15); // 15% (쇼핑)
-        categoryWeights.put(BuildingCategory.TRANSPORTATION, 0.2); // 20% (교통)
-// 각 체크리스트 항목의 비율 (각 카테고리 내에서 총합이 100%가 되도록 설정)
-        Map<BookmarkChecklistType, Double> checklistWeights = new HashMap<>();
-        checklistWeights.put(BookmarkChecklistType.OPTION_UTILITY_ROOM, 0.12);  // 12%
-        checklistWeights.put(BookmarkChecklistType.OPTION_LIVING_ROOM, 0.1);     // 10%
-        checklistWeights.put(BookmarkChecklistType.OPTION_ROOM, 0.1);           // 10%
-        checklistWeights.put(BookmarkChecklistType.OPTION_BATH_ROOM, 0.1);      // 10%
-        checklistWeights.put(BookmarkChecklistType.OPTION_SECURITY, 0.15);      // 15%
-        checklistWeights.put(BookmarkChecklistType.CHECK_WATER, 0.1);           // 10%
-        checklistWeights.put(BookmarkChecklistType.CHECK_WINDOW, 0.1);          // 10%
-        checklistWeights.put(BookmarkChecklistType.CHECK_BATHROOM, 0.1);        // 10%
-        checklistWeights.put(BookmarkChecklistType.CHECK_SURROUNDINGS, 0.1);    // 10%
-        checklistWeights.put(BookmarkChecklistType.CHECK_OPTION, 0.05);         // 5%
-        checklistWeights.put(BookmarkChecklistType.CHECK_DETAIL, 0.05);         // 5%
-        checklistWeights.put(BookmarkChecklistType.CHECK_SECURITY, 0.1);        // 10%
-        checklistWeights.put(BookmarkChecklistType.CHECK_ETC, 0.05);            // 5%
+    private Integer getScore(Map<BuildingCategory, Double> indexes, Map<BookmarkChecklistType, Long> checks) {
+        // -----------------------------
+        // 1. 입지 점수 (카테고리 총점)
+        // -----------------------------
+        Double categoryTotalScore = indexService.getTotalScore(indexes); // 이미 정규화된 0~100 점수
 
-        // 점수 초기화
-        double totalScore = 0;
-        double totalWeight = 0;
+        // -----------------------------
+        // 2. 체크리스트 점수 계산
+        // -----------------------------
+        int totalOptionItems = Arrays.stream(BookmarkChecklistType.values())
+                .filter(type -> type.name().startsWith("OPTION_"))
+                .mapToInt(type -> type.getNames().size())
+                .sum();
 
-        // BuildingCategory에 대한 점수 계산 (카테고리 비율 반영)
-        for (Map.Entry<BuildingCategory, Long> entry : indexes.entrySet()) {
-            BuildingCategory category = entry.getKey();
-            Long count = entry.getValue();
+        int totalCheckItems = Arrays.stream(BookmarkChecklistType.values())
+                .filter(type -> type.name().startsWith("CHECK_"))
+                .mapToInt(type -> type.getNames().size())
+                .sum();
 
-            // 카테고리별 비율
-            double categoryWeight = categoryWeights.getOrDefault(category, 0.0);
+        long checkedOptionItems = checks.entrySet().stream()
+                .filter(entry -> entry.getKey().name().startsWith("OPTION_"))
+                .mapToLong(Map.Entry::getValue)
+                .sum();
 
-            // 해당 카테고리의 비율에 따라 점수 계산
-            double categoryScore = (count > 0) ? categoryWeight : 0;  // 항목이 있으면 비율을 반영하여 점수 부여
-            totalScore += categoryScore;
-            totalWeight += categoryWeight;  // 전체 가중치 더하기
-        }
+        long checkedCheckItems = checks.entrySet().stream()
+                .filter(entry -> entry.getKey().name().startsWith("CHECK_"))
+                .mapToLong(Map.Entry::getValue)
+                .sum();
 
-        // BookmarkChecklistType에 대한 점수 계산 (체크리스트 비율 반영)
-        for (Map.Entry<BookmarkChecklistType, Long> entry : checks.entrySet()) {
-            BookmarkChecklistType checklistType = entry.getKey();
-            Long checkedCount = entry.getValue();
+        // -----------------------------
+        // 3. 비율 점수 계산 (0~100)
+        // -----------------------------
+        double optionScore = totalOptionItems > 0
+                ? ((double) checkedOptionItems / totalOptionItems) * 100.0
+                : 0.0;
 
-            // 체크리스트 항목별 비율
-            double checklistWeight = checklistWeights.getOrDefault(checklistType, 0.0);
+        double checkScore = totalCheckItems > 0
+                ? ((double) checkedCheckItems / totalCheckItems) * 100.0
+                : 0.0;
 
-            // 체크된 항목에 비례한 점수 계산
-            double checklistScore = (checkedCount > 0) ? checklistWeight : 0;
-            totalScore += checklistScore;
-            totalWeight += checklistWeight;  // 전체 가중치 더하기
-        }
+        // -----------------------------
+        // 4. 가중 평균
+        // -----------------------------
+        double finalScore = categoryTotalScore  + optionScore + checkScore;
+        finalScore /= 3.0;
 
-        // 비율로 계산한 점수 평균
-        double finalScore = (totalWeight > 0) ? (totalScore / totalWeight) * 100 : 0;
-
-        // 최종 점수를 0~100 범위로 제한
-        return Math.max(0, Math.min(100, (int) finalScore));
+        return (int) Math.round(finalScore); // 0~100 점수로 반환
     }
 
     private Map<BookmarkChecklistType, Long> getCheckListScore(List<BookmarkChecklistItem> checkListItemList) {

@@ -39,7 +39,7 @@ public class CompareBookmarkDetailResponseDto {
     Map<String, String> details;
 
     @JsonProperty("house_indexes")
-    Map<BuildingCategory, Long> indexes;
+    Map<BuildingCategory, Double> indexes;
 
     @JsonProperty("house_checks")
     Map<BookmarkChecklistType, Long> checks;
@@ -49,7 +49,7 @@ public class CompareBookmarkDetailResponseDto {
     private LocalDateTime bookmarkCreatedAt;
 
     @Builder
-    public CompareBookmarkDetailResponseDto(Long id, Long houseId, String name, String address, String category, Integer score, Map<String, String> costs, Map<String, String> details, Map<BuildingCategory, Long> indexes, Map<BookmarkChecklistType, Long> checks, LocalDateTime bookmarkCreatedAt) {
+    public CompareBookmarkDetailResponseDto(Long id, Long houseId, String name, String address, String category, Integer score, Map<String, String> costs, Map<String, String> details, Map<BuildingCategory, Double> indexes, Map<BookmarkChecklistType, Long> checks, LocalDateTime bookmarkCreatedAt) {
         this.id = id;
         this.houseId = houseId;
         this.name = name;
