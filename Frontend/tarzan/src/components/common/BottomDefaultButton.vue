@@ -27,5 +27,6 @@ const props = defineProps<{
     $font-color: white
   );
   flex: 1;
+  color: white !important;
 }
 </style>

@@ -79,7 +79,7 @@ onMounted(() => {
     bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.map(
       (item) => ({
         label: item.label,
-        value: item.value,
+        value: item.label,
       })
     );
 
@@ -93,28 +93,28 @@ onMounted(() => {
     bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM.map(
       (item) => ({
         label: item.label,
-        value: item.value,
+        value: item.label,
       })
     );
 
   checkItemsInRoom.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_ROOM.map((item) => ({
       label: item.label,
-      value: item.value,
+      value: item.label,
     }));
 
   checkItemsInBathRoom.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_BATH_ROOM.map(
       (item) => ({
         label: item.label,
-        value: item.value,
+        value: item.label,
       })
     );
 
   checkItemsInEtc.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_SECURITY.map((item) => ({
       label: item.label,
-      value: item.value,
+      value: item.label,
     }));
 });
 
