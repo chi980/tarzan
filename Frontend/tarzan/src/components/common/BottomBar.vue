@@ -29,7 +29,7 @@ interface BarItem {
 
 const items = ref<BarItem[]>([
   { idx: 1, icon: homeIcon, title: "홈", url: "/" },
-  { idx: 2, icon: checklistIcon, title: "체크리스트", url: "/bookmark" },
+  { idx: 2, icon: checklistIcon, title: "북마크", url: "/bookmark" },
   { idx: 3, icon: preventionIcon, title: "사기 예방", url: "/fraud" },
   { idx: 4, icon: communityIcon, title: "커뮤니티", url: "/community" },
   { idx: 5, icon: mypageIcon, title: "마이페이지", url: "/mypage" },

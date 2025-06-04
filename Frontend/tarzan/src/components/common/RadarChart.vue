@@ -71,6 +71,8 @@ const options = {
   maintainAspectRatio: false,
   scales: {
     r: {
+      min: 0,
+      max: 100,
       grid: {
         circular: true,
       },

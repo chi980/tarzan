@@ -86,7 +86,8 @@ interface ExtendedTab extends Tab {
 // 탭 데이터 배열 초기화
 const tabs: ExtendedTab[] = [
   {
-    name: "집 선택",
+    // name: "집 선택",
+    name: "북마크",
     component: HouseTap,
     buttonLabel: "비교하기",
     imgSrc: chevronImgSrc,
@@ -95,7 +96,8 @@ const tabs: ExtendedTab[] = [
     },
   },
   {
-    name: "이사 업체 선택",
+    // name: "이사 업체 선택",
+    name: "이사 준비",
     component: MoverTap,
     buttonLabel: "내보내기",
     imgSrc: exportImgSrc,
@@ -123,7 +125,8 @@ const tabs: ExtendedTab[] = [
     },
   },
   {
-    name: "자취 필수품 선택",
+    // name: "자취 필수품 선택",
+    name: "자취 필수품",
     component: ItemTap,
     buttonLabel: "내보내기",
     imgSrc: exportImgSrc,

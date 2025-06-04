@@ -75,6 +75,8 @@ const checkItemsInEtc = ref([]);
 console.log(bookmarkData.value);
 
 onMounted(() => {
+  console.log("mounted");
+  console.log("Bookmark Data:", bookmarkData.value);
   checkItemsInKitchen.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.map(
       (item) => ({
@@ -82,12 +84,6 @@ onMounted(() => {
         value: item.label,
       })
     );
-
-  selectedCheckItemsInKitchen.value =
-    bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.filter(
-      (item) => item.value
-    );
-  console.log(selectedCheckItemsInKitchen.value);
 
   checkItemsInLivingRoom.value =
     bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM.map(
@@ -116,6 +112,29 @@ onMounted(() => {
       label: item.label,
       value: item.label,
     }));
+
+  selectedCheckItemsInKitchen.value =
+    bookmarkData.value.value.bookmark_checklist.OPTION_UTILITY_ROOM.filter(
+      (item) => item.value
+    ).map((item) => item.label);
+
+  selectedCheckItemsInLivingRoom.value =
+    bookmarkData.value.value.bookmark_checklist.OPTION_LIVING_ROOM.filter(
+      (item) => item.value
+    ).map((item) => item.label);
+
+  selectedCheckItemsInRoom.value =
+    bookmarkData.value.value.bookmark_checklist.OPTION_ROOM.filter(
+      (item) => item.value
+    ).map((item) => item.label);
+  selectedCheckItemsInBathRoom.value =
+    bookmarkData.value.value.bookmark_checklist.OPTION_BATH_ROOM.filter(
+      (item) => item.value
+    ).map((item) => item.label);
+  selectedCheckItemsInEtc.value =
+    bookmarkData.value.value.bookmark_checklist.OPTION_SECURITY.filter(
+      (item) => item.value
+    ).map((item) => item.label);
 });
 
 watch(selectedCheckItemsInKitchen, (labels) => {
