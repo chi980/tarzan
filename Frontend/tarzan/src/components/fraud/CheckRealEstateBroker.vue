@@ -278,6 +278,7 @@ function goSomewhere() {
 }
 .button-default {
   @include custom-button-style;
+  color: white !important;
 }
 
 .result-wrapper {

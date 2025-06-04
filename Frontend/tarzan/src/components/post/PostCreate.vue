@@ -161,6 +161,7 @@ textarea {
       $bg-color: $secondary-color-default,
       $font-color: white
     );
+    color: white !important;
 
     &.inactive {
       background-color: transparent !important;

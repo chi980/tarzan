@@ -262,6 +262,7 @@ const goSomewhere = () => {
 }
 .button-default {
   @include custom-button-style;
+  color: white !important;
 }
 .input-form {
   gap: $padding-small !important;
