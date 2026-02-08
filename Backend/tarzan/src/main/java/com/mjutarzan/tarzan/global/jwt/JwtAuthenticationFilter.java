@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/favicon.ico",
             "/login",
             "/oauth2/authorization", "/api/auth",
-            "/api/test", "/api/data");
+            "/api/test", "/api/data",
+            "/api/v1/building");
 
 
     private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();

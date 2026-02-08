@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**", "/error").permitAll()
 
-                        .requestMatchers("/sign-up", "/api/auth/**","/api/test/**", "/api/data/**").permitAll()
+                        .requestMatchers("/sign-up", "/api/auth/**","/api/test/**", "/api/data/**", "/api/v1/building").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
