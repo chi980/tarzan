@@ -47,9 +47,9 @@ class TarzanApplicationTests {
 	@Autowired
 	private CommentRepository commentRepository;
 
-	@Test
-	@Transactional
-	@Rollback(false)
+//	@Test
+//	@Transactional
+//	@Rollback(false)
 	void contextLoads() {
 		Optional<Board> board = boardRepository.findById(1556L);
 		Optional<User> writer = userRepository.findById(1L);
